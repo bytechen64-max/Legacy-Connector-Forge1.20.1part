@@ -7,7 +7,6 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.server.packs.PackType;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.event.TextureAtlasStitchedEvent;
 import org.kylepitcock.legacyconnector.core.LegacyMods;
 import org.kylepitcock.legacyconnector.core.pack.GeneratedPack;
 import org.kylepitcock.legacyconnector.v1_12_2.bridge.TileEntityBridge1122;
@@ -38,7 +37,7 @@ public final class Client1122 {
             for (String texture : org.kylepitcock.legacyconnector.v1_12_2.ObjAssets1122.TEXTURES) Sprites1122.register(texture);
             Sprites1122.contribute(out);
         });
-        modBus.addListener((TextureAtlasStitchedEvent e) -> {
+        modBus.addListener((net.minecraftforge.client.event.TextureStitchEvent.Post e) -> {
             if (!e.getAtlas().location().equals(TextureAtlas.LOCATION_BLOCKS) || !present()) return;
             TextureMap.mcc$blocks().mcc$synchronize();
             try {
@@ -71,7 +70,7 @@ public final class Client1122 {
             }
         });
         // screens, particles, key bindings, resource reloads
-        modBus.addListener(ClientGui1122::onRegisterScreens);
+        ClientGui1122.registerScreens();
         LegacyParticles1122.register();
         ParticleDraw1122.install();
         ScreenEvents1122.register();

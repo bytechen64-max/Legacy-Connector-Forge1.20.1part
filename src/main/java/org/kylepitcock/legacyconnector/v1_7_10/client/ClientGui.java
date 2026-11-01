@@ -10,7 +10,6 @@ import legacyconnector.v1_7_10.net.minecraft.world.World;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
-import net.minecraftforge.client.event.RegisterMenuScreensEvent;
 import org.kylepitcock.legacyconnector.v1_7_10.bridge.EntityBridge;
 import org.kylepitcock.legacyconnector.v1_7_10.bridge.GuiBridge;
 import org.kylepitcock.legacyconnector.v1_7_10.gui.LegacyMenu;
@@ -20,8 +19,9 @@ import org.slf4j.LoggerFactory;
 public final class ClientGui {
     private ClientGui() {}
 
-    public static void onRegisterScreens(RegisterMenuScreensEvent event) {
-        event.register(GuiBridge.menuType(), LegacyContainerScreen::new);
+    /** 1.20.1 registers a menu's screen statically (the register event is 1.20.4+). */
+    public static void registerScreens() {
+        net.minecraft.client.gui.screens.MenuScreens.register(GuiBridge.menuType(), LegacyContainerScreen::new);
     }
 
     public static LegacyMenu createMenu(MenuType<LegacyMenu> type, IGuiHandler handler, int windowId, Inventory inv, int id, int x, int y, int z) {

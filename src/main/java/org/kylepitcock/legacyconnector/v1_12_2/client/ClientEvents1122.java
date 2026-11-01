@@ -24,7 +24,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraftforge.client.gui.VanillaGuiLayers;
+import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.common.MinecraftForge;
 import org.kylepitcock.legacyconnector.v1_12_2.bridge.EntityBridge1122;
 import org.kylepitcock.legacyconnector.v1_12_2.bridge.StatesBridge1122;
@@ -42,22 +42,22 @@ public final class ClientEvents1122 {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger("LegacyConnector/ClientEvents");
     private static final Map<String, Integer> FAILURES = new java.util.concurrent.ConcurrentHashMap<>();
     private static final Map<ResourceLocation, ElementType> LAYERS = Map.ofEntries(
-            Map.entry(VanillaGuiLayers.CROSSHAIR, ElementType.CROSSHAIRS),
-            Map.entry(VanillaGuiLayers.HOTBAR, ElementType.HOTBAR),
-            Map.entry(VanillaGuiLayers.PLAYER_HEALTH, ElementType.HEALTH),
-            Map.entry(VanillaGuiLayers.ARMOR_LEVEL, ElementType.ARMOR),
-            Map.entry(VanillaGuiLayers.FOOD_LEVEL, ElementType.FOOD),
-            Map.entry(VanillaGuiLayers.AIR_LEVEL, ElementType.AIR),
-            Map.entry(VanillaGuiLayers.EXPERIENCE_BAR, ElementType.EXPERIENCE),
-            Map.entry(VanillaGuiLayers.VEHICLE_HEALTH, ElementType.HEALTHMOUNT),
-            Map.entry(VanillaGuiLayers.JUMP_METER, ElementType.JUMPBAR),
-            Map.entry(VanillaGuiLayers.BOSS_OVERLAY, ElementType.BOSSHEALTH),
-            Map.entry(VanillaGuiLayers.CHAT, ElementType.CHAT),
-            Map.entry(VanillaGuiLayers.TAB_LIST, ElementType.PLAYER_LIST),
-            Map.entry(VanillaGuiLayers.DEBUG_OVERLAY, ElementType.DEBUG),
-            Map.entry(VanillaGuiLayers.EFFECTS, ElementType.POTION_ICONS),
-            Map.entry(VanillaGuiLayers.SUBTITLE_OVERLAY, ElementType.SUBTITLES),
-            Map.entry(VanillaGuiLayers.CAMERA_OVERLAYS, ElementType.HELMET));
+            Map.entry(VanillaGuiOverlay.CROSSHAIR, ElementType.CROSSHAIRS),
+            Map.entry(VanillaGuiOverlay.HOTBAR, ElementType.HOTBAR),
+            Map.entry(VanillaGuiOverlay.PLAYER_HEALTH, ElementType.HEALTH),
+            Map.entry(VanillaGuiOverlay.ARMOR_LEVEL, ElementType.ARMOR),
+            Map.entry(VanillaGuiOverlay.FOOD_LEVEL, ElementType.FOOD),
+            Map.entry(VanillaGuiOverlay.AIR_LEVEL, ElementType.AIR),
+            Map.entry(VanillaGuiOverlay.EXPERIENCE_BAR, ElementType.EXPERIENCE),
+            Map.entry(VanillaGuiOverlay.MOUNT_HEALTH, ElementType.HEALTHMOUNT),
+            Map.entry(VanillaGuiOverlay.JUMP_BAR, ElementType.JUMPBAR),
+            Map.entry(VanillaGuiOverlay.BOSS_EVENT_PROGRESS, ElementType.BOSSHEALTH),
+            Map.entry(VanillaGuiOverlay.CHAT_PANEL, ElementType.CHAT),
+            Map.entry(VanillaGuiOverlay.PLAYER_LIST, ElementType.PLAYER_LIST),
+            Map.entry(VanillaGuiOverlay.DEBUG_TEXT, ElementType.DEBUG),
+            Map.entry(VanillaGuiOverlay.POTION_ICONS, ElementType.POTION_ICONS),
+            Map.entry(VanillaGuiOverlay.SUBTITLES, ElementType.SUBTITLES),
+            Map.entry(VanillaGuiOverlay.HELMET, ElementType.HELMET));
 
     private ClientEvents1122() {}
 
@@ -141,14 +141,14 @@ public final class ClientEvents1122 {
         if (!wantsHud()) return;
         RenderContext.beginGui(e.getGuiGraphics());
         try {
-            if (post(new RenderGameOverlayEvent.Pre(root(e.getPartialTick().getGameTimeDeltaPartialTick(false)), ElementType.ALL), "HUD")) e.setCanceled(true);
+            if (post(new RenderGameOverlayEvent.Pre(root(e.getPartialTick()), ElementType.ALL), "HUD")) e.setCanceled(true);
         } finally {
             RenderContext.end();
         }
     }
 
     private static void onHudPost(net.minecraftforge.client.event.RenderGuiEvent.Post e) {
-        float partial = e.getPartialTick().getGameTimeDeltaPartialTick(false);
+        float partial = e.getPartialTick();
         GuiGraphics graphics = e.getGuiGraphics();
         // 1.12 posted the HUD text every frame and drew what handlers added (on top of the debug screen's lines when it was open)
         if (wants(RenderGameOverlayEvent.Text.class) && !Minecraft.getInstance().options.renderDebug) {
@@ -216,10 +216,10 @@ public final class ClientEvents1122 {
         };
     }
 
-    private static void onLayerPre(net.minecraftforge.client.event.RenderGuiLayerEvent.Pre e) {
-        ElementType type = LAYERS.get(e.getName());
+    private static void onLayerPre(net.minecraftforge.client.event.RenderGuiOverlayEvent.Pre e) {
+        ElementType type = LAYERS.get(e.getOverlay().id());
         if (type == null) return;
-        if (e.getName().equals(VanillaGuiLayers.SCOREBOARD_SIDEBAR) && !GuiIngameForge.renderObjective) {
+        if (e.getOverlay().id().equals(VanillaGuiOverlay.SCOREBOARD) && !GuiIngameForge.renderObjective) {
             e.setCanceled(true);
             return;
         }
@@ -230,18 +230,18 @@ public final class ClientEvents1122 {
         if (!wantsHud() || !drawnForMode(type)) return;
         RenderContext.beginGui(e.getGuiGraphics());
         try {
-            if (post(new RenderGameOverlayEvent.Pre(root(e.getPartialTick().getGameTimeDeltaPartialTick(false)), type), "HUD")) e.setCanceled(true);
+            if (post(new RenderGameOverlayEvent.Pre(root(e.getPartialTick()), type), "HUD")) e.setCanceled(true);
         } finally {
             RenderContext.end();
         }
     }
 
-    private static void onLayerPost(net.minecraftforge.client.event.RenderGuiLayerEvent.Post e) {
-        ElementType type = LAYERS.get(e.getName());
+    private static void onLayerPost(net.minecraftforge.client.event.RenderGuiOverlayEvent.Post e) {
+        ElementType type = LAYERS.get(e.getOverlay().id());
         if (type == null || !wantsHud() || !drawnForMode(type)) return;
         RenderContext.beginGui(e.getGuiGraphics());
         try {
-            post(new RenderGameOverlayEvent.Post(root(e.getPartialTick().getGameTimeDeltaPartialTick(false)), type), "HUD");
+            post(new RenderGameOverlayEvent.Post(root(e.getPartialTick()), type), "HUD");
         } finally {
             RenderContext.end();
         }
@@ -254,7 +254,7 @@ public final class ClientEvents1122 {
         ArrayList<String> right = new ArrayList<>(e.getRight());
         RenderContext.beginGui(e.getGuiGraphics());
         try {
-            if (post(new RenderGameOverlayEvent.Text(root(e.getPartialTick().getGameTimeDeltaPartialTick(false)), left, right), "HUD text")) {
+            if (post(new RenderGameOverlayEvent.Text(root(e.getPartialTick()), left, right), "HUD text")) {
                 left.clear();
                 right.clear();
             }
@@ -269,7 +269,7 @@ public final class ClientEvents1122 {
 
     private static void onChatPosition(net.minecraftforge.client.event.CustomizeGuiOverlayEvent.Chat e) {
         if (!wants(RenderGameOverlayEvent.Chat.class)) return;
-        var legacy = new RenderGameOverlayEvent.Chat(root(e.getPartialTick().getGameTimeDeltaPartialTick(false)), e.getPosX(), e.getPosY());
+        var legacy = new RenderGameOverlayEvent.Chat(root(e.getPartialTick()), e.getPosX(), e.getPosY());
         post(legacy, "chat position");
         e.setPosX(legacy.getPosX());
         e.setPosY(legacy.getPosY());
@@ -277,7 +277,7 @@ public final class ClientEvents1122 {
 
     private static void onBossBar(net.minecraftforge.client.event.CustomizeGuiOverlayEvent.BossEventProgress e) {
         if (!wants(RenderGameOverlayEvent.BossInfo.class)) return;
-        var legacy = new RenderGameOverlayEvent.BossInfo(root(e.getPartialTick().getGameTimeDeltaPartialTick(false)), ElementType.BOSSINFO,
+        var legacy = new RenderGameOverlayEvent.BossInfo(root(e.getPartialTick()), ElementType.BOSSINFO,
                 legacyconnector.v1_12_2.net.minecraft.client.gui.BossInfoClient.mcc$of(e.getBossEvent()), e.getX(), e.getY(),
                 e.getIncrement());
         RenderContext.beginGui(e.getGuiGraphics());
@@ -307,7 +307,7 @@ public final class ClientEvents1122 {
         RenderContext.beginWorld(pose, buffers, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
         try {
             post(new RenderWorldLastEvent(legacyconnector.v1_12_2.net.minecraft.client.Minecraft.mcc$get$renderGlobal(legacyMc()),
-                    e.getPartialTick().getGameTimeDeltaPartialTick(false)), "RenderWorldLastEvent");
+                    e.getPartialTick()), "RenderWorldLastEvent");
         } finally {
             RenderContext.end();
             buffers.endBatch();

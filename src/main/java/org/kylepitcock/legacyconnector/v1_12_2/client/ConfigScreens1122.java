@@ -7,13 +7,13 @@ import legacyconnector.v1_12_2.net.minecraft.client.gui.GuiScreen;
 import legacyconnector.v1_12_2.net.minecraftforge.fml.client.IModGuiFactory;
 import legacyconnector.v1_12_2.net.minecraftforge.fml.common.Mod;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraftforge.client.gui.IConfigScreenFactory;
 import org.kylepitcock.legacyconnector.core.LegacyModRecord;
 import org.slf4j.LoggerFactory;
 
 /**
  * FML's mod list opened a 1.12 mod's config screen through its {@code @Mod(guiFactory)} (or, for mods with {@code @Config} classes and no
- * factory, the default config screen); here NeoForge's mod list does, through the {@link IConfigScreenFactory} registered on the mod's
+ * factory, the default config screen); here Forge's mod list does, through the {@code ConfigScreenHandler.ConfigScreenFactory}
+ * registered on the mod's
  * container. The legacy screen's parent stands for the mod list, so its Done button goes back there.
  */
 public final class ConfigScreens1122 {
@@ -29,7 +29,8 @@ public final class ConfigScreens1122 {
         boolean hasConfig = legacyconnector.v1_12_2.net.minecraftforge.common.config.ConfigManager.getModConfigClasses(mod.legacyId).length > 0;
         if (!hasFactory && !hasConfig) return;
         try {
-            mod.container.registerExtensionPoint(IConfigScreenFactory.class, (IConfigScreenFactory) (container, parent) -> open(mod, parent));
+            mod.container.registerExtensionPoint(net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory.class,
+                    () -> new net.minecraftforge.client.ConfigScreenHandler.ConfigScreenFactory((mc, parent) -> open(mod, parent)));
         } catch (RuntimeException e) {
             LoggerFactory.getLogger("LegacyConnector/Gui").warn("{}: could not register its config screen: {}", mod.legacyId, e.toString());
         }

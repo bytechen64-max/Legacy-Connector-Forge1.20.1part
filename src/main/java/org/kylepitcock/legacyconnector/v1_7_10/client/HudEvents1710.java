@@ -9,8 +9,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.RenderGuiEvent;
-import net.minecraftforge.client.event.RenderGuiLayerEvent;
-import net.minecraftforge.client.gui.VanillaGuiLayers;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.common.MinecraftForge;
 
 /**
@@ -19,20 +19,20 @@ import net.minecraftforge.common.MinecraftForge;
  */
 public final class HudEvents1710 {
     private static final Map<ResourceLocation, ElementType> LAYERS = Map.ofEntries(
-            Map.entry(VanillaGuiLayers.CROSSHAIR, ElementType.CROSSHAIRS),
-            Map.entry(VanillaGuiLayers.HOTBAR, ElementType.HOTBAR),
-            Map.entry(VanillaGuiLayers.PLAYER_HEALTH, ElementType.HEALTH),
-            Map.entry(VanillaGuiLayers.ARMOR_LEVEL, ElementType.ARMOR),
-            Map.entry(VanillaGuiLayers.FOOD_LEVEL, ElementType.FOOD),
-            Map.entry(VanillaGuiLayers.AIR_LEVEL, ElementType.AIR),
-            Map.entry(VanillaGuiLayers.EXPERIENCE_BAR, ElementType.EXPERIENCE),
-            Map.entry(VanillaGuiLayers.VEHICLE_HEALTH, ElementType.HEALTHMOUNT),
-            Map.entry(VanillaGuiLayers.JUMP_METER, ElementType.JUMPBAR),
-            Map.entry(VanillaGuiLayers.BOSS_OVERLAY, ElementType.BOSSHEALTH),
-            Map.entry(VanillaGuiLayers.CHAT, ElementType.CHAT),
-            Map.entry(VanillaGuiLayers.TAB_LIST, ElementType.PLAYER_LIST),
-            Map.entry(VanillaGuiLayers.DEBUG_OVERLAY, ElementType.DEBUG),
-            Map.entry(VanillaGuiLayers.CAMERA_OVERLAYS, ElementType.HELMET));
+            Map.entry(VanillaGuiOverlay.CROSSHAIR, ElementType.CROSSHAIRS),
+            Map.entry(VanillaGuiOverlay.HOTBAR, ElementType.HOTBAR),
+            Map.entry(VanillaGuiOverlay.PLAYER_HEALTH, ElementType.HEALTH),
+            Map.entry(VanillaGuiOverlay.ARMOR_LEVEL, ElementType.ARMOR),
+            Map.entry(VanillaGuiOverlay.FOOD_LEVEL, ElementType.FOOD),
+            Map.entry(VanillaGuiOverlay.AIR_LEVEL, ElementType.AIR),
+            Map.entry(VanillaGuiOverlay.EXPERIENCE_BAR, ElementType.EXPERIENCE),
+            Map.entry(VanillaGuiOverlay.MOUNT_HEALTH, ElementType.HEALTHMOUNT),
+            Map.entry(VanillaGuiOverlay.JUMP_BAR, ElementType.JUMPBAR),
+            Map.entry(VanillaGuiOverlay.BOSS_EVENT_PROGRESS, ElementType.BOSSHEALTH),
+            Map.entry(VanillaGuiOverlay.CHAT_PANEL, ElementType.CHAT),
+            Map.entry(VanillaGuiOverlay.PLAYER_LIST, ElementType.PLAYER_LIST),
+            Map.entry(VanillaGuiOverlay.DEBUG_TEXT, ElementType.DEBUG),
+            Map.entry(VanillaGuiOverlay.HELMET, ElementType.HELMET));
 
     private HudEvents1710() {}
 
@@ -42,11 +42,11 @@ public final class HudEvents1710 {
         registerLayers();
         MinecraftForge.EVENT_BUS.addListener((RenderGuiEvent.Pre e) -> {
             org.kylepitcock.legacyconnector.v1_7_10.bridge.EventBridge1710.renderTick(legacyconnector.v1_7_10.cpw.mods.fml.common.gameevent.TickEvent.Phase.START,
-                    e.getPartialTick().getGameTimeDeltaPartialTick(false), e.getGuiGraphics());
+                    e.getPartialTick(), e.getGuiGraphics());
             // GuiIngameForge started every frame with the rows above the hotbar at 39; handlers that draw their own rows add to them.
             legacyconnector.v1_7_10.net.minecraftforge.client.GuiIngameForge.left_height = 39;
             legacyconnector.v1_7_10.net.minecraftforge.client.GuiIngameForge.right_height = 39;
-            if (wants(RenderGameOverlayEvent.Pre.class)) post(e.getGuiGraphics(), e.getPartialTick().getGameTimeDeltaPartialTick(false), ElementType.ALL, false);
+            if (wants(RenderGameOverlayEvent.Pre.class)) post(e.getGuiGraphics(), e.getPartialTick(), ElementType.ALL, false);
         });
         // 1.7.10 posted RenderTickEvent END and the ALL overlay after the whole HUD: lowest priority and a raised depth keep legacy
         // overlays (ChromatiCraft's progress cards, Thaumcraft's warp text) above the HUD of modern mods (minimaps draw at a raised z).
@@ -67,23 +67,23 @@ public final class HudEvents1710 {
     private static void postEnd(RenderGuiEvent.Post e) {
         {
             org.kylepitcock.legacyconnector.v1_7_10.bridge.EventBridge1710.renderTick(legacyconnector.v1_7_10.cpw.mods.fml.common.gameevent.TickEvent.Phase.END,
-                    e.getPartialTick().getGameTimeDeltaPartialTick(false), e.getGuiGraphics());
-            float partial = e.getPartialTick().getGameTimeDeltaPartialTick(false);
+                    e.getPartialTick(), e.getGuiGraphics());
+            float partial = e.getPartialTick();
             if (wants(RenderGameOverlayEvent.Text.class)) post(e.getGuiGraphics(), partial, ElementType.TEXT, false);
             if (wants(RenderGameOverlayEvent.Post.class)) post(e.getGuiGraphics(), partial, ElementType.ALL, true);
         }
     }
 
     private static void registerLayers() {
-        MinecraftForge.EVENT_BUS.addListener((RenderGuiLayerEvent.Pre e) -> {
-            ElementType type = LAYERS.get(e.getName());
+        MinecraftForge.EVENT_BUS.addListener((RenderGuiOverlayEvent.Pre e) -> {
+            ElementType type = LAYERS.get(e.getOverlay().id());
             if (type != null && wants(RenderGameOverlayEvent.Pre.class) && drawnForMode(type)
-                    && post(e.getGuiGraphics(), e.getPartialTick().getGameTimeDeltaPartialTick(false), type, false)) e.setCanceled(true);
+                    && post(e.getGuiGraphics(), e.getPartialTick(), type, false)) e.setCanceled(true);
         });
-        MinecraftForge.EVENT_BUS.addListener((RenderGuiLayerEvent.Post e) -> {
-            ElementType type = LAYERS.get(e.getName());
+        MinecraftForge.EVENT_BUS.addListener((RenderGuiOverlayEvent.Post e) -> {
+            ElementType type = LAYERS.get(e.getOverlay().id());
             if (type != null && drawnForMode(type)) advanceStack(type);
-            if (type != null && wants(RenderGameOverlayEvent.Post.class) && drawnForMode(type)) post(e.getGuiGraphics(), e.getPartialTick().getGameTimeDeltaPartialTick(false), type, true);
+            if (type != null && wants(RenderGameOverlayEvent.Post.class) && drawnForMode(type)) post(e.getGuiGraphics(), e.getPartialTick(), type, true);
         });
     }
 

@@ -21,8 +21,9 @@ import org.slf4j.LoggerFactory;
 public final class ClientGui1122 {
     private ClientGui1122() {}
 
-    public static void onRegisterScreens(net.minecraftforge.client.event.RegisterMenuScreensEvent event) {
-        if (GuiBridge1122.menuType() != null) event.register(GuiBridge1122.menuType(), LegacyContainerScreen1122::new);
+    /** 1.20.1 registers a menu's screen statically (the register event is 1.20.4+). */
+    public static void registerScreens() {
+        if (GuiBridge1122.menuType() != null) net.minecraft.client.gui.screens.MenuScreens.register(GuiBridge1122.menuType(), LegacyContainerScreen1122::new);
     }
 
     public static boolean isLocalPlayer(net.minecraft.world.entity.Entity entity) {

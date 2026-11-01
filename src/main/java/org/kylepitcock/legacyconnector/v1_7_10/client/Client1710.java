@@ -16,7 +16,7 @@ public final class Client1710 {
     private Client1710() {}
 
     public static void register(IEventBus modBus) {
-        modBus.addListener(ClientGui::onRegisterScreens);
+        ClientGui.registerScreens();
         modBus.addListener((net.minecraftforge.client.event.RegisterKeyMappingsEvent e) -> {
             for (var key : legacyconnector.v1_7_10.net.minecraft.client.settings.KeyBinding.mcc$registered()) {
                 try {
@@ -55,7 +55,7 @@ public final class Client1710 {
         HudEvents1710.register();
         modBus.addListener((net.minecraftforge.client.event.RegisterDimensionSpecialEffectsEvent e) ->
                 e.register(org.kylepitcock.legacyconnector.v1_7_10.dimension.LegacyDimensions.EFFECTS, new LegacyDimensionEffects()));
-        modBus.addListener((net.minecraftforge.client.event.TextureAtlasStitchedEvent e) -> {
+        modBus.addListener((net.minecraftforge.client.event.TextureStitchEvent.Post e) -> {
             if (!e.getAtlas().location().equals(net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS)) return;
             AtlasUV.invalidate();
             org.kylepitcock.legacyconnector.v1_7_10.Assets1710.postStitched();
