@@ -102,6 +102,30 @@ public final class LegacyResourceConverter {
      * models/block/cube_all.json; a mod model may mean its own or vanilla's), while 1.13 and later name the full path. The whole jar
      * is known by now, so every parent without a namespace is resolved against the files the mod actually ships.
      */
+    /**
+     * 1.12's vanilla template models that 1.14 renamed or split. A 1.12 model that parents one of them (every slab, wall, door,
+     * trapdoor, pane and torch in a mod) pointed at a file that no longer exists, so the block drew as the missing model.
+     */
+    private static final Map<String, String> RENAMED_VANILLA_MODELS = Map.ofEntries(
+            Map.entry("block/half_slab", "block/slab"),
+            Map.entry("block/upper_slab", "block/slab_top"),
+            Map.entry("block/wall_post", "block/template_wall_post"),
+            Map.entry("block/wall_side", "block/template_wall_side"),
+            Map.entry("block/wall_side_tall", "block/template_wall_side_tall"),
+            Map.entry("block/glass_pane_post_ends", "block/template_glass_pane_post"),
+            Map.entry("block/door_bottom", "block/door_bottom_left"),
+            Map.entry("block/door_top", "block/door_top_left"),
+            Map.entry("block/door_bottom_rh", "block/door_bottom_right"),
+            Map.entry("block/door_top_rh", "block/door_top_right"),
+            Map.entry("block/trapdoor_bottom", "block/template_trapdoor_bottom"),
+            Map.entry("block/trapdoor_open", "block/template_trapdoor_open"),
+            Map.entry("block/trapdoor_top", "block/template_trapdoor_top"),
+            Map.entry("block/grass_path", "block/dirt_path"),
+            Map.entry("block/slime", "block/slime_block"),
+            Map.entry("block/torch", "block/template_torch"),
+            Map.entry("block/torch_wall", "block/template_torch_wall"),
+            Map.entry("block/grass_snowed", "block/grass_block_snow"));
+
     private void resolveModelParents() {
         Pattern modelPath = Pattern.compile("assets/([^/]+)/models/(block|item)/(.+)\\.json");
         for (var e : List.copyOf(output.entrySet())) {
@@ -131,6 +155,11 @@ public final class LegacyResourceConverter {
                     } else {
                         resolved = "minecraft:" + kind + "/" + path;
                     }
+                }
+                if (resolved.startsWith("minecraft:")) {
+                    // a 1.12 template 1.14 renamed: the old name is not a model any more
+                    String renamed = RENAMED_VANILLA_MODELS.get(resolved.substring("minecraft:".length()));
+                    if (renamed != null) resolved = "minecraft:" + renamed;
                 }
                 if (resolved.equals(ref)) continue;
                 root.addProperty("parent", resolved);

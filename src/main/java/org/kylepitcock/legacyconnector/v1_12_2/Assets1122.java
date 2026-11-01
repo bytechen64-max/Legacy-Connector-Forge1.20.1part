@@ -897,8 +897,19 @@ public final class Assets1122 implements GeneratedPack.Contributor {
      * are vanilla's unless the mod has such a file); 1.13 and later name the full path. A variant that overrides textures gets its own generated
      * model file (modern blockstate variants have no texture overrides). Returns null when the model does not exist.
      */
-    private static final Map<String, String> VANILLA_MODEL_RENAMES = Map.of("block/half_slab", "block/slab", "block/upper_slab", "block/slab_top",
-            "block/grass_path", "block/dirt_path", "block/slime", "block/slime_block");
+    private static final Map<String, String> VANILLA_MODEL_RENAMES = Map.ofEntries(
+            Map.entry("block/half_slab", "block/slab"), Map.entry("block/upper_slab", "block/slab_top"),
+            Map.entry("block/wall_post", "block/template_wall_post"), Map.entry("block/wall_side", "block/template_wall_side"),
+            Map.entry("block/wall_side_tall", "block/template_wall_side_tall"),
+            Map.entry("block/glass_pane_post_ends", "block/template_glass_pane_post"),
+            Map.entry("block/door_bottom", "block/door_bottom_left"), Map.entry("block/door_top", "block/door_top_left"),
+            Map.entry("block/door_bottom_rh", "block/door_bottom_right"), Map.entry("block/door_top_rh", "block/door_top_right"),
+            Map.entry("block/trapdoor_bottom", "block/template_trapdoor_bottom"),
+            Map.entry("block/trapdoor_open", "block/template_trapdoor_open"),
+            Map.entry("block/trapdoor_top", "block/template_trapdoor_top"),
+            Map.entry("block/grass_path", "block/dirt_path"), Map.entry("block/slime", "block/slime_block"),
+            Map.entry("block/torch", "block/template_torch"), Map.entry("block/torch_wall", "block/template_torch_wall"),
+            Map.entry("block/grass_snowed", "block/grass_block_snow"));
 
     private static JsonObject blockModels(JsonObject source, ResourceLocation blockId, String key, Map<String, Supplier<byte[]>> out) {
         String defaultNamespace = blockId.getNamespace();
@@ -937,7 +948,13 @@ public final class Assets1122 implements GeneratedPack.Contributor {
                     textures == null ? null : blockId.getPath() + "_" + key, out));
             return copy;
         }
-        if (!modelResolves(modelNs, modelPath, out, 0)) return null;
+        if (!modelResolves(modelNs, modelPath, out, 0)) {
+            // a 1.12 blockstate may name an item model below models/item/ (SRP's trophy blocks show their item)
+            String belowItem = modelPath.startsWith("block/") ? "item/" + modelPath.substring("block/".length()) : null;
+            if (belowItem == null || !modelResolves(modelNs, belowItem, out, 0)) return null;
+            modelPath = belowItem;
+            model = modelNs + ":" + modelPath;
+        }
         if (source.has("textures") && source.get("textures").isJsonObject() && source.getAsJsonObject("textures").size() > 0) {
             JsonObject generated = new JsonObject();
             generated.addProperty("parent", model);

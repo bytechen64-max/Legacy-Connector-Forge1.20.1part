@@ -230,14 +230,36 @@ public class World implements IBlockAccess {
         return out;
     }
 
+    /** The entity list of this server tick (see {@link #mcc$get$loadedEntityList}). */
+    private List<Entity> mcc$entityList;
+    private long mcc$entityListTick = Long.MIN_VALUE;
+
+    /**
+     * The loaded entities, built once per tick. Mods read this list many times per tick -- SRP's EntityAIFollowBodies scans it for
+     * every entity every tick, and rebuilding it per read made a server tick cost entities squared (the server self test with its 158
+     * entities tripped the watchdog inside the scan, and in play it is an intermittent freeze).
+     */
     public static List<Entity> mcc$get$loadedEntityList(World w) {
-        List<Entity> out = new ArrayList<>();
-        if (w.mcc$liveLevel() instanceof ServerLevel s) {
+        Level level = w.mcc$liveLevel();
+        if (level instanceof ServerLevel s) {
+            long tick = s.getGameTime();
+            if (w.mcc$entityList != null && w.mcc$entityListTick == tick) return w.mcc$entityList;
+            List<Entity> out = new ArrayList<>();
             for (var e : s.getAllEntities()) out.add(EntityBridge1122.wrap(e));
-        } else if (w.mcc$liveLevel() != null && w.mcc$liveLevel().isClientSide()) {
-            for (var e : org.kylepitcock.legacyconnector.v1_12_2.bridge.WorldClient1122.entities(w.mcc$liveLevel())) out.add(EntityBridge1122.wrap(e));
+            w.mcc$entityList = out;
+            w.mcc$entityListTick = tick;
+            return out;
         }
-        return out;
+        if (level != null && level.isClientSide()) {
+            long tick = level.getGameTime();
+            if (w.mcc$entityList != null && w.mcc$entityListTick == tick) return w.mcc$entityList;
+            List<Entity> out = new ArrayList<>();
+            for (var e : org.kylepitcock.legacyconnector.v1_12_2.bridge.WorldClient1122.entities(level)) out.add(EntityBridge1122.wrap(e));
+            w.mcc$entityList = out;
+            w.mcc$entityListTick = tick;
+            return out;
+        }
+        return new ArrayList<>();
     }
 
     /** The legacy tile entities of the loaded chunks (a snapshot). */

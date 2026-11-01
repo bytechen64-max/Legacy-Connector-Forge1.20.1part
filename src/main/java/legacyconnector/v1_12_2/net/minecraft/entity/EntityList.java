@@ -31,11 +31,24 @@ public class EntityList {
         }
     }
 
+    /** Class -> name, rebuilt whenever the entity registry changes: mods ask this per entity per tick (SRP in its AI). */
+    private static java.util.List<?> mcc$keySource;
+    private static java.util.Map<Class<?>, ResourceLocation> mcc$keyCache;
+
     public static ResourceLocation getKey(Class<? extends Entity> cls) {
-        for (EntityEntry e : ForgeRegistries.ENTITIES.getValues()) {
-            // vanilla entries stand on shared base classes (EntityLiving), which name no entity
-            if (e.getEntityClass() == cls && !"minecraft".equals(e.getRegistryName().getNamespace())) return e.getRegistryName();
+        var values = ForgeRegistries.ENTITIES.getValues();
+        var cache = mcc$keyCache;
+        if (cache == null || mcc$keySource != values) {
+            cache = new java.util.HashMap<>();
+            for (EntityEntry e : values) {
+                // vanilla entries stand on shared base classes (EntityLiving), which name no entity
+                if (!"minecraft".equals(e.getRegistryName().getNamespace())) cache.putIfAbsent(e.getEntityClass(), e.getRegistryName());
+            }
+            mcc$keySource = values;
+            mcc$keyCache = cache;
         }
+        ResourceLocation known = cache.get(cls);
+        if (known != null) return known;
         String n = cls.getSimpleName();
         if (n.startsWith("Entity")) n = n.substring("Entity".length());
         return n.isEmpty() ? null : new ResourceLocation("minecraft", n.replaceAll("([a-z0-9])([A-Z])", "$1_$2").toLowerCase(java.util.Locale.ROOT));

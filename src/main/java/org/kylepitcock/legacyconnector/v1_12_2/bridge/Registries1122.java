@@ -179,12 +179,14 @@ public final class Registries1122 {
             if (fill == null) return;
             vanilla = null;
             fill.accept(this);
+            invalidate();
         }
 
         public synchronized void registerVanilla(V value) {
             ResourceLocation name = value.getRegistryName();
-            byName.putIfAbsent(name, value);
+            if (byName.putIfAbsent(name, value) != null) return;
             byValue.putIfAbsent(value, name);
+            invalidate();
         }
 
         /** Types a registry whose entry class is synthesized: the class is looked up by its legacy name once. */
@@ -205,6 +207,21 @@ public final class Registries1122 {
         /** Numeric ids are registration order; the numbering is rebuilt after the registry grows, so lookups stay O(1). */
         private java.util.List<V> byId;
         private Map<V, Integer> idOf;
+        /**
+         * getValues()/getKeys()/getEntries() copied the whole registry on every call. Legacy code calls them per entity per tick
+         * (SRP asks EntityList.getKey for every entity: an intermittent freeze), so they are snapshots rebuilt only when the
+         * registry actually changes -- which is during loading, not in play.
+         */
+        private java.util.List<V> valuesCache;
+        private Set<ResourceLocation> keysCache;
+        private Set<Map.Entry<ResourceLocation, V>> entriesCache;
+
+        private void invalidate() {
+            byId = null;
+            valuesCache = null;
+            keysCache = null;
+            entriesCache = null;
+        }
 
         private void numbering() {
             ensureVanilla();
@@ -246,8 +263,9 @@ public final class Registries1122 {
         @Override
         public synchronized V remove(ResourceLocation key) {
             V v = byName.remove(key);
-            if (v != null) byValue.remove(v);
-            byId = null;
+            if (v == null) return null;
+            byValue.remove(v);
+            invalidate();
             return v;
         }
 
@@ -270,6 +288,7 @@ public final class Registries1122 {
             }
             byName.put(name, value);
             byValue.put(value, name);
+            invalidate();
             onRegister.accept(value);
             mcc$added(value);
             if (value instanceof legacyconnector.v1_12_2.net.minecraftforge.fml.common.registry.EntityEntry entry) entry.mcc$registered();
@@ -314,13 +333,15 @@ public final class Registries1122 {
         @Override
         public synchronized Set<ResourceLocation> getKeys() {
             ensureVanilla();
-            return Collections.unmodifiableSet(new java.util.LinkedHashSet<>(byName.keySet()));
+            if (keysCache == null) keysCache = Collections.unmodifiableSet(new java.util.LinkedHashSet<>(byName.keySet()));
+            return keysCache;
         }
 
         @Override
         public synchronized java.util.List<V> getValues() {
             ensureVanilla();
-            return Collections.unmodifiableList(new ArrayList<>(byName.values()));
+            if (valuesCache == null) valuesCache = Collections.unmodifiableList(new ArrayList<>(byName.values()));
+            return valuesCache;
         }
 
         @Override
@@ -331,7 +352,8 @@ public final class Registries1122 {
         @Override
         public synchronized Set<Map.Entry<ResourceLocation, V>> getEntries() {
             ensureVanilla();
-            return Collections.unmodifiableSet(new java.util.LinkedHashSet<>(byName.entrySet()));
+            if (entriesCache == null) entriesCache = Collections.unmodifiableSet(new java.util.LinkedHashSet<>(byName.entrySet()));
+            return entriesCache;
         }
     }
 }
