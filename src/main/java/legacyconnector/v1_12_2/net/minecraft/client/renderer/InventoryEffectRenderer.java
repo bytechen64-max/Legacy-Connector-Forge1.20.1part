@@ -54,7 +54,8 @@ public abstract class InventoryEffectRenderer extends GuiContainer {
                 name.append(net.minecraft.network.chat.CommonComponents.SPACE).append(net.minecraft.network.chat.Component.translatable("enchantment.level." + (effect.getAmplifier() + 1)));
             }
             gui.drawString(mc.font, name, x + 10 + 18, y + 6, 0xFFFFFF);
-            gui.drawString(mc.font, net.minecraft.world.effect.MobEffectUtil.formatDuration(effect, 1.0F, mc.level == null ? 20.0F : mc.level.tickRateManager().tickrate()),
+            // 1.20.1 formats with the effect's own duration (the tick rate manager is 1.20.3+)
+            gui.drawString(mc.font, net.minecraft.world.effect.MobEffectUtil.formatDuration(effect, 1.0F),
                     x + 10 + 18, y + 6 + 10, 0x7F7F7F);
             y += step;
         }

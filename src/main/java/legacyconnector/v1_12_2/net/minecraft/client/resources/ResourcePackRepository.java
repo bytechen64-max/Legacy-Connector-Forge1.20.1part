@@ -83,7 +83,7 @@ public class ResourcePackRepository {
     /** Drops the server's pack: the game's own pack manager does it when leaving the server. */
     public void clearResourcePack() {
         try {
-            net.minecraft.client.Minecraft.getInstance().getDownloadedPackSource().popAll();
+            net.minecraft.client.Minecraft.getInstance().getDownloadedPackSource().clearServerPack();
         } catch (RuntimeException | LinkageError e) {
             // nothing to drop
         }

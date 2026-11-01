@@ -76,7 +76,7 @@ public class PlayerInteractionManager {
 
     public void setBlockReachDistance(double distance) {
         var sp = mcc$player();
-        var attribute = sp == null ? null : sp.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.BLOCK_INTERACTION_RANGE);
+        var attribute = sp == null ? null : sp.getAttribute(net.minecraftforge.common.ForgeMod.BLOCK_REACH.get());
         if (attribute != null) attribute.setBaseValue(distance);
         else mcc$reach = distance;
     }

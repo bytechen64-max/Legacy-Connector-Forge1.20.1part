@@ -96,7 +96,9 @@ public abstract class NodeProcessor {
         var view = mcc$modernView(access);
         if (view == null || mob == null || !(mob.mcc$entity instanceof net.minecraft.world.entity.Mob m)) return null;
         try {
-            return PathNodeType.mcc$of(new net.minecraft.world.level.pathfinder.PathfindingContext(view, m).getPathTypeFromState(x, y, z));
+                        // 1.20.1 reads the raw block path type through the static helper (PathfindingContext is 1.20.2+)
+            var pos = new net.minecraft.core.BlockPos.MutableBlockPos(x, y, z);
+            return PathNodeType.mcc$of(net.minecraft.world.level.pathfinder.BlockPathTypes.getBlockPathTypeStatic(view, pos));
         } catch (RuntimeException e) {
             return null;
         }

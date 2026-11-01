@@ -108,7 +108,7 @@ public class MapItemRenderer {
         for (MapDecoration dec : legacy.mapDecorations.values()) {
             if (dec == null || dec.getType() == null) continue;
             decorations.add(new net.minecraft.world.level.saveddata.maps.MapDecoration(dec.getType().mcc$modern(), dec.getX(), dec.getY(), dec.getRotation(),
-                    java.util.Optional.empty()));
+                    null));
         }
         data.addClientSideDecorations(decorations);
         return changed;

@@ -141,6 +141,6 @@ public class GuiNewChat extends Gui {
         if (gui == null) return;
         var mc = net.minecraft.client.Minecraft.getInstance();
         double scale = mc.getWindow().getGuiScale();
-        chat().render(gui, updateCounter, (int) (mc.mouseHandler.xpos() / scale), (int) (mc.mouseHandler.ypos() / scale), getChatOpen());
+        chat().render(gui, updateCounter, (int) (mc.mouseHandler.xpos() / scale), (int) (mc.mouseHandler.ypos() / scale));
     }
 }

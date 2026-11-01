@@ -63,7 +63,7 @@ public class NetHandlerPlayClient implements legacyconnector.v1_12_2.net.minecra
     public com.mojang.authlib.GameProfile getGameProfile() {
         if (profile != null) return profile;
         var connection = modern();
-        return connection == null ? net.minecraft.client.Minecraft.getInstance().getGameProfile() : connection.getLocalGameProfile();
+        return connection == null ? net.minecraft.client.Minecraft.getInstance().getUser().getGameProfile() : connection.getLocalGameProfile();
     }
 
     /** The tab list entries of the players on the server. */

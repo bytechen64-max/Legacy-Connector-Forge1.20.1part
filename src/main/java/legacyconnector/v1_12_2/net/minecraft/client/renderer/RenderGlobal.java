@@ -81,7 +81,7 @@ public class RenderGlobal implements legacyconnector.v1_12_2.net.minecraft.clien
 
     public String getDebugInfoRenders() {
         var mc = net.minecraft.client.Minecraft.getInstance();
-        return mc.levelRenderer == null ? "" : mc.levelRenderer.getSectionStatistics();
+        return mc.levelRenderer == null ? "" : mc.levelRenderer.getChunkStatistics();
     }
 
     public String getDebugInfoEntities() {
@@ -199,7 +199,7 @@ public class RenderGlobal implements legacyconnector.v1_12_2.net.minecraft.clien
     /** The chunk sections drawn last frame (the F3 "C:" count). */
     public int getRenderedChunks() {
         var renderer = net.minecraft.client.Minecraft.getInstance().levelRenderer;
-        return renderer == null ? 0 : renderer.countRenderedSections();
+        return renderer == null ? 0 : renderer.countRenderedChunks();
     }
 
     /**

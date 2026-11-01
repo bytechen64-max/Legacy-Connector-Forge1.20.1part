@@ -52,7 +52,7 @@ public abstract class TileEntityLockableLoot extends TileEntityLockable {
         var level = world.mcc$level();
         if (!(level instanceof net.minecraft.server.level.ServerLevel server)) return;
         var key = lootTable.mcc$modern();
-        var table = server.getServer().reloadableRegistries().getLootTable(key);
+        var table = server.getServer().getLootData().getLootTable(key);
         long seed = lootTableSeed;
         lootTable = null;
         var builder = new net.minecraft.world.level.storage.loot.LootParams.Builder(server).withParameter(

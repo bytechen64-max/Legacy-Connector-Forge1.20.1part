@@ -23,7 +23,7 @@ public class FaceBakery {
         if (modernSprite == null) modernSprite = Quads1122.missingSprite();
         var quad = new net.minecraft.client.renderer.block.model.FaceBakery().bakeQuad(new org.joml.Vector3f(posFrom.x, posFrom.y, posFrom.z),
                 new org.joml.Vector3f(posTo.x, posTo.y, posTo.z), face.mcc$modern(), modernSprite, facing.mcc$modern(), state,
-                partRotation == null ? null : partRotation.mcc$modern(), shade);
+                partRotation == null ? null : partRotation.mcc$modern(), shade, null);
         return Quads1122.toLegacy(quad);
     }
 

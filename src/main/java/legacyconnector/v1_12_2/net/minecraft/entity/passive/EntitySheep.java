@@ -67,11 +67,22 @@ public class EntitySheep extends EntityAnimal {
         var level = mcc$entity == null ? null : mcc$entity.level();
         if (level != null) {
             try {
-                var input = net.minecraft.world.item.crafting.CraftingInput.of(2, 1, java.util.List.of(
-                        new net.minecraft.world.item.ItemStack(net.minecraft.world.item.DyeItem.byColor(net.minecraft.world.item.DyeColor.byId(a.getMetadata()))),
-                        new net.minecraft.world.item.ItemStack(net.minecraft.world.item.DyeItem.byColor(net.minecraft.world.item.DyeColor.byId(b.getMetadata())))));
+                // 1.20.1 has no CraftingInput: the dye mixing recipe is asked with a transient 2x1 crafting container
+                var input = new net.minecraft.world.inventory.TransientCraftingContainer(new net.minecraft.world.inventory.AbstractContainerMenu(null, -1) {
+                    @Override
+                    public boolean stillValid(net.minecraft.world.entity.player.Player p) {
+                        return false;
+                    }
+
+                    @Override
+                    public net.minecraft.world.item.ItemStack quickMoveStack(net.minecraft.world.entity.player.Player p, int i) {
+                        return net.minecraft.world.item.ItemStack.EMPTY;
+                    }
+                }, 2, 1);
+                input.setItem(0, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.DyeItem.byColor(net.minecraft.world.item.DyeColor.byId(a.getMetadata()))));
+                input.setItem(1, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.DyeItem.byColor(net.minecraft.world.item.DyeColor.byId(b.getMetadata()))));
                 var result = level.getRecipeManager().getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, level)
-                        .map(r -> r.value().assemble(input, level.registryAccess())).orElse(net.minecraft.world.item.ItemStack.EMPTY);
+                        .map(r -> r.assemble(input, level.registryAccess())).orElse(net.minecraft.world.item.ItemStack.EMPTY);
                 if (result.getItem() instanceof net.minecraft.world.item.DyeItem dye) {
                     return legacyconnector.v1_12_2.net.minecraft.item.EnumDyeColor.byMetadata(dye.getDyeColor().getId());
                 }

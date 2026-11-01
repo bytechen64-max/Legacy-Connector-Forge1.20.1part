@@ -413,7 +413,8 @@ public abstract class EntityLiving extends EntityLivingBase {
 
     public boolean canBeLeashedTo(EntityPlayer player) {
         Mob m = mcc$mob();
-        return m != null && m.canBeLeashed();
+        // 1.20.1 asks with the player (it answers false for a player that already leads a mob)
+        return m != null && m.canBeLeashed(player != null && player.mcc$entity instanceof net.minecraft.world.entity.player.Player p ? p : null);
     }
 
     public boolean getLeashed() {
@@ -576,8 +577,8 @@ public abstract class EntityLiving extends EntityLivingBase {
         for (var slot : net.minecraft.world.entity.EquipmentSlot.values()) {
             var stack = m.getItemBySlot(slot);
             if (!stack.isEmpty() && rand.nextFloat() < (slot.getType() == net.minecraft.world.entity.EquipmentSlot.Type.ARMOR ? 0.5F : 0.25F) * f) {
-                var enchanted = net.minecraft.world.item.enchantment.EnchantmentHelper.enchantItem(m.getRandom(), stack, (int) (5.0F + f * rand.nextInt(18)),
-                        sl.registryAccess(), java.util.Optional.empty());
+                // 1.20.1 takes the level and a "treasure allowed" flag
+                var enchanted = net.minecraft.world.item.enchantment.EnchantmentHelper.enchantItem(m.getRandom(), stack, (int) (5.0F + f * rand.nextInt(18)), false);
                 m.setItemSlot(slot, enchanted);
             }
         }

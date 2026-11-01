@@ -39,7 +39,8 @@ public enum EnumConnectionState {
     public Integer getPacketId(EnumPacketDirection direction, Packet<?> packet) {
         var modern = packet == null ? null : packet.mcc$modern();
         if (modern == null) return null;
-        return modern.type().id().hashCode();
+        // 1.20.1 packets carry no type object: the class name is the stable identity
+        return modern.getClass().getName().hashCode();
     }
 
     /** Legacy packets are not created from ids any more. */

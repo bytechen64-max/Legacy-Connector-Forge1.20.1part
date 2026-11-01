@@ -154,7 +154,7 @@ public abstract class EntityAgeable extends EntityCreature {
         if (stack == null || stack.isEmpty() || entityClass == null) return false;
         var modern = org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.toModern(stack);
         if (!(modern.getItem() instanceof net.minecraft.world.item.SpawnEggItem egg)) return false;
-        var type = egg.getType(modern);
+        var type = egg.getType(modern.getTag());
         var level = mcc$entity == null ? null : mcc$entity.level();
         if (type == null || level == null) return false;
         var probe = type.create(level);

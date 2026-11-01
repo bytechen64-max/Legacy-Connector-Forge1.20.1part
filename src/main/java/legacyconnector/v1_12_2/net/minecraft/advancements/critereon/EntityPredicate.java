@@ -53,7 +53,7 @@ public class EntityPredicate {
                 // 1.20.1 looks a registry entry up by id and wraps the value itself.
         var effect = org.kylepitcock.legacyconnector.core.RegistryUtil.holder(
                 net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT, e.getKey().mcc$modern()).orElse(null);
-                var instance = effect == null ? null : living.getEffect(effect);
+                var instance = effect == null ? null : living.getEffect(effect.value());
                 if (instance == null || !e.getValue()[0].test(instance.getAmplifier()) || !e.getValue()[1].test(instance.getDuration())) return false;
             }
         }

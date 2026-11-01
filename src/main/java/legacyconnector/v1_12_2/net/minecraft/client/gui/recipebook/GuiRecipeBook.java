@@ -89,7 +89,7 @@ public class GuiRecipeBook extends Gui implements IRecipeUpdateListener {
         }
         var modern = net.minecraft.client.Minecraft.getInstance();
         // RecipeBookComponent.init makes its menu the player's open menu: only bind one the player already has open
-        if (modern.player != null && modern.player.containerMenu instanceof net.minecraft.world.inventory.RecipeBookMenu<?, ?> menu) {
+        if (modern.player != null && modern.player.containerMenu instanceof net.minecraft.world.inventory.RecipeBookMenu<?> menu) {
             if (mcc$book == null) mcc$book = new RecipeBookComponent();
             mcc$book.init(widthIn, heightIn, modern, widthTooNarrowIn, menu);
             mcc$refresh();

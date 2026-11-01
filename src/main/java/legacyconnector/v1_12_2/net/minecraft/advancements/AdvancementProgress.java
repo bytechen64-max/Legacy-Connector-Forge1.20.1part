@@ -37,8 +37,8 @@ public class AdvancementProgress implements Comparable<AdvancementProgress> {
     }
 
     public String getProgressText() {
-        var text = progress.getProgressText();
-        return text == null ? null : text.getString();
+        // 1.20.1 answers with the text itself
+        return progress.getProgressText();
     }
 
     /** 1.12.2's spelling. */

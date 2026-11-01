@@ -20,7 +20,7 @@ public class ServerPinger {
         pending.put(server, data);
         Runnable update = () -> server.mcc$update(data);
         // 1.20.1 marks the ping as done itself (the State enum is 1.20.5); the protocol match is kept on the legacy entry.
-        modern.pingServer(data, update, () -> {
+        modern.pingServer(data, () -> {
             server.mcc$setCompatible(data.protocol == net.minecraft.SharedConstants.getCurrentVersion().getProtocolVersion());
             server.mcc$update(data);
         });

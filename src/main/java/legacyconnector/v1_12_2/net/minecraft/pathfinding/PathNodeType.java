@@ -33,8 +33,7 @@ public enum PathNodeType {
                 case WALKABLE_DOOR -> DOOR_OPEN;
                 case WATER_BORDER -> WALKABLE;
                 case UNPASSABLE_RAIL -> BLOCKED;
-                // 1.20.1's BlockPathTypes has no POWDER_SNOW/LEAVES constants.
-                case DANGER_POWDER_SNOW, DAMAGE_CAUTIOUS, DANGER_TRAPDOOR, STICKY_HONEY, COCOA -> DANGER_OTHER;
+                // 1.20.1's BlockPathTypes has no POWDER_SNOW/LEAVES constants: those cases cannot occur, the default handles them.
                 default -> BLOCKED;
             };
         }

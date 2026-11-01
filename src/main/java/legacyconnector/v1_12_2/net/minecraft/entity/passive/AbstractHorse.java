@@ -337,7 +337,7 @@ public abstract class AbstractHorse extends EntityAnimal implements legacyconnec
     public void setHorseSaddled(boolean saddled) {
         var h = mcc$horse();
         if (h != null) {
-            if (saddled && !h.isSaddled()) h.equipSaddle(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.SADDLE), null);
+            if (saddled && !h.isSaddled()) h.equipSaddle(net.minecraft.sounds.SoundSource.NEUTRAL);
             return;
         }
         setHorseWatchableBoolean(4, saddled);

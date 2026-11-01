@@ -34,9 +34,8 @@ public class Criterion {
         String path = simple.replaceAll("([a-z0-9])([A-Z])", "$1_$2").toLowerCase(java.util.Locale.ROOT);
         if (!path.isEmpty()) {
             var id = new net.minecraft.resources.ResourceLocation(path);
-            if (net.minecraft.core.registries.BuiltInRegistries.TRIGGER_TYPES.containsKey(id)) {
-                return new legacyconnector.v1_12_2.net.minecraft.util.ResourceLocation(id.getNamespace(), id.getPath());
-            }
+            // 1.20.1 keeps no trigger registry (the criteria are static fields on CriteriaTriggers): the derived id stands
+            return new legacyconnector.v1_12_2.net.minecraft.util.ResourceLocation(id.getNamespace(), id.getPath());
         }
         return new legacyconnector.v1_12_2.net.minecraft.util.ResourceLocation("impossible");
     }

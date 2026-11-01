@@ -124,7 +124,7 @@ public class InventoryPlayer implements IInventory {
         for (var slot : new net.minecraft.world.entity.EquipmentSlot[] {net.minecraft.world.entity.EquipmentSlot.FEET, net.minecraft.world.entity.EquipmentSlot.LEGS,
                 net.minecraft.world.entity.EquipmentSlot.CHEST, net.minecraft.world.entity.EquipmentSlot.HEAD}) {
             var stack = p.getItemBySlot(slot);
-            if (stack.isDamageableItem()) stack.hurtAndBreak(amount, p, slot);
+            if (stack.isDamageableItem()) stack.hurtAndBreak(amount, p, broken -> broken.broadcastBreakEvent(slot));
         }
     }
 

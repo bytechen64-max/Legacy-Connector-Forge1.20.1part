@@ -37,7 +37,7 @@ public abstract class EntityMob extends EntityCreature implements IMob {
         if (mcc$entity == null) return true;
         var level = mcc$worldOverride != null ? mcc$worldOverride : mcc$entity.level();
         if (!(level instanceof net.minecraft.world.level.ServerLevelAccessor sla)) return true;
-        return net.minecraft.world.entity.monster.Monster.isDarkEnoughToSpawn(sla, mcc$entity.blockPosition(), mcc$entity.getRandom());
+        return net.minecraft.world.entity.monster.Monster.isDarkEnoughToSpawn(sla, mcc$entity.blockPosition(), mcc$entity.level().getRandom());
     }
 
     @Override

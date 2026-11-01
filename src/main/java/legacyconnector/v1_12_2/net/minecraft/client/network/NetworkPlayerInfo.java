@@ -55,10 +55,18 @@ public class NetworkPlayerInfo {
     }
 
     private synchronized void refreshTextures() {
-        var skin = mcc$modern().getSkinLocation();
-        refresh(MinecraftProfileTexture.Type.SKIN, skin.textureUrl() == null ? null : legacy(skin.texture()));
-        refresh(MinecraftProfileTexture.Type.CAPE, legacy(skin.capeTexture()));
-        refresh(MinecraftProfileTexture.Type.ELYTRA, legacy(skin.elytraTexture()));
+        // 1.20.1 has no PlayerSkin record: the skin manager hands out one texture map per profile
+        java.util.Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures;
+        try {
+            textures = net.minecraft.client.Minecraft.getInstance().getSkinManager().getInsecureSkinInformation(mcc$modern().getProfile());
+        } catch (RuntimeException e) {
+            textures = java.util.Map.of();
+        }
+        for (var type : new MinecraftProfileTexture.Type[] {MinecraftProfileTexture.Type.SKIN, MinecraftProfileTexture.Type.CAPE,
+                MinecraftProfileTexture.Type.ELYTRA}) {
+            var texture = textures.get(type);
+            refresh(type, texture == null ? null : new ResourceLocation("skins/" + texture.getHash()));
+        }
     }
 
     private void refresh(MinecraftProfileTexture.Type type, ResourceLocation now) {

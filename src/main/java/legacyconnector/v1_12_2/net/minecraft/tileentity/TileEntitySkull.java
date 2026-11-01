@@ -45,7 +45,7 @@ public class TileEntitySkull extends TileEntity implements ITickable, org.kylepi
         }
         if (state.hasProperty(net.minecraft.world.level.block.SkullBlock.ROTATION)) skullRotation = state.getValue(net.minecraft.world.level.block.SkullBlock.ROTATION);
         var owner = mcc$skull.getOwnerProfile();
-        playerProfile = owner == null ? null : owner.gameProfile();
+        playerProfile = owner;
     }
 
     public static void setSessionService(com.mojang.authlib.minecraft.MinecraftSessionService sessionServiceIn) {

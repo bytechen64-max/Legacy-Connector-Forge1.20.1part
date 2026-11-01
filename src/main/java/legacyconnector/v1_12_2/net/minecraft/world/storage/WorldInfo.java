@@ -313,7 +313,7 @@ public class WorldInfo {
 
     public boolean areCommandsAllowed() {
         var s = server();
-        return s != null ? s.isAllowCommands() : allowCommands;
+        return s != null ? s.getAllowCommands() : allowCommands;
     }
 
     public void setAllowCommands(boolean allow) {

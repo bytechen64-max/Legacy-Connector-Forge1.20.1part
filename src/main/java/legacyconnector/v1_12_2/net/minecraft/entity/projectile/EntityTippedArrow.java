@@ -49,11 +49,11 @@ public class EntityTippedArrow extends EntityArrow {
         customPotionEffects.clear();
         mcc$color = -1;
         if (contents != null) {
-            for (var e : contents.getAllEffects()) {
+            for (var e : contents.allEffects()) {
                 var legacy = PotionEffect.mcc$fromModern(e);
                 if (legacy != null) customPotionEffects.add(legacy);
             }
-            if (contents.hasEffects()) mcc$color = contents.getColor();
+            if (!contents.allEffects().isEmpty()) mcc$color = contents.color();
         }
     }
 

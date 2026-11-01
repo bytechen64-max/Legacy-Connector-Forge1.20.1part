@@ -66,7 +66,7 @@ public class EntityPig extends EntityAnimal {
     public void setSaddled(boolean saddled) {
         var m = mcc$self();
         if (m != null) {
-            if (saddled && !m.isSaddled()) m.equipSaddle(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.SADDLE), null);
+            if (saddled && !m.isSaddled()) m.equipSaddle(net.minecraft.sounds.SoundSource.NEUTRAL);
             return;
         }
         dataManager.set(SADDLED, saddled);

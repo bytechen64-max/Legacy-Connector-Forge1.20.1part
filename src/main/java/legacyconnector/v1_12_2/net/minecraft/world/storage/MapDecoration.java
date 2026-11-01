@@ -108,8 +108,8 @@ public class MapDecoration {
                 case TARGET_POINT -> net.minecraft.world.level.saveddata.maps.MapDecoration.Type.TARGET_POINT;
                 case PLAYER_OFF_MAP -> net.minecraft.world.level.saveddata.maps.MapDecoration.Type.PLAYER_OFF_MAP;
                 case PLAYER_OFF_LIMITS -> net.minecraft.world.level.saveddata.maps.MapDecoration.Type.PLAYER_OFF_LIMITS;
-                case MANSION -> net.minecraft.world.level.saveddata.maps.MapDecoration.Type.WOODLAND_MANSION;
-                case MONUMENT -> net.minecraft.world.level.saveddata.maps.MapDecoration.Type.OCEAN_MONUMENT;
+                case MANSION -> net.minecraft.world.level.saveddata.maps.MapDecoration.Type.MANSION;
+                case MONUMENT -> net.minecraft.world.level.saveddata.maps.MapDecoration.Type.MONUMENT;
             };
         }
     }

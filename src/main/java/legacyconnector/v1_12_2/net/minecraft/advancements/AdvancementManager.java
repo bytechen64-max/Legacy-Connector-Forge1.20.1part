@@ -13,7 +13,7 @@ public class AdvancementManager {
 
     public Advancement getAdvancement(ResourceLocation id) {
         var modern = mcc$modern();
-        return modern == null || id == null ? null : Advancement.mcc$of(modern.get(id.mcc$modern()));
+        return modern == null || id == null ? null : Advancement.mcc$of(modern.getAdvancement(id.mcc$modern()));
     }
 
     public Iterable<Advancement> getAdvancements() {

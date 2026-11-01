@@ -111,10 +111,14 @@ public class GuiListWorldSelectionEntry implements GuiListExtended.IGuiListEntry
             var previous = mc.screen;
             try {
                 var access = mc.getLevelSource().validateAndCreateAccess(folder);
-                mc.setScreen(net.minecraft.client.gui.screens.worldselection.EditWorldScreen.create(mc, access, changed -> {
-                    access.safeClose();
+                mc.setScreen(new net.minecraft.client.gui.screens.worldselection.EditWorldScreen(changed -> {
+                    try {
+                        access.close();
+                    } catch (java.io.IOException ignored) {
+                        // nothing left to close
+                    }
                     mc.setScreen(previous);
-                }));
+                }, access));
             } catch (Exception e) {
                 org.slf4j.LoggerFactory.getLogger("LegacyConnector/Gui").warn("Could not edit world {}: {}", folder, e.toString());
             }

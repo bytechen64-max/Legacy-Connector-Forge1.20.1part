@@ -184,8 +184,9 @@ public class GuiInventory extends InventoryEffectRenderer implements IRecipeShow
         living.yHeadRot = living.getYRot();
         living.yHeadRotO = living.getYRot();
         try {
-            net.minecraft.client.gui.screens.inventory.InventoryScreen.renderEntityInInventory(gui, posX, posY, scale / Math.max(0.01F, living.getScale()),
-                    new org.joml.Vector3f(), pose, camera, living);
+            // 1.20.1 draws the entity with its own angles, which the caller has just set
+            net.minecraft.client.gui.screens.inventory.InventoryScreen.renderEntityInInventoryFollowsAngle(gui, posX, posY,
+                    (int) (scale / Math.max(0.01F, living.getScale())), 0.0F, 0.0F, living);
         } finally {
             living.yBodyRot = bodyRot;
             living.setYRot(yRot);

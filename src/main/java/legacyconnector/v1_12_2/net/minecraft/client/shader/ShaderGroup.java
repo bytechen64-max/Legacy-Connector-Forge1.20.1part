@@ -83,7 +83,7 @@ public class ShaderGroup {
     public Shader addShader(String programName, Framebuffer framebufferIn, Framebuffer framebufferOut) {
         if (mcc$chain == null || framebufferIn == null || framebufferOut == null) return null;
         try {
-            Shader shader = new Shader(mcc$chain.addPass(programName, framebufferIn.mcc$target(), framebufferOut.mcc$target(), false));
+            Shader shader = new Shader(mcc$chain.addPass(programName, framebufferIn.mcc$target(), framebufferOut.mcc$target()));
             listShaders.add(shader);
             return shader;
         } catch (Exception | LinkageError e) {

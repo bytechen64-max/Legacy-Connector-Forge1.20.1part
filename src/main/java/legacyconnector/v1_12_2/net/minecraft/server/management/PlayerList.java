@@ -284,8 +284,7 @@ public class PlayerList {
         var m = modern();
         var sp = playerIn == null ? null : playerIn.mcc$serverPlayer();
         if (m == null || sp == null) return playerIn;
-        var fresh = m.respawn(sp, conqueredEnd, conqueredEnd ? net.minecraft.world.entity.Entity.RemovalReason.CHANGED_DIMENSION
-                : net.minecraft.world.entity.Entity.RemovalReason.KILLED);
+        var fresh = m.respawn(sp, conqueredEnd);
         var target = org.kylepitcock.legacyconnector.v1_12_2.bridge.WorldBridge1122.levelOf(fresh.server, dimension);
         if (target != null && target != fresh.serverLevel()) {
             var spawn = target.getSharedSpawnPos();

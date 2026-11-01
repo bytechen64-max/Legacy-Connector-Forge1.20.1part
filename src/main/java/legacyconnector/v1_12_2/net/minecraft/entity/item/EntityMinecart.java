@@ -89,7 +89,7 @@ public abstract class EntityMinecart extends Entity {
         if (c != null && c.level() instanceof net.minecraft.server.level.ServerLevel) {
             var modernSource = source == null ? c.damageSources().generic() : source.mcc$modern(c.level());
             if (c instanceof net.minecraft.world.entity.vehicle.AbstractMinecartContainer container) container.destroy(modernSource);
-            else c.destroy(c.getPickResult().getItem());
+            else c.destroy(modernSource);
             return;
         }
         setDead();
