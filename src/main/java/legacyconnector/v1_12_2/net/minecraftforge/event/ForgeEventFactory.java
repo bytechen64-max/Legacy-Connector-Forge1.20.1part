@@ -293,9 +293,10 @@ public class ForgeEventFactory {
         var mob = mcc$mob(entity);
         var level = world == null ? null : world.mcc$level();
         if (mob == null || !(level instanceof net.minecraft.world.level.ServerLevelAccessor accessor)) return false;
-        var event = new net.minecraftforge.event.entity.living.FinalizeSpawnEvent(mob, accessor, x, y, z,
-                accessor.getCurrentDifficultyAt(mob.blockPosition()), net.minecraft.world.entity.MobSpawnType.NATURAL, null, null);
-        return net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event).isCanceled();
+        // 1.20.1 has MobSpawnEvent.FinalizeSpawn (which also carries the spawner) and post() returns a boolean.
+        var event = new net.minecraftforge.event.entity.living.MobSpawnEvent.FinalizeSpawn(mob, accessor, x, y, z,
+                accessor.getCurrentDifficultyAt(mob.blockPosition()), net.minecraft.world.entity.MobSpawnType.NATURAL, null, null, null);
+        return net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
     }
 
     /** Whether mods force (ALLOW), forbid (DENY) or leave to the mob (DEFAULT) its despawning. */

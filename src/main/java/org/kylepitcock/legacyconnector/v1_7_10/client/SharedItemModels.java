@@ -42,7 +42,8 @@ public final class SharedItemModels {
 
     private static void onModifyBaking(ModelEvent.ModifyBakingResult event) {
         if (FILES.isEmpty()) return;
-        Map<ModelResourceLocation, BakedModel> models = event.getModels();
+        // 1.20.1's baking event maps plain ResourceLocations (ModelResourceLocation keys are 1.20.5).
+        Map<net.minecraft.resources.ResourceLocation, BakedModel> models = event.getModels();
         Map<String, BakedModel> byContent = new HashMap<>();
         int shared = 0;
         for (var e : FILES.entrySet()) {

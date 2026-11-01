@@ -58,10 +58,8 @@ public final class Client1122 {
             if (present()) Colors1122.onItemColors(e);
         });
         modBus.addListener(Client1122::onModifyBaking);
-        // status icons of mod potions (the modern effect sprites do not exist for them)
-        modBus.addListener((net.minecraftforge.client.extensions.common.RegisterClientExtensionsEvent e) -> {
-            if (present()) EffectIcons1122.register(e);
-        });
+        // status icons of mod potions: 1.20.1 has no per-effect client extensions to register (see PORTING.md)
+        if (present()) EffectIcons1122.register();
         // plain model locations mods asked ModelLoaderRegistry for are baked as standalone models
         modBus.addListener((net.minecraftforge.client.event.ModelEvent.RegisterAdditional e) -> {
             if (!present()) return;
