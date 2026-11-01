@@ -42,7 +42,7 @@ public abstract class EntityMinecartContainer extends EntityMinecart implements 
         var c = mcc$container();
         if (c != null) {
             var key = c.getLootTable();
-            return key == null ? null : new legacyconnector.v1_12_2.net.minecraft.util.ResourceLocation(key.location().getNamespace(), key.location().getPath());
+            return key == null ? null : new legacyconnector.v1_12_2.net.minecraft.util.ResourceLocation(key.getNamespace(), key.getPath());
         }
         return mcc$table;
     }

@@ -126,9 +126,9 @@ public final class ModernScreens1122 {
                     instanceof net.minecraft.client.gui.screens.worldselection.WorldSelectionList list)) return;
             int itemHeight = Fields1122.getInt(net.minecraft.client.gui.components.AbstractSelectionList.class, list, "itemHeight");
             var legacy = mcc$selectionList();
-            if (legacy == null || legacy.top != list.getY() || legacy.bottom != list.getBottom() || legacy.width != s.width) {
+            if (legacy == null || legacy.top != Fields1122.getInt(net.minecraft.client.gui.components.AbstractSelectionList.class, list, "y0") || legacy.bottom != list.getBottom() || legacy.width != s.width) {
                 legacy = legacyconnector.v1_12_2.net.minecraft.client.gui.GuiListWorldSelection.mcc$mirror(this, Minecraft.getMinecraft(), s.width, s.height,
-                        list.getY(), list.getBottom(), itemHeight > 0 ? itemHeight : 36);
+                        Fields1122.getInt(net.minecraft.client.gui.components.AbstractSelectionList.class, list, "y0"), list.getBottom(), itemHeight > 0 ? itemHeight : 36);
                 mcc$setSelectionList(legacy);
             }
             java.util.List<legacyconnector.v1_12_2.net.minecraft.world.storage.WorldSummary> worlds = new java.util.ArrayList<>();

@@ -124,7 +124,7 @@ public class PlayerList {
     public EntityPlayerMP createPlayerForUser(GameProfile profile) {
         var s = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (s == null || profile == null) return null;
-        var sp = new net.minecraft.server.level.ServerPlayer(s, s.overworld(), profile, net.minecraft.server.level.ClientInformation.createDefault());
+        var sp = new net.minecraft.server.level.ServerPlayer(s, s.overworld(), profile);
         return view(sp);
     }
 

@@ -177,15 +177,12 @@ public final class AddonHost {
     // ------------------------------------------------------------------ helpers
 
     private static <E extends Event & IModBusEvent> void post(E event) {
-        ModList.get().forEachModContainer((id, container) -> {
-            try {
-                ModContainer c = container;
-                // the minecraft container and other mods without code have no mod bus
-                if (c.getEventBus() != null) c.getEventBus().post(event);
-            } catch (RuntimeException | LinkageError e) {
-                LOG.error("Mod {} failed handling {}", id, event.getClass().getSimpleName(), e);
-            }
-        });
+        // 1.20.1 has no ModContainer#getEventBus: the loader posts a mod bus event to every mod's bus in mod order
+        try {
+            net.minecraftforge.fml.ModLoader.get().postEvent(event);
+        } catch (RuntimeException | LinkageError e) {
+            LOG.error("Posting {} failed", event.getClass().getSimpleName(), e);
+        }
     }
 
     private static void run(Runnable action, String what) {

@@ -54,17 +54,17 @@ public final class LibraryCompat {
         }
     }
 
-    /** authlib 6 made Property a record: getName/getValue/getSignature became name()/value()/signature(). */
+    /** authlib 4 (1.20.1) names the accessors getName/getValue/getSignature (authlib 6 made Property a record). */
     public static String getName(com.mojang.authlib.properties.Property property) {
-        return property.name();
+        return property.getName();
     }
 
     public static String getValue(com.mojang.authlib.properties.Property property) {
-        return property.value();
+        return property.getValue();
     }
 
     public static String getSignature(com.mojang.authlib.properties.Property property) {
-        return property.signature();
+        return property.getSignature();
     }
 
     /** text2speech: say(String) gained an interrupt flag; the old call queued the message. */

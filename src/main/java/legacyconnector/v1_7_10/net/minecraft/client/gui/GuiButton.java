@@ -36,8 +36,8 @@ public class GuiButton extends Gui {
         if (gui == null) return;
         // 1.20.1 has no blitSprite: the face is 1.12's own two-half sprite from textures/gui/widgets.png (row per state).
         int v = 46 + hoverState * 20;
-        gui.blit(BUTTON_TEXTURES.mcc$modern(), x, y, 0, v, width / 2, height);
-        gui.blit(BUTTON_TEXTURES.mcc$modern(), x + width / 2, y, 200 - width / 2, v, width / 2, height);
+        gui.blit(buttonTextures.mcc$modern(), x, y, 0, v, width / 2, height);
+        gui.blit(buttonTextures.mcc$modern(), x + width / 2, y, 200 - width / 2, v, width / 2, height);
     }
 
     public int getHoverState(boolean hovered) {

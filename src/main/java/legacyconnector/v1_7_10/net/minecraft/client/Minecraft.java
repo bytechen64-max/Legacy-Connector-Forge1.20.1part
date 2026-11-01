@@ -285,7 +285,7 @@ public class Minecraft {
     public void launchIntegratedServer(String folder, String worldName, legacyconnector.v1_7_10.net.minecraft.world.WorldSettings settings) {
         var mc = mc();
         if (getSaveLoader().canLoadWorld(folder)) {
-            mc.createWorldOpenFlows().openWorld(folder, () -> mc.setScreen(new net.minecraft.client.gui.screens.TitleScreen()));
+            mc.createWorldOpenFlows().loadLevel(mc.screen == null ? new net.minecraft.client.gui.screens.TitleScreen() : mc.screen, folder);
         } else {
             net.minecraft.client.gui.screens.worldselection.CreateWorldScreen.openFresh(mc, mc.screen);
         }
@@ -344,7 +344,7 @@ public class Minecraft {
         if (world != null) return;
         var mc = mc();
         if (mc.level != null) mc.level.disconnect();
-        mc.disconnect(new net.minecraft.client.gui.screens.TitleScreen());
+        mc.clearLevel();
     }
 
     public void loadWorld(WorldClient world, String loadingMessage) {

@@ -29,6 +29,6 @@ public class NBTSizeTracker {
     }
 
     net.minecraft.nbt.NbtAccounter mcc$accounter() {
-        return net.minecraft.nbt.NbtAccounter.create(max);
+        return net.minecraft.nbt.new NbtAccounter(max);
     }
 }

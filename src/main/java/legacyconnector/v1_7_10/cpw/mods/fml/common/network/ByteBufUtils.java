@@ -100,7 +100,7 @@ public class ByteBufUtils {
         byte[] data = new byte[len];
         from.readBytes(data);
         try {
-            CompoundTag tag = NbtIo.read(new DataInputStream(new ByteArrayInputStream(data)), NbtAccounter.create(2097152L));
+            CompoundTag tag = NbtIo.read(new DataInputStream(new ByteArrayInputStream(data)), new NbtAccounter(2097152L));
             return new NBTTagCompound(tag);
         } catch (IOException e) {
             throw new RuntimeException(e);

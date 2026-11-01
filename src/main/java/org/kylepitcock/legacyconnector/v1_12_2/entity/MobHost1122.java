@@ -473,7 +473,7 @@ public class MobHost1122 extends PathfinderMob implements LivingHost1122, IEntit
     @Override
     public boolean canDrownInFluidType(net.minecraftforge.fluids.FluidType type) {
         EntityLivingBase l = living();
-        if (l != null && type == net.minecraftforge.common.ForgeMod.WATER_TYPE.value() && l.canBreatheUnderwater()) return false;
+        if (l != null && type == net.minecraftforge.common.ForgeMod.WATER_TYPE.get() && l.canBreatheUnderwater()) return false;
         return super.canDrownInFluidType(type);
     }
 

@@ -64,7 +64,7 @@ public final class NBTUtil {
                 NBTTagList list = new NBTTagList();
                 for (com.mojang.authlib.properties.Property property : profile.getProperties().get(key)) {
                     NBTTagCompound p = new NBTTagCompound();
-                    p.setString("Value", property.value());
+                    p.setString("Value", property.getValue());
                     // authlib names the accessor getSignature() (the record-style one is newer).
                     if (property.hasSignature()) p.setString("Signature", property.getSignature());
                     list.appendTag(p);

@@ -54,7 +54,7 @@ public class GuiGameOver extends GuiScreen {
     private static void quitToTitle() {
         var mc = net.minecraft.client.Minecraft.getInstance();
         if (mc.level != null) mc.level.disconnect();
-        mc.disconnect(new net.minecraft.client.gui.screens.GenericMessageScreen(net.minecraft.network.chat.Component.translatable("menu.savingLevel")));
+        mc.clearLevel(new net.minecraft.client.gui.screens.GenericDirtMessageScreen(net.minecraft.network.chat.Component.translatable("menu.savingLevel")));
         mc.setScreen(new net.minecraft.client.gui.screens.TitleScreen());
     }
 

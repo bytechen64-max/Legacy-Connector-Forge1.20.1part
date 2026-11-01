@@ -52,7 +52,7 @@ public class NBTUtil {
                 NBTTagList list = new NBTTagList();
                 for (Property property : profile.getProperties().get(key)) {
                     NBTTagCompound entry = new NBTTagCompound();
-                    entry.setString("Value", property.value());
+                    entry.setString("Value", property.getValue());
                     if (property.hasSignature()) entry.setString("Signature", property.getSignature());
                     list.appendTag(entry);
                 }

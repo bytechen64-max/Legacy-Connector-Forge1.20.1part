@@ -87,7 +87,7 @@ public final class Minecraft1122 {
     public static void launchIntegratedServer(String folder) {
         var mc = mc();
         if (mc.getLevelSource().levelExists(folder)) {
-            mc.createWorldOpenFlows().openWorld(folder, () -> mc.setScreen(new net.minecraft.client.gui.screens.TitleScreen()));
+            mc.createWorldOpenFlows().loadLevel(mc.screen == null ? new net.minecraft.client.gui.screens.TitleScreen() : mc.screen, folder, () -> mc.setScreen(new net.minecraft.client.gui.screens.TitleScreen()));
         } else {
             net.minecraft.client.gui.screens.worldselection.CreateWorldScreen.openFresh(mc, mc.screen);
         }
@@ -125,7 +125,7 @@ public final class Minecraft1122 {
     public static void leaveWorld() {
         var mc = mc();
         if (mc.level != null) mc.level.disconnect();
-        mc.disconnect(new net.minecraft.client.gui.screens.TitleScreen());
+        mc.clearLevel();
     }
 
     public static boolean fullscreen() {
