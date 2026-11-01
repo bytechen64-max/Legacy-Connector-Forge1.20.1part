@@ -4,8 +4,8 @@ import com.mojang.blaze3d.platform.InputConstants;
 import java.util.List;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.client.event.ClientTickEvent;
+import net.minecraftforge.common.MinecraftForge;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,7 +22,7 @@ public final class LegacyKeyConflicts {
     private LegacyKeyConflicts() {}
 
     public static void register() {
-        NeoForge.EVENT_BUS.addListener((ClientTickEvent.Post e) -> {
+        MinecraftForge.EVENT_BUS.addListener((ClientTickEvent.Post e) -> {
             if (!done) {
                 done = true;
                 resolve(Minecraft.getInstance());

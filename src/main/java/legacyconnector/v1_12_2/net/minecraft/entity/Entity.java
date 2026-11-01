@@ -2309,7 +2309,7 @@ public abstract class Entity implements legacyconnector.v1_12_2.net.minecraft.co
     /** A modern method by its (official) name, or null. */
     public static java.lang.reflect.Method mcc$method(Class<?> owner, String name, Class<?>... params) {
         try {
-            return net.neoforged.fml.util.ObfuscationReflectionHelper.findMethod(owner, name, params);
+            return net.minecraftforge.fml.util.ObfuscationReflectionHelper.findMethod(owner, name, params);
         } catch (RuntimeException e) {
             return null;
         }

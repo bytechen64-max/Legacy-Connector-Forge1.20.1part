@@ -67,12 +67,12 @@ public class SimpleNetworkWrapper {
 
         @Override
         public void mcc$send(net.minecraft.server.level.ServerPlayer player) {
-            net.neoforged.neoforge.network.PacketDistributor.sendToPlayer(player, payload);
+            net.minecraftforge.network.PacketDistributor.sendToPlayer(player, payload);
         }
 
         @Override
         public void mcc$sendToServer() {
-            net.neoforged.neoforge.network.PacketDistributor.sendToServer(payload);
+            net.minecraftforge.network.PacketDistributor.sendToServer(payload);
         }
     }
 }

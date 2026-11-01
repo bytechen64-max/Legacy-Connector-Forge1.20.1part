@@ -187,7 +187,7 @@ public class TextureAtlasSprite implements IIcon {
     // ------------------------------------------------------------------ IIcon
 
     private float[] uv() {
-        return net.neoforged.fml.loading.FMLEnvironment.dist.isClient() ? AtlasUV.of(iconName) : null;
+        return net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient() ? AtlasUV.of(iconName) : null;
     }
 
     @Override

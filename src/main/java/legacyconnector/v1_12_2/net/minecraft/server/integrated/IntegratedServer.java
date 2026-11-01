@@ -9,7 +9,7 @@ public class IntegratedServer extends legacyconnector.v1_12_2.net.minecraft.serv
     }
 
     private static net.minecraft.server.MinecraftServer mcc$server() {
-        return net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        return net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
     }
 
     /** Whether the world is open to LAN. */

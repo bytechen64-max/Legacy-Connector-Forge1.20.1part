@@ -35,9 +35,9 @@ public class RecipeBook {
     private static net.minecraft.world.item.crafting.RecipeHolder<?> holder(IRecipe recipe) {
         if (recipe == null || recipe.getRegistryName() == null) return null;
         var id = recipe.getRegistryName().mcc$modern();
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server != null) return server.getRecipeManager().byKey(id).orElse(null);
-        if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) return ClientAccess.holder(id);
+        if (net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) return ClientAccess.holder(id);
         return null;
     }
 

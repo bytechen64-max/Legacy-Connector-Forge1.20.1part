@@ -19,7 +19,7 @@ public class Minecraft implements legacyconnector.v1_12_2.net.minecraft.util.ITh
      * Whether this is a client. Client-only mods call {@link #getMinecraft()} on dedicated servers too (CTM's preInit); there the
      * client singletons below stay null, since loading them would load modern client classes.
      */
-    private static final boolean CLIENT = net.neoforged.fml.loading.FMLEnvironment.dist.isClient();
+    private static final boolean CLIENT = net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient();
     private static final Minecraft INSTANCE = new Minecraft();
 
     public static final boolean IS_RUNNING_ON_MAC = System.getProperty("os.name", "").toLowerCase(java.util.Locale.ROOT).contains("mac");
@@ -60,7 +60,7 @@ public class Minecraft implements legacyconnector.v1_12_2.net.minecraft.util.ITh
     }
 
     /** The game directory (mods build paths from it). */
-    public final java.io.File gameDir = net.neoforged.fml.loading.FMLPaths.GAMEDIR.get().toFile();
+    public final java.io.File gameDir = net.minecraftforge.fml.loading.FMLPaths.GAMEDIR.get().toFile();
 
     private final IReloadableResourceManager resourceManager = new legacyconnector.v1_12_2.net.minecraft.client.resources.SimpleReloadableResourceManager();
 
@@ -77,11 +77,11 @@ public class Minecraft implements legacyconnector.v1_12_2.net.minecraft.util.ITh
     }
 
     public boolean isCallingFromMinecraftThread() {
-        return !net.neoforged.fml.loading.FMLEnvironment.dist.isClient() || mc().isSameThread();
+        return !net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient() || mc().isSameThread();
     }
 
     public com.google.common.util.concurrent.ListenableFuture<Object> addScheduledTask(Runnable task) {
-        if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
+        if (net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) {
             mc().execute(task);
         } else {
             task.run();
@@ -99,18 +99,18 @@ public class Minecraft implements legacyconnector.v1_12_2.net.minecraft.util.ITh
                 future.setException(e);
             }
         };
-        if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient() && !mc().isSameThread()) mc().execute(run);
+        if (net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient() && !mc().isSameThread()) mc().execute(run);
         else run.run();
         return future;
     }
 
     /** True unless connected to a remote server. */
     public boolean isSingleplayer() {
-        return !net.neoforged.fml.loading.FMLEnvironment.dist.isClient() || mc().hasSingleplayerServer();
+        return !net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient() || mc().hasSingleplayerServer();
     }
 
     public boolean isIntegratedServerRunning() {
-        return net.neoforged.fml.loading.FMLEnvironment.dist.isClient() && mc().hasSingleplayerServer();
+        return net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient() && mc().hasSingleplayerServer();
     }
 
     public static long getSystemTime() {
@@ -275,7 +275,7 @@ public class Minecraft implements legacyconnector.v1_12_2.net.minecraft.util.ITh
     // ------------------------------------------------------------------ the rest of the client (area R2b)
 
     private static boolean client() {
-        return net.neoforged.fml.loading.FMLEnvironment.dist.isClient();
+        return net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient();
     }
 
     /** The client's singletons below are null on a dedicated server (client-only mods call {@code getMinecraft()} there too). */

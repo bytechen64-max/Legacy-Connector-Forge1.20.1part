@@ -2,26 +2,26 @@ package legacyconnector.v1_12_2.net.minecraftforge.client.settings;
 
 /** Forge's key modifiers (Ctrl, Shift, Alt, none), mapped onto NeoForge's identical ones. Key codes are LWJGL 2 ones. */
 public enum KeyModifier {
-    CONTROL(net.neoforged.neoforge.client.settings.KeyModifier.CONTROL, 29, 157, 219, 220),
-    SHIFT(net.neoforged.neoforge.client.settings.KeyModifier.SHIFT, 42, 54),
-    ALT(net.neoforged.neoforge.client.settings.KeyModifier.ALT, 56, 184),
-    NONE(net.neoforged.neoforge.client.settings.KeyModifier.NONE);
+    CONTROL(net.minecraftforge.client.settings.KeyModifier.CONTROL, 29, 157, 219, 220),
+    SHIFT(net.minecraftforge.client.settings.KeyModifier.SHIFT, 42, 54),
+    ALT(net.minecraftforge.client.settings.KeyModifier.ALT, 56, 184),
+    NONE(net.minecraftforge.client.settings.KeyModifier.NONE);
 
     public static final KeyModifier[] MODIFIER_VALUES = {SHIFT, CONTROL, ALT};
 
-    private final net.neoforged.neoforge.client.settings.KeyModifier modern;
+    private final net.minecraftforge.client.settings.KeyModifier modern;
     private final int[] keys;
 
-    KeyModifier(net.neoforged.neoforge.client.settings.KeyModifier modern, int... keys) {
+    KeyModifier(net.minecraftforge.client.settings.KeyModifier modern, int... keys) {
         this.modern = modern;
         this.keys = keys;
     }
 
-    public net.neoforged.neoforge.client.settings.KeyModifier mcc$modern() {
+    public net.minecraftforge.client.settings.KeyModifier mcc$modern() {
         return modern;
     }
 
-    public static KeyModifier mcc$of(net.neoforged.neoforge.client.settings.KeyModifier modern) {
+    public static KeyModifier mcc$of(net.minecraftforge.client.settings.KeyModifier modern) {
         for (KeyModifier k : values()) if (k.modern == modern) return k;
         return NONE;
     }

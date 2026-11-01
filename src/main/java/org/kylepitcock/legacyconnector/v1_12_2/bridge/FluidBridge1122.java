@@ -18,9 +18,9 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidType;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.kylepitcock.legacyconnector.core.Ids;
 import org.kylepitcock.legacyconnector.core.registry.LegacyRegistrar;
 import org.slf4j.Logger;
@@ -56,7 +56,7 @@ public final class FluidBridge1122 {
                     FluidType type = new FluidType(FluidType.Properties.create().descriptionId(legacy.getUnlocalizedName())
                             .density(legacy.getDensity()).temperature(legacy.getTemperature()).viscosity(legacy.getViscosity())
                             .lightLevel(legacy.getLuminosity()).canSwim(false).canDrown(false).supportsBoating(false));
-                    LegacyRegistrar.register(net.neoforged.neoforge.registries.NeoForgeRegistries.FLUID_TYPES, id, type);
+                    LegacyRegistrar.register(net.minecraftforge.registries.ForgeRegistries.FLUID_TYPES, id, type);
                     modern = new SourceFluid(type);
                     LegacyRegistrar.register(BuiltInRegistries.FLUID, id, modern);
                 } catch (RuntimeException | LinkageError ex) {
@@ -92,7 +92,7 @@ public final class FluidBridge1122 {
     }
 
     /** The fluid handler of an item stack, looked up on every call so it reads and writes the stack's live data. */
-    public static net.neoforged.neoforge.fluids.capability.IFluidHandlerItem forStack(net.minecraft.world.item.ItemStack stack) {
+    public static net.minecraftforge.fluids.capability.IFluidHandlerItem forStack(net.minecraft.world.item.ItemStack stack) {
         return new StackHandler(stack);
     }
 
@@ -151,7 +151,7 @@ public final class FluidBridge1122 {
     }
 
     /** An item's handler: the legacy provider is asked again on each call (it keeps its state in the stack's NBT). */
-    private static final class StackHandler extends Handler implements net.neoforged.neoforge.fluids.capability.IFluidHandlerItem {
+    private static final class StackHandler extends Handler implements net.minecraftforge.fluids.capability.IFluidHandlerItem {
         private final net.minecraft.world.item.ItemStack stack;
 
         StackHandler(net.minecraft.world.item.ItemStack stack) {

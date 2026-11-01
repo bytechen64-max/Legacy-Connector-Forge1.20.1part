@@ -5,9 +5,9 @@ import legacyconnector.v1_12_2.net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.client.event.ClientTickEvent;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.common.MinecraftForge;
 import org.kylepitcock.legacyconnector.v1_7_10.client.RenderContext;
 
 /** Ticks the 1.12.2 mods' particles with the client and draws them right after the vanilla particles. */
@@ -17,8 +17,8 @@ public final class LegacyParticles1122 {
     private static final java.util.Map<Class<?>, Boolean> CUSTOM = new java.util.concurrent.ConcurrentHashMap<>();
 
     public static void register() {
-        NeoForge.EVENT_BUS.addListener(LegacyParticles1122::onTick);
-        NeoForge.EVENT_BUS.addListener(LegacyParticles1122::onRender);
+        MinecraftForge.EVENT_BUS.addListener(LegacyParticles1122::onTick);
+        MinecraftForge.EVENT_BUS.addListener(LegacyParticles1122::onRender);
     }
 
     private static ParticleManager effects() {

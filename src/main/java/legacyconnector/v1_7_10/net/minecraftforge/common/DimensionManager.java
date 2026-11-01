@@ -12,7 +12,7 @@ import legacyconnector.v1_7_10.net.minecraft.world.WorldServer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.storage.LevelResource;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 /**
  * Forge's dimension registry. Provider types and dimension ids that mods register are recorded (mods probe for free

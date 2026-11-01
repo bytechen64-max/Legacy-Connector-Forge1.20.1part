@@ -20,7 +20,7 @@ import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.monster.Monster;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.event.entity.EntityAttributeCreationEvent;
+import net.minecraftforge.event.entity.EntityAttributeCreationEvent;
 import org.kylepitcock.legacyconnector.core.Ids;
 import org.kylepitcock.legacyconnector.core.registry.LegacyRegistrar;
 import org.slf4j.Logger;

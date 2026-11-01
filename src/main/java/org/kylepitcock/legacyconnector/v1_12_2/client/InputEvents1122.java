@@ -7,7 +7,7 @@ import legacyconnector.v1_12_2.net.minecraftforge.client.event.MouseEvent;
 import legacyconnector.v1_12_2.net.minecraftforge.client.event.sound.PlaySoundEvent;
 import legacyconnector.v1_12_2.net.minecraftforge.fml.common.gameevent.InputEvent;
 import net.minecraft.client.Minecraft;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.common.MinecraftForge;
 import org.kylepitcock.legacyconnector.v1_12_2.bridge.EntityBridge1122;
 
 /**
@@ -18,18 +18,18 @@ final class InputEvents1122 {
     private InputEvents1122() {}
 
     static void register() {
-        NeoForge.EVENT_BUS.addListener(InputEvents1122::onKey);
-        NeoForge.EVENT_BUS.addListener(InputEvents1122::onMouseButtonPre);
-        NeoForge.EVENT_BUS.addListener(InputEvents1122::onMouseButtonPost);
-        NeoForge.EVENT_BUS.addListener(InputEvents1122::onScroll);
-        NeoForge.EVENT_BUS.addListener(InputEvents1122::onChatReceived);
-        NeoForge.EVENT_BUS.addListener(InputEvents1122::onChatSent);
-        NeoForge.EVENT_BUS.addListener(InputEvents1122::onFov);
-        NeoForge.EVENT_BUS.addListener(InputEvents1122::onSound);
+        MinecraftForge.EVENT_BUS.addListener(InputEvents1122::onKey);
+        MinecraftForge.EVENT_BUS.addListener(InputEvents1122::onMouseButtonPre);
+        MinecraftForge.EVENT_BUS.addListener(InputEvents1122::onMouseButtonPost);
+        MinecraftForge.EVENT_BUS.addListener(InputEvents1122::onScroll);
+        MinecraftForge.EVENT_BUS.addListener(InputEvents1122::onChatReceived);
+        MinecraftForge.EVENT_BUS.addListener(InputEvents1122::onChatSent);
+        MinecraftForge.EVENT_BUS.addListener(InputEvents1122::onFov);
+        MinecraftForge.EVENT_BUS.addListener(InputEvents1122::onSound);
     }
 
     /** FML posted KeyInputEvent for every key change. */
-    private static void onKey(net.neoforged.neoforge.client.event.InputEvent.Key e) {
+    private static void onKey(net.minecraftforge.client.event.InputEvent.Key e) {
         if (!ScreenEvents1122.wants(InputEvent.KeyInputEvent.class)) return;
         int key = org.kylepitcock.legacyconnector.v1_7_10.client.LegacyKeys.toLegacy(e.getKey());
         boolean outer = InputEvent1122.keyDispatching;
@@ -83,7 +83,7 @@ final class InputEvents1122 {
     }
 
     /** Forge's MouseEvent while playing (no screen); cancelling it stops the game from handling the click. */
-    private static void onMouseButtonPre(net.neoforged.neoforge.client.event.InputEvent.MouseButton.Pre e) {
+    private static void onMouseButtonPre(net.minecraftforge.client.event.InputEvent.MouseButton.Pre e) {
         if (Minecraft.getInstance().screen != null || !ScreenEvents1122.wants(MouseEvent.class)) return;
         boolean pressed = e.getAction() != org.lwjgl.glfw.GLFW.GLFW_RELEASE;
         int[] p = pixel();
@@ -93,12 +93,12 @@ final class InputEvents1122 {
         if (cancelled[0]) e.setCanceled(true);
     }
 
-    private static void onMouseButtonPost(net.neoforged.neoforge.client.event.InputEvent.MouseButton.Post e) {
+    private static void onMouseButtonPost(net.minecraftforge.client.event.InputEvent.MouseButton.Post e) {
         if (!ScreenEvents1122.wants(InputEvent.MouseInputEvent.class)) return;
         mouse(e.getButton(), e.getAction() != org.lwjgl.glfw.GLFW.GLFW_RELEASE, 0, () -> ScreenEvents1122.post(new InputEvent.MouseInputEvent()));
     }
 
-    private static void onScroll(net.neoforged.neoforge.client.event.InputEvent.MouseScrollingEvent e) {
+    private static void onScroll(net.minecraftforge.client.event.InputEvent.MouseScrollingEvent e) {
         int wheel = (int) Math.round(e.getScrollDeltaY() * 120.0D);
         if (wheel == 0) return;
         if (ScreenEvents1122.wants(MouseEvent.class)) {
@@ -114,12 +114,12 @@ final class InputEvents1122 {
         if (ScreenEvents1122.wants(InputEvent.MouseInputEvent.class)) mouse(-1, false, wheel, () -> ScreenEvents1122.post(new InputEvent.MouseInputEvent()));
     }
 
-    private static void onChatReceived(net.neoforged.neoforge.client.event.ClientChatReceivedEvent e) {
+    private static void onChatReceived(net.minecraftforge.client.event.ClientChatReceivedEvent e) {
         if (!ScreenEvents1122.wants(ClientChatReceivedEvent.class)) return;
         // the message as formatted text (handlers read its text; an unchanged message keeps its modern form, click events included)
         legacyconnector.v1_12_2.net.minecraft.util.text.ITextComponent original =
                 new legacyconnector.v1_12_2.net.minecraft.util.text.TextComponentString(ClientGui1122.legacyText(e.getMessage()));
-        var type = e instanceof net.neoforged.neoforge.client.event.ClientChatReceivedEvent.System sys
+        var type = e instanceof net.minecraftforge.client.event.ClientChatReceivedEvent.System sys
                 ? (sys.isOverlay() ? legacyconnector.v1_12_2.net.minecraft.util.text.ChatType.GAME_INFO : legacyconnector.v1_12_2.net.minecraft.util.text.ChatType.SYSTEM)
                 : e.isSystem() ? legacyconnector.v1_12_2.net.minecraft.util.text.ChatType.SYSTEM : legacyconnector.v1_12_2.net.minecraft.util.text.ChatType.CHAT;
         ClientChatReceivedEvent legacy = new ClientChatReceivedEvent(type, original);
@@ -130,14 +130,14 @@ final class InputEvents1122 {
         }
     }
 
-    private static void onChatSent(net.neoforged.neoforge.client.event.ClientChatEvent e) {
+    private static void onChatSent(net.minecraftforge.client.event.ClientChatEvent e) {
         if (!ScreenEvents1122.wants(ClientChatEvent.class)) return;
         ClientChatEvent legacy = new ClientChatEvent(e.getMessage());
         if (ScreenEvents1122.post(legacy)) e.setCanceled(true);
         else e.setMessage(legacy.getMessage());
     }
 
-    private static void onFov(net.neoforged.neoforge.client.event.ComputeFovModifierEvent e) {
+    private static void onFov(net.minecraftforge.client.event.ComputeFovModifierEvent e) {
         if (!ScreenEvents1122.wants(FOVUpdateEvent.class)) return;
         if (!(EntityBridge1122.wrap(e.getPlayer()) instanceof legacyconnector.v1_12_2.net.minecraft.entity.player.EntityPlayer player)) return;
         FOVUpdateEvent legacy = new FOVUpdateEvent(player, e.getNewFovModifier());
@@ -145,7 +145,7 @@ final class InputEvents1122 {
         e.setNewFovModifier(legacy.getNewfov());
     }
 
-    private static void onSound(net.neoforged.neoforge.client.event.sound.PlaySoundEvent e) {
+    private static void onSound(net.minecraftforge.client.event.sound.PlaySoundEvent e) {
         if (e.getSound() == null || !ScreenEvents1122.wants(PlaySoundEvent.class)) return;
         var original = LegacySounds1122.legacy(e.getSound());
         PlaySoundEvent legacy = new PlaySoundEvent(original);

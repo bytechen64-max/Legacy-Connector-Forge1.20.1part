@@ -33,7 +33,7 @@ public class ModelBox {
         posX2 = x + dx;
         posY2 = y + dy;
         posZ2 = z + dz;
-        mcc$cube = net.neoforged.fml.loading.FMLEnvironment.dist.isClient()
+        mcc$cube = net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()
                 ? new ModelPart.Cube(texU, texV, x, y, z, dx, dy, dz, delta, delta, delta, mirror, renderer.textureWidth, renderer.textureHeight,
                         EnumSet.allOf(Direction.class))
                 : null;

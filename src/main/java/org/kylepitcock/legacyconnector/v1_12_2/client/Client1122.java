@@ -5,9 +5,9 @@ import legacyconnector.v1_12_2.net.minecraftforge.client.event.TextureStitchEven
 import legacyconnector.v1_12_2.net.minecraftforge.common.MinecraftForge;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.server.packs.PackType;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.event.TextureAtlasStitchedEvent;
 import org.kylepitcock.legacyconnector.core.LegacyMods;
 import org.kylepitcock.legacyconnector.core.pack.GeneratedPack;
 import org.kylepitcock.legacyconnector.v1_12_2.bridge.TileEntityBridge1122;
@@ -52,19 +52,19 @@ public final class Client1122 {
         modBus.addListener((EntityRenderersEvent.AddLayers e) -> {
             if (present()) LegacyPlayerLayer1122.addTo(e);
         });
-        modBus.addListener((net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.Block e) -> {
+        modBus.addListener((net.minecraftforge.client.event.RegisterColorHandlersEvent.Block e) -> {
             if (present()) Colors1122.onBlockColors(e);
         });
-        modBus.addListener((net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.Item e) -> {
+        modBus.addListener((net.minecraftforge.client.event.RegisterColorHandlersEvent.Item e) -> {
             if (present()) Colors1122.onItemColors(e);
         });
         modBus.addListener(Client1122::onModifyBaking);
         // status icons of mod potions (the modern effect sprites do not exist for them)
-        modBus.addListener((net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent e) -> {
+        modBus.addListener((net.minecraftforge.client.extensions.common.RegisterClientExtensionsEvent e) -> {
             if (present()) EffectIcons1122.register(e);
         });
         // plain model locations mods asked ModelLoaderRegistry for are baked as standalone models
-        modBus.addListener((net.neoforged.neoforge.client.event.ModelEvent.RegisterAdditional e) -> {
+        modBus.addListener((net.minecraftforge.client.event.ModelEvent.RegisterAdditional e) -> {
             if (!present()) return;
             for (var location : legacyconnector.v1_12_2.net.minecraftforge.client.model.ModelLoaderRegistry.mcc$requested()) {
                 e.register(net.minecraft.client.resources.model.ModelResourceLocation.standalone(location.mcc$modern()));
@@ -79,12 +79,12 @@ public final class Client1122 {
         modBus.addListener(ClientEvents1122::onSoundEngineLoad);
         ClientCommands1122.register();
         // 1.12 told its resource reload listeners again after every resource reload
-        modBus.addListener((net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent e) -> e.registerReloadListener(
+        modBus.addListener((net.minecraftforge.client.event.RegisterClientReloadListenersEvent e) -> e.registerReloadListener(
                 (net.minecraft.server.packs.resources.ResourceManagerReloadListener) manager -> {
                     if (legacyconnector.v1_12_2.net.minecraft.client.Minecraft.getMinecraft().getResourceManager()
                             instanceof legacyconnector.v1_12_2.net.minecraft.client.resources.SimpleReloadableResourceManager m) m.mcc$reloaded();
                 }));
-        modBus.addListener((net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent e) -> {
+        modBus.addListener((net.minecraftforge.client.event.RegisterKeyMappingsEvent e) -> {
             for (Object key : legacyconnector.v1_12_2.net.minecraft.client.settings.KeyBinding.mcc$modernMappings()) {
                 try {
                     e.register((net.minecraft.client.KeyMapping) key);
@@ -96,7 +96,7 @@ public final class Client1122 {
     }
 
     /** ModelBakeEvent: mods look up and replace baked models by legacy location. */
-    private static void onModifyBaking(net.neoforged.neoforge.client.event.ModelEvent.ModifyBakingResult event) {
+    private static void onModifyBaking(net.minecraftforge.client.event.ModelEvent.ModifyBakingResult event) {
         if (!present()) return;
         Models1122.invalidate();
         CustomModels1122.setBaking(event.getModels());

@@ -12,7 +12,7 @@ public class BaublesApi {
     /** Slots 0 amulet, 1-2 rings, 3 belt - Baubles' layout, backed by the player's Curios slots. */
     public static IInventory getBaubles(EntityPlayer player) {
         if (player == null) return null;
-        return net.neoforged.fml.ModList.get().isLoaded("curios")
+        return net.minecraftforge.fml.ModList.get().isLoaded("curios")
                 ? CuriosBaubles.inventory(player)
                 : org.kylepitcock.legacyconnector.v1_7_10.bridge.PlainBaubles.of(player);
     }

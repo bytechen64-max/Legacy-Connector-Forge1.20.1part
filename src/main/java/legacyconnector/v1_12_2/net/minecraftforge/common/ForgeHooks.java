@@ -16,7 +16,7 @@ import legacyconnector.v1_12_2.net.minecraft.util.math.Vec3d;
 import legacyconnector.v1_12_2.net.minecraft.util.text.ITextComponent;
 import legacyconnector.v1_12_2.net.minecraft.util.text.TextComponentString;
 import legacyconnector.v1_12_2.net.minecraft.world.World;
-import net.neoforged.neoforge.common.CommonHooks;
+import net.minecraftforge.common.ForgeHooks;
 import org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122;
 import org.kylepitcock.legacyconnector.v1_12_2.bridge.StatesBridge1122;
 
@@ -51,7 +51,7 @@ public class ForgeHooks {
 
     public static void setCraftingPlayer(EntityPlayer player) {
         CRAFTING_PLAYER.set(player);
-        CommonHooks.setCraftingPlayer(player == null ? null : player.mcc$player());
+        ForgeHooks.setCraftingPlayer(player == null ? null : player.mcc$player());
     }
 
     public static EntityPlayer getCraftingPlayer() {
@@ -71,33 +71,33 @@ public class ForgeHooks {
     }
 
     public static void onLivingJump(EntityLivingBase entity) {
-        if (entity != null && entity.mcc$modern() instanceof net.minecraft.world.entity.LivingEntity living) CommonHooks.onLivingJump(living);
+        if (entity != null && entity.mcc$modern() instanceof net.minecraft.world.entity.LivingEntity living) ForgeHooks.onLivingJump(living);
     }
 
     /** False when a mod stops the entity from changing dimension. */
     public static boolean onTravelToDimension(Entity entity, int dimension) {
         if (entity == null || entity.mcc$modern() == null) return true;
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         var level = server == null ? null : legacyconnector.v1_12_2.net.minecraftforge.common.DimensionManager.mcc$level(dimension);
-        return level == null || CommonHooks.onTravelToDimension(entity.mcc$modern(), level.dimension());
+        return level == null || ForgeHooks.onTravelToDimension(entity.mcc$modern(), level.dimension());
     }
 
     public static boolean onCropsGrowPre(World worldIn, BlockPos pos, IBlockState state, boolean def) {
         if (worldIn == null || worldIn.mcc$level() == null) return def;
         var modern = StatesBridge1122.toModern(state);
-        return modern == null ? def : CommonHooks.canCropGrow(worldIn.mcc$level(), pos(pos), modern, def);
+        return modern == null ? def : ForgeHooks.canCropGrow(worldIn.mcc$level(), pos(pos), modern, def);
     }
 
     public static void onCropsGrowPost(World worldIn, BlockPos pos, IBlockState state, IBlockState blockState) {
         if (worldIn == null || worldIn.mcc$level() == null) return;
         var modern = StatesBridge1122.toModern(blockState != null ? blockState : state);
-        if (modern != null) CommonHooks.fireCropGrowPost(worldIn.mcc$level(), pos(pos), modern);
+        if (modern != null) ForgeHooks.fireCropGrowPost(worldIn.mcc$level(), pos(pos), modern);
     }
 
     /** The chance the anvil is damaged by this repair. */
     public static float onAnvilRepair(EntityPlayer player, ItemStack output, ItemStack left, ItemStack right) {
         if (player == null || player.mcc$player() == null) return 0.12F;
-        return CommonHooks.onAnvilRepair(player.mcc$player(), Stacks1122.toModern(output), Stacks1122.toModern(left), Stacks1122.toModern(right));
+        return ForgeHooks.onAnvilRepair(player.mcc$player(), Stacks1122.toModern(output), Stacks1122.toModern(left), Stacks1122.toModern(right));
     }
 
     /** How much of the block the player breaks per tick (0 when the player cannot harvest it at all). */
@@ -186,7 +186,7 @@ public class ForgeHooks {
         var sp = entityPlayer == null ? null : entityPlayer.mcc$serverPlayer();
         if (level == null || sp == null || pos == null) return 0;
         var p = pos(pos);
-        var event = CommonHooks.fireBlockBreak(level, gameType == null ? sp.gameMode.getGameModeForPlayer() : gameType.mcc$modern(), sp, p, level.getBlockState(p));
+        var event = ForgeHooks.fireBlockBreak(level, gameType == null ? sp.gameMode.getGameModeForPlayer() : gameType.mcc$modern(), sp, p, level.getBlockState(p));
         return event.isCanceled() ? -1 : 0;
     }
 
@@ -198,7 +198,7 @@ public class ForgeHooks {
         if (level == null || p == null || pos == null) return true;
         var mp = pos(pos);
         var state = level.getBlockState(mp);
-        return net.neoforged.neoforge.event.EventHooks.doPlayerHarvestCheck(p, state, level, mp);
+        return net.minecraftforge.event.EventHooks.doPlayerHarvestCheck(p, state, level, mp);
     }
 
     /** Whether the stack is a tool that breaks the block at {@code pos} faster (its tool type matches). */
@@ -223,13 +223,13 @@ public class ForgeHooks {
     public static boolean onPlayerAttackTarget(EntityPlayer player, Entity target) {
         var p = player == null ? null : player.mcc$player();
         if (p == null || target == null || target.mcc$modern() == null) return true;
-        return CommonHooks.onPlayerAttackTarget(p, target.mcc$modern());
+        return ForgeHooks.onPlayerAttackTarget(p, target.mcc$modern());
     }
 
     /** The fall distance and damage multiplier after mods' fall handlers, or null when the fall was canceled. */
     public static float[] onLivingFall(EntityLivingBase entity, float distance, float damageMultiplier) {
         if (entity == null || !(entity.mcc$modern() instanceof net.minecraft.world.entity.LivingEntity living)) return new float[] {distance, damageMultiplier};
-        return CommonHooks.onLivingFall(living, distance, damageMultiplier);
+        return ForgeHooks.onLivingFall(living, distance, damageMultiplier);
     }
 
     /** How far away a mob notices the player: the distance scaled by the player's visibility (sneaking, invisibility, mob heads). */
@@ -283,7 +283,7 @@ public class ForgeHooks {
         if (living == null || src == null) {
             return mcc$bus().post(new legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.LivingDeathEvent(entity, src));
         }
-        return CommonHooks.onLivingDeath(living, src.mcc$modern(living.level()));
+        return ForgeHooks.onLivingDeath(living, src.mcc$modern(living.level()));
     }
 
     /** True when a mod canceled the drops; handlers may change the list. */
@@ -305,8 +305,8 @@ public class ForgeHooks {
         mcc$bus().post(new legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent(entity, target));
         var living = mcc$living(entity);
         if (living != null) {
-            CommonHooks.onLivingChangeTarget(living, mcc$living(target),
-                    net.neoforged.neoforge.event.entity.living.LivingChangeTargetEvent.LivingTargetType.MOB_TARGET);
+            ForgeHooks.onLivingChangeTarget(living, mcc$living(target),
+                    net.minecraftforge.event.entity.living.LivingChangeTargetEvent.LivingTargetType.MOB_TARGET);
         }
     }
 
@@ -328,7 +328,7 @@ public class ForgeHooks {
         var pos = te.getPos();
         if (level == null || pos == null) return true;
         var p = pos(pos);
-        int result = CommonHooks.onNoteChange(level, p, level.getBlockState(p), old, te.note);
+        int result = ForgeHooks.onNoteChange(level, p, level.getBlockState(p), old, te.note);
         if (result == -1) {
             te.note = old;
             return false;
@@ -350,16 +350,16 @@ public class ForgeHooks {
             return crit ? event : null;
         }
         // the modern event reaches 1.12 handlers through the event bridge
-        var modern = CommonHooks.fireCriticalHit(p, target.mcc$modern(), vanillaCritical, damageModifier);
+        var modern = ForgeHooks.fireCriticalHit(p, target.mcc$modern(), vanillaCritical, damageModifier);
         if (!modern.isCriticalHit()) return null;
         event.setDamageModifier(modern.getDamageMultiplier());
         if (!vanillaCritical) event.setResult(legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW);
         return event;
     }
 
-    private static legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result mcc$result(net.neoforged.neoforge.common.util.TriState s) {
-        return s == net.neoforged.neoforge.common.util.TriState.TRUE ? legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW
-                : s == net.neoforged.neoforge.common.util.TriState.FALSE ? legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.DENY
+    private static legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result mcc$result(net.minecraftforge.common.util.TriState s) {
+        return s == net.minecraftforge.common.util.TriState.TRUE ? legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW
+                : s == net.minecraftforge.common.util.TriState.FALSE ? legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.DENY
                 : legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.DEFAULT;
     }
 
@@ -372,9 +372,9 @@ public class ForgeHooks {
             mcc$bus().post(event);
             return event;
         }
-        var modern = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.LeftClickBlock(p,
+        var modern = net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock(p,
                 pos(pos), face == null ? net.minecraft.core.Direction.UP : face.mcc$modern(),
-                net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.LeftClickBlock.Action.START));
+                net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock.Action.START));
         if (modern.isCanceled()) {
             event.setCanceled(true);
         } else {
@@ -395,7 +395,7 @@ public class ForgeHooks {
         }
         var direction = face == null ? net.minecraft.core.Direction.UP : face.mcc$modern();
         var location = hitVec != null ? hitVec.mcc$modern() : net.minecraft.world.phys.Vec3.atCenterOf(pos(pos));
-        var modern = CommonHooks.onRightClickBlock(p, hand == null ? net.minecraft.world.InteractionHand.MAIN_HAND : hand.mcc$modern(), pos(pos),
+        var modern = ForgeHooks.onRightClickBlock(p, hand == null ? net.minecraft.world.InteractionHand.MAIN_HAND : hand.mcc$modern(), pos(pos),
                 new net.minecraft.world.phys.BlockHitResult(location, direction, pos(pos), false));
         if (modern.isCanceled()) {
             event.setCanceled(true);
@@ -423,7 +423,7 @@ public class ForgeHooks {
         var direction = side == null ? net.minecraft.core.Direction.UP : side.mcc$modern();
         var hit = new net.minecraft.world.phys.BlockHitResult(new net.minecraft.world.phys.Vec3(pos.getX() + hitX, pos.getY() + hitY, pos.getZ() + hitZ),
                 direction, pos(pos), false);
-        var result = CommonHooks.onPlaceItemIntoWorld(new net.minecraft.world.item.context.UseOnContext(level, p, modernHand, stack, hit));
+        var result = ForgeHooks.onPlaceItemIntoWorld(new net.minecraft.world.item.context.UseOnContext(level, p, modernHand, stack, hit));
         if (!live) itemstack.setCount(stack.getCount());
         return legacyconnector.v1_12_2.net.minecraft.util.EnumActionResult.mcc$of(result);
     }
@@ -471,7 +471,7 @@ public class ForgeHooks {
             legacyconnector.v1_12_2.net.minecraft.item.ItemStack item, boolean includeName) {
         var p = player == null ? null : player.mcc$player();
         if (p == null || item == null || item.isEmpty()) return null;
-        var ret = net.neoforged.neoforge.common.CommonHooks.onPlayerTossEvent(p, org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.toModern(item), includeName);
+        var ret = net.minecraftforge.common.ForgeHooks.onPlayerTossEvent(p, org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.toModern(item), includeName);
         return ret != null && org.kylepitcock.legacyconnector.v1_12_2.bridge.EntityBridge1122.wrap(ret)
                 instanceof legacyconnector.v1_12_2.net.minecraft.entity.item.EntityItem e ? e : null;
     }

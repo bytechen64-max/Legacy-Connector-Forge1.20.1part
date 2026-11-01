@@ -137,7 +137,7 @@ public final class Colors1122 {
         return set.toArray(new net.minecraft.world.level.ItemLike[0]);
     }
 
-    static void onBlockColors(net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.Block event) {
+    static void onBlockColors(net.minecraftforge.client.event.RegisterColorHandlersEvent.Block event) {
         try {
             legacyconnector.v1_12_2.net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(
                     new legacyconnector.v1_12_2.net.minecraftforge.client.event.ColorHandlerEvent.Block(BLOCKS));
@@ -153,7 +153,7 @@ public final class Colors1122 {
         blocksOpen = true;
     }
 
-    static void onItemColors(net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.Item event) {
+    static void onItemColors(net.minecraftforge.client.event.RegisterColorHandlersEvent.Item event) {
         try {
             legacyconnector.v1_12_2.net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(
                     new legacyconnector.v1_12_2.net.minecraftforge.client.event.ColorHandlerEvent.Item(ITEMS, BLOCKS));

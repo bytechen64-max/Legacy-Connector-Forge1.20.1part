@@ -21,7 +21,7 @@ public final class ModernPieces1122 {
     private static int failures;
 
     private static net.minecraft.server.MinecraftServer server() {
-        return net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        return net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
     }
 
     /** The server's structure templates (null before a server runs). */

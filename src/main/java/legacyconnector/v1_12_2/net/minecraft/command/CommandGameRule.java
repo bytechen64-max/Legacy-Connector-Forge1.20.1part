@@ -25,7 +25,7 @@ public class CommandGameRule extends CommandBase {
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-        var m = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var m = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (m == null) return;
         m.getCommands().performPrefixedCommand(m.createCommandSourceStack(), "gamerule " + String.join(" ", args));
     }
@@ -33,7 +33,7 @@ public class CommandGameRule extends CommandBase {
     /** After a rule changed: {@code reducedDebugInfo} is sent to every player (their debug screen shows less or more). */
     public static void notifyGameRuleChange(GameRules rules, String rule, MinecraftServer server) {
         if (!"reducedDebugInfo".equals(rule) || rules == null) return;
-        var m = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var m = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (m == null) return;
         byte status = (byte) (rules.getBoolean(rule) ? 22 : 23);
         for (var player : m.getPlayerList().getPlayers()) {
@@ -44,7 +44,7 @@ public class CommandGameRule extends CommandBase {
     @Override
     public List<String> getTabCompletions(MinecraftServer server, ICommandSender sender, String[] args, BlockPos targetPos) {
         if (args.length == 1) {
-            var m = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+            var m = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
             if (m == null) return Collections.emptyList();
             return getListOfStringsMatchingLastWord(args, GameRules.mcc$of(m.getGameRules(), m).getRules());
         }

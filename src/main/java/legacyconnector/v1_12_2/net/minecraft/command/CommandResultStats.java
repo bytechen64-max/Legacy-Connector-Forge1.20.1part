@@ -16,7 +16,7 @@ public class CommandResultStats {
     public void setCommandStatForSender(MinecraftServer server, ICommandSender sender, Type typeIn, int p_184932_4_) {
         String entity = entitiesID[typeIn.getTypeID()];
         String objectiveName = objectives[typeIn.getTypeID()];
-        var m = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var m = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (entity == null || objectiveName == null || m == null) return;
         if (entity.startsWith("@")) {
             // a selector: the entities it names, from the sender's position

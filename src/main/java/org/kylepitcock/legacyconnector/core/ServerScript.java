@@ -5,8 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 import javax.script.ScriptEngine;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent.ServerTickEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,7 @@ public final class ServerScript {
         String dir = System.getProperty("legacyconnector.serverScript");
         if (dir == null || dir.isEmpty()) return;
         Path path = Path.of(dir);
-        NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post e) -> poll(e.getServer(), path));
+        MinecraftForge.EVENT_BUS.addListener((ServerTickEvent.Post e) -> poll(e.getServer(), path));
     }
 
     private static void poll(net.minecraft.server.MinecraftServer server, Path dir) {

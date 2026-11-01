@@ -208,7 +208,7 @@ public abstract class EntityLivingBase extends Entity {
 
     private static java.lang.reflect.Method mcc$findTotem() {
         try {
-            return net.neoforged.fml.util.ObfuscationReflectionHelper.findMethod(LivingEntity.class, "checkTotemDeathProtection",
+            return net.minecraftforge.fml.util.ObfuscationReflectionHelper.findMethod(LivingEntity.class, "checkTotemDeathProtection",
                     net.minecraft.world.damagesource.DamageSource.class);
         } catch (RuntimeException e) {
             return null;
@@ -1257,7 +1257,7 @@ public abstract class EntityLivingBase extends Entity {
         var l = mcc$living();
         if (l == null || l.level().isClientSide()) return;
         if (stack != null && stack.getItem() == legacyconnector.v1_12_2.net.minecraft.init.Items.MILK_BUCKET) {
-            l.removeEffectsCuredBy(net.neoforged.neoforge.common.EffectCures.MILK);
+            l.removeEffectsCuredBy(net.minecraftforge.common.EffectCures.MILK);
         }
     }
 

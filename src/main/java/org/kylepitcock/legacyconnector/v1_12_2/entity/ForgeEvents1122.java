@@ -58,8 +58,8 @@ public final class ForgeEvents1122 {
                 : legacyconnector.v1_12_2.net.minecraft.util.EnumHand.MAIN_HAND;
     }
 
-    public static void register(net.neoforged.bus.api.IEventBus game) {
-        game.addListener((net.neoforged.neoforge.event.entity.player.CanPlayerSleepEvent e) -> {
+    public static void register(net.minecraftforge.eventbus.api.IEventBus game) {
+        game.addListener((net.minecraftforge.event.entity.player.CanPlayerSleepEvent e) -> {
             EntityPlayer p = player(e.getEntity());
             if (p == null) return;
             var event = new PlayerSleepInBedEvent(p, BlockPos.mcc$of(e.getPos()));
@@ -75,16 +75,16 @@ public final class ForgeEvents1122 {
                 default -> net.minecraft.world.entity.player.Player.BedSleepingProblem.OTHER_PROBLEM;
             });
         });
-        game.addListener((net.neoforged.neoforge.event.entity.player.PlayerWakeUpEvent e) -> {
+        game.addListener((net.minecraftforge.event.entity.player.PlayerWakeUpEvent e) -> {
             EntityPlayer p = player(e.getEntity());
             if (p != null) post(new PlayerWakeUpEvent(p, e.wakeImmediately(), e.updateLevel(), true));
         });
-        game.addListener((net.neoforged.neoforge.event.entity.player.PlayerSetSpawnEvent e) -> {
+        game.addListener((net.minecraftforge.event.entity.player.PlayerSetSpawnEvent e) -> {
             EntityPlayer p = player(e.getEntity());
             if (p == null) return;
             if (post(new PlayerSetSpawnEvent(p, e.getNewSpawn() == null ? null : BlockPos.mcc$of(e.getNewSpawn()), e.isForced()))) e.setCanceled(true);
         });
-        game.addListener((net.neoforged.neoforge.event.entity.player.BonemealEvent e) -> {
+        game.addListener((net.minecraftforge.event.entity.player.BonemealEvent e) -> {
             EntityPlayer p = player(e.getPlayer());
             if (p == null || !(e.getLevel() instanceof net.minecraft.world.level.Level level)) return;
             var event = new BonemealEvent(p, WorldBridge1122.wrap(level), BlockPos.mcc$of(e.getPos()), StatesBridge1122.toLegacy(e.getState()),
@@ -93,8 +93,8 @@ public final class ForgeEvents1122 {
             if (canceled) e.setCanceled(true);
             else if (event.getResult() == Event.Result.ALLOW) e.setSuccessful(true);
         });
-        game.addListener((net.neoforged.neoforge.event.level.BlockEvent.BlockToolModificationEvent e) -> {
-            if (e.getItemAbility() != net.neoforged.neoforge.common.ItemAbilities.HOE_TILL || e.isSimulated()) return;
+        game.addListener((net.minecraftforge.event.level.BlockEvent.BlockToolModificationEvent e) -> {
+            if (e.getItemAbility() != net.minecraftforge.common.ItemAbilities.HOE_TILL || e.isSimulated()) return;
             EntityPlayer p = player(e.getPlayer());
             if (p == null || !(e.getLevel() instanceof net.minecraft.world.level.Level level)) return;
             var event = new UseHoeEvent(p, Stacks1122.view(e.getHeldItemStack()), WorldBridge1122.wrap(level), BlockPos.mcc$of(e.getPos()));
@@ -108,7 +108,7 @@ public final class ForgeEvents1122 {
                         net.minecraft.world.entity.LivingEntity.getSlotForHand(context.getHand()));
             }
         });
-        game.addListener((net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickItem e) -> {
+        game.addListener((net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickItem e) -> {
             if (!(e.getItemStack().getItem() instanceof net.minecraft.world.item.BucketItem)) return;
             EntityPlayer p = player(e.getEntity());
             if (p == null) return;
@@ -130,14 +130,14 @@ public final class ForgeEvents1122 {
                 e.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
             }
         });
-        game.addListener((net.neoforged.neoforge.event.entity.player.ArrowLooseEvent e) -> {
+        game.addListener((net.minecraftforge.event.entity.player.ArrowLooseEvent e) -> {
             EntityPlayer p = player(e.getEntity());
             if (p == null) return;
             var event = new ArrowLooseEvent(p, Stacks1122.view(e.getBow()), WorldBridge1122.wrap(e.getLevel()), e.getCharge(), e.hasAmmo());
             if (post(event)) e.setCanceled(true);
             else e.setCharge(event.getCharge());
         });
-        game.addListener((net.neoforged.neoforge.event.entity.player.ArrowNockEvent e) -> {
+        game.addListener((net.minecraftforge.event.entity.player.ArrowNockEvent e) -> {
             EntityPlayer p = player(e.getEntity());
             if (p == null) return;
             var event = new ArrowNockEvent(p, Stacks1122.view(e.getBow()), hand(e.getHand()), WorldBridge1122.wrap(e.getLevel()), e.hasAmmo());
@@ -152,7 +152,7 @@ public final class ForgeEvents1122 {
                 });
             }
         });
-        game.addListener((net.neoforged.neoforge.event.entity.player.AnvilRepairEvent e) -> {
+        game.addListener((net.minecraftforge.event.entity.player.AnvilRepairEvent e) -> {
             EntityPlayer p = player(e.getEntity());
             if (p == null) return;
             var event = new AnvilRepairEvent(p, Stacks1122.fromModern(e.getLeft()), Stacks1122.fromModern(e.getRight()), Stacks1122.fromModern(e.getOutput()));
@@ -160,7 +160,7 @@ public final class ForgeEvents1122 {
             post(event);
             e.setBreakChance(event.getBreakChance());
         });
-        game.addListener((net.neoforged.neoforge.event.entity.player.ItemFishedEvent e) -> {
+        game.addListener((net.minecraftforge.event.entity.player.ItemFishedEvent e) -> {
             java.util.List<legacyconnector.v1_12_2.net.minecraft.item.ItemStack> drops = new java.util.ArrayList<>();
             for (var s : e.getDrops()) drops.add(Stacks1122.fromModern(s));
             var hook = EntityBridge1122.wrap(e.getHookEntity()) instanceof legacyconnector.v1_12_2.net.minecraft.entity.projectile.EntityFishHook h ? h : null;
@@ -169,7 +169,7 @@ public final class ForgeEvents1122 {
             if (post(event)) e.setCanceled(true);
             else if (event.getRodDamage() != e.getRodDamage()) e.damageRodBy(Math.max(0, event.getRodDamage()));
         });
-        game.addListener((net.neoforged.neoforge.event.entity.player.CriticalHitEvent e) -> {
+        game.addListener((net.minecraftforge.event.entity.player.CriticalHitEvent e) -> {
             EntityPlayer p = player(e.getEntity());
             if (p == null) return;
             var event = new CriticalHitEvent(p, EntityBridge1122.wrap(e.getTarget()), e.getDamageMultiplier(), e.isVanillaCritical());
@@ -190,32 +190,32 @@ public final class ForgeEvents1122 {
     }
 
     /** Entity, spawn, sound, container, dimension, taming, sleeping, minecart and save-file events (only built when a mod listens). */
-    private static void registerEntityEvents(net.neoforged.bus.api.IEventBus game) {
-        game.addListener((net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck e) -> {
+    private static void registerEntityEvents(net.minecraftforge.eventbus.api.IEventBus game) {
+        game.addListener((net.minecraftforge.event.entity.living.MobSpawnEvent.PositionCheck e) -> {
             if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.LivingSpawnEvent.CheckSpawn.class)) return;
             if (!(entity(e.getEntity()) instanceof legacyconnector.v1_12_2.net.minecraft.entity.EntityLiving mob)) return;
             var event = new legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.LivingSpawnEvent.CheckSpawn(mob, WorldBridge1122.wrap(e.getLevel()),
                     (float) e.getX(), (float) e.getY(), (float) e.getZ(), e.getSpawner() != null);
             post(event);
-            if (event.getResult() == Event.Result.ALLOW) e.setResult(net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck.Result.SUCCEED);
-            else if (event.getResult() == Event.Result.DENY) e.setResult(net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck.Result.FAIL);
+            if (event.getResult() == Event.Result.ALLOW) e.setResult(net.minecraftforge.event.entity.living.MobSpawnEvent.PositionCheck.Result.SUCCEED);
+            else if (event.getResult() == Event.Result.DENY) e.setResult(net.minecraftforge.event.entity.living.MobSpawnEvent.PositionCheck.Result.FAIL);
         });
-        game.addListener((net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent e) -> {
+        game.addListener((net.minecraftforge.event.entity.living.FinalizeSpawnEvent e) -> {
             if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.LivingSpawnEvent.SpecialSpawn.class)) return;
             if (!(entity(e.getEntity()) instanceof legacyconnector.v1_12_2.net.minecraft.entity.EntityLiving mob)) return;
             var event = new legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.LivingSpawnEvent.SpecialSpawn(mob, WorldBridge1122.wrap(e.getLevel()),
                     (float) e.getX(), (float) e.getY(), (float) e.getZ(), null);
             if (post(event)) e.setCanceled(true);
         });
-        game.addListener((net.neoforged.neoforge.event.entity.living.MobDespawnEvent e) -> {
+        game.addListener((net.minecraftforge.event.entity.living.MobDespawnEvent e) -> {
             if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.LivingSpawnEvent.AllowDespawn.class)) return;
             if (!(entity(e.getEntity()) instanceof legacyconnector.v1_12_2.net.minecraft.entity.EntityLiving mob)) return;
             var event = new legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.LivingSpawnEvent.AllowDespawn(mob);
             post(event);
-            if (event.getResult() == Event.Result.ALLOW) e.setResult(net.neoforged.neoforge.event.entity.living.MobDespawnEvent.Result.ALLOW);
-            else if (event.getResult() == Event.Result.DENY) e.setResult(net.neoforged.neoforge.event.entity.living.MobDespawnEvent.Result.DENY);
+            if (event.getResult() == Event.Result.ALLOW) e.setResult(net.minecraftforge.event.entity.living.MobDespawnEvent.Result.ALLOW);
+            else if (event.getResult() == Event.Result.DENY) e.setResult(net.minecraftforge.event.entity.living.MobDespawnEvent.Result.DENY);
         });
-        game.addListener((net.neoforged.neoforge.event.PlayLevelSoundEvent.AtEntity e) -> {
+        game.addListener((net.minecraftforge.event.PlayLevelSoundEvent.AtEntity e) -> {
             if (e.getSound() == null || !wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.PlaySoundAtEntityEvent.class)) return;
             var view = entity(e.getEntity());
             var sound = Sounds1122.legacy(e.getSound().value());
@@ -236,7 +236,7 @@ public final class ForgeEvents1122 {
             e.setNewVolume(event.getVolume());
             e.setNewPitch(event.getPitch());
         });
-        game.addListener((net.neoforged.neoforge.event.entity.living.LivingEvent.LivingVisibilityEvent e) -> {
+        game.addListener((net.minecraftforge.event.entity.living.LivingEvent.LivingVisibilityEvent e) -> {
             if (!(e.getEntity() instanceof net.minecraft.world.entity.player.Player)
                     || !wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.player.PlayerEvent.Visibility.class)) {
                 return;
@@ -247,44 +247,44 @@ public final class ForgeEvents1122 {
             post(event);
             if (event.getVisibilityModifier() != 1.0D) e.modifyVisibility(event.getVisibilityModifier());
         });
-        game.addListener((net.neoforged.neoforge.event.entity.player.PlayerContainerEvent.Open e) -> {
+        game.addListener((net.minecraftforge.event.entity.player.PlayerContainerEvent.Open e) -> {
             if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.player.PlayerContainerEvent.Open.class)) return;
             EntityPlayer p = player(e.getEntity());
             if (p != null) post(new legacyconnector.v1_12_2.net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(p, MenuView1122.of(e.getContainer())));
         });
-        game.addListener((net.neoforged.neoforge.event.entity.player.PlayerContainerEvent.Close e) -> {
+        game.addListener((net.minecraftforge.event.entity.player.PlayerContainerEvent.Close e) -> {
             if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.player.PlayerContainerEvent.Close.class)) return;
             EntityPlayer p = player(e.getEntity());
             if (p != null) post(new legacyconnector.v1_12_2.net.minecraftforge.event.entity.player.PlayerContainerEvent.Close(p, MenuView1122.of(e.getContainer())));
         });
-        game.addListener((net.neoforged.neoforge.event.entity.player.PlayerEvent.LoadFromFile e) -> {
+        game.addListener((net.minecraftforge.event.entity.player.PlayerEvent.LoadFromFile e) -> {
             if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.player.PlayerEvent.LoadFromFile.class)) return;
             EntityPlayer p = player(e.getEntity());
             if (p != null) {
                 post(new legacyconnector.v1_12_2.net.minecraftforge.event.entity.player.PlayerEvent.LoadFromFile(p, e.getPlayerDirectory(), e.getPlayerUUID()));
             }
         });
-        game.addListener((net.neoforged.neoforge.event.entity.player.PlayerEvent.SaveToFile e) -> {
+        game.addListener((net.minecraftforge.event.entity.player.PlayerEvent.SaveToFile e) -> {
             if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.player.PlayerEvent.SaveToFile.class)) return;
             EntityPlayer p = player(e.getEntity());
             if (p != null) {
                 post(new legacyconnector.v1_12_2.net.minecraftforge.event.entity.player.PlayerEvent.SaveToFile(p, e.getPlayerDirectory(), e.getPlayerUUID()));
             }
         });
-        game.addListener((net.neoforged.neoforge.event.entity.living.AnimalTameEvent e) -> {
+        game.addListener((net.minecraftforge.event.entity.living.AnimalTameEvent e) -> {
             if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.AnimalTameEvent.class)) return;
             EntityPlayer p = player(e.getTamer());
             if (p == null || !(entity(e.getAnimal()) instanceof legacyconnector.v1_12_2.net.minecraft.entity.passive.EntityAnimal animal)) return;
             if (post(new legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.AnimalTameEvent(animal, p))) e.setCanceled(true);
         });
-        game.addListener((net.neoforged.neoforge.event.entity.EntityTravelToDimensionEvent e) -> {
+        game.addListener((net.minecraftforge.event.entity.EntityTravelToDimensionEvent e) -> {
             if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.EntityTravelToDimensionEvent.class)) return;
             var view = entity(e.getEntity());
             if (view == null) return;
             int id = org.kylepitcock.legacyconnector.v1_12_2.bridge.EventBridge1122.dimensionId(e.getDimension());
             if (post(new legacyconnector.v1_12_2.net.minecraftforge.event.entity.EntityTravelToDimensionEvent(view, id))) e.setCanceled(true);
         });
-        game.addListener((net.neoforged.neoforge.event.entity.player.AdvancementEvent.AdvancementEarnEvent e) -> {
+        game.addListener((net.minecraftforge.event.entity.player.AdvancementEvent.AdvancementEarnEvent e) -> {
             if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.player.AdvancementEvent.class)) return;
             EntityPlayer p = player(e.getEntity());
             if (p != null) {
@@ -292,13 +292,13 @@ public final class ForgeEvents1122 {
                         legacyconnector.v1_12_2.net.minecraft.advancements.Advancement.mcc$of(e.getAdvancement())));
             }
         });
-        game.addListener((net.neoforged.neoforge.event.DifficultyChangeEvent e) -> {
+        game.addListener((net.minecraftforge.event.DifficultyChangeEvent e) -> {
             if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.DifficultyChangeEvent.class)) return;
             post(new legacyconnector.v1_12_2.net.minecraftforge.event.DifficultyChangeEvent(
                     legacyconnector.v1_12_2.net.minecraft.world.EnumDifficulty.mcc$of(e.getDifficulty()),
                     legacyconnector.v1_12_2.net.minecraft.world.EnumDifficulty.mcc$of(e.getOldDifficulty())));
         });
-        game.addListener((net.neoforged.neoforge.event.entity.EntityMobGriefingEvent e) -> {
+        game.addListener((net.minecraftforge.event.entity.EntityMobGriefingEvent e) -> {
             if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.EntityMobGriefingEvent.class)) return;
             var view = entity(e.getEntity());
             if (view == null) return;
@@ -307,7 +307,7 @@ public final class ForgeEvents1122 {
             if (event.getResult() == Event.Result.ALLOW) e.setCanGrief(true);
             else if (event.getResult() == Event.Result.DENY) e.setCanGrief(false);
         });
-        game.addListener((net.neoforged.neoforge.event.entity.living.BabyEntitySpawnEvent e) -> {
+        game.addListener((net.minecraftforge.event.entity.living.BabyEntitySpawnEvent e) -> {
             if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.BabyEntitySpawnEvent.class)) return;
             if (!(entity(e.getParentA()) instanceof legacyconnector.v1_12_2.net.minecraft.entity.EntityLiving a)
                     || !(entity(e.getParentB()) instanceof legacyconnector.v1_12_2.net.minecraft.entity.EntityLiving b)) {
@@ -324,7 +324,7 @@ public final class ForgeEvents1122 {
                 e.setChild(child instanceof net.minecraft.world.entity.AgeableMob m ? m : null);
             }
         });
-        game.addListener((net.neoforged.neoforge.event.entity.player.CanContinueSleepingEvent e) -> {
+        game.addListener((net.minecraftforge.event.entity.player.CanContinueSleepingEvent e) -> {
             if (!(e.getEntity() instanceof net.minecraft.world.entity.player.Player modern)) return;
             boolean time = wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.player.SleepingTimeCheckEvent.class);
             boolean location = wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.player.SleepingLocationCheckEvent.class);
@@ -347,7 +347,7 @@ public final class ForgeEvents1122 {
             if (event.getResult() == Event.Result.ALLOW) e.setContinueSleeping(true);
             else if (event.getResult() == Event.Result.DENY) e.setContinueSleeping(false);
         });
-        game.addListener((net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.EntityInteract e) -> {
+        game.addListener((net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract e) -> {
             if (!(e.getTarget() instanceof net.minecraft.world.entity.vehicle.AbstractMinecart)
                     || !wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.minecart.MinecartInteractEvent.class)) {
                 return;
@@ -359,7 +359,7 @@ public final class ForgeEvents1122 {
                 e.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
             }
         });
-        game.addListener((net.neoforged.neoforge.event.tick.EntityTickEvent.Post e) -> {
+        game.addListener((net.minecraftforge.event.tick.EntityTickEvent.Post e) -> {
             if (!(e.getEntity() instanceof net.minecraft.world.entity.vehicle.AbstractMinecart modern) || modern.level().isClientSide()
                     || !wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.minecart.MinecartUpdateEvent.class)) {
                 return;

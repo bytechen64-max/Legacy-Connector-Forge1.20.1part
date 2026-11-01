@@ -10,7 +10,7 @@ import legacyconnector.v1_7_10.net.minecraft.world.World;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
-import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
+import net.minecraftforge.client.event.RegisterMenuScreensEvent;
 import org.kylepitcock.legacyconnector.v1_7_10.bridge.EntityBridge;
 import org.kylepitcock.legacyconnector.v1_7_10.bridge.GuiBridge;
 import org.kylepitcock.legacyconnector.v1_7_10.gui.LegacyMenu;
@@ -85,7 +85,7 @@ public final class ClientGui {
             case "GuiVideoSettings" -> new net.minecraft.client.gui.screens.options.VideoSettingsScreen(parent, mc, mc.options);
             case "GuiControls" -> new net.minecraft.client.gui.screens.options.controls.ControlsScreen(parent, mc.options);
             case "GuiIngameMenu" -> new net.minecraft.client.gui.screens.PauseScreen(true);
-            case "GuiModList" -> new net.neoforged.neoforge.client.gui.ModListScreen(parent);
+            case "GuiModList" -> new net.minecraftforge.client.gui.ModListScreen(parent);
             case "ScreenChatOptions" -> new net.minecraft.client.gui.screens.options.ChatOptionsScreen(parent, mc.options);
             case "GuiInventory" -> mc.player == null ? null : new net.minecraft.client.gui.screens.inventory.InventoryScreen(mc.player);
             case "GuiStats" -> mc.player == null ? null : new net.minecraft.client.gui.screens.achievement.StatsScreen(parent, mc.player.getStats());

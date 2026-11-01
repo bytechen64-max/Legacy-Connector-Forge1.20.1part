@@ -23,7 +23,7 @@ import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.resources.IoSupplier;
-import net.neoforged.neoforge.event.AddPackFindersEvent;
+import net.minecraftforge.event.AddPackFindersEvent;
 import org.slf4j.LoggerFactory;
 
 /**

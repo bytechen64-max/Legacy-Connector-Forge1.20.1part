@@ -16,7 +16,7 @@ public class PreYggdrasilConverter {
      */
     public static String func_152719_a(String name) {
         if (name == null || name.isEmpty() || name.length() > 16) return name;
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server == null || server.getProfileCache() == null) return net.minecraft.core.UUIDUtil.createOfflinePlayerUUID(name).toString();
         var profile = server.getProfileCache().get(name).orElse(null);
         if (profile != null && profile.getId() != null) return profile.getId().toString();

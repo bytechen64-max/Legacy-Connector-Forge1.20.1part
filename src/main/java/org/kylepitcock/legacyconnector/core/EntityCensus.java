@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.level.ServerLevel;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent.ServerTickEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,7 @@ public final class EntityCensus {
     public static void register() {
         if (!Boolean.getBoolean("legacyconnector.memoryLog") && System.getProperty("legacyconnector.shotScenario") == null
                 && !Boolean.getBoolean("legacyconnector.entitySelfTest")) return;
-        NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post e) -> {
+        MinecraftForge.EVENT_BUS.addListener((ServerTickEvent.Post e) -> {
             if (++ticks % 600 != 0) return;
             int levels = 0, allEntities = 0, allChunks = 0;
             for (ServerLevel level : e.getServer().getAllLevels()) {

@@ -228,7 +228,7 @@ public abstract class CommandBase implements ICommand {
      * {@code flags} is set.
      */
     public static void notifyOperators(ICommandSender sender, ICommand command, int flags, String message, Object... args) {
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server != null && server.getGameRules().getBoolean(net.minecraft.world.level.GameRules.RULE_SENDCOMMANDFEEDBACK)) {
             var said = new legacyconnector.v1_7_10.net.minecraft.util.ChatComponentTranslation(message, args).mcc$toModern();
             var notice = net.minecraft.network.chat.Component.translatable("chat.type.admin", sender.getCommandSenderName(), said)

@@ -40,7 +40,7 @@ public class RecipeFireworks implements IRecipe {
 
     private static net.minecraft.core.HolderLookup.Provider mcc$registries(net.minecraft.world.level.Level level) {
         if (level != null) return level.registryAccess();
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         return server != null ? server.registryAccess() : net.minecraft.core.RegistryAccess.EMPTY;
     }
 

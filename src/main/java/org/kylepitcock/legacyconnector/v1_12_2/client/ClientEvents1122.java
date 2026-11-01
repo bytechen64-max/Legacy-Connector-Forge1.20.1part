@@ -25,8 +25,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.client.gui.VanillaGuiLayers;
+import net.minecraftforge.common.MinecraftForge;
 import org.kylepitcock.legacyconnector.v1_12_2.bridge.EntityBridge1122;
 import org.kylepitcock.legacyconnector.v1_12_2.bridge.StatesBridge1122;
 import org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122;
@@ -63,7 +63,7 @@ public final class ClientEvents1122 {
     private ClientEvents1122() {}
 
     public static void register() {
-        var bus = NeoForge.EVENT_BUS;
+        var bus = MinecraftForge.EVENT_BUS;
         bus.addListener(ClientEvents1122::onHudPre);
         bus.addListener(ClientEvents1122::onHudPost);
         bus.addListener(ClientEvents1122::onLayerPre);
@@ -77,8 +77,8 @@ public final class ClientEvents1122 {
         bus.addListener(ClientEvents1122::onLivingPost);
         bus.addListener(ClientEvents1122::onPlayerPre);
         bus.addListener(ClientEvents1122::onPlayerPost);
-        bus.addListener((net.neoforged.neoforge.client.event.RenderFrameEvent.Pre e) -> frame++);
-        bus.addListener((net.neoforged.neoforge.client.event.RenderFrameEvent.Post e) -> Minecraft1122.recordFrame());
+        bus.addListener((net.minecraftforge.client.event.RenderFrameEvent.Pre e) -> frame++);
+        bus.addListener((net.minecraftforge.client.event.RenderFrameEvent.Post e) -> Minecraft1122.recordFrame());
         bus.addListener(ClientEvents1122::onHand);
         bus.addListener(ClientEvents1122::onBlockOverlay);
         bus.addListener(ClientEvents1122::onItemInFrame);
@@ -92,8 +92,8 @@ public final class ClientEvents1122 {
         bus.addListener(ClientEvents1122::onScreenshot);
         bus.addListener(ClientEvents1122::onSoundSource);
         bus.addListener(ClientEvents1122::onStreamingSource);
-        bus.addListener((net.neoforged.neoforge.client.event.ClientTickEvent.Post e) -> tickMusic());
-        bus.addListener((net.neoforged.neoforge.client.event.SelectMusicEvent e) -> {
+        bus.addListener((net.minecraftforge.client.event.ClientTickEvent.Post e) -> tickMusic());
+        bus.addListener((net.minecraftforge.client.event.SelectMusicEvent e) -> {
             if (replacedMusic() != null) e.setMusic(null);
         });
     }
@@ -134,7 +134,7 @@ public final class ClientEvents1122 {
         return new RenderGameOverlayEvent(partial, new ScaledResolution(legacyMc()));
     }
 
-    private static void onHudPre(net.neoforged.neoforge.client.event.RenderGuiEvent.Pre e) {
+    private static void onHudPre(net.minecraftforge.client.event.RenderGuiEvent.Pre e) {
         GuiIngameForge.left_height = 39;
         GuiIngameForge.right_height = 39;
         if (!wantsHud()) return;
@@ -146,7 +146,7 @@ public final class ClientEvents1122 {
         }
     }
 
-    private static void onHudPost(net.neoforged.neoforge.client.event.RenderGuiEvent.Post e) {
+    private static void onHudPost(net.minecraftforge.client.event.RenderGuiEvent.Post e) {
         float partial = e.getPartialTick().getGameTimeDeltaPartialTick(false);
         GuiGraphics graphics = e.getGuiGraphics();
         // 1.12 posted the HUD text every frame and drew what handlers added (on top of the debug screen's lines when it was open)
@@ -215,7 +215,7 @@ public final class ClientEvents1122 {
         };
     }
 
-    private static void onLayerPre(net.neoforged.neoforge.client.event.RenderGuiLayerEvent.Pre e) {
+    private static void onLayerPre(net.minecraftforge.client.event.RenderGuiLayerEvent.Pre e) {
         ElementType type = LAYERS.get(e.getName());
         if (type == null) return;
         if (e.getName().equals(VanillaGuiLayers.SCOREBOARD_SIDEBAR) && !GuiIngameForge.renderObjective) {
@@ -235,7 +235,7 @@ public final class ClientEvents1122 {
         }
     }
 
-    private static void onLayerPost(net.neoforged.neoforge.client.event.RenderGuiLayerEvent.Post e) {
+    private static void onLayerPost(net.minecraftforge.client.event.RenderGuiLayerEvent.Post e) {
         ElementType type = LAYERS.get(e.getName());
         if (type == null || !wantsHud() || !drawnForMode(type)) return;
         RenderContext.beginGui(e.getGuiGraphics());
@@ -247,7 +247,7 @@ public final class ClientEvents1122 {
     }
 
     /** With the debug screen open the HUD text is its lines: handlers add to or change them. */
-    private static void onDebugText(net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.DebugText e) {
+    private static void onDebugText(net.minecraftforge.client.event.CustomizeGuiOverlayEvent.DebugText e) {
         if (!wants(RenderGameOverlayEvent.Text.class)) return;
         ArrayList<String> left = new ArrayList<>(e.getLeft());
         ArrayList<String> right = new ArrayList<>(e.getRight());
@@ -266,7 +266,7 @@ public final class ClientEvents1122 {
         e.getRight().addAll(right);
     }
 
-    private static void onChatPosition(net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.Chat e) {
+    private static void onChatPosition(net.minecraftforge.client.event.CustomizeGuiOverlayEvent.Chat e) {
         if (!wants(RenderGameOverlayEvent.Chat.class)) return;
         var legacy = new RenderGameOverlayEvent.Chat(root(e.getPartialTick().getGameTimeDeltaPartialTick(false)), e.getPosX(), e.getPosY());
         post(legacy, "chat position");
@@ -274,7 +274,7 @@ public final class ClientEvents1122 {
         e.setPosY(legacy.getPosY());
     }
 
-    private static void onBossBar(net.neoforged.neoforge.client.event.CustomizeGuiOverlayEvent.BossEventProgress e) {
+    private static void onBossBar(net.minecraftforge.client.event.CustomizeGuiOverlayEvent.BossEventProgress e) {
         if (!wants(RenderGameOverlayEvent.BossInfo.class)) return;
         var legacy = new RenderGameOverlayEvent.BossInfo(root(e.getPartialTick().getGameTimeDeltaPartialTick(false)), ElementType.BOSSINFO,
                 legacyconnector.v1_12_2.net.minecraft.client.gui.BossInfoClient.mcc$of(e.getBossEvent()), e.getX(), e.getY(),
@@ -290,12 +290,12 @@ public final class ClientEvents1122 {
 
     // ---------------------------------------------------------------- world rendering
 
-    private static void onStage(net.neoforged.neoforge.client.event.RenderLevelStageEvent e) {
-        if (e.getStage() == net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_SKY) {
+    private static void onStage(net.minecraftforge.client.event.RenderLevelStageEvent e) {
+        if (e.getStage() == net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_SKY) {
             setCamera(e.getCamera().getPosition());
             return;
         }
-        if (e.getStage() != net.neoforged.neoforge.client.event.RenderLevelStageEvent.Stage.AFTER_LEVEL || !wants(RenderWorldLastEvent.class)) return;
+        if (e.getStage() != net.minecraftforge.client.event.RenderLevelStageEvent.Stage.AFTER_LEVEL || !wants(RenderWorldLastEvent.class)) return;
         Minecraft mc = Minecraft.getInstance();
         setCamera(e.getCamera().getPosition());
         var buffers = mc.renderBuffers().bufferSource();
@@ -313,7 +313,7 @@ public final class ClientEvents1122 {
         }
     }
 
-    private static void onHighlight(net.neoforged.neoforge.client.event.RenderHighlightEvent.Block e) {
+    private static void onHighlight(net.minecraftforge.client.event.RenderHighlightEvent.Block e) {
         Minecraft mc = Minecraft.getInstance();
         if (!wants(DrawBlockHighlightEvent.class) || mc.player == null) return;
         if (!(EntityBridge1122.wrap(mc.player) instanceof legacyconnector.v1_12_2.net.minecraft.entity.player.EntityPlayer player)) return;
@@ -344,7 +344,7 @@ public final class ClientEvents1122 {
         return out;
     }
 
-    private static void onLivingPre(net.neoforged.neoforge.client.event.RenderLivingEvent.Pre<?, ?> e) {
+    private static void onLivingPre(net.minecraftforge.client.event.RenderLivingEvent.Pre<?, ?> e) {
         if (!wants(RenderLivingEvent.Pre.class) && !wants(RenderLivingEvent.Specials.Pre.class)) return;
         if (!(EntityBridge1122.wrap(e.getEntity()) instanceof legacyconnector.v1_12_2.net.minecraft.entity.EntityLivingBase living)) return;
         float partial = e.getPartialTick();
@@ -361,7 +361,7 @@ public final class ClientEvents1122 {
         }
     }
 
-    private static void onLivingPost(net.neoforged.neoforge.client.event.RenderLivingEvent.Post<?, ?> e) {
+    private static void onLivingPost(net.minecraftforge.client.event.RenderLivingEvent.Post<?, ?> e) {
         if (!wants(RenderLivingEvent.Post.class) && !wants(RenderLivingEvent.Specials.Post.class)) return;
         if (!(EntityBridge1122.wrap(e.getEntity()) instanceof legacyconnector.v1_12_2.net.minecraft.entity.EntityLivingBase living)) return;
         float partial = e.getPartialTick();
@@ -388,7 +388,7 @@ public final class ClientEvents1122 {
         }
     }
 
-    private static void onPlayerPre(net.neoforged.neoforge.client.event.RenderPlayerEvent.Pre e) {
+    private static void onPlayerPre(net.minecraftforge.client.event.RenderPlayerEvent.Pre e) {
         if (!wants(RenderPlayerEvent.Pre.class) && !wants(RenderPlayerEvent.Specials.Pre.class)) return;
         if (!(EntityBridge1122.wrap(e.getEntity()) instanceof legacyconnector.v1_12_2.net.minecraft.entity.player.EntityPlayer player)) return;
         float partial = e.getPartialTick();
@@ -406,7 +406,7 @@ public final class ClientEvents1122 {
         }
     }
 
-    private static void onPlayerPost(net.neoforged.neoforge.client.event.RenderPlayerEvent.Post e) {
+    private static void onPlayerPost(net.minecraftforge.client.event.RenderPlayerEvent.Post e) {
         if (!wants(RenderPlayerEvent.Post.class) && !wants(RenderPlayerEvent.Specials.Post.class)) return;
         if (!(EntityBridge1122.wrap(e.getEntity()) instanceof legacyconnector.v1_12_2.net.minecraft.entity.player.EntityPlayer player)) return;
         float partial = e.getPartialTick();
@@ -426,7 +426,7 @@ public final class ClientEvents1122 {
     private static boolean handCanceled;
 
     /** RenderHandEvent once per frame (its answer holds for both hands), then RenderSpecificHandEvent for each hand. */
-    private static void onHand(net.neoforged.neoforge.client.event.RenderHandEvent e) {
+    private static void onHand(net.minecraftforge.client.event.RenderHandEvent e) {
         if (handFrame != frame) {
             handFrame = frame;
             handCanceled = false;
@@ -456,7 +456,7 @@ public final class ClientEvents1122 {
         }
     }
 
-    private static void onBlockOverlay(net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent e) {
+    private static void onBlockOverlay(net.minecraftforge.client.event.RenderBlockScreenEffectEvent e) {
         if (!wants(RenderBlockOverlayEvent.class)) return;
         if (!(EntityBridge1122.wrap(e.getPlayer()) instanceof legacyconnector.v1_12_2.net.minecraft.entity.player.EntityPlayer player)) return;
         RenderBlockOverlayEvent.OverlayType type = switch (e.getOverlayType()) {
@@ -481,7 +481,7 @@ public final class ClientEvents1122 {
 
     private static legacyconnector.v1_12_2.net.minecraft.client.renderer.entity.RenderItemFrame itemFrameRenderer;
 
-    private static void onItemInFrame(net.neoforged.neoforge.client.event.RenderItemInFrameEvent e) {
+    private static void onItemInFrame(net.minecraftforge.client.event.RenderItemInFrameEvent e) {
         if (!wants(legacyconnector.v1_12_2.net.minecraftforge.client.event.RenderItemInFrameEvent.class)) return;
         if (!(EntityBridge1122.wrap(e.getItemFrameEntity()) instanceof legacyconnector.v1_12_2.net.minecraft.entity.item.EntityItemFrame frame)) return;
         if (itemFrameRenderer == null) itemFrameRenderer = new legacyconnector.v1_12_2.net.minecraft.client.renderer.entity.RenderItemFrame(legacyMc().getRenderManager(),
@@ -514,7 +514,7 @@ public final class ClientEvents1122 {
      * 1.12's setupFog: FogDensity first (cancelled, the density makes exponential fog, drawn as linear fog reaching as far), then
      * RenderFogEvent, whose handlers set the fog with GL fog calls (captured by {@link LegacyFog}).
      */
-    private static void onFog(net.neoforged.neoforge.client.event.ViewportEvent.RenderFog e) {
+    private static void onFog(net.minecraftforge.client.event.ViewportEvent.RenderFog e) {
         boolean density = wants(EntityViewRenderEvent.FogDensity.class);
         boolean render = wants(EntityViewRenderEvent.RenderFogEvent.class);
         if (!density && !render) return;
@@ -554,7 +554,7 @@ public final class ClientEvents1122 {
         }
     }
 
-    private static void onFogColor(net.neoforged.neoforge.client.event.ViewportEvent.ComputeFogColor e) {
+    private static void onFogColor(net.minecraftforge.client.event.ViewportEvent.ComputeFogColor e) {
         if (!wants(EntityViewRenderEvent.FogColors.class)) return;
         var entity = EntityBridge1122.wrap(e.getCamera().getEntity());
         if (entity == null) return;
@@ -565,7 +565,7 @@ public final class ClientEvents1122 {
         e.setBlue(legacy.getBlue());
     }
 
-    private static void onCamera(net.neoforged.neoforge.client.event.ViewportEvent.ComputeCameraAngles e) {
+    private static void onCamera(net.minecraftforge.client.event.ViewportEvent.ComputeCameraAngles e) {
         if (!wants(EntityViewRenderEvent.CameraSetup.class)) return;
         var entity = EntityBridge1122.wrap(e.getCamera().getEntity());
         if (entity == null) return;
@@ -576,7 +576,7 @@ public final class ClientEvents1122 {
         e.setRoll(legacy.getRoll());
     }
 
-    private static void onFov(net.neoforged.neoforge.client.event.ViewportEvent.ComputeFov e) {
+    private static void onFov(net.minecraftforge.client.event.ViewportEvent.ComputeFov e) {
         if (!wants(EntityViewRenderEvent.FOVModifier.class)) return;
         var entity = EntityBridge1122.wrap(e.getCamera().getEntity());
         if (entity == null) return;
@@ -600,7 +600,7 @@ public final class ClientEvents1122 {
         return out;
     }
 
-    private static void onTooltip(net.neoforged.neoforge.client.event.RenderTooltipEvent.Pre e) {
+    private static void onTooltip(net.minecraftforge.client.event.RenderTooltipEvent.Pre e) {
         if (!wants(RenderTooltipEvent.Pre.class) || e.getItemStack().isEmpty()) return;
         var legacy = new RenderTooltipEvent.Pre(Stacks1122.view(e.getItemStack()), tooltipLines(e.getItemStack()), e.getX(), e.getY(), e.getScreenWidth(),
                 e.getScreenHeight(), -1, legacyconnector.v1_12_2.net.minecraft.client.gui.FontRenderer.mcc$INSTANCE);
@@ -617,7 +617,7 @@ public final class ClientEvents1122 {
         e.setY(legacy.getY());
     }
 
-    private static void onTooltipColor(net.neoforged.neoforge.client.event.RenderTooltipEvent.Color e) {
+    private static void onTooltipColor(net.minecraftforge.client.event.RenderTooltipEvent.Color e) {
         if (!wants(RenderTooltipEvent.Color.class) || e.getItemStack().isEmpty()) return;
         var legacy = new RenderTooltipEvent.Color(Stacks1122.view(e.getItemStack()), tooltipLines(e.getItemStack()), e.getX(), e.getY(),
                 legacyconnector.v1_12_2.net.minecraft.client.gui.FontRenderer.mcc$INSTANCE, e.getBackgroundStart(), e.getBorderStart(), e.getBorderEnd());
@@ -627,13 +627,13 @@ public final class ClientEvents1122 {
         e.setBorderEnd(legacy.getBorderEnd());
     }
 
-    private static void onInput(net.neoforged.neoforge.client.event.MovementInputUpdateEvent e) {
+    private static void onInput(net.minecraftforge.client.event.MovementInputUpdateEvent e) {
         if (!wants(InputUpdateEvent.class)) return;
         if (!(EntityBridge1122.wrap(e.getEntity()) instanceof legacyconnector.v1_12_2.net.minecraft.entity.player.EntityPlayer player)) return;
         post(new InputUpdateEvent(player, legacyconnector.v1_12_2.net.minecraft.util.MovementInput.mcc$of(e.getInput())), "input update");
     }
 
-    private static void onScreenshot(net.neoforged.neoforge.client.event.ScreenshotEvent e) {
+    private static void onScreenshot(net.minecraftforge.client.event.ScreenshotEvent e) {
         if (!wants(ScreenshotEvent.class)) return;
         var image = e.getImage();
         java.awt.image.BufferedImage copy = new java.awt.image.BufferedImage(image.getWidth(), image.getHeight(), java.awt.image.BufferedImage.TYPE_INT_ARGB);
@@ -652,13 +652,13 @@ public final class ClientEvents1122 {
 
     // ---------------------------------------------------------------- sound engine
 
-    private static void onSoundSource(net.neoforged.neoforge.client.event.sound.PlaySoundSourceEvent e) {
+    private static void onSoundSource(net.minecraftforge.client.event.sound.PlaySoundSourceEvent e) {
         if (!wants(legacyconnector.v1_12_2.net.minecraftforge.client.event.sound.PlaySoundSourceEvent.class)) return;
         post(new legacyconnector.v1_12_2.net.minecraftforge.client.event.sound.PlaySoundSourceEvent(legacyconnector.v1_12_2.net.minecraft.client.audio.SoundManager.mcc$INSTANCE,
                 LegacySounds1122.legacy(e.getSound()), Integer.toHexString(System.identityHashCode(e.getChannel()))), "sound source");
     }
 
-    private static void onStreamingSource(net.neoforged.neoforge.client.event.sound.PlayStreamingSourceEvent e) {
+    private static void onStreamingSource(net.minecraftforge.client.event.sound.PlayStreamingSourceEvent e) {
         if (!wants(legacyconnector.v1_12_2.net.minecraftforge.client.event.sound.PlayStreamingSourceEvent.class)) return;
         post(new legacyconnector.v1_12_2.net.minecraftforge.client.event.sound.PlayStreamingSourceEvent(
                 legacyconnector.v1_12_2.net.minecraft.client.audio.SoundManager.mcc$INSTANCE, LegacySounds1122.legacy(e.getSound()),
@@ -666,7 +666,7 @@ public final class ClientEvents1122 {
     }
 
     /** On the mod bus (SoundEngineLoadEvent is a mod-bus event; the game bus refuses it). */
-    static void onSoundEngineLoad(net.neoforged.neoforge.client.event.sound.SoundEngineLoadEvent e) {
+    static void onSoundEngineLoad(net.minecraftforge.client.event.sound.SoundEngineLoadEvent e) {
         if (!wants(legacyconnector.v1_12_2.net.minecraftforge.client.event.sound.SoundLoadEvent.class)) return;
         post(new legacyconnector.v1_12_2.net.minecraftforge.client.event.sound.SoundLoadEvent(legacyconnector.v1_12_2.net.minecraft.client.audio.SoundManager.mcc$INSTANCE),
                 "sound load");

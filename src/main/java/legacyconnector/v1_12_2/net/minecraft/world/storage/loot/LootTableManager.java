@@ -28,7 +28,7 @@ public class LootTableManager {
     }
 
     public LootTable getLootTableFromLocation(ResourceLocation location) {
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server == null || location == null) return LootTable.EMPTY_LOOT_TABLE;
         var key = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE,
                 net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(location.getNamespace(), location.getPath()));

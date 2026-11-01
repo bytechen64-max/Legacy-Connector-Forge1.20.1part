@@ -70,7 +70,7 @@ public final class BlockAccessView implements IBlockAccess {
     /** Isolated so the dedicated server never loads client classes. */
     private static final class ClientAccess {
         static net.minecraft.world.level.LevelReader level() {
-            return net.neoforged.fml.loading.FMLEnvironment.dist.isClient() ? net.minecraft.client.Minecraft.getInstance().level : null;
+            return net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient() ? net.minecraft.client.Minecraft.getInstance().level : null;
         }
     }
 

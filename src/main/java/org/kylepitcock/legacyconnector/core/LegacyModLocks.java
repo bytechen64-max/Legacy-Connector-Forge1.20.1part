@@ -80,7 +80,7 @@ public final class LegacyModLocks {
     }
 
     private static boolean isServerThread(Thread thread) {
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         return server != null && server.getRunningThread() == thread;
     }
 }

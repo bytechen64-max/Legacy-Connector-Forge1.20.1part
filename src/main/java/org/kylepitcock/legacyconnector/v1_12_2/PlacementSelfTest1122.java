@@ -13,10 +13,10 @@ import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.util.FakePlayerFactory;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.FakePlayerFactory;
+import net.minecraftforge.event.server.ServerStartedEvent;
+import net.minecraftforge.event.TickEvent.ServerTickEvent;
 import org.kylepitcock.legacyconnector.v1_12_2.adapter.Legacy1122BlockItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,8 +33,8 @@ public final class PlacementSelfTest1122 {
 
     public static void register() {
         if (!Boolean.getBoolean("legacyconnector.entitySelfTest")) return;
-        NeoForge.EVENT_BUS.addListener((ServerStartedEvent e) -> ticks = 0);
-        NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post e) -> {
+        MinecraftForge.EVENT_BUS.addListener((ServerStartedEvent e) -> ticks = 0);
+        MinecraftForge.EVENT_BUS.addListener((ServerTickEvent.Post e) -> {
             if (ticks < 0 || ticks > 30) return;
             if (++ticks == 30) {
                 try {

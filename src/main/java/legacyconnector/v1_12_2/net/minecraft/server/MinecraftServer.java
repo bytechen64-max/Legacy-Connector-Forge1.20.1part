@@ -11,7 +11,7 @@ import legacyconnector.v1_12_2.net.minecraft.command.ICommandManager;
 public class MinecraftServer implements legacyconnector.v1_12_2.net.minecraft.command.ICommandSender,
         legacyconnector.v1_12_2.net.minecraft.util.IThreadListener {
     /** The view: a {@code DedicatedServer} on a dedicated server, an {@code IntegratedServer} on a client (mods cast to them). */
-    private static final MinecraftServer INSTANCE = net.neoforged.fml.loading.FMLEnvironment.dist == net.neoforged.api.distmarker.Dist.DEDICATED_SERVER
+    private static final MinecraftServer INSTANCE = net.minecraftforge.fml.loading.FMLEnvironment.dist == net.minecraftforge.api.distmarker.Dist.DEDICATED_SERVER
             ? new legacyconnector.v1_12_2.net.minecraft.server.dedicated.DedicatedServer()
             : new legacyconnector.v1_12_2.net.minecraft.server.integrated.IntegratedServer();
     public final ICommandManager commandManager = new CommandHandler();
@@ -35,7 +35,7 @@ public class MinecraftServer implements legacyconnector.v1_12_2.net.minecraft.co
     }
 
     private static net.minecraft.server.MinecraftServer modern() {
-        return net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        return net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
     }
 
     /** The last 100 tick lengths in nanoseconds. */
@@ -154,11 +154,11 @@ public class MinecraftServer implements legacyconnector.v1_12_2.net.minecraft.co
     // state
 
     public boolean isDedicatedServer() {
-        return !net.neoforged.fml.loading.FMLEnvironment.dist.isClient();
+        return !net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient();
     }
 
     public boolean isSinglePlayer() {
-        return net.neoforged.fml.loading.FMLEnvironment.dist.isClient();
+        return net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient();
     }
 
     public String getMinecraftVersion() {
@@ -259,11 +259,11 @@ public class MinecraftServer implements legacyconnector.v1_12_2.net.minecraft.co
     /** The game's directory (the server directory; the client's game directory in single player). */
     public java.io.File getDataDirectory() {
         var server = modern();
-        return server == null ? net.neoforged.fml.loading.FMLPaths.GAMEDIR.get().toFile() : server.getServerDirectory().toFile();
+        return server == null ? net.minecraftforge.fml.loading.FMLPaths.GAMEDIR.get().toFile() : server.getServerDirectory().toFile();
     }
 
     private static net.minecraft.server.MinecraftServer mcc$modern() {
-        return net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        return net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
     }
 
     public legacyconnector.v1_12_2.net.minecraft.world.WorldServer getWorld(int dimension) {
@@ -309,7 +309,7 @@ public class MinecraftServer implements legacyconnector.v1_12_2.net.minecraft.co
     public legacyconnector.v1_12_2.net.minecraft.world.WorldServer[] worlds;
 
     public static legacyconnector.v1_12_2.net.minecraft.world.WorldServer[] mcc$get$worlds(MinecraftServer s) {
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server == null) return new legacyconnector.v1_12_2.net.minecraft.world.WorldServer[0];
         java.util.List<legacyconnector.v1_12_2.net.minecraft.world.WorldServer> out = new java.util.ArrayList<>();
         out.add((legacyconnector.v1_12_2.net.minecraft.world.WorldServer) org.kylepitcock.legacyconnector.v1_12_2.bridge.WorldBridge1122.wrap(server.overworld()));

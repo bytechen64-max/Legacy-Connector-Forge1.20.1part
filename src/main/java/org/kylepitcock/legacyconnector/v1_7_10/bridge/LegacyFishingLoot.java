@@ -11,11 +11,11 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.storage.loot.BuiltInLootTables;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.neoforged.neoforge.common.loot.IGlobalLootModifier;
-import net.neoforged.neoforge.common.loot.LootModifier;
-import net.neoforged.neoforge.registries.DeferredHolder;
-import net.neoforged.neoforge.registries.DeferredRegister;
-import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import net.minecraftforge.common.loot.IGlobalLootModifier;
+import net.minecraftforge.common.loot.LootModifier;
+import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.ForgeRegistries;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 public final class LegacyFishingLoot extends LootModifier {
     public static final DeferredRegister<MapCodec<? extends IGlobalLootModifier>> REGISTER =
-            DeferredRegister.create(NeoForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, "legacyconnector");
+            DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, "legacyconnector");
     public static final MapCodec<LegacyFishingLoot> CODEC = RecordCodecBuilder.mapCodec(inst -> codecStart(inst).apply(inst, LegacyFishingLoot::new));
     public static final DeferredHolder<MapCodec<? extends IGlobalLootModifier>, MapCodec<LegacyFishingLoot>> SERIALIZER =
             REGISTER.register("legacy_fishing", () -> CODEC);

@@ -15,7 +15,7 @@ public class KeyBindingMap {
         for (KeyBinding k : KeyBinding.mcc$registered()) {
             if (k.isActiveAndMatches(keyCode)) return k;
         }
-        if (!net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) return null;
+        if (!net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) return null;
         var options = net.minecraft.client.Minecraft.getInstance().options;
         if (options == null) return null;
         for (var mapping : options.keyMappings) {
@@ -34,7 +34,7 @@ public class KeyBindingMap {
             if (k.getKeyCode() == keyCode) out.add(k);
             seen.add(k.mcc$modern());
         }
-        if (!net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) return out;
+        if (!net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) return out;
         var options = net.minecraft.client.Minecraft.getInstance().options;
         if (options == null) return out;
         for (var mapping : options.keyMappings) {

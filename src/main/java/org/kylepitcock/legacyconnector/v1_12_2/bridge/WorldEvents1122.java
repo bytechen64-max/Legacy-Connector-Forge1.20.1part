@@ -63,32 +63,32 @@ public final class WorldEvents1122 {
     }
 
     public static void register() {
-        var b = net.neoforged.neoforge.common.NeoForge.EVENT_BUS;
-        b.addListener((net.neoforged.neoforge.event.level.LevelEvent.Unload e) -> {
+        var b = net.minecraftforge.common.MinecraftForge.EVENT_BUS;
+        b.addListener((net.minecraftforge.event.level.LevelEvent.Unload e) -> {
             if (!(e.getLevel() instanceof Level l)) return;
             World w = world(l);
             // WorldEvent.Load/Unload/Save, BlockEvent.BreakEvent and HarvestDropsEvent are posted by EventBridge1122
             legacyconnector.v1_12_2.net.minecraftforge.common.ForgeChunkManager.mcc$unloadWorld(w);
         });
-        b.addListener((net.neoforged.neoforge.event.level.ChunkEvent.Load e) -> {
+        b.addListener((net.minecraftforge.event.level.ChunkEvent.Load e) -> {
             if (!listens(ChunkEvent.Load.class) || !(e.getLevel() instanceof Level l)) return;
             post(new ChunkEvent.Load(legacyconnector.v1_12_2.net.minecraft.world.chunk.Chunk.mcc$of(world(l), e.getChunk())));
         });
-        b.addListener((net.neoforged.neoforge.event.level.ChunkEvent.Unload e) -> {
+        b.addListener((net.minecraftforge.event.level.ChunkEvent.Unload e) -> {
             if (!listens(ChunkEvent.Unload.class) || !(e.getLevel() instanceof Level l)) return;
             post(new ChunkEvent.Unload(legacyconnector.v1_12_2.net.minecraft.world.chunk.Chunk.mcc$of(world(l), e.getChunk())));
         });
-        b.addListener((net.neoforged.neoforge.event.level.ChunkDataEvent.Load e) -> {
+        b.addListener((net.minecraftforge.event.level.ChunkDataEvent.Load e) -> {
             if (!listens(ChunkDataEvent.Load.class) || !(e.getLevel() instanceof Level l)) return;
             post(new ChunkDataEvent.Load(legacyconnector.v1_12_2.net.minecraft.world.chunk.Chunk.mcc$of(world(l), e.getChunk()),
                     new legacyconnector.v1_12_2.net.minecraft.nbt.NBTTagCompound(e.getData())));
         });
-        b.addListener((net.neoforged.neoforge.event.level.ChunkDataEvent.Save e) -> {
+        b.addListener((net.minecraftforge.event.level.ChunkDataEvent.Save e) -> {
             if (!listens(ChunkDataEvent.Save.class) || !(e.getLevel() instanceof Level l)) return;
             post(new ChunkDataEvent.Save(legacyconnector.v1_12_2.net.minecraft.world.chunk.Chunk.mcc$of(world(l), e.getChunk()),
                     new legacyconnector.v1_12_2.net.minecraft.nbt.NBTTagCompound(e.getData())));
         });
-        b.addListener((net.neoforged.neoforge.event.level.BlockEvent.EntityPlaceEvent e) -> {
+        b.addListener((net.minecraftforge.event.level.BlockEvent.EntityPlaceEvent e) -> {
             if (!(e.getLevel() instanceof Level l)) return;
             if (!(e.getEntity() instanceof net.minecraft.world.entity.player.Player)) {
                 // placed by a mob, a dispenser-like machine or nothing: only the entity form of the event
@@ -106,25 +106,25 @@ public final class WorldEvents1122 {
                     player(e.getEntity()), hand);
             if (post(legacy)) e.setCanceled(true);
         });
-        b.addListener((net.neoforged.neoforge.event.level.BlockEvent.NeighborNotifyEvent e) -> {
+        b.addListener((net.minecraftforge.event.level.BlockEvent.NeighborNotifyEvent e) -> {
             if (!listens(BlockEvent.NeighborNotifyEvent.class) || !(e.getLevel() instanceof Level l)) return;
             var sides = java.util.EnumSet.noneOf(legacyconnector.v1_12_2.net.minecraft.util.EnumFacing.class);
             for (var d : e.getNotifiedSides()) sides.add(legacyconnector.v1_12_2.net.minecraft.util.EnumFacing.mcc$of(d));
             var legacy = new BlockEvent.NeighborNotifyEvent(world(l), pos(e.getPos()), state(e.getState()), sides, e.getForceRedstoneUpdate());
             if (post(legacy)) e.setCanceled(true);
         });
-        b.addListener((net.neoforged.neoforge.event.level.BlockEvent.FarmlandTrampleEvent e) -> {
+        b.addListener((net.minecraftforge.event.level.BlockEvent.FarmlandTrampleEvent e) -> {
             if (!listens(BlockEvent.FarmlandTrampleEvent.class) || !(e.getLevel() instanceof Level l)) return;
             var entity = e.getEntity() == null ? null : EntityBridge1122.wrap(e.getEntity());
             if (post(new BlockEvent.FarmlandTrampleEvent(world(l), pos(e.getPos()), state(e.getState()), e.getFallDistance(), entity))) e.setCanceled(true);
         });
-        b.addListener((net.neoforged.neoforge.event.level.ExplosionEvent.Start e) -> {
+        b.addListener((net.minecraftforge.event.level.ExplosionEvent.Start e) -> {
             if (!listens(ExplosionEvent.Start.class)) return;
             World w = world(e.getLevel());
             var explosion = legacyconnector.v1_12_2.net.minecraft.world.Explosion.mcc$of(w, null, e.getExplosion());
             if (post(new ExplosionEvent.Start(w, explosion))) e.setCanceled(true);
         });
-        b.addListener((net.neoforged.neoforge.event.level.ExplosionEvent.Detonate e) -> {
+        b.addListener((net.minecraftforge.event.level.ExplosionEvent.Detonate e) -> {
             if (!listens(ExplosionEvent.Detonate.class)) return;
             World w = world(e.getLevel());
             var explosion = legacyconnector.v1_12_2.net.minecraft.world.Explosion.mcc$of(w, null, e.getExplosion());

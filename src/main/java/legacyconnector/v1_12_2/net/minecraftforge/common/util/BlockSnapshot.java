@@ -18,7 +18,7 @@ public class BlockSnapshot {
     private final NBTTagCompound nbt;
     private World world;
     /** The modern snapshot this one stands for, when there is one. */
-    public net.neoforged.neoforge.common.util.BlockSnapshot mcc$modern;
+    public net.minecraftforge.common.util.BlockSnapshot mcc$modern;
 
     public BlockSnapshot(World world, BlockPos pos, IBlockState state) {
         this(world, pos, state, mcc$tileData(world, pos));
@@ -43,7 +43,7 @@ public class BlockSnapshot {
     }
 
     /** The legacy view of a modern snapshot. */
-    public static BlockSnapshot mcc$of(net.neoforged.neoforge.common.util.BlockSnapshot modern) {
+    public static BlockSnapshot mcc$of(net.minecraftforge.common.util.BlockSnapshot modern) {
         if (modern == null) return null;
         World world = modern.getLevel() instanceof net.minecraft.world.level.Level l ? org.kylepitcock.legacyconnector.v1_12_2.bridge.WorldBridge1122.wrap(l) : null;
         var tag = modern.getTag();

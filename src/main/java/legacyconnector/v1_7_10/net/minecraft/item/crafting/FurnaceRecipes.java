@@ -55,7 +55,7 @@ public class FurnaceRecipes {
      */
     private static ItemStack mcc$modernResult(ItemStack input) {
         if (input == null || input.getItem() == null) return null;
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server == null) return null;
         var level = server.overworld();
         if (level == null) return null;

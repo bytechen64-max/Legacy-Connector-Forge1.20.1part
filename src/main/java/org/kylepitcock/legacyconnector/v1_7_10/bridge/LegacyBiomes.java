@@ -131,7 +131,7 @@ public final class LegacyBiomes {
     /** The biome tag constants of {@code BiomeTags} and NeoForge's {@code Tags.Biomes}. */
     private static List<net.minecraft.tags.TagKey<net.minecraft.world.level.biome.Biome>> biomeTagKeys() {
         List<net.minecraft.tags.TagKey<net.minecraft.world.level.biome.Biome>> keys = new ArrayList<>();
-        for (Class<?> holder : new Class<?>[] {net.minecraft.tags.BiomeTags.class, net.neoforged.neoforge.common.Tags.Biomes.class}) {
+        for (Class<?> holder : new Class<?>[] {net.minecraft.tags.BiomeTags.class, net.minecraftforge.common.Tags.Biomes.class}) {
             for (var f : holder.getFields()) {
                 if (!java.lang.reflect.Modifier.isStatic(f.getModifiers()) || !net.minecraft.tags.TagKey.class.isAssignableFrom(f.getType())) continue;
                 try {

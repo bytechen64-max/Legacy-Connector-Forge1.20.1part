@@ -79,11 +79,11 @@ public abstract class EntityPlayer extends EntityLivingBase {
 
     private static Player mcc$fakeFor(World world, GameProfile profile) {
         if (world != null && world.mcc$fullLevel() instanceof net.minecraft.server.level.ServerLevel s) {
-            return net.neoforged.neoforge.common.util.FakePlayerFactory.get(s, profile);
+            return net.minecraftforge.common.util.FakePlayerFactory.get(s, profile);
         }
         // A client level has no fake players: use the integrated server's overworld when there is one.
-        net.minecraft.server.MinecraftServer server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
-        if (server != null) return net.neoforged.neoforge.common.util.FakePlayerFactory.get(server.overworld(), profile);
+        net.minecraft.server.MinecraftServer server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
+        if (server != null) return net.minecraftforge.common.util.FakePlayerFactory.get(server.overworld(), profile);
         throw new IllegalStateException("Cannot create a stand-in player without a server");
     }
 
@@ -102,7 +102,7 @@ public abstract class EntityPlayer extends EntityLivingBase {
         // As 1.7.10: with nothing open (or a menu legacy code knows nothing about) it is the player's own container, never null.
         if (p.mcc$player().containerMenu instanceof org.kylepitcock.legacyconnector.v1_7_10.gui.LegacyMenu m) return m.legacy();
         // A container screen the client built itself from a mod's own packet (IC2's GUIs) is the open container until the server's menu id arrives.
-        if (p.mcc$player().level().isClientSide && net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
+        if (p.mcc$player().level().isClientSide && net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) {
             var detached = org.kylepitcock.legacyconnector.v1_7_10.client.ClientGui.detachedContainer(p.mcc$player());
             if (detached != null) return detached;
         }
@@ -273,7 +273,7 @@ public abstract class EntityPlayer extends EntityLivingBase {
             return;
         }
         var copy = using.copy();
-        var result = net.neoforged.neoforge.event.EventHooks.onItemUseFinish(p, copy, p.getUseItemRemainingTicks(), using.finishUsingItem(p.level(), p));
+        var result = net.minecraftforge.event.EventHooks.onItemUseFinish(p, copy, p.getUseItemRemainingTicks(), using.finishUsingItem(p.level(), p));
         if (result != using) p.setItemInHand(hand, result);
         p.stopUsingItem();
     }
@@ -284,7 +284,7 @@ public abstract class EntityPlayer extends EntityLivingBase {
 
     /** Whether this player may be hurt by {@code other} (the server's player-versus-player setting). */
     public boolean canAttackPlayer(EntityPlayer other) {
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         return server == null || server.isPvpAllowed();
     }
 
@@ -391,8 +391,8 @@ public abstract class EntityPlayer extends EntityLivingBase {
         data.put(ACHIEVEMENTS_TAG, list);
         String name = achievement.getStatName().getFormattedText();
         if (mcc$player() instanceof net.minecraft.server.level.ServerPlayer sp) {
-            if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient() && sp.getServer() != null && sp.getServer().isSingleplayer()
-                    || net.neoforged.fml.loading.FMLEnvironment.dist.isClient() && org.kylepitcock.legacyconnector.v1_7_10.client.LegacyToasts.isLocal(sp.getUUID())) {
+            if (net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient() && sp.getServer() != null && sp.getServer().isSingleplayer()
+                    || net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient() && org.kylepitcock.legacyconnector.v1_7_10.client.LegacyToasts.isLocal(sp.getUUID())) {
                 org.kylepitcock.legacyconnector.v1_7_10.client.LegacyToasts.achievement(name);
             } else {
                 sp.sendSystemMessage(net.minecraft.network.chat.Component.literal("Achievement get! " + name));

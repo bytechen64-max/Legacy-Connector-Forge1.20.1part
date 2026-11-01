@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.Set;
 import legacyconnector.v1_7_10.cpw.mods.fml.relauncher.IFMLCallHook;
 import legacyconnector.v1_7_10.cpw.mods.fml.relauncher.IFMLLoadingPlugin;
-import net.neoforged.fml.loading.FMLPaths;
+import net.minecraftforge.fml.loading.FMLPaths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

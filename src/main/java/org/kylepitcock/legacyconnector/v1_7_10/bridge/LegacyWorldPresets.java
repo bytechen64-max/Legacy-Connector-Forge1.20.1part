@@ -15,7 +15,7 @@ import java.util.function.Supplier;
 import java.util.stream.Stream;
 import legacyconnector.v1_7_10.net.minecraft.world.WorldType;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.fml.ModList;
+import net.minecraftforge.fml.ModList;
 import org.kylepitcock.legacyconnector.core.pack.GeneratedTranslations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

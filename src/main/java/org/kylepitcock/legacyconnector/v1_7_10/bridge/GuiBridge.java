@@ -15,9 +15,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.network.PacketDistributor;
+import net.minecraftforge.network.handling.IPayloadContext;
 import org.kylepitcock.legacyconnector.core.LegacyModRecord;
 import org.kylepitcock.legacyconnector.core.LegacyMods;
 import org.kylepitcock.legacyconnector.core.network.LegacyNetwork;
@@ -119,7 +119,7 @@ public final class GuiBridge {
      * becomes the player's open menu (see {@code ClientGui.manualOpen}); without a menu the server would not see the clicks.
      */
     public static void openManual(ServerPlayer sp, int currentWindowId, Container container) {
-        if (container == null || menuType == null || sp instanceof net.neoforged.neoforge.common.util.FakePlayer) return;
+        if (container == null || menuType == null || sp instanceof net.minecraftforge.common.util.FakePlayer) return;
         if (container.mcc$menu instanceof LegacyMenu m && sp.containerMenu == m) return;
         if (container instanceof legacyconnector.v1_7_10.net.minecraft.inventory.ContainerPlayer) return; // "close": the player's own container
         int id = container.windowId != 0 ? container.windowId : currentWindowId > 0 && currentWindowId <= 100 ? currentWindowId : sp.containerMenu.containerId % 100 + 1;
@@ -132,7 +132,7 @@ public final class GuiBridge {
         PacketDistributor.sendToPlayer(sp, new LegacyPayload(FAMILY, "manual", 0, data));
         sp.containerMenu = menu;
         sp.initMenu(menu);
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.player.PlayerContainerEvent.Open(sp, menu));
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(sp, menu));
     }
 
     /** Client side of {@link MenuType} creation: rebuild the legacy GUI from the menu extra data. */

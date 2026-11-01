@@ -11,7 +11,7 @@ public class EntityAITempt extends GoalTask1122 {
 
     private static java.lang.reflect.Field mcc$playerField() {
         try {
-            return net.neoforged.fml.util.ObfuscationReflectionHelper.findField(net.minecraft.world.entity.ai.goal.TemptGoal.class, "player");
+            return net.minecraftforge.fml.util.ObfuscationReflectionHelper.findField(net.minecraft.world.entity.ai.goal.TemptGoal.class, "player");
         } catch (RuntimeException e) {
             return null;
         }

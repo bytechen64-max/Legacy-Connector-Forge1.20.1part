@@ -24,9 +24,9 @@ import net.minecraft.world.level.WorldDataConfiguration;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.levelgen.presets.WorldPresets;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.ScreenEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.client.event.ClientTickEvent;
+import net.minecraftforge.client.event.ScreenEvent;
+import net.minecraftforge.common.MinecraftForge;
 import org.kylepitcock.legacyconnector.v1_7_10.adapter.LegacyBlockAdapter;
 import org.kylepitcock.legacyconnector.v1_7_10.bridge.ItemBridge;
 import org.slf4j.Logger;
@@ -58,12 +58,12 @@ public final class WorldScreenshotTest {
 
     public static void register() {
         if (System.getProperty("legacyconnector.screenshotTest") == null) return;
-        NeoForge.EVENT_BUS.addListener((ScreenEvent.Opening e) -> {
+        MinecraftForge.EVENT_BUS.addListener((ScreenEvent.Opening e) -> {
             if (started || !(e.getNewScreen() instanceof TitleScreen)) return;
             started = true;
             Minecraft.getInstance().tell(WorldScreenshotTest::begin);
         });
-        NeoForge.EVENT_BUS.addListener((ClientTickEvent.Post e) -> onTick());
+        MinecraftForge.EVENT_BUS.addListener((ClientTickEvent.Post e) -> onTick());
     }
 
     private static int intProp(String key, int def) {
@@ -532,7 +532,7 @@ public final class WorldScreenshotTest {
 
     /** Summons the legacy entity types of the selected mods in rows on a platform, twelve per picture. */
     private static void queueEntityScenario() {
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent e) -> {
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.entity.EntityLeaveLevelEvent e) -> {
             if (e.getLevel().isClientSide() || e.getEntity() instanceof net.minecraft.world.entity.player.Player) return;
             var key = BuiltInRegistries.ENTITY_TYPE.getKey(e.getEntity().getType());
             if (!key.getNamespace().equals("minecraft")) LOG.info("Entity left the level: {} reason {} health {}", key, e.getEntity().getRemovalReason(),

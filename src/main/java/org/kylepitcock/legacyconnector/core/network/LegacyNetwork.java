@@ -3,8 +3,8 @@ package org.kylepitcock.legacyconnector.core.network;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
-import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
-import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.minecraftforge.network.event.RegisterPayloadHandlersEvent;
+import net.minecraftforge.network.handling.IPayloadContext;
 import org.slf4j.LoggerFactory;
 
 /** Routes {@link LegacyPayload}s to the legacy family that owns the channel. */

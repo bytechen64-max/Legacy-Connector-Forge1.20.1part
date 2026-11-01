@@ -14,7 +14,7 @@ import legacyconnector.v1_12_2.net.minecraft.util.ResourceLocation;
 public class NotificationModUpdateScreen extends GuiScreen {
     private static final ResourceLocation VERSION_CHECK_ICONS = new ResourceLocation("neoforge", "textures/gui/version_check_icons.png");
     private final GuiButton modButton;
-    private net.neoforged.fml.VersionChecker.Status showNotification;
+    private net.minecraftforge.fml.VersionChecker.Status showNotification;
 
     public NotificationModUpdateScreen(GuiButton modButton) {
         this.modButton = modButton;
@@ -30,14 +30,14 @@ public class NotificationModUpdateScreen extends GuiScreen {
     @Override
     public void initGui() {
         if (showNotification != null) return;
-        net.neoforged.fml.VersionChecker.Status found = null;
+        net.minecraftforge.fml.VersionChecker.Status found = null;
         try {
-            for (var info : net.neoforged.fml.ModList.get().getMods()) {
-                var status = net.neoforged.fml.VersionChecker.getResult(info).status();
+            for (var info : net.minecraftforge.fml.ModList.get().getMods()) {
+                var status = net.minecraftforge.fml.VersionChecker.getResult(info).status();
                 if (status == null || !status.shouldDraw()) continue;
-                if (found == null || status == net.neoforged.fml.VersionChecker.Status.OUTDATED || status == net.neoforged.fml.VersionChecker.Status.BETA_OUTDATED) {
+                if (found == null || status == net.minecraftforge.fml.VersionChecker.Status.OUTDATED || status == net.minecraftforge.fml.VersionChecker.Status.BETA_OUTDATED) {
                     found = status;
-                    if (status == net.neoforged.fml.VersionChecker.Status.OUTDATED) break;
+                    if (status == net.minecraftforge.fml.VersionChecker.Status.OUTDATED) break;
                 }
             }
         } catch (RuntimeException | LinkageError e) {

@@ -88,7 +88,7 @@ public class DimensionManager {
         Integer known = MODERN_IDS.get(key);
         if (known != null) return known;
         // a stable id across restarts when possible: the levels the server has, in key order
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server != null) {
             java.util.List<net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level>> keys = new java.util.ArrayList<>(server.levelKeys());
             keys.sort(java.util.Comparator.comparing(k -> k.location().toString()));
@@ -113,7 +113,7 @@ public class DimensionManager {
 
     /** The modern level of a legacy dimension id, or null. */
     public static net.minecraft.server.level.ServerLevel mcc$level(int id) {
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server == null) return null;
         if (id == 0) return server.overworld();
         for (var level : server.getAllLevels()) {
@@ -133,7 +133,7 @@ public class DimensionManager {
     }
 
     public static legacyconnector.v1_12_2.net.minecraft.world.WorldServer[] getWorlds() {
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server == null) return new legacyconnector.v1_12_2.net.minecraft.world.WorldServer[0];
         java.util.List<legacyconnector.v1_12_2.net.minecraft.world.WorldServer> out = new java.util.ArrayList<>();
         for (var level : server.getAllLevels()) {
@@ -175,7 +175,7 @@ public class DimensionManager {
     }
 
     public static java.io.File getCurrentSaveRootDirectory() {
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         return server == null ? null : server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT).toFile();
     }
 

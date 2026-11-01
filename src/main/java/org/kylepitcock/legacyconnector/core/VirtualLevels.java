@@ -18,7 +18,7 @@ public final class VirtualLevels {
     public static boolean isVirtual(LevelAccessor level) {
         if (!(level instanceof Level l)) return false;
         if (l instanceof net.minecraft.server.level.ServerLevel) return false;
-        if (l.isClientSide() && net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) return !Client.isClientLevel(l);
+        if (l.isClientSide() && net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) return !Client.isClientLevel(l);
         return true;
     }
 

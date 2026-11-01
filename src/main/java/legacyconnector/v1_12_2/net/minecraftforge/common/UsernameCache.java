@@ -8,7 +8,7 @@ public final class UsernameCache {
     private UsernameCache() {}
 
     private static net.minecraft.server.MinecraftServer server() {
-        return net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        return net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
     }
 
     public static String getLastKnownUsername(UUID uuid) {

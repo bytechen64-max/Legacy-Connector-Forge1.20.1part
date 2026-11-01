@@ -4,8 +4,8 @@ import legacyconnector.v1_7_10.net.minecraft.item.ItemStack;
 import legacyconnector.v1_7_10.net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.neoforge.common.EffectCure;
-import net.neoforged.neoforge.common.EffectCures;
+import net.minecraftforge.common.EffectCure;
+import net.minecraftforge.common.EffectCures;
 import org.kylepitcock.legacyconnector.v1_7_10.bridge.PotionBridge;
 
 /**

@@ -17,7 +17,7 @@ public class FunctionManager {
     }
 
     private static net.minecraft.server.MinecraftServer modern() {
-        return net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        return net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
     }
 
     public FunctionObject getFunction(ResourceLocation id) {

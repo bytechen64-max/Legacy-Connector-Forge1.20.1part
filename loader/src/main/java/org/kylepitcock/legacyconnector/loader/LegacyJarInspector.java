@@ -59,8 +59,7 @@ public final class LegacyJarInspector {
                 return null;
             }
             // Anything that already speaks a modern metadata format is not ours to touch.
-            if (zip.getEntry("META-INF/neoforge.mods.toml") != null
-                    || zip.getEntry("META-INF/mods.toml") != null
+            if (zip.getEntry("META-INF/mods.toml") != null
                     || zip.getEntry("fabric.mod.json") != null
                     || zip.getEntry("quilt.mod.json") != null) {
                 return null;

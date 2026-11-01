@@ -100,7 +100,7 @@ public class LegacyPlayerLayer1122 extends RenderLayer<AbstractClientPlayer, Pla
 
     /** Adds the layer to both modern player renderers. */
     @SuppressWarnings("unchecked")
-    static void addTo(net.neoforged.neoforge.client.event.EntityRenderersEvent.AddLayers event) {
+    static void addTo(net.minecraftforge.client.event.EntityRenderersEvent.AddLayers event) {
         for (var skin : event.getSkins()) {
             var r = event.getSkin(skin);
             if (r instanceof net.minecraft.client.renderer.entity.player.PlayerRenderer player) {

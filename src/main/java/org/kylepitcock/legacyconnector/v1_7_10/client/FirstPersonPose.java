@@ -4,8 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
-import net.neoforged.neoforge.client.event.RenderHandEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.client.event.RenderHandEvent;
+import net.minecraftforge.common.MinecraftForge;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
 
@@ -25,7 +25,7 @@ public final class FirstPersonPose {
     private FirstPersonPose() {}
 
     public static void register() {
-        NeoForge.EVENT_BUS.addListener((RenderHandEvent e) -> {
+        MinecraftForge.EVENT_BUS.addListener((RenderHandEvent e) -> {
             if (e.getHand() != InteractionHand.MAIN_HAND) return;
             POSE.set(e.getPoseStack().last().pose());
             NORMAL.set(e.getPoseStack().last().normal());

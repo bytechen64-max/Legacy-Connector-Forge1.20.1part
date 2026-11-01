@@ -186,7 +186,7 @@ public final class LibraryBridges {
         try (Stream<Path> files = Files.list(modsDir)) {
             for (Path p : files.filter(f -> f.toString().endsWith(".jar")).toList()) {
                 try (ZipFile zip = new ZipFile(p.toFile())) {
-                    ZipEntry e = zip.getEntry("META-INF/neoforge.mods.toml");
+                    ZipEntry e = zip.getEntry("META-INF/mods.toml");
                     if (e == null) continue;
                     try (InputStream in = zip.getInputStream(e)) {
                         Matcher m = MOD_ID.matcher(new String(in.readAllBytes(), StandardCharsets.UTF_8));

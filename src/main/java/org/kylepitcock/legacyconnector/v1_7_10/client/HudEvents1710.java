@@ -9,10 +9,10 @@ import legacyconnector.v1_7_10.net.minecraftforge.common.MinecraftForge;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.neoforge.client.event.RenderGuiEvent;
-import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
-import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.client.event.RenderGuiEvent;
+import net.minecraftforge.client.event.RenderGuiLayerEvent;
+import net.minecraftforge.client.gui.VanillaGuiLayers;
+import net.minecraftforge.common.MinecraftForge;
 
 /**
  * The 1.7.10 HUD events: {@code ElementType.ALL} around the whole HUD and the per-element types around their vanilla GUI
@@ -41,7 +41,7 @@ public final class HudEvents1710 {
 
     public static void register() {
         registerLayers();
-        NeoForge.EVENT_BUS.addListener((RenderGuiEvent.Pre e) -> {
+        MinecraftForge.EVENT_BUS.addListener((RenderGuiEvent.Pre e) -> {
             org.kylepitcock.legacyconnector.v1_7_10.bridge.EventBridge1710.renderTick(legacyconnector.v1_7_10.cpw.mods.fml.common.gameevent.TickEvent.Phase.START,
                     e.getPartialTick().getGameTimeDeltaPartialTick(false), e.getGuiGraphics());
             // GuiIngameForge started every frame with the rows above the hotbar at 39; handlers that draw their own rows add to them.
@@ -51,7 +51,7 @@ public final class HudEvents1710 {
         });
         // 1.7.10 posted RenderTickEvent END and the ALL overlay after the whole HUD: lowest priority and a raised depth keep legacy
         // overlays (ChromatiCraft's progress cards, Thaumcraft's warp text) above the HUD of modern mods (minimaps draw at a raised z).
-        NeoForge.EVENT_BUS.addListener(net.neoforged.bus.api.EventPriority.LOWEST, (RenderGuiEvent.Post e) -> {
+        MinecraftForge.EVENT_BUS.addListener(net.minecraftforge.eventbus.api.EventPriority.LOWEST, (RenderGuiEvent.Post e) -> {
             e.getGuiGraphics().pose().pushPose();
             e.getGuiGraphics().pose().translate(0, 0, LEGACY_OVERLAY_Z);
             try {
@@ -76,12 +76,12 @@ public final class HudEvents1710 {
     }
 
     private static void registerLayers() {
-        NeoForge.EVENT_BUS.addListener((RenderGuiLayerEvent.Pre e) -> {
+        MinecraftForge.EVENT_BUS.addListener((RenderGuiLayerEvent.Pre e) -> {
             ElementType type = LAYERS.get(e.getName());
             if (type != null && wants(RenderGameOverlayEvent.Pre.class) && drawnForMode(type)
                     && post(e.getGuiGraphics(), e.getPartialTick().getGameTimeDeltaPartialTick(false), type, false)) e.setCanceled(true);
         });
-        NeoForge.EVENT_BUS.addListener((RenderGuiLayerEvent.Post e) -> {
+        MinecraftForge.EVENT_BUS.addListener((RenderGuiLayerEvent.Post e) -> {
             ElementType type = LAYERS.get(e.getName());
             if (type != null && drawnForMode(type)) advanceStack(type);
             if (type != null && wants(RenderGameOverlayEvent.Post.class) && drawnForMode(type)) post(e.getGuiGraphics(), e.getPartialTick().getGameTimeDeltaPartialTick(false), type, true);

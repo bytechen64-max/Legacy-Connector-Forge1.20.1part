@@ -23,7 +23,7 @@ public final class VanillaIcons {
     public static String name(legacyconnector.v1_7_10.net.minecraft.block.Block block, String legacyName, int side, int meta) {
         String name = rule(legacyName, side, meta);
         if (name != null) return name;
-        if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
+        if (net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) {
             name = org.kylepitcock.legacyconnector.v1_7_10.client.VanillaModelIcons.name(BlockBridge.toModern(block, meta), side);
             if (name != null) return name;
         }

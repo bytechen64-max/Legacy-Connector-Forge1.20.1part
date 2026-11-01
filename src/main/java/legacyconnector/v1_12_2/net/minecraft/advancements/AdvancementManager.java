@@ -7,7 +7,7 @@ public class AdvancementManager {
     public static final AdvancementManager INSTANCE = new AdvancementManager();
 
     private static net.minecraft.server.ServerAdvancementManager mcc$modern() {
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         return server == null ? null : server.getAdvancements();
     }
 

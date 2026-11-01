@@ -17,13 +17,13 @@ public class WorldWorkerManager {
         workers.add(worker);
         if (!listening) {
             listening = true;
-            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.tick.ServerTickEvent.Pre e) -> {
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.tick.ServerTickEvent.Pre e) -> {
                 startTime = System.currentTimeMillis();
             });
-            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.tick.ServerTickEvent.Post e) -> {
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.tick.ServerTickEvent.Post e) -> {
                 tick(true);
             });
-            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.server.ServerStoppedEvent e) -> clear());
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.server.ServerStoppedEvent e) -> clear());
         }
     }
 

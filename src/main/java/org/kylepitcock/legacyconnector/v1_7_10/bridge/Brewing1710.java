@@ -21,8 +21,8 @@ import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraft.world.item.component.CustomData;
-import net.neoforged.neoforge.common.brewing.IBrewingRecipe;
-import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
+import net.minecraftforge.common.brewing.IBrewingRecipe;
+import net.minecraftforge.event.brewing.RegisterBrewingRecipesEvent;
 import org.kylepitcock.legacyconnector.core.pack.GeneratedTranslations;
 import org.slf4j.LoggerFactory;
 
@@ -91,7 +91,7 @@ public final class Brewing1710 {
         listening = true;
         GeneratedTranslations.put("en_us", "legacyconnector.potion_of", "Potion of %s");
         GeneratedTranslations.put("en_us", "legacyconnector.splash_potion_of", "Splash Potion of %s");
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(RegisterBrewingRecipesEvent.class, e -> e.getBuilder().addRecipe(new LegacyBrewing()));
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener(RegisterBrewingRecipesEvent.class, e -> e.getBuilder().addRecipe(new LegacyBrewing()));
     }
 
     /** The 1.7.10 value of a modern potion stack, or -1. */

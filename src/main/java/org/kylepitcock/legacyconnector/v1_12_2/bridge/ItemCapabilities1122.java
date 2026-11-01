@@ -5,10 +5,10 @@ import legacyconnector.v1_12_2.net.minecraftforge.energy.CapabilityEnergy;
 import legacyconnector.v1_12_2.net.minecraftforge.fluids.capability.CapabilityFluidHandler;
 import legacyconnector.v1_12_2.net.minecraftforge.items.CapabilityItemHandler;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.energy.IEnergyStorage;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
+import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.items.IItemHandler;
 import org.kylepitcock.legacyconnector.api.internal.BuiltinAdapters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,8 +29,8 @@ public final class ItemCapabilities1122 {
             if (!declaresCapabilities(item.getClass())) continue;
             var variants = ItemBridge1122.variants(item).values().toArray(new net.minecraft.world.item.Item[0]);
             if (variants.length == 0) continue;
-            event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> has(stack, CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) ? FluidBridge1122.forStack(stack) : null, variants);
-            event.registerItem(Capabilities.EnergyStorage.ITEM, (stack, ctx) -> has(stack, CapabilityEnergy.ENERGY) ? new Energy(stack) : null, variants);
+            event.registerItem(ForgeCapabilities.FLUID_HANDLER_ITEM, (stack, ctx) -> has(stack, CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) ? FluidBridge1122.forStack(stack) : null, variants);
+            event.registerItem(ForgeCapabilities.ENERGY, (stack, ctx) -> has(stack, CapabilityEnergy.ENERGY) ? new Energy(stack) : null, variants);
             event.registerItem(Capabilities.ItemHandler.ITEM, (stack, ctx) -> has(stack, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) ? new Items(stack) : null, variants);
             count++;
         }
@@ -100,7 +100,7 @@ public final class ItemCapabilities1122 {
     private record Items(ItemStack stack) implements IItemHandler {
         private IItemHandler live() {
             var h = Stacks1122.fromModern(stack).getCapability(CapabilityItemHandler.ITEM_HANDLER_CAPABILITY, null);
-            return h == null ? new net.neoforged.neoforge.items.ItemStackHandler(0) : BuiltinAdapters.wrapItems1122(h);
+            return h == null ? new net.minecraftforge.items.ItemStackHandler(0) : BuiltinAdapters.wrapItems1122(h);
         }
 
         @Override

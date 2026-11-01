@@ -87,7 +87,7 @@ public class GuiListWorldSelectionEntry implements GuiListExtended.IGuiListEntry
 
     /** The game's edit world screen for this world. */
     public void editWorld() {
-        if (!net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) return;
+        if (!net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) return;
         Modern.edit(worldSummary.getFileName());
     }
 

@@ -175,13 +175,13 @@ public final class Loot1122 {
     public static synchronized void register() {
         if (registered) return;
         registered = true;
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(net.neoforged.bus.api.EventPriority.LOW, (net.neoforged.neoforge.event.LootTableLoadEvent e) -> {
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener(net.minecraftforge.eventbus.api.EventPriority.LOW, (net.minecraftforge.event.LootTableLoadEvent e) -> {
             var bus = legacyconnector.v1_12_2.net.minecraftforge.common.MinecraftForge.EVENT_BUS;
             if (!bus.mcc$hasListeners(legacyconnector.v1_12_2.net.minecraftforge.event.LootTableLoadEvent.class)) return;
             var view = legacyconnector.v1_12_2.net.minecraft.world.storage.loot.LootTable.mcc$view(e.getTable());
             var name = new legacyconnector.v1_12_2.net.minecraft.util.ResourceLocation(e.getName().getNamespace(), e.getName().getPath());
             var event = new legacyconnector.v1_12_2.net.minecraftforge.event.LootTableLoadEvent(name, view,
-                    legacyconnector.v1_12_2.net.minecraft.world.storage.loot.LootTableManager.mcc$of(net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer()));
+                    legacyconnector.v1_12_2.net.minecraft.world.storage.loot.LootTableManager.mcc$of(net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer()));
             try {
                 if (bus.post(event)) {
                     e.setTable(net.minecraft.world.level.storage.loot.LootTable.EMPTY);

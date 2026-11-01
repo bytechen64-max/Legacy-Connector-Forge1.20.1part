@@ -105,7 +105,7 @@ public class ForgeChunkManager {
 
     public static synchronized Configuration getConfig() {
         if (config == null) {
-            config = new Configuration(new File(net.neoforged.fml.loading.FMLPaths.CONFIGDIR.get().toFile(), "forgeChunkLoading.cfg"));
+            config = new Configuration(new File(net.minecraftforge.fml.loading.FMLPaths.CONFIGDIR.get().toFile(), "forgeChunkLoading.cfg"));
         }
         return config;
     }

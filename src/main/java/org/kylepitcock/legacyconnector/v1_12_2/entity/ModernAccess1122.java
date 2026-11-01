@@ -2,7 +2,7 @@ package org.kylepitcock.legacyconnector.v1_12_2.entity;
 
 import java.lang.reflect.Field;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.fml.util.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
 /** Protected state of modern living entities that 1.12 code reads as public fields (looked up once; missing ones read neutral). */
 public final class ModernAccess1122 {

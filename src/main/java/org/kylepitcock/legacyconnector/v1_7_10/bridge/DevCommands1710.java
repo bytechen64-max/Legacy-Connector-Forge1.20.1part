@@ -25,8 +25,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.HitResult;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.RegisterCommandsEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.RegisterCommandsEvent;
 import org.kylepitcock.legacyconnector.core.LegacyModRecord;
 import org.kylepitcock.legacyconnector.core.LegacyMods;
 import org.kylepitcock.legacyconnector.v1_7_10.adapter.LegacyBlockAdapter;
@@ -40,7 +40,7 @@ public final class DevCommands1710 {
     private DevCommands1710() {}
 
     public static void register() {
-        NeoForge.EVENT_BUS.addListener(DevCommands1710::onRegister);
+        MinecraftForge.EVENT_BUS.addListener(DevCommands1710::onRegister);
     }
 
     private static void onRegister(RegisterCommandsEvent event) {

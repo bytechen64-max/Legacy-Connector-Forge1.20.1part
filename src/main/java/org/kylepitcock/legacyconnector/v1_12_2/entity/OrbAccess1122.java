@@ -2,7 +2,7 @@ package org.kylepitcock.legacyconnector.v1_12_2.entity;
 
 import java.lang.reflect.Field;
 import net.minecraft.world.entity.ExperienceOrb;
-import net.neoforged.fml.util.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
 /** The private value of modern experience orbs (an orb a mod constructs with an amount). */
 public final class OrbAccess1122 {

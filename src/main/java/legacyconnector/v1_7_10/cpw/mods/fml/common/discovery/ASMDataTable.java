@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import net.neoforged.fml.ModList;
+import net.minecraftforge.fml.ModList;
 
 /**
  * FML's annotation index over all mods, built from NeoForge's scan data. Legacy annotation names are accepted both

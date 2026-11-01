@@ -16,7 +16,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.neoforged.fml.loading.FMLEnvironment;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -45,10 +45,10 @@ public final class EntityBridge {
 
     /** Saves the extended properties of every vanilla entity view (world saves, logouts, server stop). */
     public static void registerSaving() {
-        var bus = net.neoforged.neoforge.common.NeoForge.EVENT_BUS;
-        bus.addListener((net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent e) -> saveExtended(e.getEntity()));
-        bus.addListener((net.neoforged.neoforge.event.server.ServerStoppingEvent e) -> saveAllExtended());
-        bus.addListener((net.neoforged.neoforge.event.level.LevelEvent.Save e) -> saveAllExtended());
+        var bus = net.minecraftforge.common.MinecraftForge.EVENT_BUS;
+        bus.addListener((net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent e) -> saveExtended(e.getEntity()));
+        bus.addListener((net.minecraftforge.event.server.ServerStoppingEvent e) -> saveAllExtended());
+        bus.addListener((net.minecraftforge.event.level.LevelEvent.Save e) -> saveAllExtended());
     }
 
     private static void saveAllExtended() {
@@ -94,7 +94,7 @@ public final class EntityBridge {
     }
 
     private static Entity create(net.minecraft.world.entity.Entity modern) {
-        if (modern instanceof net.neoforged.neoforge.common.util.FakePlayer fp) return new legacyconnector.v1_7_10.net.minecraftforge.common.util.FakePlayer(fp);
+        if (modern instanceof net.minecraftforge.common.util.FakePlayer fp) return new legacyconnector.v1_7_10.net.minecraftforge.common.util.FakePlayer(fp);
         if (modern instanceof ServerPlayer sp) return new EntityPlayerMP(sp);
         if (modern instanceof Player p) {
             if (!p.level().isClientSide()) return new EntityPlayerClient(p);

@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
-import net.neoforged.fml.ModList;
+import net.minecraftforge.fml.ModList;
 
 /**
  * FML's annotation index over all mods, built from NeoForge's scan data. Legacy annotation names are accepted both
@@ -69,7 +69,7 @@ public class ASMDataTable {
     }
 
     private static Object convertValue(Object v) {
-        if (v instanceof net.neoforged.fml.loading.modscan.ModAnnotation.EnumHolder h) {
+        if (v instanceof net.minecraftforge.fml.loading.modscan.ModAnnotation.EnumHolder h) {
             return new legacyconnector.v1_12_2.net.minecraftforge.fml.common.discovery.asm.ModAnnotation.EnumHolder(h.desc(), h.value());
         }
         if (v instanceof java.util.List<?> list) {

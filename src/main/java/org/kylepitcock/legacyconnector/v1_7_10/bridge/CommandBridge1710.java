@@ -47,8 +47,8 @@ public final class CommandBridge1710 {
     private static synchronized void ensureListener() {
         if (listening) return;
         listening = true;
-        var bus = net.neoforged.neoforge.common.NeoForge.EVENT_BUS;
-        bus.addListener(net.neoforged.neoforge.event.RegisterCommandsEvent.class, e -> {
+        var bus = net.minecraftforge.common.MinecraftForge.EVENT_BUS;
+        bus.addListener(net.minecraftforge.event.RegisterCommandsEvent.class, e -> {
             List<ICommand> all;
             synchronized (REGISTERED) {
                 all = new java.util.ArrayList<>(REGISTERED);
@@ -61,7 +61,7 @@ public final class CommandBridge1710 {
                 }
             }
         });
-        bus.addListener(net.neoforged.neoforge.event.server.ServerStoppedEvent.class, e -> REGISTERED.clear());
+        bus.addListener(net.minecraftforge.event.server.ServerStoppedEvent.class, e -> REGISTERED.clear());
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> build(String name, ICommand command) {

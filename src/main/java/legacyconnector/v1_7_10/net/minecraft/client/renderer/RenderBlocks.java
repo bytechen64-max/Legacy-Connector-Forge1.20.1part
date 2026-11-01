@@ -65,7 +65,7 @@ public class RenderBlocks {
     public boolean lockBlockBounds;
     public boolean partialRenderBounds;
     /** The client (null on a dedicated server: mods build renderers there too, e.g. GuiScreen's static RenderItem). */
-    public Minecraft minecraftRB = net.neoforged.fml.loading.FMLEnvironment.dist.isClient() ? Minecraft.getMinecraft() : null;
+    public Minecraft minecraftRB = net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient() ? Minecraft.getMinecraft() : null;
     public int uvRotateEast, uvRotateWest, uvRotateSouth, uvRotateNorth, uvRotateTop, uvRotateBottom;
     public boolean enableAO;
     public float aoLightValueScratchXYZNNN, aoLightValueScratchXYNN, aoLightValueScratchXYZNNP, aoLightValueScratchYZNN, aoLightValueScratchYZNP,

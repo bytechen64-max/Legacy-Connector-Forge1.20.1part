@@ -18,7 +18,7 @@ public class LootEntryTable extends LootEntry {
     @Override
     public void addLoot(Collection<ItemStack> stacks, Random rand, LootContext context) {
         LootTableManager manager = context.getLootTableManager();
-        if (manager == null) manager = LootTableManager.mcc$of(net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer());
+        if (manager == null) manager = LootTableManager.mcc$of(net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer());
         if (manager == null) return;
         stacks.addAll(manager.getLootTableFromLocation(table).generateLootForPools(rand, context));
     }

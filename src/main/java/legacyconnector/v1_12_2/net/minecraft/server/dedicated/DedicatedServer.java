@@ -14,14 +14,14 @@ public class DedicatedServer extends legacyconnector.v1_12_2.net.minecraft.serve
     }
 
     private static net.minecraft.server.MinecraftServer mcc$server() {
-        return net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        return net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
     }
 
     /** {@code server.properties} of the server directory (read once). */
     public static synchronized PropertyManager mcc$get$settings(DedicatedServer s) {
         if (mcc$settings == null) {
             var m = mcc$server();
-            java.io.File dir = m == null ? net.neoforged.fml.loading.FMLPaths.GAMEDIR.get().toFile() : m.getServerDirectory().toFile();
+            java.io.File dir = m == null ? net.minecraftforge.fml.loading.FMLPaths.GAMEDIR.get().toFile() : m.getServerDirectory().toFile();
             mcc$settings = new PropertyManager(new java.io.File(dir, "server.properties"));
         }
         return mcc$settings;

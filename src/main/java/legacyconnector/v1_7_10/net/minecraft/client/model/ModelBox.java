@@ -27,7 +27,7 @@ public class ModelBox {
         this.posY2 = y + h;
         this.posZ2 = z + d;
         // Models are built by common code too (entity constructors); only a client has the modern cube class.
-        this.mcc$cube = net.neoforged.fml.loading.FMLEnvironment.dist.isClient()
+        this.mcc$cube = net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()
                 ? new ModelPart.Cube(u, v, x, y, z, w, h, d, grow, grow, grow, renderer.mirror, renderer.textureWidth, renderer.textureHeight,
                         EnumSet.allOf(Direction.class))
                 : null;

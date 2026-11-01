@@ -70,6 +70,6 @@ public final class Crafting1122 {
         if (p == null) return;
         var grid = new net.minecraft.world.SimpleContainer(matrix.getSizeInventory());
         for (int i = 0; i < matrix.getSizeInventory(); i++) grid.setItem(i, Stacks1122.toModern(matrix.getStackInSlot(i)));
-        net.neoforged.neoforge.event.EventHooks.firePlayerCraftingEvent(p, Stacks1122.toModern(stack), grid);
+        net.minecraftforge.event.EventHooks.firePlayerCraftingEvent(p, Stacks1122.toModern(stack), grid);
     }
 }

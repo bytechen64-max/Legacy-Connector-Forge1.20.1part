@@ -21,7 +21,7 @@ import net.minecraft.world.level.biome.MultiNoiseBiomeSource;
 import net.minecraft.world.level.biome.MultiNoiseBiomeSourceParameterList;
 import net.minecraft.world.level.biome.MultiNoiseBiomeSourceParameterLists;
 import net.minecraft.world.level.dimension.LevelStem;
-import net.neoforged.fml.ModList;
+import net.minecraftforge.fml.ModList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -80,7 +80,7 @@ public final class BiomePlacement {
      * earlier runs its static setup before TerraBlender's config is loaded, which fails and breaks the class for every mod (the
      * legacy biomes registered it right after legacy loading, during the registry events, and VanillaBackport crashed in ATM10).
      */
-    public static void onCommonSetup(net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent event) {
+    public static void onCommonSetup(net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
             synchronized (BiomePlacement.class) {
                 commonSetupDone = true;

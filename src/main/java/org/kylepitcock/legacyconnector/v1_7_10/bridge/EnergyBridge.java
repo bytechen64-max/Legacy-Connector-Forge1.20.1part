@@ -8,9 +8,9 @@ import legacyconnector.v1_7_10.net.minecraft.item.Item;
 import legacyconnector.v1_7_10.net.minecraft.tileentity.TileEntity;
 import legacyconnector.v1_7_10.net.minecraftforge.common.util.ForgeDirection;
 import net.minecraft.core.Direction;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
+import net.minecraftforge.energy.IEnergyStorage;
 
 /**
  * CoFH RF API -> NeoForge Energy capability (1 RF = 1 FE). Legacy RF tiles and items expose {@code IEnergyStorage},
@@ -22,11 +22,11 @@ public final class EnergyBridge {
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
         var type = TileEntityBridge.type();
         if (type != null) {
-            event.registerBlockEntity(Capabilities.EnergyStorage.BLOCK, type, (be, side) -> forTile(be.legacy(), side));
+            event.registerBlockEntity(ForgeCapabilities.ENERGY, type, (be, side) -> forTile(be.legacy(), side));
         }
         for (Item item : ItemBridge.modItems()) {
             if (!(item instanceof IEnergyContainerItem container)) continue;
-            event.registerItem(Capabilities.EnergyStorage.ITEM, (stack, ctx) -> new ItemStorage(container, stack),
+            event.registerItem(ForgeCapabilities.ENERGY, (stack, ctx) -> new ItemStorage(container, stack),
                     item.mcc$variants.values().toArray(new net.minecraft.world.item.Item[0]));
         }
     }

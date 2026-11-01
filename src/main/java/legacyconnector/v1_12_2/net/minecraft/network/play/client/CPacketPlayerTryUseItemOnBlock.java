@@ -88,7 +88,7 @@ public class CPacketPlayerTryUseItemOnBlock implements Packet<INetHandlerPlaySer
 
     /** The client player's yaw and pitch (the modern use packets carry them), or zero on a server. */
     static float[] mcc$look() {
-        if (!net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) return new float[2];
+        if (!net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) return new float[2];
         return ClientLook.look();
     }
 

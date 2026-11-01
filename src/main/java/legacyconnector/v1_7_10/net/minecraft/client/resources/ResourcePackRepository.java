@@ -31,7 +31,7 @@ public class ResourcePackRepository {
     private final Map<String, Entry> mcc$byId = new java.util.concurrent.ConcurrentHashMap<>();
 
     public File getDirResourcepacks() {
-        return net.neoforged.fml.loading.FMLPaths.GAMEDIR.get().resolve("resourcepacks").toFile();
+        return net.minecraftforge.fml.loading.FMLPaths.GAMEDIR.get().resolve("resourcepacks").toFile();
     }
 
     private static net.minecraft.server.packs.repository.PackRepository mcc$modern() {

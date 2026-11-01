@@ -53,7 +53,7 @@ public class LegacyEntityRenderer1122 extends EntityRenderer<Entity> {
 
     private static boolean isAnyLoaded(String... ids) {
         try {
-            for (String id : ids) if (net.neoforged.fml.ModList.get().isLoaded(id)) return true;
+            for (String id : ids) if (net.minecraftforge.fml.ModList.get().isLoaded(id)) return true;
         } catch (RuntimeException | LinkageError e) {
             // no mod list yet: treat as absent
         }

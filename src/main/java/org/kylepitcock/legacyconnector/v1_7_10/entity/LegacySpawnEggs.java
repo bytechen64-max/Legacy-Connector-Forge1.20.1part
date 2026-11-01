@@ -12,8 +12,8 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.item.CreativeModeTabs;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.common.DeferredSpawnEggItem;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraftforge.common.ForgeSpawnEggItem;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import org.kylepitcock.legacyconnector.core.registry.LegacyRegistrar;
 
 /**
@@ -51,7 +51,7 @@ public final class LegacySpawnEggs {
         for (ResourceLocation id : EGGS) out.put("assets/" + id.getNamespace() + "/models/item/" + id.getPath() + ".json", () -> model);
     }
 
-    private static final class Egg extends DeferredSpawnEggItem {
+    private static final class Egg extends ForgeSpawnEggItem {
         private final EntityType<?> type;
 
         Egg(Supplier<EntityType<? extends Mob>> supplier, int background, int foreground, EntityType<?> type) {

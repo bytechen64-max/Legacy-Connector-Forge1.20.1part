@@ -23,7 +23,7 @@ public class SaveFormatOld implements ISaveFormat {
 
     /** The saves folder of the running server (its world's parent folder), or null without a server. */
     public static SaveFormatOld mcc$server() {
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server == null) return null;
         File world = server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT).toAbsolutePath().normalize().toFile();
         return new SaveFormatOld(world.getParentFile(), null);
@@ -113,7 +113,7 @@ public class SaveFormatOld implements ISaveFormat {
     public boolean deleteWorldDirectory(String saveName) {
         File dir = new File(savesDirectory, saveName);
         if (!dir.exists()) return true;
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server != null && server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT).toAbsolutePath().normalize().toFile().equals(dir.getAbsoluteFile())) {
             return false;
         }

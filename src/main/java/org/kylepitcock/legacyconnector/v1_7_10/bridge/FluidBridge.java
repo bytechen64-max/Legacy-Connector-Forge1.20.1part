@@ -23,15 +23,15 @@ import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
-import net.neoforged.neoforge.client.extensions.common.IClientFluidTypeExtensions;
-import net.neoforged.neoforge.common.NeoForgeMod;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.FluidType;
-import net.neoforged.neoforge.fluids.capability.IFluidHandlerItem;
-import net.neoforged.neoforge.fluids.capability.templates.FluidHandlerItemStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
+import net.minecraftforge.client.extensions.common.IClientFluidTypeExtensions;
+import net.minecraftforge.common.ForgeMod;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidType;
+import net.minecraftforge.fluids.capability.IFluidHandlerItem;
+import net.minecraftforge.fluids.capability.templates.FluidHandlerItemStack;
+import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 import org.kylepitcock.legacyconnector.core.Ids;
 import org.kylepitcock.legacyconnector.core.registry.LegacyRegistrar;
 import org.slf4j.Logger;
@@ -67,7 +67,7 @@ public final class FluidBridge {
                 ResourceLocation id = ResourceLocation.fromNamespaceAndPath(namespace, Ids.normalizePath(name).replace('/', '_'));
                 if (BuiltInRegistries.FLUID.containsKey(id)) id = ResourceLocation.fromNamespaceAndPath("legacyconnector", id.getNamespace() + "_" + id.getPath());
                 LegacyFluidType type = new LegacyFluidType(name, legacy);
-                LegacyRegistrar.register(net.neoforged.neoforge.registries.NeoForgeRegistries.FLUID_TYPES, id, type);
+                LegacyRegistrar.register(net.minecraftforge.registries.ForgeRegistries.FLUID_TYPES, id, type);
                 Fluid modern = new LegacyModernFluid(type);
                 LegacyRegistrar.register(BuiltInRegistries.FLUID, id, modern);
                 MODERN.put(name, modern);
@@ -113,17 +113,17 @@ public final class FluidBridge {
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
         var type = TileEntityBridge.type();
         if (type != null) {
-            event.registerBlockEntity(Capabilities.FluidHandler.BLOCK, type, (be, side) -> forTile(be.legacy(), side));
+            event.registerBlockEntity(ForgeCapabilities.FLUID_HANDLER, type, (be, side) -> forTile(be.legacy(), side));
         }
         for (legacyconnector.v1_7_10.net.minecraft.item.Item item : ItemBridge.modItems()) {
             if (!(item instanceof IFluidContainerItem container)) continue;
-            event.registerItem(Capabilities.FluidHandler.ITEM, (stack, ctx) -> new ItemHandler(container, stack),
+            event.registerItem(ForgeCapabilities.FLUID_HANDLER_ITEM, (stack, ctx) -> new ItemHandler(container, stack),
                     item.mcc$variants.values().toArray(new net.minecraft.world.item.Item[0]));
         }
     }
 
     /** The NeoForge fluid handler of a legacy Forge {@code IFluidHandler} tile entity seen from {@code side} (public API adapter), or null. */
-    public static net.neoforged.neoforge.fluids.capability.IFluidHandler forTile(Object legacy, Direction side) {
+    public static net.minecraftforge.fluids.capability.IFluidHandler forTile(Object legacy, Direction side) {
         if (legacy instanceof legacyconnector.v1_7_10.net.minecraftforge.fluids.IFluidTank tank && !(legacy instanceof IFluidHandler)) return new TankHandler(tank);
         if (!(legacy instanceof IFluidHandler handler)) return null;
         ForgeDirection from = side == null ? ForgeDirection.UNKNOWN : ForgeDirection.getOrientation(side.get3DDataValue());
@@ -131,7 +131,7 @@ public final class FluidBridge {
     }
 
     /** A tile that is itself a Forge {@code IFluidTank} (and no IFluidHandler): one tank, every side. */
-    private record TankHandler(legacyconnector.v1_7_10.net.minecraftforge.fluids.IFluidTank tank) implements net.neoforged.neoforge.fluids.capability.IFluidHandler {
+    private record TankHandler(legacyconnector.v1_7_10.net.minecraftforge.fluids.IFluidTank tank) implements net.minecraftforge.fluids.capability.IFluidHandler {
         @Override
         public int getTanks() {
             return 1;
@@ -172,7 +172,7 @@ public final class FluidBridge {
         }
     }
 
-    private record TileHandler(IFluidHandler tile, ForgeDirection from) implements net.neoforged.neoforge.fluids.capability.IFluidHandler {
+    private record TileHandler(IFluidHandler tile, ForgeDirection from) implements net.minecraftforge.fluids.capability.IFluidHandler {
         @Override
         public int getTanks() {
             FluidTankInfo[] info = tile.getTankInfo(from);

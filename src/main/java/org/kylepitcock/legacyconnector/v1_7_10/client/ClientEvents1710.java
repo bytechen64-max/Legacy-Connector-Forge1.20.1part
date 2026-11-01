@@ -12,7 +12,7 @@ import legacyconnector.v1_7_10.net.minecraftforge.common.MinecraftForge;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.neoforged.bus.api.IEventBus;
+import net.minecraftforge.eventbus.api.IEventBus;
 import org.kylepitcock.legacyconnector.v1_7_10.bridge.BlockBridge;
 import org.kylepitcock.legacyconnector.v1_7_10.bridge.EntityBridge;
 import org.slf4j.Logger;
@@ -41,7 +41,7 @@ public final class ClientEvents1710 {
     public static void register(IEventBus bus) {
         bus.addListener(ClientEvents1710::onFog);
         bus.addListener(ClientEvents1710::onBlockOverlay);
-        bus.addListener((net.neoforged.neoforge.client.event.RenderFrameEvent.Pre e) -> frame++);
+        bus.addListener((net.minecraftforge.client.event.RenderFrameEvent.Pre e) -> frame++);
         bus.addListener(ClientEvents1710::onHand);
         bus.addListener(ClientEvents1710::onItemInFrame);
         bus.addListener(ClientEvents1710::onChat);
@@ -54,7 +54,7 @@ public final class ClientEvents1710 {
      * reaching as far), then, for the plain fog outside fluids and blindness, RenderFogEvent, whose handlers set the fog
      * with glFogf (captured by {@link LegacyFog}).
      */
-    private static void onFog(net.neoforged.neoforge.client.event.ViewportEvent.RenderFog e) {
+    private static void onFog(net.minecraftforge.client.event.ViewportEvent.RenderFog e) {
         boolean density = wants(EntityViewRenderEvent.FogDensity.class);
         boolean render = wants(EntityViewRenderEvent.RenderFogEvent.class);
         if (!density && !render) return;
@@ -99,7 +99,7 @@ public final class ClientEvents1710 {
 
     // ---------------------------------------------------------------- block overlay
 
-    private static void onBlockOverlay(net.neoforged.neoforge.client.event.RenderBlockScreenEffectEvent e) {
+    private static void onBlockOverlay(net.minecraftforge.client.event.RenderBlockScreenEffectEvent e) {
         if (!wants(RenderBlockOverlayEvent.class)) return;
         if (!(EntityBridge.wrap(e.getPlayer()) instanceof EntityPlayer player)) return;
         RenderBlockOverlayEvent.OverlayType type = switch (e.getOverlayType()) {
@@ -130,7 +130,7 @@ public final class ClientEvents1710 {
     private static boolean handCanceled;
 
     /** 1.7.10 drew one hand: the legacy event fires with the first hand of each frame, and its answer holds for both. */
-    private static void onHand(net.neoforged.neoforge.client.event.RenderHandEvent e) {
+    private static void onHand(net.minecraftforge.client.event.RenderHandEvent e) {
         if (handFrame != frame) {
             handFrame = frame;
             handCanceled = false;
@@ -150,7 +150,7 @@ public final class ClientEvents1710 {
 
     // ---------------------------------------------------------------- item frames
 
-    private static void onItemInFrame(net.neoforged.neoforge.client.event.RenderItemInFrameEvent e) {
+    private static void onItemInFrame(net.minecraftforge.client.event.RenderItemInFrameEvent e) {
         if (!wants(RenderItemInFrameEvent.class)) return;
         if (!(EntityBridge.wrap(e.getItemFrameEntity()) instanceof legacyconnector.v1_7_10.net.minecraft.entity.item.EntityItemFrame frameEntity)) return;
         RenderContext.beginWorld(e.getPoseStack(), e.getMultiBufferSource(), e.getPackedLight(), OverlayTexture.NO_OVERLAY);
@@ -166,7 +166,7 @@ public final class ClientEvents1710 {
 
     // ---------------------------------------------------------------- chat
 
-    private static void onChat(net.neoforged.neoforge.client.event.ClientChatReceivedEvent e) {
+    private static void onChat(net.minecraftforge.client.event.ClientChatReceivedEvent e) {
         if (!wants(ClientChatReceivedEvent.class)) return;
         try {
             var original = legacyconnector.v1_7_10.net.minecraft.util.IChatComponent.mcc$fromModern(e.getMessage());

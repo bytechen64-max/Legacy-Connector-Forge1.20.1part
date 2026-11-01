@@ -74,7 +74,7 @@ public class LootContext {
     public net.minecraft.world.level.storage.loot.LootParams mcc$params() {
         var level = world == null ? null : world.mcc$serverLevel();
         if (level == null) {
-            var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+            var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
             level = server == null ? null : server.overworld();
         }
         if (level == null) return null;

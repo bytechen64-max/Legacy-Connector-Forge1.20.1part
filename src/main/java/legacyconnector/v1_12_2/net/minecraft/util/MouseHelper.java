@@ -38,7 +38,7 @@ public class MouseHelper {
     }
 
     private static boolean client() {
-        return net.neoforged.fml.loading.FMLEnvironment.dist.isClient();
+        return net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient();
     }
 
     /** The game's mouse handler, kept apart so this class verifies on a dedicated server. */

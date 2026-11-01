@@ -3,8 +3,8 @@ package org.kylepitcock.legacyconnector.core;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.TickEvent.ServerTickEvent;
 
 /**
  * Development aid for headless servers: with {@code -Dlegacyconnector.serverDevScript=<dir>} every {@code <dir>/*.js} file is
@@ -19,7 +19,7 @@ public final class ServerDevScript {
         if (dir == null || dir.isEmpty()) return;
         Path root = Path.of(dir);
         int[] tick = {0};
-        NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post e) -> {
+        MinecraftForge.EVENT_BUS.addListener((ServerTickEvent.Post e) -> {
             if (++tick[0] % 10 != 0) return;
             try (var files = Files.list(root)) {
                 for (Path p : files.filter(f -> f.getFileName().toString().endsWith(".js")).toList()) {

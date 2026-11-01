@@ -238,7 +238,7 @@ public final class SoundBridge {
                     keys = new HashMap<>();
                     Map<String, String> categories = new HashMap<>();
                     try {
-                        var list = net.neoforged.fml.ModList.get();
+                        var list = net.minecraftforge.fml.ModList.get();
                         if (list == null) return null; // too early: do not cache
                         for (var mod : list.getMods()) {
                             String id = mod.getModId();

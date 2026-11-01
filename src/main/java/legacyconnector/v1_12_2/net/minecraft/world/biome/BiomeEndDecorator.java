@@ -10,7 +10,7 @@ public class BiomeEndDecorator extends BiomeDecorator {
     public static WorldGenSpikes.EndSpike[] getSpikesForWorld(legacyconnector.v1_12_2.net.minecraft.world.World world) {
         net.minecraft.world.level.WorldGenLevel level = org.kylepitcock.legacyconnector.v1_12_2.bridge.ModernFeatures1122.level(world);
         if (level == null) {
-            var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+            var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
             level = server == null ? null : server.overworld();
         }
         if (level == null) return new WorldGenSpikes.EndSpike[0];

@@ -68,7 +68,7 @@ public final class CommandBridge1122 {
     public static void registered(CommandHandler handler, ICommand command) {
         if (handler != MinecraftServer.mcc$instance().getCommandManager()) return; // the client's handler and mods' own ones only keep it
         ensureListener();
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server == null) return;
         server.execute(() -> {
             register(server.getCommands().getDispatcher(), command);
@@ -79,7 +79,7 @@ public final class CommandBridge1122 {
     private static synchronized void ensureListener() {
         if (listening) return;
         listening = true;
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(net.neoforged.neoforge.event.RegisterCommandsEvent.class, e -> {
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener(net.minecraftforge.event.RegisterCommandsEvent.class, e -> {
             OURS.clear();
             if (!(MinecraftServer.mcc$instance().getCommandManager() instanceof CommandHandler handler)) return;
             for (ICommand c : handler.mcc$commands()) register(e.getDispatcher(), c);

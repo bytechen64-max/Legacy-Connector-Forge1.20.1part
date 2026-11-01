@@ -6,7 +6,7 @@ import org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122;
 /** Vanilla's brewing (potion mixes and container changes): the running game's own brewing table. */
 public class VanillaBrewingRecipe implements IBrewingRecipe {
     private static net.minecraft.world.item.alchemy.PotionBrewing brewing() {
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         return server == null ? null : server.potionBrewing();
     }
 

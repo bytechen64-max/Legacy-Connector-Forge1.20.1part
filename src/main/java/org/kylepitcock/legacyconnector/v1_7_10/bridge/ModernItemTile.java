@@ -6,8 +6,8 @@ import legacyconnector.v1_7_10.net.minecraft.item.ItemStack;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.items.IItemHandler;
 
 /**
  * {@link ModernCapabilityTile} of a block entity with an item handler (a storage or machine of a NeoForge mod that is not a vanilla
@@ -28,10 +28,10 @@ public final class ModernItemTile extends ModernCapabilityTile implements ISided
         Level level = be.getLevel();
         if (level == null || be.isRemoved()) return null;
         var pos = be.getBlockPos();
-        IItemHandler h = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, null);
+        IItemHandler h = level.getCapability(ForgeCapabilities.ITEM_HANDLER, pos, null);
         if (h != null) return h;
         for (Direction d : Direction.values()) {
-            h = level.getCapability(Capabilities.ItemHandler.BLOCK, pos, d);
+            h = level.getCapability(ForgeCapabilities.ITEM_HANDLER, pos, d);
             if (h != null) return h;
         }
         return null;
@@ -44,7 +44,7 @@ public final class ModernItemTile extends ModernCapabilityTile implements ISided
     private IItemHandler side(int side) {
         Level level = host.getLevel();
         if (level == null || host.isRemoved() || side < 0 || side > 5) return null;
-        return level.getCapability(Capabilities.ItemHandler.BLOCK, host.getBlockPos(), Direction.from3DDataValue(side));
+        return level.getCapability(ForgeCapabilities.ITEM_HANDLER, host.getBlockPos(), Direction.from3DDataValue(side));
     }
 
     @Override

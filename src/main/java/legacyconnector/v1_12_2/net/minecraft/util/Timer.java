@@ -42,7 +42,7 @@ public class Timer {
     }
 
     private static boolean live(Timer t) {
-        return t.mcc$client && net.neoforged.fml.loading.FMLEnvironment.dist.isClient();
+        return t.mcc$client && net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient();
     }
 
     public void updateTimer() {

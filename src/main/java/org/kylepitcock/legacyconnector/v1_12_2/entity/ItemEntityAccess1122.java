@@ -2,7 +2,7 @@ package org.kylepitcock.legacyconnector.v1_12_2.entity;
 
 import java.lang.reflect.Field;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.neoforged.fml.util.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 
 /** Private state of modern item entities that 1.12 code reads and writes as fields (age, pickup delay). */
 public final class ItemEntityAccess1122 {

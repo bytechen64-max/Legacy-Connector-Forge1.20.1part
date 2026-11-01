@@ -193,29 +193,18 @@ public final class RecipeBridge {
         int removed = 0;
         for (Spec spec : RECIPES) {
             try {
-                Object source = switch (spec) {
-                    case Shaped s -> s.source;
-                    case Shapeless s -> s.source;
-                    case Smelting s -> s.source;
-                    case Custom c -> c.source;
-                };
+                Object source = sourceOf(spec);
                 if (spec instanceof Smelting ? !FurnaceRecipes.smelting().getSmeltingList().containsKey(source) : !crafting.contains(source)) {
                     removed++;
                     continue;
                 }
-                JsonObject json = switch (spec) {
-                    case Shaped s -> shaped(s);
-                    case Shapeless s -> shapeless(s);
-                    case Smelting s -> smelting(s);
-                    case Custom c -> custom(c);
-                };
+                JsonObject json;
+                if (spec instanceof Shaped s) json = shaped(s);
+                else if (spec instanceof Shapeless s) json = shapeless(s);
+                else if (spec instanceof Smelting s) json = smelting(s);
+                else json = custom((Custom) spec);
                 if (json == null) continue;
-                String ns = switch (spec) {
-                    case Shaped s -> s.owner;
-                    case Shapeless s -> s.owner;
-                    case Smelting s -> s.owner;
-                    case Custom c -> c.owner;
-                };
+                String ns = ownerOf(spec);
                 String path = uniquePath(ns, spec, used);
                 byte[] bytes = GSON.toJson(json).getBytes(StandardCharsets.UTF_8);
                 out.put("data/" + ns + "/recipe/" + path + ".json", () -> bytes);
@@ -234,20 +223,18 @@ public final class RecipeBridge {
 
     /** {@code <kind>/<output item path>} (the output's namespace too when it is another mod's item), unique within {@code ns}. */
     private static String uniquePath(String ns, Spec spec, Set<String> used) {
-        String kind = switch (spec) {
-            case Shaped s -> "shaped";
-            case Shapeless s -> "shapeless";
-            case Smelting s -> "smelting";
-            case Custom c -> "custom";
-        };
+        String kind;
+        if (spec instanceof Shaped) kind = "shaped";
+        else if (spec instanceof Shapeless) kind = "shapeless";
+        else if (spec instanceof Smelting) kind = "smelting";
+        else kind = "custom";
         String item = "recipe";
         try {
-            ItemStack output = switch (spec) {
-                case Shaped s -> s.output;
-                case Shapeless s -> s.output;
-                case Smelting s -> s.output;
-                case Custom c -> CUSTOM.get(c.index).getRecipeOutput();
-            };
+            ItemStack output;
+            if (spec instanceof Shaped s) output = s.output;
+            else if (spec instanceof Shapeless s) output = s.output;
+            else if (spec instanceof Smelting s) output = s.output;
+            else output = CUSTOM.get(((Custom) spec).index).getRecipeOutput();
             if (output != null && output.getItem() != null) {
                 ResourceLocation id = BuiltInRegistries.ITEM.getKey(output.mcc$modern().getItem());
                 item = id.getNamespace().equals(ns) ? id.getPath() : id.getNamespace() + "/" + id.getPath();
@@ -259,6 +246,20 @@ public final class RecipeBridge {
         String path = base;
         for (int n = 2; !used.add(ns + ":" + path); n++) path = base + "_" + n;
         return path;
+    }
+
+    private static Object sourceOf(Spec spec) {
+        if (spec instanceof Shaped s) return s.source;
+        if (spec instanceof Shapeless s) return s.source;
+        if (spec instanceof Smelting s) return s.source;
+        return ((Custom) spec).source;
+    }
+
+    private static String ownerOf(Spec spec) {
+        if (spec instanceof Shaped s) return s.owner;
+        if (spec instanceof Shapeless s) return s.owner;
+        if (spec instanceof Smelting s) return s.owner;
+        return ((Custom) spec).owner;
     }
 
     private static Set<Object> liveCrafting() {
@@ -306,7 +307,7 @@ public final class RecipeBridge {
     public static Replacement replacementOf(Object source) {
         ResourceLocation id = idOf.get(source);
         if (id == null) return null;
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server == null) return null;
         var manager = server.getRecipeManager();
         if (replacementsOwner != manager) {

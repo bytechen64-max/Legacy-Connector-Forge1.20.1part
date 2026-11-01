@@ -145,13 +145,19 @@ public final class AbsentDependencyStubber {
     }
 
     private static String missingIn(AbstractInsnNode insn, Hierarchy h) {
-        String found = switch (insn) {
-            case MethodInsnNode mi -> missing(h, mi.owner, Type.getMethodType(mi.desc));
-            case FieldInsnNode fi -> missing(h, fi.owner, Type.getType(fi.desc));
-            case TypeInsnNode ti -> missing(h, ti.desc, null);
-            case MultiANewArrayInsnNode ma -> missing(h, ma.desc, null);
-            default -> null;
-        };
+        // Java 17 (Forge 1.20.1's baseline) has no pattern-matching switch yet: an instanceof chain does the same job.
+        String found;
+        if (insn instanceof MethodInsnNode mi) {
+            found = missing(h, mi.owner, Type.getMethodType(mi.desc));
+        } else if (insn instanceof FieldInsnNode fi) {
+            found = missing(h, fi.owner, Type.getType(fi.desc));
+        } else if (insn instanceof TypeInsnNode ti) {
+            found = missing(h, ti.desc, null);
+        } else if (insn instanceof MultiANewArrayInsnNode ma) {
+            found = missing(h, ma.desc, null);
+        } else {
+            found = null;
+        }
         return found == null ? null : found.replace('/', '.');
     }
 

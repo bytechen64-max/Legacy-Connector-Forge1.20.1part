@@ -16,10 +16,10 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.common.util.FakePlayerFactory;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.common.util.FakePlayerFactory;
+import net.minecraftforge.event.server.ServerStartedEvent;
+import net.minecraftforge.event.TickEvent.ServerTickEvent;
 import org.kylepitcock.legacyconnector.v1_7_10.adapter.LegacyBlockAdapter;
 import org.kylepitcock.legacyconnector.v1_7_10.adapter.LegacyBlockEntity;
 import org.kylepitcock.legacyconnector.v1_7_10.bridge.BlockBridge;
@@ -46,10 +46,10 @@ public final class BlockSelfTest {
 
     public static void register() {
         if (!Boolean.getBoolean("legacyconnector.entitySelfTest")) return;
-        NeoForge.EVENT_BUS.addListener((ServerStartedEvent e) -> start(e.getServer()));
-        NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post e) -> tick(e.getServer()));
+        MinecraftForge.EVENT_BUS.addListener((ServerStartedEvent e) -> start(e.getServer()));
+        MinecraftForge.EVENT_BUS.addListener((ServerTickEvent.Post e) -> tick(e.getServer()));
         // Other dev fixtures stop the server early (the fixture mod after its own test): report what there is.
-        NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.server.ServerStoppingEvent e) -> {
+        MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.server.ServerStoppingEvent e) -> {
             if (ticks >= 0 && ticks < 60) {
                 stopping = true;
                 ticks = 59;
@@ -202,7 +202,7 @@ public final class BlockSelfTest {
         for (StackTraceElement e : root.getStackTrace()) {
             String c = e.getClassName();
             if (c.startsWith("net.minecraft.") || c.startsWith("java.") || c.startsWith("jdk.") || c.startsWith("com.mojang.")
-                    || c.startsWith("net.neoforged.") || c.startsWith("legacyconnector.v1_7_10.net.minecraft.entity.player.EntityPlayer")) continue;
+                    || c.startsWith("net.minecraftforge.") || c.startsWith("legacyconnector.v1_7_10.net.minecraft.entity.player.EntityPlayer")) continue;
             where.append(frames == 0 ? " at " : " < ").append(c.substring(c.lastIndexOf('.') + 1)).append('.').append(e.getMethodName())
                     .append(':').append(e.getLineNumber());
             if (++frames == 3) break;

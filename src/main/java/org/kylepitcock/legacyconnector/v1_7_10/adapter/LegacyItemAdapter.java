@@ -149,20 +149,20 @@ public class LegacyItemAdapter extends net.minecraft.world.item.Item implements 
      * treats it like any other tool.
      */
     @Override
-    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ItemAbility ability) {
+    public boolean canPerformAction(ItemStack stack, net.minecraftforge.common.ItemAbility ability) {
         String toolClass = toolClassOf(ability);
         if (toolClass != null && hasToolClass(toolClass, stack)) return true;
         return super.canPerformAction(stack, ability);
     }
 
-    private static String toolClassOf(net.neoforged.neoforge.common.ItemAbility a) {
-        if (a == net.neoforged.neoforge.common.ItemAbilities.PICKAXE_DIG) return "pickaxe";
-        if (a == net.neoforged.neoforge.common.ItemAbilities.AXE_DIG || a == net.neoforged.neoforge.common.ItemAbilities.AXE_STRIP
-                || a == net.neoforged.neoforge.common.ItemAbilities.AXE_SCRAPE || a == net.neoforged.neoforge.common.ItemAbilities.AXE_WAX_OFF) return "axe";
-        if (a == net.neoforged.neoforge.common.ItemAbilities.SHOVEL_DIG || a == net.neoforged.neoforge.common.ItemAbilities.SHOVEL_FLATTEN) return "shovel";
-        if (a == net.neoforged.neoforge.common.ItemAbilities.HOE_DIG || a == net.neoforged.neoforge.common.ItemAbilities.HOE_TILL) return "hoe";
-        if (a == net.neoforged.neoforge.common.ItemAbilities.SWORD_DIG) return "sword";
-        if (a == net.neoforged.neoforge.common.ItemAbilities.SHEARS_DIG || a == net.neoforged.neoforge.common.ItemAbilities.SHEARS_HARVEST) return "shears";
+    private static String toolClassOf(net.minecraftforge.common.ItemAbility a) {
+        if (a == net.minecraftforge.common.ItemAbilities.PICKAXE_DIG) return "pickaxe";
+        if (a == net.minecraftforge.common.ItemAbilities.AXE_DIG || a == net.minecraftforge.common.ItemAbilities.AXE_STRIP
+                || a == net.minecraftforge.common.ItemAbilities.AXE_SCRAPE || a == net.minecraftforge.common.ItemAbilities.AXE_WAX_OFF) return "axe";
+        if (a == net.minecraftforge.common.ItemAbilities.SHOVEL_DIG || a == net.minecraftforge.common.ItemAbilities.SHOVEL_FLATTEN) return "shovel";
+        if (a == net.minecraftforge.common.ItemAbilities.HOE_DIG || a == net.minecraftforge.common.ItemAbilities.HOE_TILL) return "hoe";
+        if (a == net.minecraftforge.common.ItemAbilities.SWORD_DIG) return "sword";
+        if (a == net.minecraftforge.common.ItemAbilities.SHEARS_DIG || a == net.minecraftforge.common.ItemAbilities.SHEARS_HARVEST) return "shears";
         return null;
     }
 

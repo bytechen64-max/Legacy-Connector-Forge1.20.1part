@@ -176,7 +176,7 @@ public abstract class CommandBase implements ICommand {
     // ------------------------------------------------------------------ players and entities
 
     private static net.minecraft.server.MinecraftServer modernServer() {
-        return net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        return net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
     }
 
     private static EntityPlayerMP playerNamed(String name) {

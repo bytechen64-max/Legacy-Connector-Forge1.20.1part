@@ -19,7 +19,7 @@ public class FarmlandWaterManager {
     }
 
     /** The modern ticket standing for a legacy one. */
-    private static final class ModernTicket extends net.neoforged.neoforge.common.ticket.SimpleTicket<net.minecraft.world.phys.Vec3> {
+    private static final class ModernTicket extends net.minecraftforge.common.ticket.SimpleTicket<net.minecraft.world.phys.Vec3> {
         private final SimpleTicket<Vec3d> legacy;
 
         ModernTicket(SimpleTicket<Vec3d> legacy) {
@@ -39,7 +39,7 @@ public class FarmlandWaterManager {
         ModernTicket modern = new ModernTicket(ticket);
         net.minecraft.world.level.ChunkPos[] extra = new net.minecraft.world.level.ChunkPos[additionalChunks.length];
         for (int i = 0; i < extra.length; i++) extra[i] = new net.minecraft.world.level.ChunkPos(additionalChunks[i].x, additionalChunks[i].z);
-        net.neoforged.neoforge.common.FarmlandWaterManager.addCustomTicket(level, modern,
+        net.minecraftforge.common.FarmlandWaterManager.addCustomTicket(level, modern,
                 new net.minecraft.world.level.ChunkPos(masterChunk.x, masterChunk.z), extra);
         // the legacy ticket's validate/invalidate move the modern one in and out of the modern manager
         ticket.setManager(new ITicketManager<Vec3d>() {

@@ -175,7 +175,7 @@ public final class Assets1122 implements GeneratedPack.Contributor {
                 String json = GSON.toJson(model);
                 byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
                 out.put("assets/" + id.getNamespace() + "/models/item/" + id.getPath() + ".json", () -> bytes);
-                if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) org.kylepitcock.legacyconnector.v1_7_10.client.SharedItemModels.note(id, json);
+                if (net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) org.kylepitcock.legacyconnector.v1_7_10.client.SharedItemModels.note(id, json);
             }
         }
     }
@@ -1035,7 +1035,7 @@ public final class Assets1122 implements GeneratedPack.Contributor {
             String json = GSON.toJson(model);
             byte[] bytes = json.getBytes(StandardCharsets.UTF_8);
             out.put("assets/" + itemId.getNamespace() + "/models/item/" + itemId.getPath() + ".json", () -> bytes);
-            if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) org.kylepitcock.legacyconnector.v1_7_10.client.SharedItemModels.note(itemId, json);
+            if (net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) org.kylepitcock.legacyconnector.v1_7_10.client.SharedItemModels.note(itemId, json);
         }
     }
 

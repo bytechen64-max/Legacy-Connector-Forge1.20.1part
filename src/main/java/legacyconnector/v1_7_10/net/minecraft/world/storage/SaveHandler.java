@@ -50,7 +50,7 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData {
 
     /** The server's player data folder (shared by all dimensions), or {@code playerdata} in this folder without a server. */
     private File mcc$playerDir() {
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         File dir = server != null ? server.getWorldPath(net.minecraft.world.level.storage.LevelResource.PLAYER_DATA_DIR).toFile()
                 : new File(worldDirectory, "playerdata");
         dir.mkdirs();
@@ -68,7 +68,7 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData {
             net.minecraft.nbt.NbtIo.writeCompressed(tag, tmp);
             net.minecraft.Util.safeReplaceFile(dir.toPath().resolve(modern.getStringUUID() + ".dat"), tmp,
                     dir.toPath().resolve(modern.getStringUUID() + ".dat_old"));
-            net.neoforged.neoforge.event.EventHooks.firePlayerSavingEvent(modern, dir, modern.getStringUUID());
+            net.minecraftforge.event.EventHooks.firePlayerSavingEvent(modern, dir, modern.getStringUUID());
         } catch (Exception e) {
             org.slf4j.LoggerFactory.getLogger("LegacyConnector/SaveHandler").warn("Failed to save player data for {}", modern.getName().getString());
         }
@@ -87,13 +87,13 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData {
             if (!file.isFile()) continue;
             try {
                 CompoundTag tag = net.minecraft.nbt.NbtIo.readCompressed(file.toPath(), net.minecraft.nbt.NbtAccounter.unlimitedHeap());
-                var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+                var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
                 if (server != null) {
                     tag = net.minecraft.util.datafix.DataFixTypes.PLAYER.updateToCurrentVersion(server.getFixerUpper(), tag,
                             net.minecraft.nbt.NbtUtils.getDataVersion(tag, -1));
                 }
                 modern.load(tag);
-                net.neoforged.neoforge.event.EventHooks.firePlayerLoadingEvent(modern, dir, modern.getStringUUID());
+                net.minecraftforge.event.EventHooks.firePlayerLoadingEvent(modern, dir, modern.getStringUUID());
                 return new NBTTagCompound(tag);
             } catch (Exception e) {
                 org.slf4j.LoggerFactory.getLogger("LegacyConnector/SaveHandler").warn("Failed to load player data for {}", modern.getName().getString());

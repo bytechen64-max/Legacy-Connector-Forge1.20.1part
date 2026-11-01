@@ -6,9 +6,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.resources.ResourceLocation;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.client.event.ModelEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.client.event.ModelEvent;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 public final class SharedItemModels {
     private static final Map<ResourceLocation, String> FILES = new ConcurrentHashMap<>();
     private static final boolean ENABLED = org.kylepitcock.legacyconnector.core.LegacyConfig.perfShareItemModels()
-            && !net.neoforged.fml.ModList.get().isLoaded("modernfix");
+            && !net.minecraftforge.fml.ModList.get().isLoaded("modernfix");
     private static boolean registered;
 
     private SharedItemModels() {}

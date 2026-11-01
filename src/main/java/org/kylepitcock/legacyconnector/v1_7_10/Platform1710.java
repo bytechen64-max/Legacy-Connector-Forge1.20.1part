@@ -14,8 +14,8 @@ import legacyconnector.v1_7_10.cpw.mods.fml.common.event.FMLInterModComms;
 import legacyconnector.v1_7_10.cpw.mods.fml.common.event.FMLLoadCompleteEvent;
 import legacyconnector.v1_7_10.cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import legacyconnector.v1_7_10.cpw.mods.fml.common.event.FMLPreInitializationEvent;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforgespi.language.ModFileScanData;
+import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.forgespi.language.ModFileScanData;
 import org.kylepitcock.legacyconnector.core.LegacyModRecord;
 import org.kylepitcock.legacyconnector.core.LegacyMods;
 import org.kylepitcock.legacyconnector.core.LegacyPlatform;
@@ -330,7 +330,7 @@ public final class Platform1710 implements LegacyPlatform {
         org.kylepitcock.legacyconnector.v1_7_10.bridge.FluidBridge.register();
         TileEntityBridge.registerType(adapters);
         CreativeTabBridge.registerTabs();
-        if (net.neoforged.fml.ModList.get().isLoaded("curios")) org.kylepitcock.legacyconnector.compat.curios.CuriosBaubles.registerItems();
+        if (net.minecraftforge.fml.ModList.get().isLoaded("curios")) org.kylepitcock.legacyconnector.compat.curios.CuriosBaubles.registerItems();
         org.kylepitcock.legacyconnector.compat.waila.WailaBridge.processRegistrations();
         // Mods (Biomes O' Plenty) replace the vanilla biome statics by reflection and can leave them null: put the vanilla ones back,
         // and initialise the class on this thread so no generation worker is the first to touch it.

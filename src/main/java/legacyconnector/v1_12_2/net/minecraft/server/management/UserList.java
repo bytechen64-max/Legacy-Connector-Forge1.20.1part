@@ -113,7 +113,7 @@ public class UserList<K, V extends UserListEntry<K>> {
 
     /** The running server, or null. */
     static net.minecraft.server.MinecraftServer mcc$server() {
-        return net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        return net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
     }
 
     /** The profile of a name the modern list holds, via the server's profile cache (modern entries hide their profile). */

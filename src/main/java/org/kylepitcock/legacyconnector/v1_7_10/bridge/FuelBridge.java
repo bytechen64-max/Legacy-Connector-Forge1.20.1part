@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import legacyconnector.v1_7_10.cpw.mods.fml.common.IFuelHandler;
 import legacyconnector.v1_7_10.net.minecraft.item.ItemStack;
-import net.neoforged.neoforge.event.furnace.FurnaceFuelBurnTimeEvent;
+import net.minecraftforge.event.furnace.FurnaceFuelBurnTimeEvent;
 
 /** Legacy IFuelHandlers answer NeoForge's burn time event for any item, legacy or modern. */
 public final class FuelBridge {

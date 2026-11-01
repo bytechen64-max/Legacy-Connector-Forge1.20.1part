@@ -106,7 +106,7 @@ public final class OreBackgrounds {
      * read or this is not the client. Used by the deepslate variants of ores that generate below y=0.
      */
     public static String deepslateTexture(String sprite, Map<String, Supplier<byte[]>> out) {
-        if (!net.neoforged.fml.loading.FMLEnvironment.dist.isClient() || sprite == null) return sprite;
+        if (!net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient() || sprite == null) return sprite;
         String known = DEEP_DONE.get(sprite);
         if (known != null) {
             if (!known.equals(sprite)) generated(sprite, known, out);

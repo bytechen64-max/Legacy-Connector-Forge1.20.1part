@@ -23,7 +23,7 @@ public class AdvancementCommand extends CommandBase {
 
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
-        var m = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var m = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (m == null) return;
         m.getCommands().performPrefixedCommand(legacyconnector.v1_12_2.net.minecraft.advancements.FunctionManager.mcc$source(sender),
                 "advancement " + String.join(" ", args));

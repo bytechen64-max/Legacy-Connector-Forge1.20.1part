@@ -134,7 +134,7 @@ public final class RecipeBridge1122 {
     private static boolean removedByDataPack(Object input) {
         var id = smeltingIds.get(input);
         if (id == null) return false;
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         return server != null && server.getRecipeManager().byKey(id).isEmpty();
     }
 

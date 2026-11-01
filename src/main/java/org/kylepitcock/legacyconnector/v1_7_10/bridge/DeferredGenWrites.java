@@ -129,14 +129,14 @@ public final class DeferredGenWrites {
         // writes for chunks that are still to be generated are placed during their own generation
         org.kylepitcock.legacyconnector.core.worldgen.LegacyWorldGenFeature.addDecorator(
                 (region, chunkX, chunkZ, seed) -> applyDuringGeneration(region, chunkX, chunkZ));
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.level.ChunkEvent.Load e) -> {
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.level.ChunkEvent.Load e) -> {
             if (!(e.getLevel() instanceof ServerLevel level) || !(e.getChunk() instanceof LevelChunk chunk)) return;
             Map<Long, Queue<Write>> byChunk = PENDING.get(level);
             if (byChunk == null) return;
             long key = chunk.getPos().toLong();
             if (byChunk.containsKey(key)) level.getServer().execute(() -> apply(level, key));
         });
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.level.LevelEvent.Unload e) -> {
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.level.LevelEvent.Unload e) -> {
             if (e.getLevel() instanceof ServerLevel level) {
                 STATES.remove(level);
                 TILES.remove(level);

@@ -86,7 +86,7 @@ public final class ModernLeaves {
                 + Ids.normalizePath(n.substring(n.indexOf(':') + 1)));
         List<LeafModernizer.Source> out = new ArrayList<>();
         try {
-            for (var file : net.neoforged.fml.ModList.get().getModFiles()) {
+            for (var file : net.minecraftforge.fml.ModList.get().getModFiles()) {
                 java.nio.file.Path jar = file.getFile().getFilePath();
                 if (!org.kylepitcock.legacyconnector.core.pack.ModernizedTextures.isTranslated(jar)) continue;
                 try (java.util.zip.ZipFile zip = new java.util.zip.ZipFile(jar.toFile())) {

@@ -7,7 +7,7 @@ import legacyconnector.v1_7_10.cpw.mods.fml.common.Mod;
 import legacyconnector.v1_7_10.net.minecraft.client.Minecraft;
 import legacyconnector.v1_7_10.net.minecraft.client.gui.GuiScreen;
 import net.minecraft.client.gui.screens.Screen;
-import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
+import net.minecraftforge.client.gui.IConfigScreenFactory;
 import org.kylepitcock.legacyconnector.core.LegacyModRecord;
 import org.slf4j.LoggerFactory;
 

@@ -281,7 +281,7 @@ public final class Models1122 {
 
         @Override
         public List<net.minecraft.client.renderer.block.model.BakedQuad> getQuads(BlockState state, net.minecraft.core.Direction side, RandomSource rand,
-                net.neoforged.neoforge.client.model.data.ModelData data, net.minecraft.client.renderer.RenderType renderType) {
+                net.minecraftforge.client.model.data.ModelData data, net.minecraft.client.renderer.RenderType renderType) {
             return quads(state, side, rand, renderType);
         }
 

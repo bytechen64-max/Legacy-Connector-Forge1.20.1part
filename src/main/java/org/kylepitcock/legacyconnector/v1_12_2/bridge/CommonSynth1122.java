@@ -13,7 +13,7 @@ public final class CommonSynth1122 {
 
     private static java.lang.reflect.Field beaconLevels() {
         try {
-            return net.neoforged.fml.util.ObfuscationReflectionHelper.findField(net.minecraft.world.level.block.entity.BeaconBlockEntity.class, "levels");
+            return net.minecraftforge.fml.util.ObfuscationReflectionHelper.findField(net.minecraft.world.level.block.entity.BeaconBlockEntity.class, "levels");
         } catch (RuntimeException e) {
             return null;
         }

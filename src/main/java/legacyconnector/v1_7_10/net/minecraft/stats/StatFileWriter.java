@@ -25,7 +25,7 @@ public class StatFileWriter {
     /** The legacy view of the server-side player this writer belongs to, if that server runs in this game. */
     private EntityPlayer mcc$serverPlayer() {
         if (mcc$player == null) return null;
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server == null) return null;
         var p = server.getPlayerList().getPlayer(mcc$player);
         return p == null ? null : (EntityPlayer) org.kylepitcock.legacyconnector.v1_7_10.bridge.EntityBridge.wrap(p);

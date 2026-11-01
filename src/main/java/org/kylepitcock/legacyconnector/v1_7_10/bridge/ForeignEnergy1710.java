@@ -4,7 +4,7 @@ import java.lang.reflect.Method;
 import legacyconnector.v1_7_10.net.minecraft.tileentity.TileEntity;
 import legacyconnector.v1_7_10.net.minecraftforge.common.util.ForgeDirection;
 import net.minecraft.core.Direction;
-import net.neoforged.neoforge.energy.IEnergyStorage;
+import net.minecraftforge.energy.IEnergyStorage;
 import org.kylepitcock.legacyconnector.api.internal.EnergyRates;
 import org.kylepitcock.legacyconnector.core.LegacyConfig;
 
@@ -47,14 +47,14 @@ public final class ForeignEnergy1710 {
 
     // ------------------------------------------------------------------ IC2 electric items
 
-    /** Registers {@code Capabilities.EnergyStorage.ITEM} for every item implementing IC2's {@code IElectricItem} (EU at {@code energy.fePerEu}). */
-    public static void registerItems(net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent event) {
+    /** Registers {@code ForgeCapabilities.ENERGY} for every item implementing IC2's {@code IElectricItem} (EU at {@code energy.fePerEu}). */
+    public static void registerItems(net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent event) {
         for (legacyconnector.v1_7_10.net.minecraft.item.Item item : ItemBridge.modItems()) {
             Class<?> electric = named(item.getClass(), "ic2.api.item.IElectricItem");
             if (electric == null) continue;
             ElectricItem api = ElectricItem.of(item, electric);
             if (api == null) continue;
-            event.registerItem(net.neoforged.neoforge.capabilities.Capabilities.EnergyStorage.ITEM, (stack, ctx) -> new ItemStorage(api, stack),
+            event.registerItem(net.minecraftforge.common.capabilities.ForgeForgeCapabilities.ENERGY, (stack, ctx) -> new ItemStorage(api, stack),
                     item.mcc$variants.values().toArray(new net.minecraft.world.item.Item[0]));
         }
     }

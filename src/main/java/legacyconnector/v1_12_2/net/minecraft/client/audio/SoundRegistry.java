@@ -12,7 +12,7 @@ import legacyconnector.v1_12_2.net.minecraft.util.registry.RegistrySimple;
  */
 public class SoundRegistry extends RegistrySimple<ResourceLocation, SoundEventAccessor> {
     private static boolean client() {
-        return net.neoforged.fml.loading.FMLEnvironment.dist.isClient();
+        return net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient();
     }
 
     public void add(SoundEventAccessor accessor) {

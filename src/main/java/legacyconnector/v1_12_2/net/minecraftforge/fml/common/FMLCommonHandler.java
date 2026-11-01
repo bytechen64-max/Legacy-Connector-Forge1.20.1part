@@ -3,8 +3,8 @@ package legacyconnector.v1_12_2.net.minecraftforge.fml.common;
 import legacyconnector.v1_12_2.net.minecraftforge.common.MinecraftForge;
 import legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.EventBus;
 import legacyconnector.v1_12_2.net.minecraftforge.fml.relauncher.Side;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 public class FMLCommonHandler {
     private static final FMLCommonHandler INSTANCE = new FMLCommonHandler();
@@ -40,7 +40,7 @@ public class FMLCommonHandler {
         } catch (RuntimeException | LinkageError e) {
             label = callable.getClass().getName();
         }
-        net.neoforged.fml.CrashReportCallables.registerCrashCallable(label == null ? callable.getClass().getName() : label, () -> {
+        net.minecraftforge.fml.CrashReportCallables.registerCrashCallable(label == null ? callable.getClass().getName() : label, () -> {
             try {
                 return callable.call();
             } catch (Throwable t) {
@@ -134,7 +134,7 @@ public class FMLCommonHandler {
     }
 
     public java.io.File getSavesDirectory() {
-        return net.neoforged.fml.loading.FMLPaths.GAMEDIR.get().resolve("saves").toFile();
+        return net.minecraftforge.fml.loading.FMLPaths.GAMEDIR.get().resolve("saves").toFile();
     }
 
     public void raiseException(Throwable exception, String message, boolean stopGame) {
@@ -152,13 +152,13 @@ public class FMLCommonHandler {
 
     /** The client's language code (en_us on a server). */
     public String getCurrentLanguage() {
-        if (!net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) return "en_us";
+        if (!net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) return "en_us";
         return ClientLanguage.get();
     }
 
     /** Opens a legacy screen on the client (FML's own screens and mods' ones). */
     public void showGuiScreen(Object clientGuiScreen) {
-        if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) ClientLanguage.show(clientGuiScreen);
+        if (net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) ClientLanguage.show(clientGuiScreen);
     }
 
     /** The modern level saves its own data; FML's save hooks have nothing to add. */

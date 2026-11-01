@@ -468,7 +468,7 @@ public class Item {
      * vanilla items' icons: {@code Items.dye.getIconFromDamage(4)} is lapis lazuli).
      */
     protected final IIcon mcc$vanillaItemIcon(int damage, int pass) {
-        if (!net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) return null;
+        if (!net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) return null;
         var modern = new ItemStack(this, 1, damage).mcc$modern();
         String name = org.kylepitcock.legacyconnector.v1_7_10.client.VanillaModelIcons.itemName(modern.getItem(), pass);
         return name == null ? null : VANILLA_ICONS.registerIcon("minecraft:" + name);
@@ -666,12 +666,12 @@ public class Item {
     /** Set while a capability answers: an item whose capability calls these methods back gets 0 instead of looping. */
     private static final ThreadLocal<Boolean> MCC$IN_ENERGY = ThreadLocal.withInitial(() -> Boolean.FALSE);
 
-    private static net.neoforged.neoforge.energy.IEnergyStorage mcc$energy(ItemStack stack) {
+    private static net.minecraftforge.energy.IEnergyStorage mcc$energy(ItemStack stack) {
         if (stack == null || MCC$IN_ENERGY.get()) return null;
         var modern = ItemStack.mcc$toModern(stack);
         if (modern.isEmpty()) return null;
         try {
-            return modern.getCapability(net.neoforged.neoforge.capabilities.Capabilities.EnergyStorage.ITEM);
+            return modern.getCapability(net.minecraftforge.common.capabilities.ForgeForgeCapabilities.ENERGY);
         } catch (RuntimeException e) {
             return null;
         }

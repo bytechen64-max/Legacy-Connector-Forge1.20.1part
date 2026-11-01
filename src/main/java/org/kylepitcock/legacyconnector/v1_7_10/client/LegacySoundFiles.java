@@ -161,7 +161,7 @@ public final class LegacySoundFiles {
             if (lowerCaseIndex != null) return lowerCaseIndex;
             index = new HashMap<>();
             try {
-                for (var info : net.neoforged.fml.ModList.get().getModFiles()) {
+                for (var info : net.minecraftforge.fml.ModList.get().getModFiles()) {
                     Path root = info.getFile().getSecureJar().getRootPath();
                     try (Stream<Path> files = Files.walk(root)) {
                         for (Path p : (Iterable<Path>) files::iterator) {

@@ -12,7 +12,7 @@ public class FakePlayerFactory {
 
     public static FakePlayer get(WorldServer world, GameProfile username) {
         ServerLevel level = (ServerLevel) world.mcc$fullLevel();
-        return (FakePlayer) EntityBridge.wrap(net.neoforged.neoforge.common.util.FakePlayerFactory.get(level, username));
+        return (FakePlayer) EntityBridge.wrap(net.minecraftforge.common.util.FakePlayerFactory.get(level, username));
     }
 
     public static FakePlayer getMinecraft(WorldServer world) {

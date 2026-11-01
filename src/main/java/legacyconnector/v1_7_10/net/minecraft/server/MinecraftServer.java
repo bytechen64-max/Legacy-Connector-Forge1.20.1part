@@ -10,7 +10,7 @@ import legacyconnector.v1_7_10.net.minecraft.util.IChatComponent;
 import legacyconnector.v1_7_10.net.minecraft.world.World;
 import legacyconnector.v1_7_10.net.minecraft.world.WorldServer;
 import net.minecraft.server.level.ServerLevel;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.kylepitcock.legacyconnector.v1_7_10.bridge.DimensionBridge;
 
 /** View over the running modern server. */

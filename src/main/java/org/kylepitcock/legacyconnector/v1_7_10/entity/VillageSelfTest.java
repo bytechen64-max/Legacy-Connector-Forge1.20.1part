@@ -7,8 +7,8 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.StructureTags;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -20,7 +20,7 @@ public final class VillageSelfTest {
 
     public static void register() {
         if (!Boolean.getBoolean("legacyconnector.entitySelfTest")) return;
-        NeoForge.EVENT_BUS.addListener((ServerStartedEvent e) -> run(e.getServer()));
+        MinecraftForge.EVENT_BUS.addListener((ServerStartedEvent e) -> run(e.getServer()));
     }
 
     private static void run(MinecraftServer server) {
@@ -66,7 +66,7 @@ public final class VillageSelfTest {
         log.info("VILLAGE TEST: village near {} {}; blocks of mods in the 9x9 chunks around it: {}; villagers loaded: {}", found.getX(), found.getZ(), blocks, villagers);
         final int[] ticks = {0};
         final int fcx = cx, fcz = cz;
-        NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.tick.ServerTickEvent.Post e) -> {
+        MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.tick.ServerTickEvent.Post e) -> {
             if (++ticks[0] != 600) return;
             int stone = 0, wallgen = 0;
             BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();

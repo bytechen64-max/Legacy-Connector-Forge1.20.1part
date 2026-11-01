@@ -88,7 +88,7 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData {
     }
 
     private static net.minecraft.world.level.storage.PlayerDataStorage mcc$playerStorage() {
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server == null) return null;
         try {
             var f = net.minecraft.server.MinecraftServer.class.getDeclaredField("playerDataStorage");

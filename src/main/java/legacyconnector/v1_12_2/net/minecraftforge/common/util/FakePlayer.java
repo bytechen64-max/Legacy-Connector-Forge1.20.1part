@@ -17,16 +17,16 @@ public class FakePlayer extends EntityPlayerMP {
         super(mcc$create(world, profile));
     }
 
-    public FakePlayer(net.neoforged.neoforge.common.util.FakePlayer modern) {
+    public FakePlayer(net.minecraftforge.common.util.FakePlayer modern) {
         super(modern);
     }
 
-    private static net.neoforged.neoforge.common.util.FakePlayer mcc$create(legacyconnector.v1_12_2.net.minecraft.world.World world, GameProfile profile) {
+    private static net.minecraftforge.common.util.FakePlayer mcc$create(legacyconnector.v1_12_2.net.minecraft.world.World world, GameProfile profile) {
         var level = world == null ? null : world.mcc$level();
         if (!(level instanceof net.minecraft.server.level.ServerLevel sl)) {
             throw new IllegalStateException("A fake player needs a server world");
         }
-        return net.neoforged.neoforge.common.util.FakePlayerFactory.get(sl, profile);
+        return net.minecraftforge.common.util.FakePlayerFactory.get(sl, profile);
     }
 
     @Override

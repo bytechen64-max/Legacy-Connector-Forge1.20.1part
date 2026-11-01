@@ -15,11 +15,11 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
+import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import org.kylepitcock.legacyconnector.v1_7_10.bridge.EntityBridge;
 
 /** Host of a non-living legacy entity (projectiles, orbs, special items, ...). */
-public class LegacyEntityHost extends net.minecraft.world.entity.Entity implements LegacyHost, IEntityWithComplexSpawn {
+public class LegacyEntityHost extends net.minecraft.world.entity.Entity implements LegacyHost, IEntityAdditionalSpawnData {
     static final EntityDataAccessor<CompoundTag> WATCHER = SynchedEntityData.defineId(LegacyEntityHost.class, EntityDataSerializers.COMPOUND_TAG);
 
     private Entity legacy;

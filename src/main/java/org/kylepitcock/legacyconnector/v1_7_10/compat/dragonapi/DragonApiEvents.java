@@ -6,9 +6,9 @@ import legacyconnector.v1_7_10.net.minecraft.item.ItemStack;
 import legacyconnector.v1_7_10.net.minecraft.world.World;
 import legacyconnector.v1_7_10.net.minecraftforge.common.MinecraftForge;
 import net.minecraft.world.level.Level;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.loading.FMLEnvironment;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import org.kylepitcock.legacyconnector.core.LegacyModRecord;
 import org.kylepitcock.legacyconnector.core.LegacyMods;
 import org.kylepitcock.legacyconnector.v1_7_10.bridge.BlockBridge;
@@ -101,8 +101,8 @@ public final class DragonApiEvents {
     public static void register(IEventBus bus) {
         org.kylepitcock.legacyconnector.v1_7_10.dimension.LegacyChunkGenerator.addPopulationInterceptor((world, chunkX, chunkZ, generator) ->
                 CHUNK_POPULATION.wanted() && CHUNK_POPULATION.post(world, chunkX, chunkZ, generator, generator));
-        bus.addListener(EventPriority.HIGH, (net.neoforged.neoforge.event.level.BlockEvent.EntityPlaceEvent e) -> onPlace(e));
-        bus.addListener((net.neoforged.neoforge.event.tick.EntityTickEvent.Pre e) -> {
+        bus.addListener(EventPriority.HIGH, (net.minecraftforge.event.level.BlockEvent.EntityPlaceEvent e) -> onPlace(e));
+        bus.addListener((net.minecraftforge.event.tick.EntityTickEvent.Pre e) -> {
             var entity = e.getEntity();
             if (entity instanceof net.minecraft.world.entity.item.ItemEntity) {
                 if (ITEM_UPDATE.wanted()) ITEM_UPDATE.post(EntityBridge.wrap(entity));
@@ -110,7 +110,7 @@ public final class DragonApiEvents {
                 if (XP_UPDATE.wanted()) XP_UPDATE.post(EntityBridge.wrap(entity));
             }
         });
-        bus.addListener((net.neoforged.neoforge.event.tick.PlayerTickEvent.Post e) -> {
+        bus.addListener((net.minecraftforge.event.tick.PlayerTickEvent.Post e) -> {
             if (!ITEMSTACK_UPDATE.wanted()) return;
             var player = e.getEntity();
             var items = player.getInventory().items;
@@ -122,21 +122,21 @@ public final class DragonApiEvents {
                 ITEMSTACK_UPDATE.post(ItemStack.mcc$wrap(stack), legacy, i, i == player.getInventory().selected);
             }
         });
-        bus.addListener((net.neoforged.neoforge.event.level.BlockEvent.FarmlandTrampleEvent e) -> {
+        bus.addListener((net.minecraftforge.event.level.BlockEvent.FarmlandTrampleEvent e) -> {
             if (!FARMLAND_TRAMPLE.wanted() || !(e.getLevel() instanceof Level level)) return;
             var p = e.getPos();
             Event ev = FARMLAND_TRAMPLE.create(World.mcc$wrap(level), p.getX(), p.getY(), p.getZ(), EntityBridge.wrap(e.getEntity()), e.getFallDistance());
             // DragonAPI: DENY keeps the farmland, ALLOW tramples, DEFAULT keeps vanilla's decision (NeoForge only asks when vanilla would trample)
             if (ev != null && (FARMLAND_TRAMPLE.send(ev) || ev.getResult() == Event.Result.DENY)) e.setCanceled(true);
         });
-        bus.addListener((net.neoforged.neoforge.event.entity.living.MobDespawnEvent e) -> {
-            if (e.getResult() != net.neoforged.neoforge.event.entity.living.MobDespawnEvent.Result.DEFAULT || e.getEntity().isPersistenceRequired()
+        bus.addListener((net.minecraftforge.event.entity.living.MobDespawnEvent e) -> {
+            if (e.getResult() != net.minecraftforge.event.entity.living.MobDespawnEvent.Result.DEFAULT || e.getEntity().isPersistenceRequired()
                     || !FAR_DESPAWN.wanted()) return;
             // the patched canDespawn() returned "vanilla && !post(event)": a cancelled event keeps the mob
             Event ev = FAR_DESPAWN.create(EntityBridge.wrap(e.getEntity()));
-            if (ev != null && FAR_DESPAWN.send(ev)) e.setResult(net.neoforged.neoforge.event.entity.living.MobDespawnEvent.Result.DENY);
+            if (ev != null && FAR_DESPAWN.send(ev)) e.setResult(net.minecraftforge.event.entity.living.MobDespawnEvent.Result.DENY);
         });
-        bus.addListener((net.neoforged.neoforge.event.entity.living.LivingBreatheEvent e) -> {
+        bus.addListener((net.minecraftforge.event.entity.living.LivingBreatheEvent e) -> {
             if (!DECREASE_AIR.wanted()) return;
             // the patched test: ALLOW loses air (even out of water), DENY keeps it, DEFAULT is vanilla's "inside water"
             Event ev = DECREASE_AIR.create(EntityBridge.wrap(e.getEntity()));
@@ -145,14 +145,14 @@ public final class DragonApiEvents {
             if (ev.getResult() == Event.Result.ALLOW) e.setCanBreathe(false);
             else if (ev.getResult() == Event.Result.DENY) e.setCanBreathe(true);
         });
-        bus.addListener((net.neoforged.neoforge.event.level.ExplosionEvent.Start e) -> {
+        bus.addListener((net.minecraftforge.event.level.ExplosionEvent.Start e) -> {
             if (!(e.getExplosion().getDirectSourceEntity() instanceof net.minecraft.world.entity.monster.Creeper creeper)
                     || e.getLevel().isClientSide() || !CREEPER_EXPLODE.wanted()) return;
             CREEPER_EXPLODE.post(EntityBridge.wrap(creeper)); // DragonAPI discarded the post result: not cancellable
         });
         // SetBlockEvent.Post: NeoForge has no event for every block change; a neighbour notification follows each change made
         // with the "update neighbours" flag (players, most mod and vanilla block changes), which is where this posts it.
-        bus.addListener((net.neoforged.neoforge.event.level.BlockEvent.NeighborNotifyEvent e) -> {
+        bus.addListener((net.minecraftforge.event.level.BlockEvent.NeighborNotifyEvent e) -> {
             if (!SET_BLOCK_POST.wanted() || !(e.getLevel() instanceof Level level)) return;
             var p = e.getPos();
             var chunk = World.mcc$wrap(level).getChunkFromChunkCoords(p.getX() >> 4, p.getZ() >> 4);
@@ -162,7 +162,7 @@ public final class DragonApiEvents {
     }
 
     /** PlayerPlaceBlockEvent(world, x, y, z, side, block, meta, held stack, player); cancelling it undoes the placement. */
-    private static void onPlace(net.neoforged.neoforge.event.level.BlockEvent.EntityPlaceEvent e) {
+    private static void onPlace(net.minecraftforge.event.level.BlockEvent.EntityPlaceEvent e) {
         if (!(e.getEntity() instanceof net.minecraft.world.entity.player.Player pl) || !(e.getLevel() instanceof Level level)
                 || !PLAYER_PLACE_BLOCK.wanted()) return;
         var p = e.getPos();

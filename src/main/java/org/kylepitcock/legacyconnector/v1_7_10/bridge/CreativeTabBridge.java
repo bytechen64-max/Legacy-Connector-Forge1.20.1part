@@ -12,7 +12,7 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
+import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import org.kylepitcock.legacyconnector.core.Ids;
 import org.kylepitcock.legacyconnector.core.registry.LegacyRegistrar;
 

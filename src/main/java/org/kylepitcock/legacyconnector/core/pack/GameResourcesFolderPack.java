@@ -26,8 +26,8 @@ import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
 import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.resources.IoSupplier;
-import net.neoforged.fml.loading.FMLPaths;
-import net.neoforged.neoforge.event.AddPackFindersEvent;
+import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.event.AddPackFindersEvent;
 
 /**
  * Folders 1.7.10 served as assets: {@code <game dir>/resources/<domain>/<path>} (Custom Main Menu keeps its images in

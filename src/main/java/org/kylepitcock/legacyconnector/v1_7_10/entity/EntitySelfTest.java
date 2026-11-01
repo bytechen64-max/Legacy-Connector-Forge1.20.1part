@@ -12,9 +12,9 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobSpawnType;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.server.ServerStartedEvent;
+import net.minecraftforge.event.TickEvent.ServerTickEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,10 +34,10 @@ public final class EntitySelfTest {
 
     public static void register() {
         if (!Boolean.getBoolean("legacyconnector.entitySelfTest")) return;
-        NeoForge.EVENT_BUS.addListener((ServerStartedEvent e) -> start(e.getServer()));
-        NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post e) -> tick());
+        MinecraftForge.EVENT_BUS.addListener((ServerStartedEvent e) -> start(e.getServer()));
+        MinecraftForge.EVENT_BUS.addListener((ServerTickEvent.Post e) -> tick());
         // Other dev fixtures may stop the server early: report what there is.
-        NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.server.ServerStoppingEvent e) -> {
+        MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.server.ServerStoppingEvent e) -> {
             if (ticks >= 0 && ticks < 100) {
                 ticks = 99;
                 tick();

@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 public final class ClientGui1122 {
     private ClientGui1122() {}
 
-    public static void onRegisterScreens(net.neoforged.neoforge.client.event.RegisterMenuScreensEvent event) {
+    public static void onRegisterScreens(net.minecraftforge.client.event.RegisterMenuScreensEvent event) {
         if (GuiBridge1122.menuType() != null) event.register(GuiBridge1122.menuType(), LegacyContainerScreen1122::new);
     }
 
@@ -101,7 +101,7 @@ public final class ClientGui1122 {
             case "GuiControls" -> new net.minecraft.client.gui.screens.options.controls.ControlsScreen(parent, mc.options);
             case "GuiIngameMenu" -> new net.minecraft.client.gui.screens.PauseScreen(true);
             case "GuiStats" -> mc.player == null ? null : new net.minecraft.client.gui.screens.achievement.StatsScreen(parent, mc.player.getStats());
-            case "GuiModList" -> new net.neoforged.neoforge.client.gui.ModListScreen(parent);
+            case "GuiModList" -> new net.minecraftforge.client.gui.ModListScreen(parent);
             case "GuiInventory" -> mc.player == null ? null : new net.minecraft.client.gui.screens.inventory.InventoryScreen(mc.player);
             case "GuiContainerCreative" -> mc.player == null ? null : new net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen(mc.player,
                     mc.player.connection.enabledFeatures(), mc.options.operatorItemsTab().get());

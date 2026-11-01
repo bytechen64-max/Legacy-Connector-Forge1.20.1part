@@ -262,7 +262,7 @@ public class KeyBinding implements Comparable<KeyBinding> {
 
     @SuppressWarnings("unchecked")
     private static Map<String, Integer> mcc$categoryOrder() {
-        if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
+        if (net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) {
             try {
                 var f = net.minecraft.client.KeyMapping.class.getDeclaredField("CATEGORY_SORT_ORDER");
                 f.setAccessible(true);

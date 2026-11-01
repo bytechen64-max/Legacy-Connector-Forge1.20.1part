@@ -2,10 +2,10 @@ package org.kylepitcock.legacyconnector.api;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.BlockCapability;
-import net.neoforged.neoforge.energy.IEnergyStorage;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
-import net.neoforged.neoforge.items.IItemHandler;
+import net.minecraftforge.common.capabilities.BlockCapability;
+import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.items.IItemHandler;
 import org.jetbrains.annotations.Nullable;
 import org.kylepitcock.legacyconnector.api.internal.BuiltinAdapters;
 
@@ -25,9 +25,9 @@ import org.kylepitcock.legacyconnector.api.internal.BuiltinAdapters;
  * <h2>Built-in adapters</h2>
  * Legacy Connector already registers these on every legacy tile of the matching kind, so addons do not need to:
  * <ul>
- *   <li>1.7.10 {@code IInventory}/{@code ISidedInventory} as {@code Capabilities.ItemHandler.BLOCK};</li>
- *   <li>1.7.10 Forge {@code IFluidHandler} as {@code Capabilities.FluidHandler.BLOCK};</li>
- *   <li>1.7.10 CoFH {@code IEnergyReceiver}/{@code IEnergyProvider} as {@code Capabilities.EnergyStorage.BLOCK} (1 RF = 1 FE);</li>
+ *   <li>1.7.10 {@code IInventory}/{@code ISidedInventory} as {@code ForgeCapabilities.ITEM_HANDLER};</li>
+ *   <li>1.7.10 Forge {@code IFluidHandler} as {@code ForgeCapabilities.FLUID_HANDLER};</li>
+ *   <li>1.7.10 CoFH {@code IEnergyReceiver}/{@code IEnergyProvider} as {@code ForgeCapabilities.ENERGY} (1 RF = 1 FE);</li>
  *   <li>1.12.2 tiles answering {@code CapabilityItemHandler.ITEM_HANDLER_CAPABILITY} / {@code CapabilityEnergy.ENERGY} as
  *       the item handler / fluid handler / energy capabilities.</li>
  * </ul>

@@ -8,8 +8,8 @@ import legacyconnector.v1_7_10.net.minecraft.world.ChunkPosition;
 import legacyconnector.v1_7_10.net.minecraft.world.gen.structure.MapGenStructure;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.CommandEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.CommandEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +37,7 @@ public final class LegacyStructures {
     private static synchronized void register() {
         if (registered) return;
         registered = true;
-        NeoForge.EVENT_BUS.addListener(LegacyStructures::onCommand);
+        MinecraftForge.EVENT_BUS.addListener(LegacyStructures::onCommand);
     }
 
     private static List<MapGenStructure> generators(String name) {

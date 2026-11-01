@@ -3,7 +3,7 @@ package org.kylepitcock.legacyconnector.v1_7_10.entity;
 import java.lang.reflect.Method;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.fml.util.ObfuscationReflectionHelper;
+import net.minecraftforge.fml.util.ObfuscationReflectionHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

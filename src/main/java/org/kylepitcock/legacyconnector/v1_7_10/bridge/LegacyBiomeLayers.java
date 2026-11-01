@@ -15,11 +15,11 @@ import net.minecraft.tags.BiomeTags;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.dimension.LevelStem;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
-import net.neoforged.neoforge.event.server.ServerStoppedEvent;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
+import net.minecraftforge.event.server.ServerStartedEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
 import org.kylepitcock.legacyconnector.core.worldgen.BiomePlacement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -94,9 +94,9 @@ public final class LegacyBiomeLayers {
         BiomePlacement.setEntries(LegacyBiomeClimate::entries);
         BiomePlacement.registerTerraBlender();
         // HIGHEST: the parameter list must hold the legacy biomes before anything lists the overworld's possible biomes.
-        NeoForge.EVENT_BUS.addListener(EventPriority.HIGHEST, LegacyBiomeLayers::onServerAboutToStart);
-        NeoForge.EVENT_BUS.addListener((ServerStoppedEvent e) -> unbind());
-        NeoForge.EVENT_BUS.addListener((ServerStartedEvent e) -> {
+        MinecraftForge.EVENT_BUS.addListener(EventPriority.HIGHEST, LegacyBiomeLayers::onServerAboutToStart);
+        MinecraftForge.EVENT_BUS.addListener((ServerStoppedEvent e) -> unbind());
+        MinecraftForge.EVENT_BUS.addListener((ServerStartedEvent e) -> {
             // a diagnostic (1089 biome source lookups): off the server thread, which the joining player waits for (perf.asyncBiomeSample)
             if (org.kylepitcock.legacyconnector.core.LegacyConfig.perfAsyncBiomeSample()) net.minecraft.Util.backgroundExecutor().execute(() -> logSample(e.getServer()));
             else logSample(e.getServer());

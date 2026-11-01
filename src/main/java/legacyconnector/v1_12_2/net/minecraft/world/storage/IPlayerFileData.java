@@ -26,7 +26,7 @@ public interface IPlayerFileData {
         }
 
         private static java.io.File dir() {
-            var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+            var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
             return server == null ? null : server.getWorldPath(net.minecraft.world.level.storage.LevelResource.PLAYER_DATA_DIR).toFile();
         }
 

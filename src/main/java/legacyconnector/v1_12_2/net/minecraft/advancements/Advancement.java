@@ -23,7 +23,7 @@ public class Advancement {
     }
 
     public Advancement getParent() {
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         var parent = holder.value().parent().orElse(null);
         return parent == null || server == null ? null : mcc$of(server.getAdvancements().get(parent));
     }

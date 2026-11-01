@@ -26,13 +26,13 @@ import java.util.jar.Manifest;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-import net.neoforged.fml.ModLoadingIssue;
-import net.neoforged.fml.loading.FMLPaths;
-import net.neoforged.neoforgespi.ILaunchContext;
-import net.neoforged.neoforgespi.locating.IDiscoveryPipeline;
-import net.neoforged.neoforgespi.locating.IModFileCandidateLocator;
-import net.neoforged.neoforgespi.locating.IncompatibleFileReporting;
-import net.neoforged.neoforgespi.locating.ModFileDiscoveryAttributes;
+import cpw.mods.jarhandling.SecureJar;
+import net.minecraftforge.fml.loading.FMLPaths;
+import net.minecraftforge.fml.loading.moddiscovery.ModFileParser;
+import net.minecraftforge.forgespi.locating.IModFile;
+import net.minecraftforge.forgespi.locating.IModLocator;
+import net.minecraftforge.forgespi.locating.ModFileFactory;
+import net.minecraftforge.forgespi.locating.ModFileLoadingException;
 import org.kylepitcock.legacyconnector.loader.shim.ClassInfo;
 import org.kylepitcock.legacyconnector.loader.shim.ShimIndex;
 import org.kylepitcock.legacyconnector.loader.synth.SynthDemand;
@@ -42,17 +42,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Entry point of the loader half, discovered by FML as an {@link IModFileCandidateLocator} service.
+ * Entry point of the loader half, discovered by FML as an {@link IModLocator} service.
  *
- * <p>Runs before the built-in mods-folder locator (higher priority), claims every legacy Forge jar in the mods
- * folder via {@link ILaunchContext#addLocated(Path)} so FML does not reject it as "made for an older Forge",
- * translates it into a cached NeoForge jar and submits that instead. The original jar is never modified.</p>
+ * <p>Forge 1.20.1 still uses the old discovery SPI: a locator returns the {@link IModFile}s it wants FML to load, and there is
+ * no "claim this path" call for files other locators would pick up. A legacy jar left in the top level of the mods folder would
+ * therefore also be offered to Forge's own mods-folder locator and rejected as "made for an older Forge". So the legacy jars are
+ * translated first and then <em>moved</em> into {@link #ORIGINALS_DIR} inside the mods folder before that locator lists it (the
+ * jar's bytes are never touched, only where it sits), and {@link #scanMods()} reports the translated jars instead. The folder is
+ * scanned again on the next start, so the move happens once per jar.</p>
+ *
+ * <p>{@code loader.relocateLegacyJars=false} in {@code config/legacyconnector.properties} disables the move for users who would
+ * rather keep their mods folder untouched; the legacy jars must then be kept outside the top level of the mods folder.</p>
  */
-public final class LegacyModLocator implements IModFileCandidateLocator {
+public final class LegacyModLocator implements IModLocator {
     private static final Logger LOG = LoggerFactory.getLogger("Legacy Connector");
     /** Nested runtime (shim) mod inside the distributed loader jar. Absent in development. */
     static final String EMBEDDED_RUNTIME = "/META-INF/legacyconnector/legacyconnector-runtime.jar";
     static final String SHIM_INDEX_PROPERTY = "legacyconnector.shimIndex";
+    /** Where translated-and-moved legacy jars live (relative to the mods folder); Forge's mods-folder locator only lists the top level. */
+    static final String ORIGINALS_DIR = ".legacyconnector/originals";
 
     /**
      * 1.12 jars may carry libraries and coremods as nested jars named by the {@code ContainedDeps} manifest attribute (stored under
@@ -84,21 +92,68 @@ public final class LegacyModLocator implements IModFileCandidateLocator {
         }
     }
 
+    // ---------------------------------------------------------------------------------------------------------
+    // IModLocator (Forge 1.20.1 discovery SPI)
+    // ---------------------------------------------------------------------------------------------------------
+
     @Override
-    public int getPriority() {
-        return 100; // before ModsFolderLocator (0)
+    public String name() {
+        return "Legacy Connector legacy mods";
     }
 
     @Override
-    public void findCandidates(ILaunchContext context, IDiscoveryPipeline pipeline) {
+    public void initArguments(Map<String, ?> arguments) {
+        // nothing to read: the loader only uses the game/mods folders and its own config file
+    }
+
+    @Override
+    public boolean isValid(IModFile modFile) {
+        return true;
+    }
+
+    @Override
+    public void scanFile(IModFile modFile, java.util.function.Consumer<Path> pathConsumer) {
+        // nothing nested to expose: translated jars are flat mod jars
+    }
+
+    @Override
+    public List<IModLocator.ModFileOrException> scanMods() {
+        List<Path> outputs = new ArrayList<>();
+        try {
+            findCandidates(outputs);
+        } catch (RuntimeException e) {
+            // Every failure inside discovery is already logged where it happens; FML still starts, without the legacy mods.
+            LOG.error("Legacy Connector: legacy mod discovery failed", e);
+        }
+        List<IModLocator.ModFileOrException> files = new ArrayList<>();
+        for (Path p : outputs) {
+            try {
+                files.add(new IModLocator.ModFileOrException(toModFile(p), null));
+            } catch (RuntimeException e) {
+                LOG.error("Legacy Connector: FML cannot load the jar the loader generated ({})", p, e);
+                files.add(new IModLocator.ModFileOrException(null,
+                        new ModFileLoadingException("Legacy Connector could not hand " + p.getFileName() + " to FML: " + e)));
+            }
+        }
+        return files;
+    }
+
+    /** Wraps a jar of the cache in the {@link IModFile} FML loads it from. */
+    private IModFile toModFile(Path jar) {
+        return ModFileFactory.FACTORY.build(SecureJar.from(jar), this, ModFileParser::modsTomlParser);
+    }
+
+    private void findCandidates(List<Path> outputs) {
         Path gameDir = FMLPaths.GAMEDIR.get();
         Path modsDir = FMLPaths.MODSDIR.get();
         Path cacheDir = gameDir.resolve(".legacyconnector").resolve("cache");
+        Path originalsDir = modsDir.resolve(ORIGINALS_DIR);
+        List<Path> scanDirs = List.of(modsDir, modsDir.resolve("1.7.10"), modsDir.resolve("1.12.2"), originalsDir);
         try {
             Files.createDirectories(cacheDir);
             Path runtimeJar = extractRuntime(cacheDir);
             if (runtimeJar != null) {
-                pipeline.addPath(runtimeJar, ModFileDiscoveryAttributes.DEFAULT, IncompatibleFileReporting.ERROR);
+                outputs.add(runtimeJar);
             }
 
             ShimIndex index = loadShimIndex(runtimeJar);
@@ -110,17 +165,16 @@ public final class LegacyModLocator implements IModFileCandidateLocator {
             // CodeChickenLib); a jar present in both places is taken from mods/. These folders are also where jars that ship
             // launcher services (a shaded Mixin, as many 1.12.2 mods have) must go: NeoForge's early scan of mods/ itself
             // loads such jars as launcher services before anything can translate them, and the game stops.
-            for (Path dir : List.of(modsDir, modsDir.resolve("1.7.10"), modsDir.resolve("1.12.2"))) {
+            for (Path dir : scanDirs) {
                 if (!Files.isDirectory(dir)) continue;
                 try (Stream<Path> files = Files.list(dir)) {
                     for (Path p : files.filter(f -> f.getFileName().toString().toLowerCase().endsWith(".jar"))
                             .sorted(Comparator.comparing(f -> f.getFileName().toString().toLowerCase())).toList()) {
-                        if (context.isLocated(p) || !seenNames.add(p.getFileName().toString().toLowerCase())) continue;
+                        if (!seenNames.add(p.getFileName().toString().toLowerCase())) continue;
                         try {
                             LegacyJar jar = LegacyJarInspector.inspect(p);
                             if (jar == null && LegacyJarInspector.takeDerivative(p)) {
                                 // a translated jar taken out of a cache: only Legacy Connector itself loads those, from its own cache
-                                context.addLocated(p);
                                 LOG.warn("Legacy Connector: {} is a translated copy of another mod made by Legacy Connector (not an original). "
                                         + "It is not loaded; put the original mod in mods/ instead and Legacy Connector translates it here.", p.getFileName());
                                 continue;
@@ -139,9 +193,9 @@ public final class LegacyModLocator implements IModFileCandidateLocator {
             // Scala, trove, ... are handed to FML only when a legacy mod uses them and nothing else in the pack provides them.
             Set<Path> libraryKeep = new HashSet<>();
             LIBRARY_SKIPS.clear();
-            BundledLibraries.Result libraries = BundledLibraries.provide(pipeline, cacheDir,
+            BundledLibraries.Result libraries = BundledLibraries.provide(outputs::add, cacheDir,
                     legacy.stream().filter(j -> skipReason(j) == null && LibraryBridges.replacing(j, bridges) == null && LibraryBridges.obsoleteReason(j) == null).toList(),
-                    List.of(modsDir, modsDir.resolve("1.7.10"), modsDir.resolve("1.12.2")), LOADER_DIGEST, libraryKeep);
+                    scanDirs, LOADER_DIGEST, libraryKeep);
             LIBRARY_SKIPS.putAll(libraries.unsupported());
             libraryNotes = libraries.notes();
             LegacyVersion.setBridgedRoots(bridges.stream().map(LibraryBridges.Bridge::apiRoot).toList());
@@ -181,7 +235,7 @@ public final class LegacyModLocator implements IModFileCandidateLocator {
                     return coremods.get().apply(name, bytes);
                 }
             });
-            LegacyModDecl.setFmlIds(fmlIdRenames(loading, legacy, List.of(modsDir, modsDir.resolve("1.7.10"), modsDir.resolve("1.12.2"))));
+            LegacyModDecl.setFmlIds(fmlIdRenames(loading, legacy, scanDirs));
             if (!LegacyModDecl.fmlIds().isEmpty()) LOG.info("Legacy Connector: mod ids a modern mod also uses; the legacy mods load as {}", LegacyModDecl.fmlIds());
             org.kylepitcock.legacyconnector.loader.meta.ModMetadataGenerator.setLoadedMods(legacy.stream()
                     .filter(j -> skipReason(j) == null && LibraryBridges.replacing(j, bridges) == null && LibraryBridges.obsoleteReason(j) == null)
@@ -193,7 +247,7 @@ public final class LegacyModLocator implements IModFileCandidateLocator {
             keep.add(cacheDir.resolve("coremod-api.jar"));
             // Mods link against each other (RotaryCraft extends DragonAPI classes), so a jar's translation depends on
             // every legacy jar of its version: that set is part of the cache key, and peers are scanned on a miss.
-            var crossVersion = crossVersionPackages(loading, legacy, List.of(modsDir, modsDir.resolve("1.7.10"), modsDir.resolve("1.12.2")));
+            var crossVersion = crossVersionPackages(loading, legacy, scanDirs);
             if (!crossVersion.modernClashes().isEmpty()) {
                 Set<String> pkgs = crossVersion.modernClashes();
                 LOG.info("Legacy Connector: {} packages that legacy jars share with modern mods are relocated in the legacy jars: {}",
@@ -231,18 +285,15 @@ public final class LegacyModLocator implements IModFileCandidateLocator {
                 }
             }
             for (LegacyJar jar : legacy) {
-                // Claim the original even if we end up skipping it, so FML does not raise its own
-                // "this is an old Forge mod" error on top of ours.
-                context.addLocated(jar.path);
+                // FML\'s own mods-folder locator must not see the original, so it is moved out of its way
+                // (see relocateOriginals); the translated jar is what it gets instead.
                 LibraryBridges.Bridge replacedBy = LibraryBridges.replacing(jar, bridges);
                 String obsolete = LibraryBridges.obsoleteReason(jar);
                 String skip = replacedBy != null ? "replaced by " + replacedBy.modernModId() + " (legacy " + replacedBy.legacyModId()
                         + " API bridged)" : obsolete != null ? "not loaded: " + obsolete : skipReason(jar);
                 if (skip != null) {
                     outcomes.put(jar, skip);
-                    // Unknown translation keys are displayed verbatim by FML's error screen. Bridged libraries are expected.
-                    if (replacedBy == null && obsolete == null) pipeline.addIssue(ModLoadingIssue.warning("Legacy Connector skipped " + jar.fileName() + ": " + skip.replace("'", ""))
-                            .withAffectedPath(jar.path));
+                    if (replacedBy == null && obsolete == null) LOG.warn("Legacy Connector: skipped {}: {}", jar.fileName(), skip.replace("\'", ""));
                     continue;
                 }
                 boolean translating = false;
@@ -283,8 +334,6 @@ public final class LegacyModLocator implements IModFileCandidateLocator {
                 } catch (Exception e) {
                     LOG.error("Legacy Connector: failed to translate {}", jar.fileName(), e);
                     outcomes.put(jar, "translation failed: " + e);
-                    pipeline.addIssue(ModLoadingIssue.error("Legacy Connector could not translate " + jar.fileName())
-                            .withAffectedPath(jar.path).withCause(e));
                 }
                 if (translating) progress.finished();
             }
@@ -297,7 +346,7 @@ public final class LegacyModLocator implements IModFileCandidateLocator {
                 if (e.getValue().isEmpty()) continue;
                 Path synthJar = buildSynthJar(cacheDir, e.getKey(), index, e.getValue());
                 keep.add(synthJar);
-                pipeline.addPath(synthJar, ModFileDiscoveryAttributes.DEFAULT, IncompatibleFileReporting.ERROR);
+                outputs.add(synthJar);
             }
 
             SplitPackageResolver.Outcome split = SplitPackageResolver.resolve(translated, cacheDir);
@@ -305,12 +354,13 @@ public final class LegacyModLocator implements IModFileCandidateLocator {
                 LOG.info("Legacy Connector: {} packages shipped by several legacy jars were merged into {}",
                         split.sharedPackages().size(), split.sharedLibrary().getFileName());
                 keep.add(split.sharedLibrary());
-                pipeline.addPath(split.sharedLibrary(), ModFileDiscoveryAttributes.DEFAULT, IncompatibleFileReporting.ERROR);
+                outputs.add(split.sharedLibrary());
             }
             for (Path p : split.jars()) {
                 keep.add(p);
-                pipeline.addPath(p, ModFileDiscoveryAttributes.DEFAULT, IncompatibleFileReporting.ERROR);
+                outputs.add(p);
             }
+            relocateOriginals(legacy, modsDir, originalsDir);
             writeReport(gameDir, outcomes, split);
             pruneCache(cacheDir, keep);
         } catch (IOException e) {
@@ -334,6 +384,39 @@ public final class LegacyModLocator implements IModFileCandidateLocator {
             HASHED.clear();
         } catch (RuntimeException | LinkageError e) {
             LOG.debug("Legacy Connector: could not release the loader's tables", e);
+        }
+    }
+
+    /**
+     * Moves the legacy jars out of the top level of the mods folder, where Forge's own mods-folder locator would list them and
+     * stop the game with "built for an older Forge". Forge 1.20.1 has no way to hand a path to FML and have the other locators
+     * skip it (NeoForge's {@code IDiscoveryPipeline} has no equivalent here), so the file itself moves; its content is never
+     * changed. A jar that cannot be moved (read-only folder) stays where it is and is reported.
+     */
+    private static void relocateOriginals(List<LegacyJar> legacy, Path modsDir, Path originalsDir) {
+        if (!Boolean.parseBoolean(LibraryBridges.readConfig(modsDir).getProperty("loader.relocateLegacyJars", "true").trim())) {
+            LOG.warn("Legacy Connector: loader.relocateLegacyJars=false: the legacy jars stay in the top level of the mods folder, so "
+                    + "Forge's own mods-folder locator also reads them and rejects them as built for an older Forge. Keep legacy jars in "
+                    + "mods/1.7.10 or mods/1.12.2 instead.");
+            return;
+        }
+        try {
+            Files.createDirectories(originalsDir);
+        } catch (IOException e) {
+            LOG.warn("Legacy Connector: cannot create {}, the legacy jars stay in the mods folder", originalsDir, e);
+            return;
+        }
+        Path root = originalsDir.toAbsolutePath().normalize();
+        for (LegacyJar jar : legacy) {
+            Path source = jar.path.toAbsolutePath().normalize();
+            if (!Files.isRegularFile(source) || root.equals(source.getParent())) continue;
+            Path target = root.resolve(source.getFileName());
+            for (int n = 2; Files.exists(target); n++) target = root.resolve(n + "-" + source.getFileName());
+            try {
+                Files.move(source, target);
+            } catch (IOException e) {
+                LOG.warn("Legacy Connector: could not move {} out of the mods folder; Forge will also read it and reject it", source, e);
+            }
         }
     }
 
@@ -374,7 +457,7 @@ public final class LegacyModLocator implements IModFileCandidateLocator {
                 for (Path p : files.filter(f -> f.getFileName().toString().toLowerCase().endsWith(".jar")).toList()) {
                     if (p.getFileName().toString().toLowerCase().startsWith("legacyconnector") || legacyPaths.contains(p.toAbsolutePath().normalize())) continue;
                     try (java.util.zip.ZipFile zip = new java.util.zip.ZipFile(p.toFile())) {
-                        var e = zip.getEntry("META-INF/neoforge.mods.toml");
+                        var e = zip.getEntry("META-INF/mods.toml");
                         if (e == null) continue;
                         String toml = new String(zip.getInputStream(e).readAllBytes(), StandardCharsets.UTF_8);
                         Set<String> ids = new HashSet<>();
@@ -568,7 +651,7 @@ public final class LegacyModLocator implements IModFileCandidateLocator {
     /** "CLIENT" or "SERVER". Dist is read reflectively: its class is not on the loader's compile classpath. */
     private static String side() {
         try {
-            Object dist = net.neoforged.fml.loading.FMLLoader.class.getMethod("getDist").invoke(null);
+            Object dist = net.minecraftforge.fml.loading.FMLLoader.class.getMethod("getDist").invoke(null);
             return String.valueOf(dist).equals("CLIENT") ? "CLIENT" : "SERVER";
         } catch (ReflectiveOperationException | RuntimeException e) {
             return "CLIENT";

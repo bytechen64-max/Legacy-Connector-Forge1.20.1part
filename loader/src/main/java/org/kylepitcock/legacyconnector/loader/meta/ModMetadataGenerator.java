@@ -15,7 +15,7 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Opcodes;
 
 /**
- * Produces what NeoForge needs to load a translated jar as an ordinary mod: a {@code neoforge.mods.toml}
+ * Produces what Forge needs to load a translated jar as an ordinary mod: a {@code mods.toml}
  * and, per legacy mod, a tiny {@code @Mod}-annotated entrypoint class that hands control to the shim.
  */
 public final class ModMetadataGenerator {
@@ -78,7 +78,7 @@ public final class ModMetadataGenerator {
     private static void dependency(StringBuilder sb, String owner, String target, boolean required, String ordering) {
         sb.append("[[dependencies.").append(owner).append("]]\n");
         sb.append("modId=").append(q(target)).append('\n');
-        sb.append("type=").append(q(required ? "required" : "optional")).append('\n');
+        sb.append("mandatory=").append(required ? "true" : "false").append('\n');
         // Legacy version ranges compare against legacy version strings that rarely follow Maven ordering.
         sb.append("versionRange=\"*\"\n");
         sb.append("ordering=").append(q(ordering)).append('\n');
@@ -120,11 +120,11 @@ public final class ModMetadataGenerator {
         String name = entrypointName(mod);
         ClassWriter cw = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         cw.visit(Opcodes.V17, Opcodes.ACC_PUBLIC | Opcodes.ACC_FINAL | Opcodes.ACC_SUPER, name, null, "java/lang/Object", null);
-        AnnotationVisitor av = cw.visitAnnotation("Lnet/neoforged/fml/common/Mod;", true);
+        AnnotationVisitor av = cw.visitAnnotation("Lnet/minecraftforge/fml/common/Mod;", true);
         av.visit("value", mod.fmlId());
         av.visitEnd();
 
-        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "(Lnet/neoforged/bus/api/IEventBus;Lnet/neoforged/fml/ModContainer;)V", null, null);
+        MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "(Lnet/minecraftforge/eventbus/api/IEventBus;Lnet/minecraftforge/fml/ModContainer;)V", null, null);
         mv.visitCode();
         mv.visitVarInsn(Opcodes.ALOAD, 0);
         mv.visitMethodInsn(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V", false);
@@ -134,7 +134,7 @@ public final class ModMetadataGenerator {
         mv.visitVarInsn(Opcodes.ALOAD, 1);
         mv.visitVarInsn(Opcodes.ALOAD, 2);
         mv.visitMethodInsn(Opcodes.INVOKESTATIC, BOOTSTRAP, "construct",
-                "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lnet/neoforged/bus/api/IEventBus;Lnet/neoforged/fml/ModContainer;)V", false);
+                "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Lnet/minecraftforge/eventbus/api/IEventBus;Lnet/minecraftforge/fml/ModContainer;)V", false);
         mv.visitInsn(Opcodes.RETURN);
         mv.visitMaxs(0, 0);
         mv.visitEnd();

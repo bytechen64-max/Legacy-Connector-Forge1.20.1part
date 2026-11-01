@@ -23,7 +23,7 @@ public class EnchantWithLevels extends LootFunction {
 
     @Override
     public ItemStack apply(ItemStack stack, Random rand, LootContext context) {
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (stack == null || server == null) return stack;
         try {
             var access = server.registryAccess();

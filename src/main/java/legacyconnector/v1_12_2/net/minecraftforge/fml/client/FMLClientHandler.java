@@ -76,7 +76,7 @@ public class FMLClientHandler {
     }
 
     public java.io.File getSavesDir() {
-        return net.neoforged.fml.loading.FMLPaths.GAMEDIR.get().resolve("saves").toFile();
+        return net.minecraftforge.fml.loading.FMLPaths.GAMEDIR.get().resolve("saves").toFile();
     }
 
     public String getCurrentLanguage() {
@@ -128,7 +128,7 @@ public class FMLClientHandler {
         if (legacy != null && legacy.getSource() != null && legacy.getSource().exists()) {
             return legacy.getSource().isDirectory() ? new FMLFolderResourcePack(legacy) : new FMLFileResourcePack(legacy);
         }
-        var file = modId == null ? null : net.neoforged.fml.ModList.get().getModFileById(modId);
+        var file = modId == null ? null : net.minecraftforge.fml.ModList.get().getModFileById(modId);
         if (file == null) return null;
         java.io.File path = file.getFile().getFilePath().toFile();
         return path.isDirectory() ? new legacyconnector.v1_12_2.net.minecraft.client.resources.FolderResourcePack(path)

@@ -9,8 +9,8 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import org.kylepitcock.legacyconnector.v1_7_10.dimension.LegacyDimensions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,7 +26,7 @@ public final class DimensionSelfTest {
 
     public static void register() {
         if (!Boolean.getBoolean("legacyconnector.entitySelfTest")) return;
-        NeoForge.EVENT_BUS.addListener((ServerStartedEvent e) -> run(e.getServer()));
+        MinecraftForge.EVENT_BUS.addListener((ServerStartedEvent e) -> run(e.getServer()));
     }
 
     private static void run(MinecraftServer server) {

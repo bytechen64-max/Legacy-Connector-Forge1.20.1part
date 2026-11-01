@@ -25,8 +25,8 @@ import net.minecraft.world.level.dimension.LevelStem;
 import net.minecraft.world.level.storage.DerivedLevelData;
 import net.minecraft.world.level.storage.LevelStorageSource;
 import net.minecraft.world.level.storage.WorldData;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.level.LevelEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.level.LevelEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -114,7 +114,7 @@ public final class RuntimeDimensions {
         overworld.getWorldBorder().addListener(new BorderChangeListener.DelegateBorderChangeListener(level.getWorldBorder()));
         server.forgeGetWorldMap().put(key, level);
         server.markWorldsDirty();
-        NeoForge.EVENT_BUS.post(new LevelEvent.Load(level));
+        MinecraftForge.EVENT_BUS.post(new LevelEvent.Load(level));
         return level;
     }
 

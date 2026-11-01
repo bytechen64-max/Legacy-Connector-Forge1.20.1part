@@ -103,7 +103,7 @@ public abstract class EntityPlayer extends EntityLivingBase {
 
     private static java.lang.reflect.Field mcc$enchantmentSeedField() {
         try {
-            return net.neoforged.fml.util.ObfuscationReflectionHelper.findField(Player.class, "enchantmentSeed");
+            return net.minecraftforge.fml.util.ObfuscationReflectionHelper.findField(Player.class, "enchantmentSeed");
         } catch (RuntimeException e) {
             return null;
         }
@@ -542,7 +542,7 @@ public abstract class EntityPlayer extends EntityLivingBase {
     /** Baubles' slots, answered from Curios when the Baubles bridge is active (Curios installed). */
     private static boolean mcc$baubles(legacyconnector.v1_12_2.net.minecraftforge.common.capabilities.Capability<?> capability) {
         return capability == legacyconnector.v1_12_2.baubles.api.cap.BaublesCapabilities.CAPABILITY_BAUBLES
-                && net.neoforged.fml.ModList.get() != null && net.neoforged.fml.ModList.get().isLoaded("curios");
+                && net.minecraftforge.fml.ModList.get() != null && net.minecraftforge.fml.ModList.get().isLoaded("curios");
     }
 
     // ------------------------------------------------------------------ hooks
@@ -780,7 +780,7 @@ public abstract class EntityPlayer extends EntityLivingBase {
 
     private static java.lang.reflect.Method mcc$shoulderSetter(String name) {
         try {
-            return net.neoforged.fml.util.ObfuscationReflectionHelper.findMethod(Player.class, name, net.minecraft.nbt.CompoundTag.class);
+            return net.minecraftforge.fml.util.ObfuscationReflectionHelper.findMethod(Player.class, name, net.minecraft.nbt.CompoundTag.class);
         } catch (RuntimeException e) {
             return null;
         }

@@ -33,7 +33,7 @@ public class EntityZombieVillager extends EntityZombie {
 
     private static java.lang.reflect.Field mcc$starterField() {
         try {
-            return net.neoforged.fml.util.ObfuscationReflectionHelper.findField(net.minecraft.world.entity.monster.ZombieVillager.class, "conversionStarter");
+            return net.minecraftforge.fml.util.ObfuscationReflectionHelper.findField(net.minecraft.world.entity.monster.ZombieVillager.class, "conversionStarter");
         } catch (RuntimeException e) {
             return null;
         }

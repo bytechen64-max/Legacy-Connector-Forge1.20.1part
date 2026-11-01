@@ -2,13 +2,13 @@ package legacyconnector.v1_12_2.net.minecraftforge.client.settings;
 
 /** Forge's key contexts: always, only with a screen open, only in game. Mapped onto NeoForge's identical contexts. */
 public enum KeyConflictContext implements IKeyConflictContext {
-    UNIVERSAL(net.neoforged.neoforge.client.settings.KeyConflictContext.UNIVERSAL),
-    GUI(net.neoforged.neoforge.client.settings.KeyConflictContext.GUI),
-    IN_GAME(net.neoforged.neoforge.client.settings.KeyConflictContext.IN_GAME);
+    UNIVERSAL(net.minecraftforge.client.settings.KeyConflictContext.UNIVERSAL),
+    GUI(net.minecraftforge.client.settings.KeyConflictContext.GUI),
+    IN_GAME(net.minecraftforge.client.settings.KeyConflictContext.IN_GAME);
 
-    private final net.neoforged.neoforge.client.settings.KeyConflictContext modern;
+    private final net.minecraftforge.client.settings.KeyConflictContext modern;
 
-    KeyConflictContext(net.neoforged.neoforge.client.settings.KeyConflictContext modern) {
+    KeyConflictContext(net.minecraftforge.client.settings.KeyConflictContext modern) {
         this.modern = modern;
     }
 
@@ -24,13 +24,13 @@ public enum KeyConflictContext implements IKeyConflictContext {
     }
 
     @Override
-    public net.neoforged.neoforge.client.settings.IKeyConflictContext mcc$modern() {
+    public net.minecraftforge.client.settings.IKeyConflictContext mcc$modern() {
         return modern;
     }
 
-    public static IKeyConflictContext mcc$of(net.neoforged.neoforge.client.settings.IKeyConflictContext modern) {
-        if (modern == net.neoforged.neoforge.client.settings.KeyConflictContext.GUI) return GUI;
-        if (modern == net.neoforged.neoforge.client.settings.KeyConflictContext.IN_GAME) return IN_GAME;
+    public static IKeyConflictContext mcc$of(net.minecraftforge.client.settings.IKeyConflictContext modern) {
+        if (modern == net.minecraftforge.client.settings.KeyConflictContext.GUI) return GUI;
+        if (modern == net.minecraftforge.client.settings.KeyConflictContext.IN_GAME) return IN_GAME;
         return UNIVERSAL;
     }
 }

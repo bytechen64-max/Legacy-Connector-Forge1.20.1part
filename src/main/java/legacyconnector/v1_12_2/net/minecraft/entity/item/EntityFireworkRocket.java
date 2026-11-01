@@ -37,7 +37,7 @@ public class EntityFireworkRocket extends legacyconnector.v1_12_2.net.minecraft.
 
     private static java.lang.reflect.Field mcc$attachedField() {
         try {
-            return net.neoforged.fml.util.ObfuscationReflectionHelper.findField(net.minecraft.world.entity.projectile.FireworkRocketEntity.class, "attachedToEntity");
+            return net.minecraftforge.fml.util.ObfuscationReflectionHelper.findField(net.minecraft.world.entity.projectile.FireworkRocketEntity.class, "attachedToEntity");
         } catch (RuntimeException e) {
             return null;
         }

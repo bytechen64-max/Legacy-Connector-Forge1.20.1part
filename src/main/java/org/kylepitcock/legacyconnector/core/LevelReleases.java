@@ -8,8 +8,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import net.minecraft.world.level.LevelAccessor;
-import net.neoforged.bus.api.EventPriority;
-import net.neoforged.bus.api.IEventBus;
+import net.minecraftforge.eventbus.api.EventPriority;
+import net.minecraftforge.eventbus.api.IEventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,14 +43,14 @@ public final class LevelReleases {
     public static void register(IEventBus bus) {
         if (!LegacyConfig.perfReleaseUnloadedLevels()) return;
         enabled = true;
-        bus.addListener(EventPriority.LOWEST, net.neoforged.neoforge.event.level.LevelEvent.Unload.class, e -> {
+        bus.addListener(EventPriority.LOWEST, net.minecraftforge.event.level.LevelEvent.Unload.class, e -> {
             LevelAccessor level = e.getLevel();
             if (level == null) return;
             DEAD.add(level);
             if (level instanceof net.minecraft.server.level.ServerLevel s) DEAD.add(s.getDataStorage());
             for (var a : LEVEL_ACTIONS) run(a, level);
         });
-        bus.addListener(EventPriority.LOWEST, net.neoforged.neoforge.event.server.ServerStoppedEvent.class, e -> {
+        bus.addListener(EventPriority.LOWEST, net.minecraftforge.event.server.ServerStoppedEvent.class, e -> {
             var server = e.getServer();
             DEAD.add(server);
             for (var a : SERVER_ACTIONS) run(a, server);

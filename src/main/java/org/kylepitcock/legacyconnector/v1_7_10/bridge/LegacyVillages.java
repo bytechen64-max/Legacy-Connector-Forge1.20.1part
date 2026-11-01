@@ -22,10 +22,10 @@ public final class LegacyVillages {
         org.kylepitcock.legacyconnector.core.registry.LegacyRegistrar.register(net.minecraft.core.registries.BuiltInRegistries.STRUCTURE_POOL_ELEMENT,
                 net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("legacyconnector", "legacy_village_building"), type);
         LegacyVillagePoolElement.TYPE = type;
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(LegacyVillages::describe);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener(LegacyVillages::describe);
     }
 
-    private static void describe(net.neoforged.neoforge.event.server.ServerAboutToStartEvent event) {
+    private static void describe(net.minecraftforge.event.server.ServerAboutToStartEvent event) {
         if (VillagerBridge.creationHandlers().isEmpty()) return;
         if (!org.kylepitcock.legacyconnector.core.LegacyConfig.villageLegacyBuildings()) {
             LOG.info("Legacy village buildings are switched off (villages.legacyBuildings=false)");

@@ -3,17 +3,17 @@ package org.kylepitcock.legacyconnector.v1_7_10.client;
 import legacyconnector.v1_7_10.net.minecraft.client.particle.EffectRenderer;
 import legacyconnector.v1_7_10.net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.Minecraft;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.client.event.ClientTickEvent;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.common.MinecraftForge;
 
 /** Ticks legacy particles with the client and draws them right after vanilla particles. */
 public final class LegacyParticles {
     private LegacyParticles() {}
 
     public static void register() {
-        NeoForge.EVENT_BUS.addListener(LegacyParticles::onTick);
-        NeoForge.EVENT_BUS.addListener(LegacyParticles::onRender);
+        MinecraftForge.EVENT_BUS.addListener(LegacyParticles::onTick);
+        MinecraftForge.EVENT_BUS.addListener(LegacyParticles::onRender);
     }
 
     private static EffectRenderer effects() {

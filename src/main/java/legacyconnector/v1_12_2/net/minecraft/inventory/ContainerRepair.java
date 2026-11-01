@@ -70,7 +70,7 @@ public class ContainerRepair extends Container {
         if (p != null && !creative) p.giveExperienceLevels(-maximumCost);
         float breakChance = 0.12F;
         if (p != null) {
-            breakChance = net.neoforged.neoforge.common.CommonHooks.onAnvilRepair(p, Stacks1122.toModern(stack), Stacks1122.toModern(inputSlots.getStackInSlot(0)),
+            breakChance = net.minecraftforge.common.ForgeHooks.onAnvilRepair(p, Stacks1122.toModern(stack), Stacks1122.toModern(inputSlots.getStackInSlot(0)),
                     Stacks1122.toModern(inputSlots.getStackInSlot(1)));
         }
         inputSlots.setInventorySlotContents(0, ItemStack.EMPTY);

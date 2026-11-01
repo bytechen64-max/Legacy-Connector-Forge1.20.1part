@@ -1,6 +1,6 @@
 package legacyconnector.v1_7_10.cpw.mods.fml.relauncher;
 
-import net.neoforged.fml.loading.FMLEnvironment;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 
 public final class FMLLaunchHandler {
     private FMLLaunchHandler() {}

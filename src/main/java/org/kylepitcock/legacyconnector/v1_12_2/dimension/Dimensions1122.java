@@ -118,7 +118,7 @@ public final class Dimensions1122 {
     /** Development check ({@code -Dlegacyconnector.entitySelfTest=true}): generates an area of every mod dimension and counts blocks. */
     public static void registerSelfTest() {
         if (!Boolean.getBoolean("legacyconnector.entitySelfTest")) return;
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.server.ServerStartedEvent e) -> selfTest(e.getServer()));
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.server.ServerStartedEvent e) -> selfTest(e.getServer()));
     }
 
     private static void selfTest(net.minecraft.server.MinecraftServer server) {

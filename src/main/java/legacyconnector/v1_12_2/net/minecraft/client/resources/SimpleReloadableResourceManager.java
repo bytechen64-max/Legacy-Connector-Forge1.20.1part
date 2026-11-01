@@ -61,14 +61,14 @@ public class SimpleReloadableResourceManager implements IReloadableResourceManag
                 org.slf4j.LoggerFactory.getLogger("LegacyConnector/Client").warn("A resource reload listener failed: {}", e.toString());
             }
         };
-        if (!net.neoforged.fml.loading.FMLEnvironment.dist.isClient() || com.mojang.blaze3d.systems.RenderSystem.isOnRenderThread()) run.run();
+        if (!net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient() || com.mojang.blaze3d.systems.RenderSystem.isOnRenderThread()) run.run();
         else com.mojang.blaze3d.systems.RenderSystem.recordRenderCall(run::run);
     }
 
     @Override
     public Set<String> getResourceDomains() {
         Set<String> out = new java.util.TreeSet<>();
-        for (var info : net.neoforged.fml.ModList.get().getMods()) out.add(info.getModId());
+        for (var info : net.minecraftforge.fml.ModList.get().getMods()) out.add(info.getModId());
         out.add("minecraft");
         return out;
     }
@@ -108,7 +108,7 @@ public class SimpleReloadableResourceManager implements IReloadableResourceManag
         String ns = location.getNamespace();
         String raw = location.getPath();
         String lower = org.kylepitcock.legacyconnector.core.Ids.normalizePath(raw);
-        for (var file : net.neoforged.fml.ModList.get().getModFiles()) {
+        for (var file : net.minecraftforge.fml.ModList.get().getModFiles()) {
             Path p = file.getFile().findResource("assets", ns, raw);
             if (p == null || !Files.isRegularFile(p)) p = file.getFile().findResource("assets", ns, lower);
             if (p != null && Files.isRegularFile(p)) {
@@ -117,7 +117,7 @@ public class SimpleReloadableResourceManager implements IReloadableResourceManag
                 if (first) return out;
             }
         }
-        if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) Client.find(location, out, first);
+        if (net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) Client.find(location, out, first);
         return out;
     }
 

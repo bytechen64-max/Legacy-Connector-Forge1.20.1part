@@ -63,7 +63,7 @@ final class PackSpill {
     }
 
     private static Path dir() {
-        return net.neoforged.fml.loading.FMLPaths.GAMEDIR.get().resolve(".legacyconnector").resolve("pack-spill");
+        return net.minecraftforge.fml.loading.FMLPaths.GAMEDIR.get().resolve(".legacyconnector").resolve("pack-spill");
     }
 
     /** Removes the scratch files of processes that no longer run (named {@code <pid>-<n>-<pack>.bin}). */

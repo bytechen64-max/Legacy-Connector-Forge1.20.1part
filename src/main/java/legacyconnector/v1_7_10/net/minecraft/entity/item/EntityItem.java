@@ -130,7 +130,7 @@ public class EntityItem extends Entity {
         if (target == null) return null;
         var server = mcc$server();
         var player = server == null ? null : server.getPlayerList().getPlayer(target);
-        return player != null ? player.getGameProfile().getName() : net.neoforged.neoforge.common.UsernameCache.getLastKnownUsername(target);
+        return player != null ? player.getGameProfile().getName() : net.minecraftforge.common.UsernameCache.getLastKnownUsername(target);
     }
 
     /**
@@ -152,7 +152,7 @@ public class EntityItem extends Entity {
         if (server == null) return null;
         var online = server.getPlayerList().getPlayerByName(name);
         if (online != null) return online.getUUID();
-        for (var e : net.neoforged.neoforge.common.UsernameCache.getMap().entrySet()) {
+        for (var e : net.minecraftforge.common.UsernameCache.getMap().entrySet()) {
             if (name.equalsIgnoreCase(e.getValue())) return e.getKey();
         }
         return null;

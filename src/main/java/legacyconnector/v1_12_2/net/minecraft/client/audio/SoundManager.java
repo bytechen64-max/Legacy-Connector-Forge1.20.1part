@@ -16,7 +16,7 @@ public class SoundManager {
     public java.util.Map<ISound, String> invPlayingSounds;
 
     public static java.util.Map<ISound, String> mcc$get$invPlayingSounds(SoundManager m) {
-        if (!net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) return new java.util.HashMap<>();
+        if (!net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) return new java.util.HashMap<>();
         return org.kylepitcock.legacyconnector.v1_12_2.client.LegacySounds1122.playing();
     }
 
@@ -65,7 +65,7 @@ public class SoundManager {
      */
     public static class SoundSystemStarterThread {
         private static boolean client() {
-            return net.neoforged.fml.loading.FMLEnvironment.dist.isClient();
+            return net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient();
         }
 
         public void newSource(boolean priority, String sourcename, java.net.URL url, String identifier, boolean toLoop, float x, float y, float z,

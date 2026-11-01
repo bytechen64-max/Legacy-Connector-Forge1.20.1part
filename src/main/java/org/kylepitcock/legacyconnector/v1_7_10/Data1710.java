@@ -29,7 +29,7 @@ public final class Data1710 implements GeneratedPack.Contributor {
         org.kylepitcock.legacyconnector.v1_7_10.bridge.LegacyWorldPresets.contributeData(out);
         org.kylepitcock.legacyconnector.v1_7_10.bridge.LegacyEntitySpawns.contribute(out);
         org.kylepitcock.legacyconnector.v1_7_10.dimension.LegacyDimensions.contribute(out);
-        if (net.neoforged.fml.ModList.get().isLoaded("curios")) org.kylepitcock.legacyconnector.compat.curios.CuriosBaubles.data(out);
+        if (net.minecraftforge.fml.ModList.get().isLoaded("curios")) org.kylepitcock.legacyconnector.compat.curios.CuriosBaubles.data(out);
         Map<String, Set<String>> tags = new LinkedHashMap<>();
         for (Block b : BlockBridge.modBlocks()) {
             if (b.mcc$modern == null) continue;

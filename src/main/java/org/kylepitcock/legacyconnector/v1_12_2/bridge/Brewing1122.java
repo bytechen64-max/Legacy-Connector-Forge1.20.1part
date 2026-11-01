@@ -8,7 +8,7 @@ import legacyconnector.v1_12_2.net.minecraftforge.common.brewing.BrewingRecipe;
 import legacyconnector.v1_12_2.net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import legacyconnector.v1_12_2.net.minecraftforge.common.brewing.IBrewingRecipe;
 import legacyconnector.v1_12_2.net.minecraftforge.common.brewing.VanillaBrewingRecipe;
-import net.neoforged.neoforge.event.brewing.RegisterBrewingRecipesEvent;
+import net.minecraftforge.event.brewing.RegisterBrewingRecipesEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +26,7 @@ public final class Brewing1122 {
     public static synchronized void ensureListener() {
         if (listening) return;
         listening = true;
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(RegisterBrewingRecipesEvent.class, Brewing1122::register);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener(RegisterBrewingRecipesEvent.class, Brewing1122::register);
     }
 
     private static void register(RegisterBrewingRecipesEvent event) {
@@ -74,8 +74,8 @@ public final class Brewing1122 {
                     var ingredient = Stacks1122.toModern(simple.getIngredient());
                     var output = Stacks1122.toModern(simple.getOutput());
                     if (!input.isEmpty() && !ingredient.isEmpty() && !output.isEmpty()) {
-                        builder.addRecipe(net.neoforged.neoforge.common.crafting.DataComponentIngredient.of(false, input),
-                                net.neoforged.neoforge.common.crafting.DataComponentIngredient.of(false, ingredient), output);
+                        builder.addRecipe(net.minecraftforge.common.crafting.DataComponentIngredient.of(false, input),
+                                net.minecraftforge.common.crafting.DataComponentIngredient.of(false, ingredient), output);
                         recipes++;
                         continue;
                     }
@@ -90,7 +90,7 @@ public final class Brewing1122 {
     }
 
     /** A potion mix involving a type with no modern potion: matched on the legacy stacks. */
-    private record LegacyMix(PotionHelper.MixPredicate<PotionType> mix) implements net.neoforged.neoforge.common.brewing.IBrewingRecipe {
+    private record LegacyMix(PotionHelper.MixPredicate<PotionType> mix) implements net.minecraftforge.common.brewing.IBrewingRecipe {
         @Override
         public boolean isInput(net.minecraft.world.item.ItemStack input) {
             return !input.isEmpty() && PotionUtils.getPotionFromItem(Stacks1122.fromModern(input)) == mix.mcc$input();
@@ -109,7 +109,7 @@ public final class Brewing1122 {
     }
 
     /** A Forge brewing recipe of a legacy mod, asked through legacy stacks. */
-    private record LegacyRecipe(IBrewingRecipe recipe) implements net.neoforged.neoforge.common.brewing.IBrewingRecipe {
+    private record LegacyRecipe(IBrewingRecipe recipe) implements net.minecraftforge.common.brewing.IBrewingRecipe {
         @Override
         public boolean isInput(net.minecraft.world.item.ItemStack input) {
             return !input.isEmpty() && recipe.isInput(Stacks1122.fromModern(input));

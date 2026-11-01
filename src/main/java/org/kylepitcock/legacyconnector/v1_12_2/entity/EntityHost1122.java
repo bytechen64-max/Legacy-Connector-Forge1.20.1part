@@ -16,11 +16,11 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
+import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import org.kylepitcock.legacyconnector.v1_12_2.bridge.EntityBridge1122;
 
 /** Host of a non-living 1.12.2 entity (projectiles, orbs, special items, vehicles, ...). */
-public class EntityHost1122 extends net.minecraft.world.entity.Entity implements Host1122, IEntityWithComplexSpawn {
+public class EntityHost1122 extends net.minecraft.world.entity.Entity implements Host1122, IEntityAdditionalSpawnData {
     static final EntityDataAccessor<CompoundTag> DATA = SynchedEntityData.defineId(EntityHost1122.class, EntityDataSerializers.COMPOUND_TAG);
 
     private Entity legacy;

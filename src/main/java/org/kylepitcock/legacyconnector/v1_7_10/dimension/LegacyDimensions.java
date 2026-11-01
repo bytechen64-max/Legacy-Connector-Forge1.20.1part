@@ -49,7 +49,7 @@ public final class LegacyDimensions {
 
     /** The provider of a mod dimension's level (null before the level exists). */
     public static WorldProvider provider(int dimension) {
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server == null) return null;
         var level = server.getLevel(levelKey(dimension));
         if (level == null) return null;

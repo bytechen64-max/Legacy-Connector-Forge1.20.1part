@@ -51,7 +51,7 @@ public class SkinManager {
                 // no client yet: profiles without textures
             }
             instance = new SkinManager(TextureManager.INSTANCE,
-                    net.neoforged.fml.loading.FMLPaths.GAMEDIR.get().resolve("assets").resolve("skins").toFile(), service);
+                    net.minecraftforge.fml.loading.FMLPaths.GAMEDIR.get().resolve("assets").resolve("skins").toFile(), service);
         }
         return instance;
     }

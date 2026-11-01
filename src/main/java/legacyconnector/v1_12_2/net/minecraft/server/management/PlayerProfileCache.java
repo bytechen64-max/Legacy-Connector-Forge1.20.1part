@@ -14,14 +14,14 @@ public class PlayerProfileCache {
     }
 
     private static net.minecraft.server.players.GameProfileCache modern() {
-        var s = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var s = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         return s == null ? null : s.getProfileCache();
     }
 
     /** The profiles of the online players by lower-cased name (the modern cache does not list its entries). */
     public static Map<String, ProfileEntry> mcc$get$usernameToProfileEntryMap(PlayerProfileCache cache) {
         Map<String, ProfileEntry> out = new java.util.HashMap<>();
-        var s = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var s = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (s != null) {
             for (var p : s.getPlayerList().getPlayers()) {
                 out.put(p.getGameProfile().getName().toLowerCase(java.util.Locale.ROOT), cache.new ProfileEntry(p.getGameProfile(), null));
@@ -55,7 +55,7 @@ public class PlayerProfileCache {
     }
 
     public static boolean isOnlineMode() {
-        var s = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var s = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         return s != null && s.usesAuthentication();
     }
 

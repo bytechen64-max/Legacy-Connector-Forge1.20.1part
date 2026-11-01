@@ -71,7 +71,7 @@ public class SPacketEntityProperties implements Packet<INetHandlerPlayClient> {
 
     @Override
     public net.minecraft.network.protocol.Packet<?> mcc$modern() {
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server == null) return null;
         for (var level : server.getAllLevels()) {
             if (level.getEntity(entityId) instanceof net.minecraft.world.entity.LivingEntity living) {

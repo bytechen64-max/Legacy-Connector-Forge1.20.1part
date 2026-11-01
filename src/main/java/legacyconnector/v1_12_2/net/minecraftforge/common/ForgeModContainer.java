@@ -64,7 +64,7 @@ public class ForgeModContainer extends legacyconnector.v1_12_2.net.minecraftforg
     }
 
     public static synchronized Configuration getConfig() {
-        if (config == null) config = new Configuration(new File(net.neoforged.fml.loading.FMLPaths.CONFIGDIR.get().toFile(), "forge.cfg"));
+        if (config == null) config = new Configuration(new File(net.minecraftforge.fml.loading.FMLPaths.CONFIGDIR.get().toFile(), "forge.cfg"));
         return config;
     }
 }

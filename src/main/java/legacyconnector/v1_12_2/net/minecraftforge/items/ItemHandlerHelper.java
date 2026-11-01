@@ -56,7 +56,7 @@ public class ItemHandlerHelper {
 
     public static void giveItemToPlayer(legacyconnector.v1_12_2.net.minecraft.entity.player.EntityPlayer player, ItemStack stack, int preferredSlot) {
         if (stack.isEmpty() || player == null || !(player.mcc$entity instanceof net.minecraft.world.entity.player.Player p)) return;
-        net.neoforged.neoforge.items.ItemHandlerHelper.giveItemToPlayer(p, org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.toModern(stack), preferredSlot);
+        net.minecraftforge.items.ItemHandlerHelper.giveItemToPlayer(p, org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.toModern(stack), preferredSlot);
     }
 
     /** The comparator signal of an item handler's fill level. */

@@ -48,7 +48,7 @@ public final class Hierarchy {
     /** Library namespaces present at runtime but possibly invisible to the loader's class loader (game layer). */
     private static final String[] RUNTIME_LIBRARIES = {"java/", "javax/", "jdk/", "sun/", "com/google/", "io/netty/", "org/apache/",
             "com/mojang/", "org/lwjgl/", "gnu/trove/", "it/unimi/", "org/slf4j/", "com/typesafe/", "org/objectweb/", "net/minecraft/",
-            "net/neoforged/", "org/joml/", "paulscode/", "com/ibm/icu/", "org/openjdk/nashorn/", "oshi/", "org/kylepitcock/",
+            "net/minecraftforge/", "org/joml/", "paulscode/", "com/ibm/icu/", "org/openjdk/nashorn/", "oshi/", "org/kylepitcock/",
             "scala/", "javax/vecmath/"};
 
     /**

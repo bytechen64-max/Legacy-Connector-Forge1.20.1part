@@ -75,7 +75,7 @@ public class RecipeBookServer extends RecipeBook {
     public void read(NBTTagCompound tag) {
         if (tag == null) return;
         if (mcc$server != null) {
-            var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+            var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
             if (server != null) mcc$server.fromNbt(tag.mcc$modern(), server.getRecipeManager());
             return;
         }

@@ -228,7 +228,7 @@ public class EnchantmentHelper {
      * {@code in_enchanting_table}); a book becomes an enchanted book. Unchanged while no server is running.
      */
     public static ItemStack addRandomEnchantment(java.util.Random random, ItemStack stack, int level) {
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (stack == null || server == null) return stack;
         var registry = server.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
         var modern = stack.mcc$modern();

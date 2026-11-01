@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import net.neoforged.fml.loading.FMLPaths;
+import net.minecraftforge.fml.loading.FMLPaths;
 
 /**
  * LaunchWrapper's entry point, as far as mods observe it: the shared blackboard, the class loader and the game

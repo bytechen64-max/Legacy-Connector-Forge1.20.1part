@@ -22,9 +22,9 @@ import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
 import net.minecraft.world.item.trading.ItemCost;
 import net.minecraft.world.item.trading.MerchantOffer;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.village.VillagerTradesEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.village.VillagerTradesEvent;
 import org.kylepitcock.legacyconnector.core.pack.GeneratedPack;
 import org.kylepitcock.legacyconnector.core.registry.LegacyRegistrar;
 import org.slf4j.Logger;
@@ -51,8 +51,8 @@ public final class VillagerBridge {
     public static void register() {
         if (registered) return;
         registered = true;
-        NeoForge.EVENT_BUS.addListener(VillagerBridge::onTrades);
-        NeoForge.EVENT_BUS.addListener(VillagerBridge::onJoin);
+        MinecraftForge.EVENT_BUS.addListener(VillagerBridge::onTrades);
+        MinecraftForge.EVENT_BUS.addListener(VillagerBridge::onJoin);
         GeneratedPack.addContributor(VillagerBridge::contribute);
     }
 

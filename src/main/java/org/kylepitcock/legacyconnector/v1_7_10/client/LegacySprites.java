@@ -15,7 +15,7 @@ import legacyconnector.v1_7_10.net.minecraft.client.renderer.texture.TextureMap;
 import legacyconnector.v1_7_10.net.minecraft.client.resources.IResource;
 import legacyconnector.v1_7_10.net.minecraft.client.resources.IResourceManager;
 import legacyconnector.v1_7_10.net.minecraft.util.ResourceLocation;
-import net.neoforged.fml.ModList;
+import net.minecraftforge.fml.ModList;
 import org.kylepitcock.legacyconnector.core.Ids;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

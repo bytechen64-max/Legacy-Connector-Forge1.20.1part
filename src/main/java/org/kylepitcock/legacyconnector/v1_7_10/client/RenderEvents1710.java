@@ -11,9 +11,9 @@ import legacyconnector.v1_7_10.net.minecraftforge.common.MinecraftForge;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.neoforged.neoforge.client.event.RenderHighlightEvent;
-import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.client.event.RenderHighlightEvent;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
+import net.minecraftforge.common.MinecraftForge;
 import org.kylepitcock.legacyconnector.v1_7_10.bridge.EntityBridge;
 
 /**
@@ -24,10 +24,10 @@ public final class RenderEvents1710 {
     private RenderEvents1710() {}
 
     public static void register() {
-        NeoForge.EVENT_BUS.addListener(RenderEvents1710::onStage);
-        NeoForge.EVENT_BUS.addListener(RenderEvents1710::onHighlight);
+        MinecraftForge.EVENT_BUS.addListener(RenderEvents1710::onStage);
+        MinecraftForge.EVENT_BUS.addListener(RenderEvents1710::onHighlight);
         // legacy code reads the movement keys as plain fields of thePlayer.movementInput: mirror them before the client tick handlers run
-        NeoForge.EVENT_BUS.addListener(net.neoforged.bus.api.EventPriority.HIGHEST, (net.neoforged.neoforge.client.event.ClientTickEvent.Pre e) -> {
+        MinecraftForge.EVENT_BUS.addListener(net.minecraftforge.eventbus.api.EventPriority.HIGHEST, (net.minecraftforge.client.event.ClientTickEvent.Pre e) -> {
             var local = Minecraft.getInstance().player;
             if (local != null && EntityBridge.wrap(local) instanceof legacyconnector.v1_7_10.net.minecraft.client.entity.EntityPlayerSP sp) sp.mcc$syncInput();
         });

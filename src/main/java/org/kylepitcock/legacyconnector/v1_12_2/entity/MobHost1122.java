@@ -22,7 +22,7 @@ import net.minecraft.world.entity.PathfinderMob;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.entity.IEntityWithComplexSpawn;
+import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import org.kylepitcock.legacyconnector.v1_12_2.bridge.EntityBridge1122;
 
 /**
@@ -30,7 +30,7 @@ import org.kylepitcock.legacyconnector.v1_12_2.bridge.EntityBridge1122;
  * jump control, attributes, equipment, combat and despawning; the legacy object's overrides run in their place (tick -> onUpdate,
  * aiStep -> onLivingUpdate, the server AI step -> the legacy task lists and updateAITasks, ...).
  */
-public class MobHost1122 extends PathfinderMob implements LivingHost1122, IEntityWithComplexSpawn, net.minecraft.world.entity.monster.RangedAttackMob {
+public class MobHost1122 extends PathfinderMob implements LivingHost1122, IEntityAdditionalSpawnData, net.minecraft.world.entity.monster.RangedAttackMob {
     static final EntityDataAccessor<CompoundTag> DATA = SynchedEntityData.defineId(MobHost1122.class, EntityDataSerializers.COMPOUND_TAG);
 
     private Entity legacy;
@@ -172,7 +172,7 @@ public class MobHost1122 extends PathfinderMob implements LivingHost1122, IEntit
             super.actuallyHurt(source, amount);
             return;
         }
-        damageContainers.push(new net.neoforged.neoforge.common.damagesource.DamageContainer(source, amount));
+        damageContainers.push(new net.minecraftforge.common.damagesource.DamageContainer(source, amount));
         try {
             super.actuallyHurt(source, amount);
         } finally {
@@ -486,9 +486,9 @@ public class MobHost1122 extends PathfinderMob implements LivingHost1122, IEntit
     }
 
     @Override
-    public boolean canDrownInFluidType(net.neoforged.neoforge.fluids.FluidType type) {
+    public boolean canDrownInFluidType(net.minecraftforge.fluids.FluidType type) {
         EntityLivingBase l = living();
-        if (l != null && type == net.neoforged.neoforge.common.NeoForgeMod.WATER_TYPE.value() && l.canBreatheUnderwater()) return false;
+        if (l != null && type == net.minecraftforge.common.ForgeMod.WATER_TYPE.value() && l.canBreatheUnderwater()) return false;
         return super.canDrownInFluidType(type);
     }
 

@@ -13,13 +13,13 @@ public class FakePlayerFactory {
 
     public static FakePlayer get(WorldServer world, GameProfile profile) {
         if (world == null || !(world.mcc$level() instanceof net.minecraft.server.level.ServerLevel level)) return null;
-        var modern = net.neoforged.neoforge.common.util.FakePlayerFactory.get(level, profile);
+        var modern = net.minecraftforge.common.util.FakePlayerFactory.get(level, profile);
         return org.kylepitcock.legacyconnector.v1_12_2.bridge.EntityBridge1122.wrap(modern) instanceof FakePlayer p ? p : new FakePlayer(modern);
     }
 
     public static void unloadWorld(WorldServer world) {
         if (world != null && world.mcc$level() instanceof net.minecraft.server.level.ServerLevel level) {
-            net.neoforged.neoforge.common.util.FakePlayerFactory.unloadLevel(level);
+            net.minecraftforge.common.util.FakePlayerFactory.unloadLevel(level);
         }
     }
 }

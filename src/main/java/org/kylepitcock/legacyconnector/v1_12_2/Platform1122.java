@@ -15,8 +15,8 @@ import legacyconnector.v1_12_2.net.minecraftforge.fml.common.event.FMLInitializa
 import legacyconnector.v1_12_2.net.minecraftforge.fml.common.event.FMLLoadCompleteEvent;
 import legacyconnector.v1_12_2.net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import legacyconnector.v1_12_2.net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforgespi.language.ModFileScanData;
+import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.forgespi.language.ModFileScanData;
 import org.kylepitcock.legacyconnector.core.LegacyModRecord;
 import org.kylepitcock.legacyconnector.core.LegacyMods;
 import org.kylepitcock.legacyconnector.core.LegacyPlatform;
@@ -50,17 +50,17 @@ public final class Platform1122 implements LegacyPlatform {
 
     /** The modern server's lifecycle as FML's server events, sent to every 1.12.2 mod's {@code @Mod.EventHandler} methods. */
     private static void registerServerLifecycle() {
-        var bus = net.neoforged.neoforge.common.NeoForge.EVENT_BUS;
+        var bus = net.minecraftforge.common.MinecraftForge.EVENT_BUS;
         var legacyServer = legacyconnector.v1_12_2.net.minecraft.server.MinecraftServer.mcc$instance();
-        bus.addListener((net.neoforged.neoforge.event.server.ServerAboutToStartEvent e) -> dispatchAll(LoaderState.SERVER_ABOUT_TO_START,
+        bus.addListener((net.minecraftforge.event.server.ServerAboutToStartEvent e) -> dispatchAll(LoaderState.SERVER_ABOUT_TO_START,
                 () -> new legacyconnector.v1_12_2.net.minecraftforge.fml.common.event.FMLServerAboutToStartEvent(legacyServer)));
-        bus.addListener((net.neoforged.neoforge.event.server.ServerStartingEvent e) -> dispatchAll(LoaderState.SERVER_STARTING,
+        bus.addListener((net.minecraftforge.event.server.ServerStartingEvent e) -> dispatchAll(LoaderState.SERVER_STARTING,
                 () -> new legacyconnector.v1_12_2.net.minecraftforge.fml.common.event.FMLServerStartingEvent(legacyServer)));
-        bus.addListener((net.neoforged.neoforge.event.server.ServerStartedEvent e) -> dispatchAll(LoaderState.SERVER_STARTED,
+        bus.addListener((net.minecraftforge.event.server.ServerStartedEvent e) -> dispatchAll(LoaderState.SERVER_STARTED,
                 legacyconnector.v1_12_2.net.minecraftforge.fml.common.event.FMLServerStartedEvent::new));
-        bus.addListener((net.neoforged.neoforge.event.server.ServerStoppingEvent e) -> dispatchAll(LoaderState.SERVER_STOPPING,
+        bus.addListener((net.minecraftforge.event.server.ServerStoppingEvent e) -> dispatchAll(LoaderState.SERVER_STOPPING,
                 legacyconnector.v1_12_2.net.minecraftforge.fml.common.event.FMLServerStoppingEvent::new));
-        bus.addListener((net.neoforged.neoforge.event.server.ServerStoppedEvent e) -> dispatchAll(LoaderState.SERVER_STOPPED,
+        bus.addListener((net.minecraftforge.event.server.ServerStoppedEvent e) -> dispatchAll(LoaderState.SERVER_STOPPED,
                 legacyconnector.v1_12_2.net.minecraftforge.fml.common.event.FMLServerStoppedEvent::new));
     }
 
@@ -303,7 +303,7 @@ public final class Platform1122 implements LegacyPlatform {
         legacyconnector.v1_12_2.net.minecraftforge.items.CapabilityItemHandler.register();
         legacyconnector.v1_12_2.net.minecraftforge.energy.CapabilityEnergy.register();
         // Baubles' capabilities exist before any mod's @CapabilityInject for them is resolved (only with Curios: the Baubles bridge)
-        if (net.neoforged.fml.ModList.get().isLoaded("curios")) legacyconnector.v1_12_2.baubles.api.cap.BaublesCapabilities.mcc$init();
+        if (net.minecraftforge.fml.ModList.get().isLoaded("curios")) legacyconnector.v1_12_2.baubles.api.cap.BaublesCapabilities.mcc$init();
         // mods create their own registries here, before any preInit (EnderIO needs its mod object registry then)
         post(new legacyconnector.v1_12_2.net.minecraftforge.event.RegistryEvent.NewRegistry());
     }
@@ -466,7 +466,7 @@ public final class Platform1122 implements LegacyPlatform {
         PlacementSelfTest1122.register();
         org.kylepitcock.legacyconnector.v1_12_2.bridge.FluidBridge1122.register();
         org.kylepitcock.legacyconnector.v1_12_2.bridge.TileEntityBridge1122.registerType();
-        if (net.neoforged.fml.ModList.get().isLoaded("curios")) org.kylepitcock.legacyconnector.compat.curios.CuriosBaubles1122.registerItems();
+        if (net.minecraftforge.fml.ModList.get().isLoaded("curios")) org.kylepitcock.legacyconnector.compat.curios.CuriosBaubles1122.registerItems();
         java.util.Map<String, int[]> perMod = new java.util.TreeMap<>();
         for (var item : org.kylepitcock.legacyconnector.v1_12_2.bridge.ItemBridge1122.modItems()) {
             var name = item.getRegistryName();

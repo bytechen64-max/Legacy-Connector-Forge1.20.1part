@@ -45,20 +45,20 @@ public final class WorldEventsW1122 {
     public static synchronized void register() {
         if (registered) return;
         registered = true;
-        var bus = net.neoforged.neoforge.common.NeoForge.EVENT_BUS;
-        bus.addListener((net.neoforged.neoforge.event.level.ChunkWatchEvent.Watch e) -> {
+        var bus = net.minecraftforge.common.MinecraftForge.EVENT_BUS;
+        bus.addListener((net.minecraftforge.event.level.ChunkWatchEvent.Watch e) -> {
             if (!listens(ChunkWatchEvent.Watch.class)) return;
             var p = player(e.getPlayer());
             if (p == null) return;
             var world = WorldBridge1122.wrap(e.getLevel());
             post(new ChunkWatchEvent.Watch(legacyconnector.v1_12_2.net.minecraft.world.chunk.Chunk.mcc$of(world, e.getChunk()), p));
         });
-        bus.addListener((net.neoforged.neoforge.event.level.ChunkWatchEvent.UnWatch e) -> {
+        bus.addListener((net.minecraftforge.event.level.ChunkWatchEvent.UnWatch e) -> {
             if (!listens(ChunkWatchEvent.UnWatch.class)) return;
             var p = player(e.getPlayer());
             if (p != null) post(new ChunkWatchEvent.UnWatch(legacyconnector.v1_12_2.net.minecraft.util.math.ChunkPos.mcc$of(e.getPos()), p));
         });
-        bus.addListener((net.neoforged.neoforge.event.level.NoteBlockEvent.Play e) -> {
+        bus.addListener((net.minecraftforge.event.level.NoteBlockEvent.Play e) -> {
             if (!listens(NoteBlockEvent.Play.class) || !(e.getLevel() instanceof net.minecraft.world.level.Level level)) return;
             var legacy = new NoteBlockEvent.Play(WorldBridge1122.wrap(level), pos(e.getPos()), StatesBridge1122.toLegacy(e.getState()), e.getVanillaNoteId(),
                     e.getInstrument().ordinal());
@@ -66,11 +66,11 @@ public final class WorldEventsW1122 {
                 e.setCanceled(true);
                 return;
             }
-            e.setNote(net.neoforged.neoforge.event.level.NoteBlockEvent.Note.values()[legacy.getNote().ordinal()],
-                    net.neoforged.neoforge.event.level.NoteBlockEvent.Octave.values()[legacy.getOctave().ordinal()]);
+            e.setNote(net.minecraftforge.event.level.NoteBlockEvent.Note.values()[legacy.getNote().ordinal()],
+                    net.minecraftforge.event.level.NoteBlockEvent.Octave.values()[legacy.getOctave().ordinal()]);
             e.setInstrument(net.minecraft.world.level.block.state.properties.NoteBlockInstrument.values()[legacy.getInstrument().ordinal()]);
         });
-        bus.addListener((net.neoforged.neoforge.event.level.NoteBlockEvent.Change e) -> {
+        bus.addListener((net.minecraftforge.event.level.NoteBlockEvent.Change e) -> {
             if (!listens(NoteBlockEvent.Change.class) || !(e.getLevel() instanceof net.minecraft.world.level.Level level)) return;
             int oldNote = e.getOldNote().ordinal() + e.getOldOctave().ordinal() * 12;
             var legacy = new NoteBlockEvent.Change(WorldBridge1122.wrap(level), pos(e.getPos()), StatesBridge1122.toLegacy(e.getState()), oldNote,
@@ -79,10 +79,10 @@ public final class WorldEventsW1122 {
                 e.setCanceled(true);
                 return;
             }
-            e.setNote(net.neoforged.neoforge.event.level.NoteBlockEvent.Note.values()[legacy.getNote().ordinal()],
-                    net.neoforged.neoforge.event.level.NoteBlockEvent.Octave.values()[legacy.getOctave().ordinal()]);
+            e.setNote(net.minecraftforge.event.level.NoteBlockEvent.Note.values()[legacy.getNote().ordinal()],
+                    net.minecraftforge.event.level.NoteBlockEvent.Octave.values()[legacy.getOctave().ordinal()]);
         });
-        bus.addListener((net.neoforged.neoforge.event.level.BlockEvent.FluidPlaceBlockEvent e) -> {
+        bus.addListener((net.minecraftforge.event.level.BlockEvent.FluidPlaceBlockEvent e) -> {
             if (!listens(BlockEvent.FluidPlaceBlockEvent.class) || !(e.getLevel() instanceof net.minecraft.world.level.Level level)) return;
             var legacy = new BlockEvent.FluidPlaceBlockEvent(WorldBridge1122.wrap(level), pos(e.getPos()), pos(e.getLiquidPos()),
                     StatesBridge1122.toLegacy(e.getNewState()));

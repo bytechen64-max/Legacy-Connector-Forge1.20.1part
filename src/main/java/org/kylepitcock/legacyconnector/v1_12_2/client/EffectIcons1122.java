@@ -10,8 +10,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.neoforged.neoforge.client.extensions.common.IClientMobEffectExtensions;
-import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.minecraftforge.client.extensions.common.IClientMobEffectExtensions;
+import net.minecraftforge.client.extensions.common.RegisterClientExtensionsEvent;
 import org.kylepitcock.legacyconnector.v1_12_2.entity.Effects1122;
 import org.kylepitcock.legacyconnector.v1_7_10.client.RenderContext;
 

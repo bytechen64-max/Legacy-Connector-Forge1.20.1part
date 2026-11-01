@@ -3,8 +3,8 @@ package org.kylepitcock.legacyconnector.v1_7_10.bridge;
 import java.util.Map;
 import java.util.TreeMap;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import org.kylepitcock.legacyconnector.v1_7_10.adapter.LegacyBlockAdapter;
 import org.kylepitcock.legacyconnector.v1_7_10.adapter.LegacyItemHolder;
 import org.kylepitcock.legacyconnector.v1_7_10.entity.LegacyHosts;
@@ -15,7 +15,7 @@ public final class LegacyContentSummary {
     private LegacyContentSummary() {}
 
     public static void register() {
-        NeoForge.EVENT_BUS.addListener((ServerStartedEvent e) -> log());
+        MinecraftForge.EVENT_BUS.addListener((ServerStartedEvent e) -> log());
     }
 
     private static void log() {

@@ -6,8 +6,8 @@ import legacyconnector.v1_7_10.net.minecraftforge.client.event.GuiOpenEvent;
 import legacyconnector.v1_7_10.net.minecraftforge.client.event.GuiScreenEvent;
 import legacyconnector.v1_7_10.net.minecraftforge.common.MinecraftForge;
 import net.minecraft.client.gui.screens.TitleScreen;
-import net.neoforged.neoforge.client.event.ScreenEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.client.event.ScreenEvent;
+import net.minecraftforge.common.MinecraftForge;
 
 /**
  * Feeds screen events to the legacy Forge bus: GuiOpenEvent for the title screen (seen as a {@link GuiMainMenu}) and for
@@ -17,14 +17,14 @@ public final class ScreenEvents1710 {
     private ScreenEvents1710() {}
 
     public static void register() {
-        NeoForge.EVENT_BUS.addListener(ScreenEvents1710::onOpening);
-        NeoForge.EVENT_BUS.addListener((ScreenEvent.MouseScrolled.Pre e) -> legacyconnector.v1_7_10.org.lwjgl.input.Mouse.mcc$scrolled(e.getScrollDeltaY()));
-        NeoForge.EVENT_BUS.addListener((ScreenEvent.Init.Post e) -> {
+        MinecraftForge.EVENT_BUS.addListener(ScreenEvents1710::onOpening);
+        MinecraftForge.EVENT_BUS.addListener((ScreenEvent.MouseScrolled.Pre e) -> legacyconnector.v1_7_10.org.lwjgl.input.Mouse.mcc$scrolled(e.getScrollDeltaY()));
+        MinecraftForge.EVENT_BUS.addListener((ScreenEvent.Init.Post e) -> {
             if (!(e.getScreen() instanceof LegacyScreen ls) || !wants(GuiScreenEvent.InitGuiEvent.Post.class)) return;
             GuiScreenEvent.InitGuiEvent.Post post = new GuiScreenEvent.InitGuiEvent.Post(ls.legacy(), ls.legacy().mcc$buttons());
             MinecraftForge.EVENT_BUS.post(post);
         });
-        NeoForge.EVENT_BUS.addListener((ScreenEvent.Render.Post e) -> {
+        MinecraftForge.EVENT_BUS.addListener((ScreenEvent.Render.Post e) -> {
             if (!(e.getScreen() instanceof LegacyScreen ls) || !wants(GuiScreenEvent.DrawScreenEvent.Post.class)) return;
             RenderContext.beginGui(e.getGuiGraphics());
             try {

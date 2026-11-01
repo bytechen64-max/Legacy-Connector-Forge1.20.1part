@@ -87,7 +87,7 @@ public class EntitySlime extends legacyconnector.v1_12_2.net.minecraft.entity.En
 
     private static java.lang.reflect.Field mcc$wasOnGroundField() {
         try {
-            return net.neoforged.fml.util.ObfuscationReflectionHelper.findField(net.minecraft.world.entity.monster.Slime.class, "wasOnGround");
+            return net.minecraftforge.fml.util.ObfuscationReflectionHelper.findField(net.minecraft.world.entity.monster.Slime.class, "wasOnGround");
         } catch (RuntimeException e) {
             return null;
         }

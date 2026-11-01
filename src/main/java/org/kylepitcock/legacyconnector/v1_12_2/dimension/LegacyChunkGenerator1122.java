@@ -60,7 +60,7 @@ public class LegacyChunkGenerator1122 extends ChunkGenerator {
     /** The mod's chunk generator (created once, from the provider of the dimension's level). */
     private synchronized IChunkGenerator legacy() {
         if (legacy == null && !failed) {
-            var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+            var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
             var level = server == null ? null : server.getLevel(Dimensions1122.levelKey(dimension));
             if (level != null) {
                 try {

@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
  * A legacy minecart collision handler installed as NeoForge's (which kept Forge's hook): every cart, vanilla or legacy, is handed to it
  * as a legacy view. A handler that throws is uninstalled, so carts fall back to vanilla pushing instead of failing every tick.
  */
-public final class MinecartCollisionBridge implements net.neoforged.neoforge.common.IMinecartCollisionHandler {
+public final class MinecartCollisionBridge implements net.minecraftforge.common.IMinecartCollisionHandler {
     private static final Logger LOG = LoggerFactory.getLogger("LegacyConnector/Entities");
     private final IMinecartCollisionHandler legacy;
 

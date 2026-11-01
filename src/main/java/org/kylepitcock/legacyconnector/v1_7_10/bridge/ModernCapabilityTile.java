@@ -10,9 +10,9 @@ import legacyconnector.v1_7_10.net.minecraftforge.fluids.IFluidHandler;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.energy.IEnergyStorage;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler.FluidAction;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.fluids.capability.IFluidHandler.FluidAction;
 
 /**
  * Legacy view of a modern block entity (a machine of a NeoForge mod) that offers NeoForge energy or fluid capabilities, so legacy
@@ -38,21 +38,21 @@ public class ModernCapabilityTile extends TileEntity implements IEnergyHandler, 
         Level level = be.getLevel();
         if (level == null || be.isRemoved()) return false;
         var pos = be.getBlockPos();
-        if (level.getCapability(Capabilities.EnergyStorage.BLOCK, pos, null) != null || level.getCapability(Capabilities.FluidHandler.BLOCK, pos, null) != null) return true;
+        if (level.getCapability(ForgeCapabilities.ENERGY, pos, null) != null || level.getCapability(ForgeCapabilities.FLUID_HANDLER, pos, null) != null) return true;
         for (Direction d : Direction.values()) {
-            if (level.getCapability(Capabilities.EnergyStorage.BLOCK, pos, d) != null || level.getCapability(Capabilities.FluidHandler.BLOCK, pos, d) != null) return true;
+            if (level.getCapability(ForgeCapabilities.ENERGY, pos, d) != null || level.getCapability(ForgeCapabilities.FLUID_HANDLER, pos, d) != null) return true;
         }
         return ModernItemTile.hasItems(be);
     }
 
     private IEnergyStorage energy(ForgeDirection from) {
         Level level = host.getLevel();
-        return level == null || host.isRemoved() ? null : level.getCapability(Capabilities.EnergyStorage.BLOCK, host.getBlockPos(), from == null ? null : from.mcc$modern());
+        return level == null || host.isRemoved() ? null : level.getCapability(ForgeCapabilities.ENERGY, host.getBlockPos(), from == null ? null : from.mcc$modern());
     }
 
-    private net.neoforged.neoforge.fluids.capability.IFluidHandler fluids(ForgeDirection from) {
+    private net.minecraftforge.fluids.capability.IFluidHandler fluids(ForgeDirection from) {
         Level level = host.getLevel();
-        return level == null || host.isRemoved() ? null : level.getCapability(Capabilities.FluidHandler.BLOCK, host.getBlockPos(), from == null ? null : from.mcc$modern());
+        return level == null || host.isRemoved() ? null : level.getCapability(ForgeCapabilities.FLUID_HANDLER, host.getBlockPos(), from == null ? null : from.mcc$modern());
     }
 
     // ------------------------------------------------------------------ RF

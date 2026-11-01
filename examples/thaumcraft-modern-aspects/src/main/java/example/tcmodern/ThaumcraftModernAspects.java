@@ -6,9 +6,9 @@ import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.material.Fluids;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.fluids.FluidStack;
-import net.neoforged.neoforge.fluids.capability.IFluidHandler;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.capability.IFluidHandler;
 import org.kylepitcock.legacyconnector.api.LegacyAccess;
 import org.kylepitcock.legacyconnector.api.LegacyAddon;
 import org.kylepitcock.legacyconnector.api.LegacyApi;
@@ -93,7 +93,7 @@ public final class ThaumcraftModernAspects implements LegacyAddon {
      */
     @Override
     public void registerCapabilities(LegacyCapabilities capabilities) {
-        capabilities.forTile(TC, "thaumcraft.common.tiles.TileJarFillable", Capabilities.FluidHandler.BLOCK, JarView::new);
+        capabilities.forTile(TC, "thaumcraft.common.tiles.TileJarFillable", ForgeCapabilities.FLUID_HANDLER, JarView::new);
     }
 
     private record JarView(Object tile) implements IFluidHandler {

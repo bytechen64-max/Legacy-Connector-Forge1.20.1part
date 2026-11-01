@@ -58,7 +58,7 @@ public class PlayerAdvancements {
 
     public void reload() {
         var modern = mcc$modern();
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (modern != null && server != null) modern.reload(server.getAdvancements());
     }
 

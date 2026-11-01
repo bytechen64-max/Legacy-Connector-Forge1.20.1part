@@ -22,7 +22,7 @@ public class CommandGive extends CommandBase {
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] args) throws CommandException {
         if (args.length < 2) throw new WrongUsageException("commands.give.usage");
-        var m = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var m = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (m == null) return;
         String count = args.length > 2 ? " " + args[2] : "";
         m.getCommands().performPrefixedCommand(m.createCommandSourceStack(), "give " + args[0] + " " + args[1] + count);

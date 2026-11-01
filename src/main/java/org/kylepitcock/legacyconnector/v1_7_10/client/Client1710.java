@@ -4,10 +4,10 @@ import legacyconnector.v1_7_10.net.minecraft.block.Block;
 import legacyconnector.v1_7_10.net.minecraft.item.Item;
 import legacyconnector.v1_7_10.net.minecraft.item.ItemBlock;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.client.event.EntityRenderersEvent;
-import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.client.event.EntityRenderersEvent;
+import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.minecraftforge.client.extensions.common.RegisterClientExtensionsEvent;
 import org.kylepitcock.legacyconnector.v1_7_10.bridge.ItemBridge;
 import org.kylepitcock.legacyconnector.v1_7_10.bridge.TileEntityBridge;
 
@@ -17,7 +17,7 @@ public final class Client1710 {
 
     public static void register(IEventBus modBus) {
         modBus.addListener(ClientGui::onRegisterScreens);
-        modBus.addListener((net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent e) -> {
+        modBus.addListener((net.minecraftforge.client.event.RegisterKeyMappingsEvent e) -> {
             for (var key : legacyconnector.v1_7_10.net.minecraft.client.settings.KeyBinding.mcc$registered()) {
                 try {
                     e.register(key.mcc$modern());
@@ -28,7 +28,7 @@ public final class Client1710 {
             legacyconnector.v1_7_10.net.minecraft.client.settings.KeyBinding.mcc$mappingsCollected();
         });
         modBus.addListener(Client1710::onRegisterRenderers);
-        modBus.addListener((net.neoforged.neoforge.client.event.sound.SoundEngineLoadEvent e) -> {
+        modBus.addListener((net.minecraftforge.client.event.sound.SoundEngineLoadEvent e) -> {
             // 1.7.10 fired SoundSetupEvent and SoundLoadEvent each time its sound system (re)started
             LegacySoundSources.engineReloaded(e.getEngine());
             boolean loaded = LegacySoundSources.engineLoaded();
@@ -53,9 +53,9 @@ public final class Client1710 {
         LegacyKeyConflicts.register();
         LegacyArmorLayer.registerOverlayHiding();
         HudEvents1710.register();
-        modBus.addListener((net.neoforged.neoforge.client.event.RegisterDimensionSpecialEffectsEvent e) ->
+        modBus.addListener((net.minecraftforge.client.event.RegisterDimensionSpecialEffectsEvent e) ->
                 e.register(org.kylepitcock.legacyconnector.v1_7_10.dimension.LegacyDimensions.EFFECTS, new LegacyDimensionEffects()));
-        modBus.addListener((net.neoforged.neoforge.client.event.TextureAtlasStitchedEvent e) -> {
+        modBus.addListener((net.minecraftforge.client.event.TextureAtlasStitchedEvent e) -> {
             if (!e.getAtlas().location().equals(net.minecraft.world.inventory.InventoryMenu.BLOCK_ATLAS)) return;
             AtlasUV.invalidate();
             org.kylepitcock.legacyconnector.v1_7_10.Assets1710.postStitched();
@@ -101,7 +101,7 @@ public final class Client1710 {
     }
 
     /** Blocks drawn by a legacy ISimpleBlockRenderingHandler get a model that runs it (see IsbrhBlockModel). */
-    private static void onModifyBaking(net.neoforged.neoforge.client.event.ModelEvent.ModifyBakingResult event) {
+    private static void onModifyBaking(net.minecraftforge.client.event.ModelEvent.ModifyBakingResult event) {
         var models = event.getModels();
         int replaced = 0;
         for (Block block : org.kylepitcock.legacyconnector.v1_7_10.bridge.BlockBridge.modBlocks()) {
@@ -128,7 +128,7 @@ public final class Client1710 {
     }
 
     /** Blocks that colour themselves (leaves, grass, anything overriding colorMultiplier/getRenderColor) tint index 0 of their model. */
-    private static void onRegisterBlockColors(net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.Block event) {
+    private static void onRegisterBlockColors(net.minecraftforge.client.event.RegisterColorHandlersEvent.Block event) {
         for (legacyconnector.v1_7_10.net.minecraft.block.Block block : org.kylepitcock.legacyconnector.v1_7_10.bridge.BlockBridge.modBlocks()) {
             if (block.mcc$modern == null || !org.kylepitcock.legacyconnector.v1_7_10.Assets1710.tinted(block)) continue;
             event.register((state, level, pos, tint) -> {
@@ -158,7 +158,7 @@ public final class Client1710 {
     }
 
     /** Legacy items tinted per render pass (spawn eggs, dyed items): layer N of the item model is pass N. */
-    private static void onRegisterItemColors(net.neoforged.neoforge.client.event.RegisterColorHandlersEvent.Item event) {
+    private static void onRegisterItemColors(net.minecraftforge.client.event.RegisterColorHandlersEvent.Item event) {
         for (Item item : ItemBridge.modItems()) {
             try {
                 if (!org.kylepitcock.legacyconnector.v1_7_10.adapter.LegacyBlockAdapter.overrides(item, "getColorFromItemStack",

@@ -35,7 +35,7 @@ public class LegacyArmorLayer<T extends LivingEntity, M extends HumanoidModel<T>
      * outer layer (hat, jacket and sleeves, trousers) is hidden instead of poking through it (Fisk's Heroes' suits).
      */
     public static void registerOverlayHiding() {
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.client.event.RenderPlayerEvent.Pre e) -> {
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.client.event.RenderPlayerEvent.Pre e) -> {
             var player = e.getEntity();
             var model = e.getRenderer().getModel();
             if (legacyArmor(player, EquipmentSlot.HEAD)) model.hat.visible = false;

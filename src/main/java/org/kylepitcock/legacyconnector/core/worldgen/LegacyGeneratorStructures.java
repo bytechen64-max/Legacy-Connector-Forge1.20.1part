@@ -328,7 +328,7 @@ public final class LegacyGeneratorStructures {
         if (s.is(BlockTags.LOGS) || s.is(BlockTags.LEAVES) || s.is(BlockTags.FLOWERS) || s.is(BlockTags.SAPLINGS) || s.is(BlockTags.REPLACEABLE)
                 || s.is(BlockTags.REPLACEABLE_BY_TREES) || s.is(BlockTags.CROPS) || s.is(BlockTags.BASE_STONE_OVERWORLD) || s.is(BlockTags.BASE_STONE_NETHER)
                 || s.is(BlockTags.DIRT) || s.is(BlockTags.SAND) || s.is(BlockTags.ICE) || s.is(BlockTags.SNOW) || s.is(BlockTags.TERRACOTTA)
-                || s.is(BlockTags.CORALS) || s.is(BlockTags.CORAL_BLOCKS) || s.is(BlockTags.CAVE_VINES) || s.is(net.neoforged.neoforge.common.Tags.Blocks.ORES)) {
+                || s.is(BlockTags.CORALS) || s.is(BlockTags.CORAL_BLOCKS) || s.is(BlockTags.CAVE_VINES) || s.is(net.minecraftforge.common.Tags.Blocks.ORES)) {
             return true;
         }
         Block b = s.getBlock();

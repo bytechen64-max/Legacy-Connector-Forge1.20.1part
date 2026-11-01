@@ -2,8 +2,8 @@ package org.kylepitcock.legacyconnector.core;
 
 import com.google.gson.JsonObject;
 import java.nio.file.Path;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.fml.ModContainer;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.ModContainer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

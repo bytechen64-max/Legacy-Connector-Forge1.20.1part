@@ -3,7 +3,7 @@ package legacyconnector.v1_7_10.cpw.mods.fml.relauncher;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-import net.neoforged.fml.loading.FMLPaths;
+import net.minecraftforge.fml.loading.FMLPaths;
 
 /** FML's launch data: the FML/Minecraft/MCP versions of the 1.7.10 environment legacy mods expect. */
 public class FMLInjectionData {

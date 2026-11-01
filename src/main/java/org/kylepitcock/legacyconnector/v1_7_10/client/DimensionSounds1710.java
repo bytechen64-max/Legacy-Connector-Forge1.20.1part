@@ -7,8 +7,8 @@ import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.client.sounds.WeighedSoundEvents;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.client.event.sound.PlaySoundEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.client.event.sound.PlaySoundEvent;
 import org.kylepitcock.legacyconnector.v1_7_10.bridge.DimensionPhysics1710;
 
 /**
@@ -41,13 +41,13 @@ public final class DimensionSounds1710 {
             }
         });
         // 1.7.10's source events: a sound's channel started (uuid names it while it plays)
-        gameBus.addListener((net.neoforged.neoforge.client.event.sound.PlaySoundSourceEvent e) -> {
+        gameBus.addListener((net.minecraftforge.client.event.sound.PlaySoundSourceEvent e) -> {
             var forge = legacyconnector.v1_7_10.net.minecraftforge.common.MinecraftForge.EVENT_BUS;
             if (!forge.mcc$hasListeners(legacyconnector.v1_7_10.net.minecraftforge.client.event.sound.PlaySoundSourceEvent.class)) return;
             postSource(forge, new legacyconnector.v1_7_10.net.minecraftforge.client.event.sound.PlaySoundSourceEvent(
                     legacyconnector.v1_7_10.net.minecraft.client.audio.SoundManager.INSTANCE, legacy(e.getSound()), uuid(e.getChannel())));
         });
-        gameBus.addListener((net.neoforged.neoforge.client.event.sound.PlayStreamingSourceEvent e) -> {
+        gameBus.addListener((net.minecraftforge.client.event.sound.PlayStreamingSourceEvent e) -> {
             var forge = legacyconnector.v1_7_10.net.minecraftforge.common.MinecraftForge.EVENT_BUS;
             if (!forge.mcc$hasListeners(legacyconnector.v1_7_10.net.minecraftforge.client.event.sound.PlayStreamingSourceEvent.class)) return;
             postSource(forge, new legacyconnector.v1_7_10.net.minecraftforge.client.event.sound.PlayStreamingSourceEvent(

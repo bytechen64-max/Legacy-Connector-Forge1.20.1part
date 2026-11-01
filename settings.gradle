@@ -2,7 +2,7 @@ pluginManagement {
     repositories {
         mavenLocal()
         gradlePluginPortal()
-        maven { url = 'https://maven.neoforged.net/releases' }
+        maven { url = 'https://maven.minecraftforge.net/' }
     }
 }
 
@@ -13,7 +13,7 @@ plugins {
 rootProject.name = 'legacyconnector'
 
 // Service-layer half of the compatibility layer: discovers legacy mod jars and
-// rewrites them into NeoForge mods before FML ever sees them.
+// rewrites them into Forge mods before FML ever sees them.
 include 'loader'
 // Pure-Java fixtures that imitate legacy (1.7.10 / 1.12.2) Forge mods for integration testing.
 include 'testmods'

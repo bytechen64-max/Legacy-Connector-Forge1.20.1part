@@ -29,7 +29,7 @@ public class PlayerList {
     }
 
     private static net.minecraft.server.players.PlayerList modern() {
-        var s = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var s = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         return s == null ? null : s.getPlayerList();
     }
 
@@ -122,7 +122,7 @@ public class PlayerList {
      * edit offline players' data). Its saved data is not loaded: {@code readPlayerDataFromFile} does that.
      */
     public EntityPlayerMP createPlayerForUser(GameProfile profile) {
-        var s = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var s = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (s == null || profile == null) return null;
         var sp = new net.minecraft.server.level.ServerPlayer(s, s.overworld(), profile, net.minecraft.server.level.ClientInformation.createDefault());
         return view(sp);

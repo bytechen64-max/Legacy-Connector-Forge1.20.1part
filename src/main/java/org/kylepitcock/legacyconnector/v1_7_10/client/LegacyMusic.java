@@ -1,9 +1,9 @@
 package org.kylepitcock.legacyconnector.v1_7_10.client;
 
 import legacyconnector.v1_7_10.net.minecraft.client.audio.MusicTicker;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import net.neoforged.neoforge.client.event.SelectMusicEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.client.event.ClientTickEvent;
+import net.minecraftforge.client.event.SelectMusicEvent;
+import net.minecraftforge.common.MinecraftForge;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -16,8 +16,8 @@ public final class LegacyMusic {
     private LegacyMusic() {}
 
     public static void register() {
-        NeoForge.EVENT_BUS.addListener(LegacyMusic::onTick);
-        NeoForge.EVENT_BUS.addListener(LegacyMusic::onSelectMusic);
+        MinecraftForge.EVENT_BUS.addListener(LegacyMusic::onTick);
+        MinecraftForge.EVENT_BUS.addListener(LegacyMusic::onSelectMusic);
     }
 
     private static MusicTicker replaced() {

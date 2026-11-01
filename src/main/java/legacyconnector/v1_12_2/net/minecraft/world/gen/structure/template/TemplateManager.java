@@ -63,7 +63,7 @@ public class TemplateManager {
         String ns = id.getNamespace();
         String path = id.getPath() + ".nbt";
         try {
-            for (var mod : net.neoforged.fml.ModList.get().getModFiles()) {
+            for (var mod : net.minecraftforge.fml.ModList.get().getModFiles()) {
                 var p = mod.getFile().findResource("assets", ns, "structures", path);
                 if (p == null || !java.nio.file.Files.isRegularFile(p)) continue;
                 try (InputStream in = java.nio.file.Files.newInputStream(p)) {

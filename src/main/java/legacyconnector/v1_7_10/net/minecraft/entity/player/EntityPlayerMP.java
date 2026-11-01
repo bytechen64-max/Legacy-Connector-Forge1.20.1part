@@ -41,7 +41,7 @@ public class EntityPlayerMP extends EntityPlayer implements legacyconnector.v1_7
      */
     public EntityPlayerMP(MinecraftServer server, WorldServer world, com.mojang.authlib.GameProfile profile,
             legacyconnector.v1_7_10.net.minecraft.server.management.ItemInWorldManager manager) {
-        this(net.neoforged.neoforge.common.util.FakePlayerFactory.get((net.minecraft.server.level.ServerLevel) world.mcc$fullLevel(), profile));
+        this(net.minecraftforge.common.util.FakePlayerFactory.get((net.minecraft.server.level.ServerLevel) world.mcc$fullLevel(), profile));
     }
 
     public ServerPlayer mcc$serverPlayer() {

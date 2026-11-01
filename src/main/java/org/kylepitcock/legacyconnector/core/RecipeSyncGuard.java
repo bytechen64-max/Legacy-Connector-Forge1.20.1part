@@ -5,8 +5,8 @@ import java.util.List;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
-import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.OnDatapackSyncEvent;
+import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.OnDatapackSyncEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +21,7 @@ public final class RecipeSyncGuard {
     private RecipeSyncGuard() {}
 
     public static void register() {
-        NeoForge.EVENT_BUS.addListener((OnDatapackSyncEvent e) -> clean(e.getPlayerList().getServer().getRecipeManager(),
+        MinecraftForge.EVENT_BUS.addListener((OnDatapackSyncEvent e) -> clean(e.getPlayerList().getServer().getRecipeManager(),
                 e.getPlayerList().getServer().registryAccess()));
     }
 

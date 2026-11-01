@@ -10,7 +10,7 @@ import legacyconnector.v1_7_10.codechicken.nei.recipe.ICraftingHandler;
 import legacyconnector.v1_7_10.codechicken.nei.recipe.IUsageHandler;
 import legacyconnector.v1_7_10.codechicken.nei.recipe.TemplateRecipeHandler;
 import legacyconnector.v1_7_10.net.minecraft.item.ItemStack;
-import net.neoforged.fml.ModList;
+import net.minecraftforge.fml.ModList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

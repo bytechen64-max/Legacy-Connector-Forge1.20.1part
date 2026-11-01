@@ -18,10 +18,10 @@ final class DevBootstrap {
 
     @SuppressWarnings("unchecked")
     static void boot() throws ReflectiveOperationException {
-        var dist = net.neoforged.fml.loading.FMLLoader.class.getDeclaredField("dist");
+        var dist = net.minecraftforge.fml.loading.FMLLoader.class.getDeclaredField("dist");
         dist.setAccessible(true);
-        dist.set(null, net.neoforged.api.distmarker.Dist.DEDICATED_SERVER);
-        net.neoforged.fml.loading.LoadingModList.of(List.of(), List.of(), List.of(), List.of(), Map.of());
+        dist.set(null, net.minecraftforge.api.distmarker.Dist.DEDICATED_SERVER);
+        net.minecraftforge.fml.loading.LoadingModList.of(List.of(), List.of(), List.of(), List.of(), Map.of());
         net.minecraft.SharedConstants.tryDetectVersion();
         net.minecraft.server.Bootstrap.bootStrap();
         // Our own data component (normally bound by the mod's DeferredRegister).

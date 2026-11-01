@@ -95,7 +95,7 @@ public final class LegacyStructureRegistry {
      */
     private static void clearOnStop() {
         if (CLEARING.compareAndSet(false, true)) {
-            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.server.ServerStoppedEvent e) -> clearLevels());
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.server.ServerStoppedEvent e) -> clearLevels());
         }
     }
 
@@ -232,7 +232,7 @@ public final class LegacyStructureRegistry {
         if (generator == null || legacyGenerator(generator)) return null;
         ServerLevel known = LEVELS.get(generator);
         if (known != null) return known;
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server == null) return null;
         try {
             for (ServerLevel level : server.getAllLevels()) {

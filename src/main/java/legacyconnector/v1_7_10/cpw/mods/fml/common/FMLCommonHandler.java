@@ -3,8 +3,8 @@ package legacyconnector.v1_7_10.cpw.mods.fml.common;
 import legacyconnector.v1_7_10.cpw.mods.fml.common.eventhandler.EventBus;
 import legacyconnector.v1_7_10.cpw.mods.fml.relauncher.Side;
 import legacyconnector.v1_7_10.net.minecraft.server.MinecraftServer;
-import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.neoforge.server.ServerLifecycleHooks;
+import net.minecraftforge.fml.loading.FMLEnvironment;
+import net.minecraftforge.server.ServerLifecycleHooks;
 
 public class FMLCommonHandler {
     private static final FMLCommonHandler INSTANCE = new FMLCommonHandler();
@@ -65,7 +65,7 @@ public class FMLCommonHandler {
     }
 
     public java.io.File getSavesDirectory() {
-        return net.neoforged.fml.loading.FMLPaths.GAMEDIR.get().resolve("saves").toFile();
+        return net.minecraftforge.fml.loading.FMLPaths.GAMEDIR.get().resolve("saves").toFile();
     }
 
     /** Crash report sections of mods are not part of the modern crash report: only logged when asked for. */

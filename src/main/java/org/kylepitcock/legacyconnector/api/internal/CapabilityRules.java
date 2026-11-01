@@ -7,10 +7,10 @@ import java.util.Map;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
-import net.neoforged.neoforge.capabilities.BlockCapability;
-import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.capabilities.ICapabilityProvider;
-import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.minecraftforge.common.capabilities.BlockCapability;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import net.minecraftforge.common.capabilities.ICapabilityProvider;
+import net.minecraftforge.common.capabilities.RegisterCapabilitiesEvent;
 import org.kylepitcock.legacyconnector.api.LegacyApi;
 import org.kylepitcock.legacyconnector.api.LegacyCapabilities;
 import org.kylepitcock.legacyconnector.api.LegacyCapabilities.TileAdapter;
@@ -60,9 +60,9 @@ public final class CapabilityRules implements LegacyCapabilities {
     /** Collects the addons' rules and registers them, plus the 1.12.2 built-ins, on the host types that exist. */
     public static void apply(RegisterCapabilitiesEvent event) {
         CapabilityRules registrar = new CapabilityRules();
-        registrar.forAnyTile(Capabilities.ItemHandler.BLOCK, LegacyCapabilities.FORGE_ITEMS_1122);
-        registrar.forAnyTile(Capabilities.FluidHandler.BLOCK, LegacyCapabilities.FORGE_FLUIDS_1122);
-        registrar.forAnyTile(Capabilities.EnergyStorage.BLOCK, LegacyCapabilities.FORGE_ENERGY_1122);
+        registrar.forAnyTile(ForgeCapabilities.ITEM_HANDLER, LegacyCapabilities.FORGE_ITEMS_1122);
+        registrar.forAnyTile(ForgeCapabilities.FLUID_HANDLER, LegacyCapabilities.FORGE_FLUIDS_1122);
+        registrar.forAnyTile(ForgeCapabilities.ENERGY, LegacyCapabilities.FORGE_ENERGY_1122);
         // addons first: their rules are asked before the built-ins of the same capability
         CapabilityRules addons = new CapabilityRules();
         AddonHost.registerCapabilities(addons);

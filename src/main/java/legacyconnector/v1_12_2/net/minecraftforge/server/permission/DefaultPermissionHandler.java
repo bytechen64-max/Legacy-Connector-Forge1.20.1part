@@ -33,7 +33,7 @@ public enum DefaultPermissionHandler implements IPermissionHandler {
         DefaultPermissionLevel level = getDefaultPermissionLevel(node);
         if (level == DefaultPermissionLevel.NONE) return false;
         if (level == DefaultPermissionLevel.ALL) return true;
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         return server != null && profile != null && server.getPlayerList().isOp(profile);
     }
 

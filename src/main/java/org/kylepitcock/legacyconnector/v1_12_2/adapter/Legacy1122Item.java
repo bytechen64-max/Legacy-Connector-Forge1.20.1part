@@ -110,8 +110,8 @@ public class Legacy1122Item extends net.minecraft.world.item.Item {
      * for the shield-block ability, so legacy shields block and wear like vanilla's.
      */
     @Override
-    public boolean canPerformAction(ItemStack stack, net.neoforged.neoforge.common.ItemAbility itemAbility) {
-        if (itemAbility == net.neoforged.neoforge.common.ItemAbilities.SHIELD_BLOCK) {
+    public boolean canPerformAction(ItemStack stack, net.minecraftforge.common.ItemAbility itemAbility) {
+        if (itemAbility == net.minecraftforge.common.ItemAbilities.SHIELD_BLOCK) {
             try {
                 var view = org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.fromModern(stack);
                 if (legacy.isShield(view, null) || legacy.getItemUseAction(view) == legacyconnector.v1_12_2.net.minecraft.item.EnumAction.BLOCK) return true;
@@ -120,7 +120,7 @@ public class Legacy1122Item extends net.minecraft.world.item.Item {
             }
         }
         // fishing rods: the modern hook keeps fishing while its owner holds an item that can cast
-        if (itemAbility == net.neoforged.neoforge.common.ItemAbilities.FISHING_ROD_CAST && legacy instanceof legacyconnector.v1_12_2.net.minecraft.item.ItemFishingRod) {
+        if (itemAbility == net.minecraftforge.common.ItemAbilities.FISHING_ROD_CAST && legacy instanceof legacyconnector.v1_12_2.net.minecraft.item.ItemFishingRod) {
             return true;
         }
         // legacy tools as modern tools: the shim's tool classes or a declared Forge tool class answer the matching abilities
@@ -129,14 +129,14 @@ public class Legacy1122Item extends net.minecraft.world.item.Item {
         return super.canPerformAction(stack, itemAbility);
     }
 
-    private static String toolClassOf(net.neoforged.neoforge.common.ItemAbility a) {
-        if (a == net.neoforged.neoforge.common.ItemAbilities.PICKAXE_DIG) return "pickaxe";
-        if (a == net.neoforged.neoforge.common.ItemAbilities.AXE_DIG || a == net.neoforged.neoforge.common.ItemAbilities.AXE_STRIP
-                || a == net.neoforged.neoforge.common.ItemAbilities.AXE_SCRAPE || a == net.neoforged.neoforge.common.ItemAbilities.AXE_WAX_OFF) return "axe";
-        if (a == net.neoforged.neoforge.common.ItemAbilities.SHOVEL_DIG || a == net.neoforged.neoforge.common.ItemAbilities.SHOVEL_FLATTEN) return "shovel";
-        if (a == net.neoforged.neoforge.common.ItemAbilities.HOE_DIG || a == net.neoforged.neoforge.common.ItemAbilities.HOE_TILL) return "hoe";
-        if (a == net.neoforged.neoforge.common.ItemAbilities.SWORD_DIG) return "sword";
-        if (a == net.neoforged.neoforge.common.ItemAbilities.SHEARS_DIG || a == net.neoforged.neoforge.common.ItemAbilities.SHEARS_HARVEST) return "shears";
+    private static String toolClassOf(net.minecraftforge.common.ItemAbility a) {
+        if (a == net.minecraftforge.common.ItemAbilities.PICKAXE_DIG) return "pickaxe";
+        if (a == net.minecraftforge.common.ItemAbilities.AXE_DIG || a == net.minecraftforge.common.ItemAbilities.AXE_STRIP
+                || a == net.minecraftforge.common.ItemAbilities.AXE_SCRAPE || a == net.minecraftforge.common.ItemAbilities.AXE_WAX_OFF) return "axe";
+        if (a == net.minecraftforge.common.ItemAbilities.SHOVEL_DIG || a == net.minecraftforge.common.ItemAbilities.SHOVEL_FLATTEN) return "shovel";
+        if (a == net.minecraftforge.common.ItemAbilities.HOE_DIG || a == net.minecraftforge.common.ItemAbilities.HOE_TILL) return "hoe";
+        if (a == net.minecraftforge.common.ItemAbilities.SWORD_DIG) return "sword";
+        if (a == net.minecraftforge.common.ItemAbilities.SHEARS_DIG || a == net.minecraftforge.common.ItemAbilities.SHEARS_HARVEST) return "shears";
         return null;
     }
 

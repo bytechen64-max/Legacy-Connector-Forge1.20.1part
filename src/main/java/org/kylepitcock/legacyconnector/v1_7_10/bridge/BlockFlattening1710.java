@@ -172,7 +172,7 @@ public final class BlockFlattening1710 {
     private static synchronized void listen() {
         if (listening) return;
         listening = true;
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener((net.neoforged.neoforge.event.level.ChunkEvent.Load e) -> {
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.level.ChunkEvent.Load e) -> {
             if (e.getLevel() instanceof ServerLevel && e.getChunk() instanceof LevelChunk chunk) normalize(chunk);
         });
     }

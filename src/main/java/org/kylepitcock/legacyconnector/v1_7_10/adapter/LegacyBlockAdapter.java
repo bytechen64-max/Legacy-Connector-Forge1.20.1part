@@ -868,7 +868,7 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
     }
 
     @Override
-    public net.neoforged.neoforge.common.util.TriState canSustainPlant(BlockState state, BlockGetter level, BlockPos pos, Direction facing,
+    public net.minecraftforge.common.util.TriState canSustainPlant(BlockState state, BlockGetter level, BlockPos pos, Direction facing,
             BlockState plant) {
         if (!sustainsPlants || !(plant.getBlock() instanceof LegacyBlockAdapter adapter)
                 || !(adapter.legacy() instanceof legacyconnector.v1_7_10.net.minecraftforge.common.IPlantable plantable)) {
@@ -877,9 +877,9 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
         try {
             boolean ok = legacy.canSustainPlant(BlockAccessView.of(level), pos.getX(), pos.getY(), pos.getZ(),
                     legacyconnector.v1_7_10.net.minecraftforge.common.util.ForgeDirection.getOrientation(facing.get3DDataValue()), plantable);
-            return ok ? net.neoforged.neoforge.common.util.TriState.TRUE : net.neoforged.neoforge.common.util.TriState.FALSE;
+            return ok ? net.minecraftforge.common.util.TriState.TRUE : net.minecraftforge.common.util.TriState.FALSE;
         } catch (RuntimeException | LinkageError e) {
-            return net.neoforged.neoforge.common.util.TriState.DEFAULT;
+            return net.minecraftforge.common.util.TriState.DEFAULT;
         }
     }
 

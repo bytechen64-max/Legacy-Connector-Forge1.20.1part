@@ -57,7 +57,7 @@ public final class Assets1710 implements GeneratedPack.Contributor {
     public void contribute(PackType type, Map<String, Supplier<byte[]>> out) {
         if (type != PackType.CLIENT_RESOURCES) return;
         org.kylepitcock.legacyconnector.v1_7_10.entity.LegacySpawnEggs.contributeModels(out);
-        if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) org.kylepitcock.legacyconnector.v1_7_10.client.LegacyFontPages.contribute(out);
+        if (net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) org.kylepitcock.legacyconnector.v1_7_10.client.LegacyFontPages.contribute(out);
         var blocks = new legacyconnector.v1_7_10.net.minecraft.client.renderer.texture.TextureMap(0, "textures/blocks");
         var items = new legacyconnector.v1_7_10.net.minecraft.client.renderer.texture.TextureMap(1, "textures/items");
         blockAtlas = blocks;
@@ -65,7 +65,7 @@ public final class Assets1710 implements GeneratedPack.Contributor {
         // Forge fired TextureStitchEvent.Pre per map (blocks, then items): mods such as BuildCraft register their icons there.
         postStitch(new legacyconnector.v1_7_10.net.minecraftforge.client.event.TextureStitchEvent.Pre(blocks));
         postStitch(new legacyconnector.v1_7_10.net.minecraftforge.client.event.TextureStitchEvent.Pre(items));
-        boolean client = net.neoforged.fml.loading.FMLEnvironment.dist.isClient();
+        boolean client = net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient();
         for (Block b : BlockBridge.modBlocks()) {
             // the icons leaf blocks register are candidates for the modern leaf pattern (ModernLeaves)
             boolean leaves = client && org.kylepitcock.legacyconnector.v1_7_10.client.ModernLeaves.isLeafBlock(b);
@@ -108,7 +108,7 @@ public final class Assets1710 implements GeneratedPack.Contributor {
         }
         bakeSprites(blocks, true, out);
         bakeSprites(items, false, out);
-        if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
+        if (net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) {
             try {
                 org.kylepitcock.legacyconnector.v1_7_10.client.ModernLeaves.contribute(out);
             } catch (RuntimeException | LinkageError e) {
@@ -200,7 +200,7 @@ public final class Assets1710 implements GeneratedPack.Contributor {
             // Vanilla names may carry their folder ("blocks/stone") or not.
             String bare = name.startsWith("blocks/") || name.startsWith("items/") ? name.substring(name.indexOf('/') + 1) : name;
             String folder = name.startsWith("items/") ? "items/" : name.startsWith("blocks/") ? "blocks/" : block ? "blocks/" : "items/";
-            if (folder.equals("blocks/") && net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
+            if (folder.equals("blocks/") && net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) {
                 String water = org.kylepitcock.legacyconnector.v1_7_10.client.LegacyWater.sprite(bare);
                 if (water != null) return water;
             }
@@ -241,7 +241,7 @@ public final class Assets1710 implements GeneratedPack.Contributor {
             for (int side = 0; side < 6; side++) {
                 faces[side] = iconName(b, side, meta);
                 if (deepslate) faces[side] = org.kylepitcock.legacyconnector.v1_7_10.client.OreBackgrounds.deepslateTexture(faces[side], out);
-                else if (oreBlock && net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) {
+                else if (oreBlock && net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) {
                     org.kylepitcock.legacyconnector.v1_7_10.client.OreBackgrounds.noteOreSprite(faces[side]);
                 }
             }
@@ -670,7 +670,7 @@ public final class Assets1710 implements GeneratedPack.Contributor {
                 model.add("textures", tex);
             }
             put(out, "assets/" + id.getNamespace() + "/models/item/" + id.getPath() + ".json", model);
-            if (net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) org.kylepitcock.legacyconnector.v1_7_10.client.SharedItemModels.note(id, model.toString());
+            if (net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) org.kylepitcock.legacyconnector.v1_7_10.client.SharedItemModels.note(id, model.toString());
         }
     }
 
@@ -705,7 +705,7 @@ public final class Assets1710 implements GeneratedPack.Contributor {
      */
     record Icon(String getIconName) implements IIcon {
         private float[] uv() {
-            return net.neoforged.fml.loading.FMLEnvironment.dist.isClient() ? org.kylepitcock.legacyconnector.v1_7_10.client.AtlasUV.of(getIconName) : null;
+            return net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient() ? org.kylepitcock.legacyconnector.v1_7_10.client.AtlasUV.of(getIconName) : null;
         }
 
         @Override

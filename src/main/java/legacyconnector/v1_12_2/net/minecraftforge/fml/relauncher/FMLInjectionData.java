@@ -13,7 +13,7 @@ public class FMLInjectionData {
     public static final String mcpversion = "9.42";
 
     public static File minecraftHome() {
-        return net.neoforged.fml.loading.FMLPaths.GAMEDIR.get().toFile();
+        return net.minecraftforge.fml.loading.FMLPaths.GAMEDIR.get().toFile();
     }
 
     public static Object[] data() {

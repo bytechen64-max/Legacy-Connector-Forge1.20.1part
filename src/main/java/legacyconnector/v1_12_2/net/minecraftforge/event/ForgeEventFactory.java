@@ -11,7 +11,7 @@ import legacyconnector.v1_12_2.net.minecraft.util.EnumActionResult;
 import legacyconnector.v1_12_2.net.minecraft.util.EnumHand;
 import legacyconnector.v1_12_2.net.minecraft.util.math.BlockPos;
 import legacyconnector.v1_12_2.net.minecraft.world.World;
-import net.neoforged.neoforge.event.EventHooks;
+import net.minecraftforge.event.EventHooks;
 import org.kylepitcock.legacyconnector.v1_12_2.bridge.StatesBridge1122;
 import org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122;
 
@@ -133,7 +133,7 @@ public class ForgeEventFactory {
         var p = player(player);
         if (p == null || entityItem == null || !(entityItem.mcc$modern() instanceof net.minecraft.world.entity.item.ItemEntity item)) return 0;
         var result = EventHooks.fireItemPickupPre(item, p).canPickup();
-        return result == net.neoforged.neoforge.common.util.TriState.FALSE ? -1 : result == net.neoforged.neoforge.common.util.TriState.TRUE ? 1 : 0;
+        return result == net.minecraftforge.common.util.TriState.FALSE ? -1 : result == net.minecraftforge.common.util.TriState.TRUE ? 1 : 0;
     }
 
     /** The extra ticks a mod gives an expiring item entity (a negative number lets it despawn). */
@@ -165,8 +165,8 @@ public class ForgeEventFactory {
     public static boolean doPlayerHarvestCheck(EntityPlayer player, IBlockState state, boolean success) {
         var p = player(player);
         if (p == null || state == null) return success;
-        var event = new net.neoforged.neoforge.event.entity.player.PlayerEvent.HarvestCheck(p, state(state), p.level(), p.blockPosition(), success);
-        return net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).canHarvest();
+        var event = new net.minecraftforge.event.entity.player.PlayerEvent.HarvestCheck(p, state(state), p.level(), p.blockPosition(), success);
+        return net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event).canHarvest();
     }
 
     /** The burn time mods give the stack (-1: the item's own). */
@@ -196,12 +196,12 @@ public class ForgeEventFactory {
 
     // ---- area F: placement and spawn events
 
-    private static net.neoforged.neoforge.common.util.BlockSnapshot mcc$modernSnapshot(legacyconnector.v1_12_2.net.minecraftforge.common.util.BlockSnapshot snapshot) {
+    private static net.minecraftforge.common.util.BlockSnapshot mcc$modernSnapshot(legacyconnector.v1_12_2.net.minecraftforge.common.util.BlockSnapshot snapshot) {
         if (snapshot == null) return null;
         if (snapshot.mcc$modern != null) return snapshot.mcc$modern;
         var world = snapshot.getWorld();
         var level = world == null ? null : world.mcc$level();
-        return level == null ? null : net.neoforged.neoforge.common.util.BlockSnapshot.create(level.dimension(), level, pos(snapshot.getPos()), snapshot.getFlag());
+        return level == null ? null : net.minecraftforge.common.util.BlockSnapshot.create(level.dimension(), level, pos(snapshot.getPos()), snapshot.getFlag());
     }
 
     /** The placement event for a block a player placed (canceled when a mod canceled the placement). */
@@ -240,9 +240,9 @@ public class ForgeEventFactory {
         if (mob == null || !(level instanceof net.minecraft.world.level.ServerLevelAccessor accessor)) {
             return legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.DEFAULT;
         }
-        var event = new net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck(mob, accessor,
+        var event = new net.minecraftforge.event.entity.living.MobSpawnEvent.PositionCheck(mob, accessor,
                 spawner ? net.minecraft.world.entity.MobSpawnType.SPAWNER : net.minecraft.world.entity.MobSpawnType.NATURAL, null);
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
         return switch (event.getResult()) {
             case SUCCEED -> legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW;
             case FAIL -> legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.DENY;
@@ -294,9 +294,9 @@ public class ForgeEventFactory {
         var mob = mcc$mob(entity);
         var level = world == null ? null : world.mcc$level();
         if (mob == null || !(level instanceof net.minecraft.world.level.ServerLevelAccessor accessor)) return false;
-        var event = new net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent(mob, accessor, x, y, z,
+        var event = new net.minecraftforge.event.entity.living.FinalizeSpawnEvent(mob, accessor, x, y, z,
                 accessor.getCurrentDifficultyAt(mob.blockPosition()), net.minecraft.world.entity.MobSpawnType.NATURAL, null, null);
-        return net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled();
+        return net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event).isCanceled();
     }
 
     /** Whether mods force (ALLOW), forbid (DENY) or leave to the mob (DEFAULT) its despawning. */
@@ -306,7 +306,7 @@ public class ForgeEventFactory {
         if (mob == null || !(mob.level() instanceof net.minecraft.server.level.ServerLevel level)) {
             return legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.DEFAULT;
         }
-        var event = net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(new net.neoforged.neoforge.event.entity.living.MobDespawnEvent(mob, level));
+        var event = net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.living.MobDespawnEvent(mob, level));
         return switch (event.getResult()) {
             case ALLOW -> legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW;
             case DENY -> legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.DENY;
@@ -389,10 +389,10 @@ public class ForgeEventFactory {
         var mob = mcc$mob(entity);
         var level = world == null ? null : world.mcc$level();
         if (mob == null || !(level instanceof net.minecraft.world.level.ServerLevelAccessor accessor)) return false;
-        var event = new net.neoforged.neoforge.event.entity.living.FinalizeSpawnEvent(mob, accessor, x, y, z,
+        var event = new net.minecraftforge.event.entity.living.FinalizeSpawnEvent(mob, accessor, x, y, z,
                 accessor.getCurrentDifficultyAt(mob.blockPosition()),
                 spawner != null ? net.minecraft.world.entity.MobSpawnType.SPAWNER : net.minecraft.world.entity.MobSpawnType.NATURAL, null, null);
-        return net.neoforged.neoforge.common.NeoForge.EVENT_BUS.post(event).isCanceled();
+        return net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event).isCanceled();
     }
 
     /**

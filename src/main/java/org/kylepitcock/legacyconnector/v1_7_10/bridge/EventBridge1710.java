@@ -39,21 +39,21 @@ import legacyconnector.v1_7_10.net.minecraftforge.event.world.WorldEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.LevelAccessor;
-import net.neoforged.bus.api.IEventBus;
-import net.neoforged.neoforge.common.util.TriState;
-import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
-import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
-import net.neoforged.neoforge.event.entity.player.ItemEntityPickupEvent;
-import net.neoforged.neoforge.event.level.LevelEvent;
-import net.neoforged.neoforge.event.server.ServerAboutToStartEvent;
-import net.neoforged.neoforge.event.server.ServerStartedEvent;
-import net.neoforged.neoforge.event.server.ServerStartingEvent;
-import net.neoforged.neoforge.event.server.ServerStoppedEvent;
-import net.neoforged.neoforge.event.server.ServerStoppingEvent;
-import net.neoforged.neoforge.event.tick.EntityTickEvent;
-import net.neoforged.neoforge.event.tick.LevelTickEvent;
-import net.neoforged.neoforge.event.tick.PlayerTickEvent;
-import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.common.util.TriState;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
+import net.minecraftforge.event.level.LevelEvent;
+import net.minecraftforge.event.server.ServerAboutToStartEvent;
+import net.minecraftforge.event.server.ServerStartedEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
+import net.minecraftforge.event.server.ServerStoppingEvent;
+import net.minecraftforge.event.tick.EntityTickEvent;
+import net.minecraftforge.event.TickEvent.LevelTickEvent;
+import net.minecraftforge.event.TickEvent.PlayerTickEvent;
+import net.minecraftforge.event.TickEvent.ServerTickEvent;
 import org.kylepitcock.legacyconnector.v1_7_10.Platform1710;
 
 /**
@@ -115,14 +115,14 @@ public final class EventBridge1710 {
         });
 
         // ---- Forge bus: player data files (Thaumcraft keeps research in <uuid>.thaum next to the player's .dat)
-        gameBus.addListener((net.neoforged.neoforge.event.entity.player.PlayerEvent.LoadFromFile e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.player.PlayerEvent.LoadFromFile e) -> {
             LOADED_FROM_FILE.add(e.getPlayerUUID());
             if (wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.PlayerEvent.LoadFromFile.class)) {
                 forge().post(new legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.PlayerEvent.LoadFromFile(player(e.getEntity()),
                         e.getPlayerDirectory(), e.getPlayerUUID()));
             }
         });
-        gameBus.addListener((net.neoforged.neoforge.event.entity.player.PlayerEvent.SaveToFile e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.player.PlayerEvent.SaveToFile e) -> {
             if (wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.PlayerEvent.SaveToFile.class)) {
                 forge().post(new legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.PlayerEvent.SaveToFile(player(e.getEntity()),
                         e.getPlayerDirectory(), e.getPlayerUUID()));
@@ -130,7 +130,7 @@ public final class EventBridge1710 {
         });
 
         // ---- FML bus: players
-        gameBus.addListener((net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent e) -> {
             // The single-player host's data comes from level.dat, which fires no LoadFromFile; Forge 1.7.10 fired it for the host
             // too, and mods load their own player files there (Thaumcraft's research and starting entries).
             if (!LOADED_FROM_FILE.remove(e.getEntity().getStringUUID()) && e.getEntity() instanceof net.minecraft.server.level.ServerPlayer sp
@@ -153,7 +153,7 @@ public final class EventBridge1710 {
             if (wants(fml(), PlayerEvent.PlayerLoggedInEvent.class)) fml().post(new PlayerEvent.PlayerLoggedInEvent(player(e.getEntity())));
             notifyFailures(e.getEntity());
         });
-        gameBus.addListener((net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent e) -> {
             if (wants(fml(), PlayerEvent.PlayerLoggedOutEvent.class)) fml().post(new PlayerEvent.PlayerLoggedOutEvent(player(e.getEntity())));
             if (e.getEntity() instanceof net.minecraft.server.level.ServerPlayer sp && sp.connection != null
                     && wants(fml(), legacyconnector.v1_7_10.cpw.mods.fml.common.network.FMLNetworkEvent.ServerDisconnectionFromClientEvent.class)) {
@@ -162,20 +162,20 @@ public final class EventBridge1710 {
                         legacyconnector.v1_7_10.net.minecraft.network.NetworkManager.mcc$of(sp.connection.getConnection())));
             }
         });
-        gameBus.addListener((net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerRespawnEvent e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.player.PlayerEvent.PlayerRespawnEvent e) -> {
             if (wants(fml(), PlayerEvent.PlayerRespawnEvent.class)) fml().post(new PlayerEvent.PlayerRespawnEvent(player(e.getEntity())));
         });
-        gameBus.addListener((net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerChangedDimensionEvent e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.player.PlayerEvent.PlayerChangedDimensionEvent e) -> {
             if (wants(fml(), PlayerEvent.PlayerChangedDimensionEvent.class)) {
                 fml().post(new PlayerEvent.PlayerChangedDimensionEvent(player(e.getEntity()), WorldProvider.dimensionId(e.getFrom()), WorldProvider.dimensionId(e.getTo())));
             }
         });
-        gameBus.addListener((net.neoforged.neoforge.event.entity.player.PlayerEvent.ItemCraftedEvent e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.player.PlayerEvent.ItemCraftedEvent e) -> {
             if (wants(fml(), PlayerEvent.ItemCraftedEvent.class)) {
                 fml().post(new PlayerEvent.ItemCraftedEvent(player(e.getEntity()), ItemStack.mcc$wrap(e.getCrafting()), null));
             }
         });
-        gameBus.addListener((net.neoforged.neoforge.event.entity.player.PlayerEvent.ItemSmeltedEvent e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.player.PlayerEvent.ItemSmeltedEvent e) -> {
             if (wants(fml(), PlayerEvent.ItemSmeltedEvent.class)) {
                 fml().post(new PlayerEvent.ItemSmeltedEvent(player(e.getEntity()), ItemStack.mcc$wrap(e.getSmelting())));
             }
@@ -187,7 +187,7 @@ public final class EventBridge1710 {
         });
 
         // ---- Forge bus: interaction
-        gameBus.addListener((net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickBlock e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickBlock e) -> {
             if (!wants(forge(), PlayerInteractEvent.class)) return;
             var p = e.getPos();
             PlayerInteractEvent legacy = new PlayerInteractEvent(player(e.getEntity()), PlayerInteractEvent.Action.RIGHT_CLICK_BLOCK,
@@ -197,7 +197,7 @@ public final class EventBridge1710 {
             e.setUseBlock(tri(legacy.useBlock));
             e.setUseItem(tri(legacy.useItem));
         });
-        gameBus.addListener((net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickItem e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickItem e) -> {
             if (!wants(forge(), PlayerInteractEvent.class)) return;
             var p = e.getEntity().blockPosition();
             PlayerInteractEvent legacy = new PlayerInteractEvent(player(e.getEntity()), PlayerInteractEvent.Action.RIGHT_CLICK_AIR,
@@ -206,13 +206,13 @@ public final class EventBridge1710 {
             if (legacy.isCanceled() || legacy.useItem == Event.Result.DENY) e.setCanceled(true);
         });
         // 1.7.10 fired RIGHT_CLICK_AIR on the client for an empty hand too (Fisk's Heroes shoots Spider-Man's web lines on it)
-        gameBus.addListener((net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.RightClickEmpty e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickEmpty e) -> {
             if (e.getHand() != net.minecraft.world.InteractionHand.MAIN_HAND || !wants(forge(), PlayerInteractEvent.class)) return;
             var p = e.getEntity().blockPosition();
             forge().post(new PlayerInteractEvent(player(e.getEntity()), PlayerInteractEvent.Action.RIGHT_CLICK_AIR,
                     p.getX(), p.getY(), p.getZ(), -1, World.mcc$wrap(e.getLevel())));
         });
-        gameBus.addListener((net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.LeftClickBlock e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock e) -> {
             if (!wants(forge(), PlayerInteractEvent.class)) return;
             var p = e.getPos();
             PlayerInteractEvent legacy = new PlayerInteractEvent(player(e.getEntity()), PlayerInteractEvent.Action.LEFT_CLICK_BLOCK,
@@ -222,7 +222,7 @@ public final class EventBridge1710 {
         });
 
         // ---- Forge bus: blocks and worlds
-        gameBus.addListener((net.neoforged.neoforge.event.level.BlockEvent.BreakEvent e) -> {
+        gameBus.addListener((net.minecraftforge.event.level.BlockEvent.BreakEvent e) -> {
             BlockEvent.BreakEvent pending = legacyconnector.v1_7_10.net.minecraftforge.common.ForgeHooks.mcc$takePendingBreak();
             if (!wants(forge(), BlockEvent.BreakEvent.class)) return;
             var p = e.getPos();
@@ -236,7 +236,7 @@ public final class EventBridge1710 {
                     BlockBridge.legacyBlock(e.getState()), BlockBridge.legacyMeta(e.getState()), player(e.getPlayer()));
             if (forge().post(legacy)) e.setCanceled(true);
         });
-        gameBus.addListener((net.neoforged.neoforge.event.level.BlockEvent.EntityPlaceEvent e) -> {
+        gameBus.addListener((net.minecraftforge.event.level.BlockEvent.EntityPlaceEvent e) -> {
             if (!wants(forge(), BlockEvent.PlaceEvent.class) || !(e.getEntity() instanceof net.minecraft.world.entity.player.Player pl)) return;
             var p = e.getPos();
             BlockEvent.PlaceEvent legacy = new BlockEvent.PlaceEvent(p.getX(), p.getY(), p.getZ(), World.mcc$wrap(e.getLevel()),
@@ -244,7 +244,7 @@ public final class EventBridge1710 {
                     player(pl), ItemStack.mcc$wrap(pl.getMainHandItem()));
             if (forge().post(legacy)) e.setCanceled(true);
         });
-        gameBus.addListener((net.neoforged.neoforge.event.level.BlockDropsEvent e) -> {
+        gameBus.addListener((net.minecraftforge.event.level.BlockDropsEvent e) -> {
             var p = e.getPos();
             // Shears on a block that is shearable the legacy way (leaves, tall grass, vines) drop what the block says.
             if (isShears(e.getTool())
@@ -285,7 +285,7 @@ public final class EventBridge1710 {
         });
         // Bone meal, as 1.7.10's ItemDye.applyBonemeal: the legacy BonemealEvent first (handlers grow the block and answer ALLOW),
         // then a legacy IGrowable block (Thaumcraft's greatwood/silverwood saplings) is fertilized directly.
-        gameBus.addListener((net.neoforged.neoforge.event.entity.player.BonemealEvent e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.player.BonemealEvent e) -> {
             var block = BlockBridge.legacyBlock(e.getState());
             var p = e.getPos();
             World world = World.mcc$wrap(e.getLevel());
@@ -316,7 +316,7 @@ public final class EventBridge1710 {
                 e.setCanceled(true);
             }
         });
-        gameBus.addListener((net.neoforged.neoforge.event.entity.player.PlayerEvent.BreakSpeed e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed.class)) return;
             var pos = e.getPosition().orElse(net.minecraft.core.BlockPos.ZERO);
             var legacy = new legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.PlayerEvent.BreakSpeed(player(e.getEntity()),
@@ -324,14 +324,14 @@ public final class EventBridge1710 {
             if (forge().post(legacy)) e.setCanceled(true);
             else e.setNewSpeed(legacy.newSpeed);
         });
-        gameBus.addListener((net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent.Start e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.living.LivingEntityUseItemEvent.Start e) -> {
             if (!(e.getEntity() instanceof net.minecraft.world.entity.player.Player p) || !(e.getItem().getItem() instanceof net.minecraft.world.item.BowItem)
                     || !wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.ArrowNockEvent.class)) return;
             var stack = ItemStack.mcc$wrap(e.getItem());
             if (forge().post(new legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.ArrowNockEvent(player(p), stack))) e.setCanceled(true);
         });
-        gameBus.addListener((net.neoforged.neoforge.event.level.BlockEvent.BlockToolModificationEvent e) -> {
-            if (e.getItemAbility() != net.neoforged.neoforge.common.ItemAbilities.HOE_TILL || e.isSimulated() || e.getPlayer() == null
+        gameBus.addListener((net.minecraftforge.event.level.BlockEvent.BlockToolModificationEvent e) -> {
+            if (e.getItemAbility() != net.minecraftforge.common.ItemAbilities.HOE_TILL || e.isSimulated() || e.getPlayer() == null
                     || !(e.getLevel() instanceof net.minecraft.world.level.Level level)
                     || !wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.UseHoeEvent.class)) return;
             var p = e.getPos();
@@ -339,7 +339,7 @@ public final class EventBridge1710 {
                     ItemStack.mcc$wrap(e.getHeldItemStack()), World.mcc$wrap(level), p.getX(), p.getY(), p.getZ());
             if (forge().post(legacy)) e.setCanceled(true);
         });
-        gameBus.addListener((net.neoforged.neoforge.event.entity.EntityTeleportEvent.EnderEntity e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.EntityTeleportEvent.EnderEntity e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.entity.living.EnderTeleportEvent.class)) return;
             var legacy = new legacyconnector.v1_7_10.net.minecraftforge.event.entity.living.EnderTeleportEvent((EntityLivingBase) EntityBridge.wrap(e.getEntityLiving()),
                     e.getTargetX(), e.getTargetY(), e.getTargetZ(), 0.0F);
@@ -351,13 +351,13 @@ public final class EventBridge1710 {
                 e.setTargetZ(legacy.targetZ);
             }
         });
-        gameBus.addListener((net.neoforged.neoforge.event.ServerChatEvent e) -> {
+        gameBus.addListener((net.minecraftforge.event.ServerChatEvent e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.ServerChatEvent.class)) return;
             var legacy = new legacyconnector.v1_7_10.net.minecraftforge.event.ServerChatEvent(
                     (legacyconnector.v1_7_10.net.minecraft.entity.player.EntityPlayerMP) EntityBridge.wrap(e.getPlayer()), e.getRawText(), null);
             if (forge().post(legacy)) e.setCanceled(true);
         });
-        gameBus.addListener((net.neoforged.neoforge.event.entity.item.ItemTossEvent e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.item.ItemTossEvent e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.entity.item.ItemTossEvent.class)) return;
             var legacy = new legacyconnector.v1_7_10.net.minecraftforge.event.entity.item.ItemTossEvent((EntityItem) EntityBridge.wrap(e.getEntity()), player(e.getPlayer()));
             if (forge().post(legacy)) e.setCanceled(true);
@@ -367,10 +367,10 @@ public final class EventBridge1710 {
             // an item entity that was merged away has an empty stack; 1.7.10 never reported those, and handlers read the stack unchecked
             if (e.getItemEntity().getItem().isEmpty()) return;
             var legacy = new legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.EntityItemPickupEvent(player(e.getPlayer()), (EntityItem) EntityBridge.wrap(e.getItemEntity()));
-            if (forge().post(legacy) || legacy.getResult() == Event.Result.DENY) e.setCanPickup(net.neoforged.neoforge.common.util.TriState.FALSE);
-            else if (legacy.getResult() == Event.Result.ALLOW) e.setCanPickup(net.neoforged.neoforge.common.util.TriState.TRUE);
+            if (forge().post(legacy) || legacy.getResult() == Event.Result.DENY) e.setCanPickup(net.minecraftforge.common.util.TriState.FALSE);
+            else if (legacy.getResult() == Event.Result.ALLOW) e.setCanPickup(net.minecraftforge.common.util.TriState.TRUE);
         });
-        gameBus.addListener((net.neoforged.neoforge.event.AnvilUpdateEvent e) -> {
+        gameBus.addListener((net.minecraftforge.event.AnvilUpdateEvent e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.AnvilUpdateEvent.class)) return;
             var legacy = new legacyconnector.v1_7_10.net.minecraftforge.event.AnvilUpdateEvent(ItemStack.mcc$wrap(e.getLeft()), ItemStack.mcc$wrap(e.getRight()),
                     e.getName(), (int) e.getCost());
@@ -382,7 +382,7 @@ public final class EventBridge1710 {
                 e.setMaterialCost(legacy.materialCost);
             }
         });
-        gameBus.addListener((net.neoforged.neoforge.event.level.ChunkEvent.Load e) -> {
+        gameBus.addListener((net.minecraftforge.event.level.ChunkEvent.Load e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.world.ChunkEvent.Load.class) || !(e.getLevel() instanceof net.minecraft.world.level.Level level)) return;
             // the chunk is not fetchable yet while its load event runs: chest views must not fill loot tables (setChanged would wait for it)
             legacyconnector.v1_7_10.net.minecraft.tileentity.TileEntityChest.MCC_CHUNK_LOADING.set(Boolean.TRUE);
@@ -392,40 +392,40 @@ public final class EventBridge1710 {
                 legacyconnector.v1_7_10.net.minecraft.tileentity.TileEntityChest.MCC_CHUNK_LOADING.set(Boolean.FALSE);
             }
         });
-        gameBus.addListener((net.neoforged.neoforge.event.level.ChunkEvent.Unload e) -> {
+        gameBus.addListener((net.minecraftforge.event.level.ChunkEvent.Unload e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.world.ChunkEvent.Unload.class) || !(e.getLevel() instanceof net.minecraft.world.level.Level level)) return;
             forge().post(new legacyconnector.v1_7_10.net.minecraftforge.event.world.ChunkEvent.Unload(new legacyconnector.v1_7_10.net.minecraft.world.chunk.Chunk(World.mcc$wrap(level), e.getChunk())));
         });
-        gameBus.addListener((net.neoforged.neoforge.event.level.ChunkDataEvent.Load e) -> {
+        gameBus.addListener((net.minecraftforge.event.level.ChunkDataEvent.Load e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.world.ChunkDataEvent.Load.class) || !(e.getLevel() instanceof net.minecraft.world.level.Level level)) return;
             forge().post(new legacyconnector.v1_7_10.net.minecraftforge.event.world.ChunkDataEvent.Load(
                     new legacyconnector.v1_7_10.net.minecraft.world.chunk.Chunk(World.mcc$wrap(level), e.getChunk()),
                     new legacyconnector.v1_7_10.net.minecraft.nbt.NBTTagCompound(e.getData())));
         });
-        gameBus.addListener((net.neoforged.neoforge.event.level.ChunkDataEvent.Save e) -> {
+        gameBus.addListener((net.minecraftforge.event.level.ChunkDataEvent.Save e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.world.ChunkDataEvent.Save.class) || !(e.getLevel() instanceof net.minecraft.world.level.Level level)
                     || !(e.getChunk() instanceof net.minecraft.world.level.chunk.LevelChunk)) return; // a chunk still generating never got its load event
             forge().post(new legacyconnector.v1_7_10.net.minecraftforge.event.world.ChunkDataEvent.Save(
                     new legacyconnector.v1_7_10.net.minecraft.world.chunk.Chunk(World.mcc$wrap(level), e.getChunk()),
                     new legacyconnector.v1_7_10.net.minecraft.nbt.NBTTagCompound(e.getData())));
         });
-        gameBus.addListener((net.neoforged.neoforge.event.level.ExplosionEvent.Start e) -> {
+        gameBus.addListener((net.minecraftforge.event.level.ExplosionEvent.Start e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.world.ExplosionEvent.Start.class)) return;
             World world = World.mcc$wrap(e.getLevel());
             if (forge().post(new legacyconnector.v1_7_10.net.minecraftforge.event.world.ExplosionEvent.Start(world, legacyExplosion(world, e.getExplosion())))) {
                 e.setCanceled(true);
             }
         });
-        gameBus.addListener((net.neoforged.neoforge.event.level.ExplosionEvent.Detonate e) -> explosionDetonate(e));
-        gameBus.addListener((net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck e) -> {
+        gameBus.addListener((net.minecraftforge.event.level.ExplosionEvent.Detonate e) -> explosionDetonate(e));
+        gameBus.addListener((net.minecraftforge.event.entity.living.MobSpawnEvent.PositionCheck e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.entity.living.LivingSpawnEvent.CheckSpawn.class)) return;
             var legacy = new legacyconnector.v1_7_10.net.minecraftforge.event.entity.living.LivingSpawnEvent.CheckSpawn(
                     (EntityLivingBase) EntityBridge.wrap(e.getEntity()), World.mcc$wrap(e.getLevel()), (float) e.getX(), (float) e.getY(), (float) e.getZ());
             forge().post(legacy);
-            if (legacy.getResult() == Event.Result.ALLOW) e.setResult(net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck.Result.SUCCEED);
-            else if (legacy.getResult() == Event.Result.DENY) e.setResult(net.neoforged.neoforge.event.entity.living.MobSpawnEvent.PositionCheck.Result.FAIL);
+            if (legacy.getResult() == Event.Result.ALLOW) e.setResult(net.minecraftforge.event.entity.living.MobSpawnEvent.PositionCheck.Result.SUCCEED);
+            else if (legacy.getResult() == Event.Result.DENY) e.setResult(net.minecraftforge.event.entity.living.MobSpawnEvent.PositionCheck.Result.FAIL);
         });
-        gameBus.addListener((net.neoforged.neoforge.client.event.ComputeFovModifierEvent e) -> {
+        gameBus.addListener((net.minecraftforge.client.event.ComputeFovModifierEvent e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.client.event.FOVUpdateEvent.class)) return;
             if (!(player(e.getPlayer()) instanceof legacyconnector.v1_7_10.net.minecraft.client.entity.EntityPlayerSP)) return;
             var legacy = new legacyconnector.v1_7_10.net.minecraftforge.client.event.FOVUpdateEvent(player(e.getPlayer()) instanceof legacyconnector.v1_7_10.net.minecraft.client.entity.EntityPlayerSP sp ? sp : null, e.getFovModifier());
@@ -466,11 +466,11 @@ public final class EventBridge1710 {
         // Forge's ISpecialArmor: worn pieces that absorb damage by their own rules (ProjectE's matter armour: 80% less damage, none from
         // lava, drowning or mobs) take their share before the modern armour maths runs on what is left.
         gameBus.addListener((LivingIncomingDamageEvent e) -> specialArmor(e));
-        gameBus.addListener((net.neoforged.neoforge.event.entity.living.LivingDeathEvent e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.living.LivingDeathEvent e) -> {
             if (!wants(forge(), LivingDeathEvent.class)) return;
             if (forge().post(new LivingDeathEvent((EntityLivingBase) EntityBridge.wrap(e.getEntity()), legacySource(e.getSource())))) e.setCanceled(true);
         });
-        gameBus.addListener((net.neoforged.neoforge.event.entity.living.LivingDropsEvent e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.living.LivingDropsEvent e) -> {
             if (!wants(forge(), LivingDropsEvent.class)) return;
             ArrayList<EntityItem> drops = new ArrayList<>();
             for (var item : e.getDrops()) if (EntityBridge.wrap(item) instanceof EntityItem legacyItem) drops.add(legacyItem);
@@ -486,43 +486,43 @@ public final class EventBridge1710 {
                 if (item != null && item.mcc$entity() instanceof net.minecraft.world.entity.item.ItemEntity modern) e.getDrops().add(modern);
             }
         });
-        gameBus.addListener((net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent.Start e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.living.LivingEntityUseItemEvent.Start e) -> {
             var legacy = playerUse(e, 0);
             if (legacy != null && forge().post(legacy)) e.setCanceled(true);
         });
-        gameBus.addListener((net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent.Tick e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.living.LivingEntityUseItemEvent.Tick e) -> {
             var legacy = playerUse(e, 1);
             if (legacy != null && forge().post(legacy)) e.setCanceled(true);
         });
-        gameBus.addListener((net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent.Stop e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.living.LivingEntityUseItemEvent.Stop e) -> {
             var legacy = playerUse(e, 2);
             if (legacy != null && forge().post(legacy)) e.setCanceled(true);
         });
-        gameBus.addListener((net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent.Finish e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.living.LivingEntityUseItemEvent.Finish e) -> {
             var legacy = playerUse(e, 3);
             if (legacy != null) forge().post(legacy);
         });
         // 1.7.10 posted Watch after the chunk packet was sent and mods send their tile entities' data from it (IC2's initial data):
         // NeoForge's Watch fires while the chunk is only queued (the client does not know it yet), its Sent fires right after the packet.
-        gameBus.addListener((net.neoforged.neoforge.event.level.ChunkWatchEvent.Sent e) -> {
+        gameBus.addListener((net.minecraftforge.event.level.ChunkWatchEvent.Sent e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.world.ChunkWatchEvent.Watch.class)) return;
             if (!(EntityBridge.wrap(e.getPlayer()) instanceof legacyconnector.v1_7_10.net.minecraft.entity.player.EntityPlayerMP player)) return;
             forge().post(new legacyconnector.v1_7_10.net.minecraftforge.event.world.ChunkWatchEvent.Watch(
                     new legacyconnector.v1_7_10.net.minecraft.world.ChunkCoordIntPair(e.getPos().x, e.getPos().z), player));
         });
-        gameBus.addListener((net.neoforged.neoforge.event.level.ChunkWatchEvent.UnWatch e) -> {
+        gameBus.addListener((net.minecraftforge.event.level.ChunkWatchEvent.UnWatch e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.world.ChunkWatchEvent.UnWatch.class)) return;
             if (!(EntityBridge.wrap(e.getPlayer()) instanceof legacyconnector.v1_7_10.net.minecraft.entity.player.EntityPlayerMP player)) return;
             forge().post(new legacyconnector.v1_7_10.net.minecraftforge.event.world.ChunkWatchEvent.UnWatch(
                     new legacyconnector.v1_7_10.net.minecraft.world.ChunkCoordIntPair(e.getPos().x, e.getPos().z), player));
         });
-        gameBus.addListener((net.neoforged.neoforge.event.entity.player.PlayerEvent.Clone e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.player.PlayerEvent.Clone e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.PlayerEvent.Clone.class)) return;
             if (!(EntityBridge.wrap(e.getEntity()) instanceof legacyconnector.v1_7_10.net.minecraft.entity.player.EntityPlayer now)) return;
             if (!(EntityBridge.wrap(e.getOriginal()) instanceof legacyconnector.v1_7_10.net.minecraft.entity.player.EntityPlayer before)) return;
             forge().post(new legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.PlayerEvent.Clone(now, before, e.isWasDeath()));
         });
-        gameBus.addListener((net.neoforged.neoforge.event.entity.living.LivingDropsEvent e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.living.LivingDropsEvent e) -> {
             if (!(e.getEntity() instanceof net.minecraft.world.entity.player.Player)) return;
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.PlayerDropsEvent.class)) return;
             if (!(EntityBridge.wrap(e.getEntity()) instanceof legacyconnector.v1_7_10.net.minecraft.entity.player.EntityPlayer player)) return;
@@ -538,12 +538,12 @@ public final class EventBridge1710 {
                 if (item != null && item.mcc$entity() instanceof net.minecraft.world.entity.item.ItemEntity modern) e.getDrops().add(modern);
             }
         });
-        gameBus.addListener((net.neoforged.neoforge.event.entity.player.PlayerDestroyItemEvent e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.player.PlayerDestroyItemEvent e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.PlayerDestroyItemEvent.class)) return;
             if (!(EntityBridge.wrap(e.getEntity()) instanceof legacyconnector.v1_7_10.net.minecraft.entity.player.EntityPlayer player)) return;
             forge().post(new legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.PlayerDestroyItemEvent(player, ItemStack.mcc$wrap(e.getOriginal())));
         });
-        gameBus.addListener((net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.EntityInteract e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract e) -> {
             var held = e.getItemStack();
             // Legacy shears shear entities through their own itemInteractionForEntity; this is for the vanilla shears.
             if (!(held.getItem() instanceof net.minecraft.world.item.ShearsItem) || e.getLevel().isClientSide()) return;
@@ -575,11 +575,11 @@ public final class EventBridge1710 {
                 org.slf4j.LoggerFactory.getLogger("LegacyConnector/Shears").warn("Shearing {} failed: {}", e.getTarget(), ex.toString());
             }
         });
-        gameBus.addListener((net.neoforged.neoforge.event.entity.player.PlayerInteractEvent.EntityInteract e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract e) -> {
             if (!wants(forge(), EntityInteractEvent.class)) return;
             if (forge().post(new EntityInteractEvent(player(e.getEntity()), EntityBridge.wrap(e.getTarget())))) e.setCanceled(true);
         });
-        gameBus.addListener((net.neoforged.neoforge.event.entity.living.LivingFallEvent e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.living.LivingFallEvent e) -> {
             if (!wants(forge(), LivingFallEvent.class)) return;
             LivingFallEvent legacy = new LivingFallEvent((EntityLivingBase) EntityBridge.wrap(e.getEntity()), e.getDistance());
             if (forge().post(legacy)) e.setCanceled(true);
@@ -623,7 +623,7 @@ public final class EventBridge1710 {
 
     /** The legacy PlayerUseItemEvent (kind 0 start, 1 tick, 2 stop, 3 finish) for a player using an item, or null when nothing listens. */
     private static legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.PlayerUseItemEvent playerUse(
-            net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent e, int kind) {
+            net.minecraftforge.event.entity.living.LivingEntityUseItemEvent e, int kind) {
         if (!(e.getEntity() instanceof net.minecraft.world.entity.player.Player)) return null;
         Class<? extends legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.PlayerUseItemEvent> type = switch (kind) {
             case 0 -> legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.PlayerUseItemEvent.Start.class;
@@ -712,7 +712,7 @@ public final class EventBridge1710 {
 
     /** Client-only events. Registered from the client entrypoint so servers never load client classes. */
     public static void registerClient(IEventBus gameBus) {
-        gameBus.addListener((net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent.LoggingIn e) -> {
+        gameBus.addListener((net.minecraftforge.client.event.ClientPlayerNetworkEvent.LoggingIn e) -> {
             var manager = legacyconnector.v1_7_10.net.minecraft.network.NetworkManager.mcc$of(e.getConnection());
             if (wants(fml(), legacyconnector.v1_7_10.cpw.mods.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent.class)) {
                 fml().post(new legacyconnector.v1_7_10.cpw.mods.fml.common.network.FMLNetworkEvent.ClientConnectedToServerEvent(manager, "MODDED"));
@@ -721,7 +721,7 @@ public final class EventBridge1710 {
                     legacyconnector.v1_7_10.cpw.mods.fml.common.network.handshake.NetworkDispatcher.get(manager),
                     legacyconnector.v1_7_10.net.minecraft.client.network.NetHandlerPlayClient.INSTANCE);
         });
-        gameBus.addListener((net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent.LoggingOut e) -> {
+        gameBus.addListener((net.minecraftforge.client.event.ClientPlayerNetworkEvent.LoggingOut e) -> {
             if (!wants(fml(), legacyconnector.v1_7_10.cpw.mods.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent.class)) return;
             fml().post(new legacyconnector.v1_7_10.cpw.mods.fml.common.network.FMLNetworkEvent.ClientDisconnectionFromServerEvent(
                     legacyconnector.v1_7_10.net.minecraft.network.NetworkManager.mcc$of(e.getConnection())));
@@ -731,7 +731,7 @@ public final class EventBridge1710 {
         org.kylepitcock.legacyconnector.v1_7_10.client.LegacyAttenuation.register(gameBus);
         org.kylepitcock.legacyconnector.v1_7_10.client.LegacyHorizon.register(gameBus);
         org.kylepitcock.legacyconnector.v1_7_10.client.ClientEvents1710.register(gameBus);
-        gameBus.addListener((net.neoforged.neoforge.client.event.ViewportEvent.ComputeFogColor e) -> {
+        gameBus.addListener((net.minecraftforge.client.event.ViewportEvent.ComputeFogColor e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.client.event.EntityViewRenderEvent.FogColors.class)) return;
             if (!(EntityBridge.wrap(e.getCamera().getEntity()) instanceof EntityLivingBase living)) return;
             var legacy = new legacyconnector.v1_7_10.net.minecraftforge.client.event.EntityViewRenderEvent.FogColors(living, e.getPartialTick(),
@@ -743,7 +743,7 @@ public final class EventBridge1710 {
         });
         // 1.7.10 fired these from its input loop while no screen was open, after updating the key bindings (as InputEvent.Key
         // and MouseButton.Post fire here): mods handle their key bindings in them (Fisk's Heroes' suit abilities)
-        gameBus.addListener((net.neoforged.neoforge.client.event.InputEvent.Key e) -> {
+        gameBus.addListener((net.minecraftforge.client.event.InputEvent.Key e) -> {
             if (e.getAction() == org.lwjgl.glfw.GLFW.GLFW_REPEAT || net.minecraft.client.Minecraft.getInstance().screen != null) return;
             legacyconnector.v1_7_10.org.lwjgl.input.Keyboard.mcc$setEvent(org.kylepitcock.legacyconnector.v1_7_10.client.KeyCodes.fromGlfw(e.getKey()),
                     e.getAction() == org.lwjgl.glfw.GLFW.GLFW_PRESS, '\0');
@@ -755,7 +755,7 @@ public final class EventBridge1710 {
                 legacyconnector.v1_7_10.org.lwjgl.input.Keyboard.mcc$setEvent(0, false, '\0');
             }
         });
-        gameBus.addListener((net.neoforged.neoforge.client.event.InputEvent.MouseButton.Post e) -> {
+        gameBus.addListener((net.minecraftforge.client.event.InputEvent.MouseButton.Post e) -> {
             if (net.minecraft.client.Minecraft.getInstance().screen != null) return;
             legacyconnector.v1_7_10.org.lwjgl.input.Mouse.mcc$setEvent(e.getButton(), e.getAction() != 0);
             try {
@@ -766,14 +766,14 @@ public final class EventBridge1710 {
                 legacyconnector.v1_7_10.org.lwjgl.input.Mouse.mcc$setEvent(-1, false);
             }
         });
-        gameBus.addListener((net.neoforged.neoforge.client.event.InputEvent.MouseScrollingEvent e) -> {
+        gameBus.addListener((net.minecraftforge.client.event.InputEvent.MouseScrollingEvent e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.client.event.MouseEvent.class)) return;
             if (!mouseEventsInGame()) return;
             var event = new legacyconnector.v1_7_10.net.minecraftforge.client.event.MouseEvent((int) e.getMouseX(), (int) e.getMouseY(), 0, 0,
                     (int) Math.signum(e.getScrollDeltaY()) * 120, -1, false);
             if (forge().post(event)) e.setCanceled(true);
         });
-        gameBus.addListener((net.neoforged.neoforge.client.event.InputEvent.MouseButton.Pre e) -> {
+        gameBus.addListener((net.minecraftforge.client.event.InputEvent.MouseButton.Pre e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.client.event.MouseEvent.class)) return;
             if (!mouseEventsInGame()) return;
             var mouse = net.minecraft.client.Minecraft.getInstance().mouseHandler;
@@ -786,7 +786,7 @@ public final class EventBridge1710 {
                 legacyconnector.v1_7_10.org.lwjgl.input.Mouse.mcc$setEvent(-1, false);
             }
         });
-        gameBus.addListener((net.neoforged.neoforge.client.event.RenderPlayerEvent.Pre e) -> {
+        gameBus.addListener((net.minecraftforge.client.event.RenderPlayerEvent.Pre e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.client.event.RenderPlayerEvent.Pre.class)
                     && !wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.client.event.RenderPlayerEvent.Specials.Pre.class)) return;
             if (!(EntityBridge.wrap(e.getEntity()) instanceof legacyconnector.v1_7_10.net.minecraft.entity.player.EntityPlayer player)) return;
@@ -801,7 +801,7 @@ public final class EventBridge1710 {
             postInWorld(new legacyconnector.v1_7_10.net.minecraftforge.client.event.RenderPlayerEvent.Specials.Pre(player, legacyRenderPlayer(), partial, x, y, z),
                     e.getPoseStack(), e.getMultiBufferSource(), e.getPackedLight(), at);
         });
-        gameBus.addListener((net.neoforged.neoforge.client.event.RenderPlayerEvent.Post e) -> {
+        gameBus.addListener((net.minecraftforge.client.event.RenderPlayerEvent.Post e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.client.event.RenderPlayerEvent.Post.class)
                     && !wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.client.event.RenderPlayerEvent.Specials.Post.class)) return;
             if (!(EntityBridge.wrap(e.getEntity()) instanceof legacyconnector.v1_7_10.net.minecraft.entity.player.EntityPlayer player)) return;
@@ -814,25 +814,25 @@ public final class EventBridge1710 {
                     e.getPoseStack(), e.getMultiBufferSource(), e.getPackedLight(), at);
         });
         // (every living entity drawn, every frame: nothing is computed or wrapped unless a legacy listener wants the event)
-        gameBus.addListener((net.neoforged.neoforge.client.event.RenderLivingEvent.Pre<?, ?> e) -> {
+        gameBus.addListener((net.minecraftforge.client.event.RenderLivingEvent.Pre<?, ?> e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.client.event.RenderLivingEvent.Pre.class)) return;
             double[] at = legacyRenderPos(e.getPoseStack());
             var legacy = livingRenderEvent(e.getEntity(), true, at);
             if (legacy != null && postInWorld(legacy, e.getPoseStack(), e.getMultiBufferSource(), e.getPackedLight(), at)) e.setCanceled(true);
         });
-        gameBus.addListener((net.neoforged.neoforge.client.event.RenderLivingEvent.Post<?, ?> e) -> {
+        gameBus.addListener((net.minecraftforge.client.event.RenderLivingEvent.Post<?, ?> e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.client.event.RenderLivingEvent.Post.class)) return;
             double[] at = legacyRenderPos(e.getPoseStack());
             var legacy = livingRenderEvent(e.getEntity(), false, at);
             if (legacy != null) postInWorld(legacy, e.getPoseStack(), e.getMultiBufferSource(), e.getPackedLight(), at);
         });
-        gameBus.addListener((net.neoforged.neoforge.client.event.ClientTickEvent.Pre e) -> {
+        gameBus.addListener((net.minecraftforge.client.event.ClientTickEvent.Pre e) -> {
             if (wants(fml(), TickEvent.ClientTickEvent.class)) fml().post(new TickEvent.ClientTickEvent(TickEvent.Phase.START));
         });
-        gameBus.addListener((net.neoforged.neoforge.client.event.ClientTickEvent.Post e) -> {
+        gameBus.addListener((net.minecraftforge.client.event.ClientTickEvent.Post e) -> {
             if (wants(fml(), TickEvent.ClientTickEvent.class)) fml().post(new TickEvent.ClientTickEvent(TickEvent.Phase.END));
         });
-        gameBus.addListener((net.neoforged.neoforge.event.entity.player.ItemTooltipEvent e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.player.ItemTooltipEvent e) -> {
             if (!wants(forge(), ItemTooltipEvent.class) || e.getItemStack().isEmpty()) return;
             List<String> lines = new ArrayList<>();
             for (Component c : e.getToolTip()) lines.add(c.getString());
@@ -857,7 +857,7 @@ public final class EventBridge1710 {
     }
 
     /** Legacy listeners see the blocks and entities the explosion hits; what they remove is spared. */
-    private static void explosionDetonate(net.neoforged.neoforge.event.level.ExplosionEvent.Detonate e) {
+    private static void explosionDetonate(net.minecraftforge.event.level.ExplosionEvent.Detonate e) {
         if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.world.ExplosionEvent.Detonate.class)) return;
         World world = World.mcc$wrap(e.getLevel());
         var explosion = legacyExplosion(world, e.getExplosion());

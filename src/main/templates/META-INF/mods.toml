@@ -9,25 +9,19 @@ displayName = "${mod_name}"
 authors = "${mod_authors}"
 description = '''${mod_description}'''
 
-[[accessTransformers]]
-file = "META-INF/accesstransformer.cfg"
-
-[[mixins]]
-config = "legacyconnector.mixins.json"
-
-[[mixins]]
-config = "legacyconnector.compat.mixins.json"
+# The access transformer travels inside the jar (META-INF/accesstransformer.cfg) and Forge applies it automatically;
+# the mixin configs are declared in the jar manifest ("MixinConfigs") by the `jar` task.
 
 [[dependencies."${mod_id}"]]
-modId = "neoforge"
-type = "required"
-versionRange = "${neo_version_range}"
+modId = "forge"
+mandatory = true
+versionRange = "${forge_version_range}"
 ordering = "NONE"
 side = "BOTH"
 
 [[dependencies."${mod_id}"]]
 modId = "minecraft"
-type = "required"
+mandatory = true
 versionRange = "${minecraft_version_range}"
 ordering = "NONE"
 side = "BOTH"
@@ -35,7 +29,7 @@ side = "BOTH"
 # Optional: legacy biomes are placed as a TerraBlender overworld region when it is installed.
 [[dependencies."${mod_id}"]]
 modId = "terrablender"
-type = "optional"
-versionRange = "[4.0,)"
+mandatory = false
+versionRange = "[3.0,)"
 ordering = "NONE"
 side = "BOTH"

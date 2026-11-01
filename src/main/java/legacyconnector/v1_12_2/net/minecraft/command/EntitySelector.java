@@ -72,7 +72,7 @@ public class EntitySelector {
     public static <T extends Entity> List<T> matchEntities(ICommandSender sender, String token, Class<? extends T> targetClass) throws CommandException {
         Matcher m = TOKEN_PATTERN.matcher(token == null ? "" : token);
         if (!m.matches() || sender == null || !sender.canUseCommand(1, "@")) return Collections.emptyList();
-        var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server == null) return Collections.emptyList();
         var source = server.createCommandSourceStack().withPermission(2);
         var world = sender.getEntityWorld();

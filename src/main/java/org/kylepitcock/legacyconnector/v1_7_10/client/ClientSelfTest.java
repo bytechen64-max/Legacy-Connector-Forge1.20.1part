@@ -13,8 +13,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
-import net.neoforged.neoforge.client.event.ScreenEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.client.event.ScreenEvent;
+import net.minecraftforge.common.MinecraftForge;
 import org.kylepitcock.legacyconnector.v1_7_10.Assets1710;
 import org.kylepitcock.legacyconnector.v1_7_10.bridge.BlockBridge;
 import org.kylepitcock.legacyconnector.v1_7_10.bridge.ItemBridge;
@@ -34,7 +34,7 @@ public final class ClientSelfTest {
 
     public static void register() {
         if (System.getProperty("legacyconnector.clientSelfTest") == null) return;
-        NeoForge.EVENT_BUS.addListener((ScreenEvent.Opening e) -> {
+        MinecraftForge.EVENT_BUS.addListener((ScreenEvent.Opening e) -> {
             if (done || !(e.getNewScreen() instanceof TitleScreen)) return;
             done = true;
             Minecraft.getInstance().tell(() -> {

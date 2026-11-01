@@ -17,8 +17,8 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.network.chat.Component;
-import net.neoforged.neoforge.client.event.ScreenEvent;
-import net.neoforged.neoforge.common.NeoForge;
+import net.minecraftforge.client.event.ScreenEvent;
+import net.minecraftforge.common.MinecraftForge;
 import org.kylepitcock.legacyconnector.v1_7_10.client.RenderContext;
 
 /**
@@ -40,11 +40,11 @@ public final class ScreenEvents1122 {
     }
 
     public static void register() {
-        NeoForge.EVENT_BUS.addListener(ScreenEvents1122::onOpening);
-        NeoForge.EVENT_BUS.addListener(ScreenEvents1122::onInit);
-        NeoForge.EVENT_BUS.addListener(ScreenEvents1122::onRenderPre);
-        NeoForge.EVENT_BUS.addListener(ScreenEvents1122::onRenderPost);
-        NeoForge.EVENT_BUS.addListener(ScreenEvents1122::onBackground);
+        MinecraftForge.EVENT_BUS.addListener(ScreenEvents1122::onOpening);
+        MinecraftForge.EVENT_BUS.addListener(ScreenEvents1122::onInit);
+        MinecraftForge.EVENT_BUS.addListener(ScreenEvents1122::onRenderPre);
+        MinecraftForge.EVENT_BUS.addListener(ScreenEvents1122::onRenderPost);
+        MinecraftForge.EVENT_BUS.addListener(ScreenEvents1122::onBackground);
         InputEvents1122.register();
     }
 

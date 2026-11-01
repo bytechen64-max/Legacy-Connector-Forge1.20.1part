@@ -67,7 +67,7 @@ public final class EntityBridge1122 {
 
     private static Entity create(net.minecraft.world.entity.Entity modern) {
         if (modern instanceof org.kylepitcock.legacyconnector.v1_12_2.entity.Host1122 h && h.mcc$legacy() != null) return h.mcc$legacy();
-        if (modern instanceof net.neoforged.neoforge.common.util.FakePlayer fp) return new legacyconnector.v1_12_2.net.minecraftforge.common.util.FakePlayer(fp);
+        if (modern instanceof net.minecraftforge.common.util.FakePlayer fp) return new legacyconnector.v1_12_2.net.minecraftforge.common.util.FakePlayer(fp);
         if (modern instanceof ServerPlayer sp) return new legacyconnector.v1_12_2.net.minecraft.entity.player.EntityPlayerMP(sp);
         if (modern instanceof net.minecraft.world.entity.player.Player p) {
             if (!p.level().isClientSide()) return new PlayerView(p);
@@ -222,12 +222,12 @@ public final class EntityBridge1122 {
     // ------------------------------------------------------------------ capabilities of vanilla entities
 
     /** Saves the capabilities of every vanilla entity view (world saves, logouts, server stop). */
-    public static void registerSaving(net.neoforged.bus.api.IEventBus bus) {
-        bus.addListener((net.neoforged.neoforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent e) -> saveCaps(e.getEntity()));
-        bus.addListener((net.neoforged.neoforge.event.entity.player.PlayerEvent.SaveToFile e) -> saveCaps(e.getEntity()));
-        bus.addListener((net.neoforged.neoforge.event.server.ServerStoppingEvent e) -> saveAllCaps());
-        bus.addListener((net.neoforged.neoforge.event.level.LevelEvent.Save e) -> saveAllCaps());
-        bus.addListener((net.neoforged.neoforge.event.entity.EntityLeaveLevelEvent e) -> {
+    public static void registerSaving(net.minecraftforge.eventbus.api.IEventBus bus) {
+        bus.addListener((net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedOutEvent e) -> saveCaps(e.getEntity()));
+        bus.addListener((net.minecraftforge.event.entity.player.PlayerEvent.SaveToFile e) -> saveCaps(e.getEntity()));
+        bus.addListener((net.minecraftforge.event.server.ServerStoppingEvent e) -> saveAllCaps());
+        bus.addListener((net.minecraftforge.event.level.LevelEvent.Save e) -> saveAllCaps());
+        bus.addListener((net.minecraftforge.event.entity.EntityLeaveLevelEvent e) -> {
             if (!e.getLevel().isClientSide() && !(e.getEntity() instanceof net.minecraft.world.entity.player.Player)) saveCaps(e.getEntity());
         });
     }
@@ -251,7 +251,7 @@ public final class EntityBridge1122 {
 
     /** Client: the local player's view, or null (also on a dedicated server). */
     public static legacyconnector.v1_12_2.net.minecraft.entity.player.EntityPlayer clientPlayer() {
-        if (!net.neoforged.fml.loading.FMLEnvironment.dist.isClient()) return null;
+        if (!net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) return null;
         return ClientAccess.player();
     }
 

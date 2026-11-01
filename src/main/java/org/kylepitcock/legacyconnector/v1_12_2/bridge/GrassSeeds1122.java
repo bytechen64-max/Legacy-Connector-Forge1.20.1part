@@ -6,7 +6,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import legacyconnector.v1_12_2.net.minecraft.item.ItemStack;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.event.level.BlockDropsEvent;
+import net.minecraftforge.event.level.BlockEvent.BreakEvent;
 
 /**
  * Forge 1.12's grass seed list ({@code MinecraftForge.addGrassSeed}): broken tall grass dropped, one time in eight, a seed picked by
@@ -28,14 +28,14 @@ public final class GrassSeeds1122 {
         SEEDS.add(new Seed(seed.copy(), weight));
         if (!listening) {
             listening = true;
-            net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(BlockDropsEvent.class, GrassSeeds1122::onDrops);
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener(BlockDropsEvent.class, GrassSeeds1122::onDrops);
         }
     }
 
     private static void onDrops(BlockDropsEvent event) {
         var state = event.getState();
         if (!state.is(Blocks.SHORT_GRASS) && !state.is(Blocks.FERN)) return;
-        if (event.getTool().canPerformAction(net.neoforged.neoforge.common.ItemAbilities.SHEARS_DIG)) return; // shears take the grass itself
+        if (event.getTool().canPerformAction(net.minecraftforge.common.ItemAbilities.SHEARS_DIG)) return; // shears take the grass itself
         var random = ThreadLocalRandom.current();
         if (random.nextInt(8) != 0) return;
         ItemStack picked = null;

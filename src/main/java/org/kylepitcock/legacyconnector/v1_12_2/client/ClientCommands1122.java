@@ -14,10 +14,10 @@ public final class ClientCommands1122 {
     private ClientCommands1122() {}
 
     public static void register() {
-        net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(ClientCommands1122::onRegister);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener(ClientCommands1122::onRegister);
     }
 
-    private static void onRegister(net.neoforged.neoforge.client.event.RegisterClientCommandsEvent e) {
+    private static void onRegister(net.minecraftforge.client.event.RegisterClientCommandsEvent e) {
         if (!Client1122.present()) return;
         for (ICommand command : ClientCommandHandler.instance.mcc$commands()) {
             java.util.List<String> names = new java.util.ArrayList<>();
