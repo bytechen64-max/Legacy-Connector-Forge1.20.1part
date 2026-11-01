@@ -40,10 +40,10 @@ public class EntityTippedArrow extends EntityArrow {
     /** Takes the effects (and colour) of a tipped arrow item; a plain arrow item clears them. */
     public void setPotionEffect(ItemStack stack) {
         var modern = Stacks1122.toModern(stack);
-        var contents = modern.get(net.minecraft.core.component.DataComponents.POTION_CONTENTS);
+        var contents = org.kylepitcock.legacyconnector.core.data.PotionData.of(modern);
         var a = mcc$modernArrow();
         if (a != null) {
-            if (contents != null) for (var e : contents.getAllEffects()) a.addEffect(new net.minecraft.world.effect.MobEffectInstance(e));
+            for (var e : contents.allEffects()) a.addEffect(new net.minecraft.world.effect.MobEffectInstance(e));
             return;
         }
         customPotionEffects.clear();
@@ -75,8 +75,8 @@ public class EntityTippedArrow extends EntityArrow {
 
     /** The colour a tipped arrow item shows (its custom colour, else its effects' mix). */
     public static int getCustomColor(ItemStack stack) {
-        var contents = Stacks1122.toModern(stack).get(net.minecraft.core.component.DataComponents.POTION_CONTENTS);
-        return contents == null ? -1 : contents.getColor();
+        var contents = org.kylepitcock.legacyconnector.core.data.PotionData.of(Stacks1122.toModern(stack));
+        return contents.isEmpty() ? -1 : contents.color();
     }
 
     @Override
@@ -96,8 +96,8 @@ public class EntityTippedArrow extends EntityArrow {
             var m = e.mcc$toModern();
             if (m != null) effects.add(m);
         }
-        modern.set(net.minecraft.core.component.DataComponents.POTION_CONTENTS, new net.minecraft.world.item.alchemy.PotionContents(java.util.Optional.empty(),
-                mcc$color == -1 ? java.util.Optional.empty() : java.util.Optional.of(mcc$color), effects));
+        new org.kylepitcock.legacyconnector.core.data.PotionData(java.util.Optional.empty(),
+                mcc$color == -1 ? java.util.Optional.empty() : java.util.Optional.of(mcc$color), effects).applyTo(modern);
         return Stacks1122.fromModern(modern);
     }
 

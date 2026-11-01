@@ -98,7 +98,7 @@ public class EntityAreaEffectCloud extends Entity {
     public void setPotion(PotionType potion) {
         var c = mcc$cloud();
         var modern = potion == null ? null : potion.mcc$modern();
-        if (c != null && modern != null) c.setPotionContents(new net.minecraft.world.item.alchemy.PotionContents(modern));
+        if (c != null) c.setPotion(modern == null ? null : modern.value());
         mcc$potionType = potion;
         mcc$refreshColor();
     }
@@ -128,10 +128,9 @@ public class EntityAreaEffectCloud extends Entity {
         var c = e.mcc$cloud();
         if (c == null) return e.mcc$localEffects;
         java.util.List<PotionEffect> out = new java.util.ArrayList<>();
-        var tag = new net.minecraft.nbt.CompoundTag();
-        c.saveWithoutId(tag);
-        var contents = net.minecraft.world.item.alchemy.PotionContents.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("potion_contents")).result().orElse(null);
-        if (contents != null) for (var m : contents.customEffects()) out.add(PotionEffect.mcc$fromModern(m));
+        for (var m : ((org.kylepitcock.legacyconnector.mixin.access.AreaEffectCloudAccess) c).legacyconnector$effects()) {
+            out.add(PotionEffect.mcc$fromModern(m));
+        }
         return out;
     }
 
@@ -140,13 +139,9 @@ public class EntityAreaEffectCloud extends Entity {
         if (v != null) e.mcc$localEffects.addAll(v);
         var c = e.mcc$cloud();
         if (c == null) return;
-        var tag = new net.minecraft.nbt.CompoundTag();
-        c.saveWithoutId(tag);
-        var contents = net.minecraft.world.item.alchemy.PotionContents.CODEC.parse(net.minecraft.nbt.NbtOps.INSTANCE, tag.get("potion_contents")).result()
-                .orElse(net.minecraft.world.item.alchemy.PotionContents.EMPTY);
-        java.util.List<net.minecraft.world.effect.MobEffectInstance> modern = new java.util.ArrayList<>();
+        var modern = ((org.kylepitcock.legacyconnector.mixin.access.AreaEffectCloudAccess) c).legacyconnector$effects();
+        modern.clear();
         if (v != null) for (PotionEffect p : v) if (p != null && p.mcc$toModern() != null) modern.add(p.mcc$toModern());
-        c.setPotionContents(new net.minecraft.world.item.alchemy.PotionContents(contents.potion(), contents.customColor(), modern));
         e.mcc$added.clear();
         if (v != null) e.mcc$added.addAll(v);
         e.mcc$refreshColor();

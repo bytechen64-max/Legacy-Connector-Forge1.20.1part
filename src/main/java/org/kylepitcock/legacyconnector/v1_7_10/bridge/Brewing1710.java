@@ -17,7 +17,7 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
-import net.minecraft.world.item.alchemy.PotionContents;
+import org.kylepitcock.legacyconnector.core.data.PotionData;
 import net.minecraft.world.item.alchemy.Potions;
 import net.minecraftforge.common.brewing.IBrewingRecipe;
 import net.minecraftforge.event.brewing.RegisterBrewingRecipesEvent;
@@ -98,8 +98,8 @@ public final class Brewing1710 {
         if (!splash && !stack.is(Items.POTION)) return -1;
         net.minecraft.nbt.CompoundTag data = org.kylepitcock.legacyconnector.core.data.ItemData.customData(stack);
         if (data != null && data.contains(TAG)) return data.getInt(TAG);
-        PotionContents contents = stack.get(DataComponents.POTION_CONTENTS);
-        if (contents == null || contents.potion().isEmpty() || !contents.customEffects().isEmpty()) return -1;
+        var contents = org.kylepitcock.legacyconnector.core.data.PotionData.of(stack);
+        if (contents.potion().isEmpty() || !contents.customEffects().isEmpty()) return -1;
         Integer value = VALUE.get(contents.potion().get());
         return value == null ? -1 : value | (splash ? SPLASH : 0);
     }
@@ -137,7 +137,7 @@ public final class Brewing1710 {
             vanilla = plain == 0 ? Potions.WATER : base == 16 ? Potions.AWKWARD : base == 32 ? Potions.THICK : Potions.MUNDANE;
         }
         if (vanilla != null) {
-            stack.set(DataComponents.POTION_CONTENTS, new PotionContents(vanilla));
+            org.kylepitcock.legacyconnector.core.data.PotionData.of(vanilla).applyTo(stack);
             return stack;
         }
         List<MobEffectInstance> effects = new ArrayList<>();
@@ -150,14 +150,14 @@ public final class Brewing1710 {
             if (name == null) name = effect.value().getDisplayName();
         }
         if (effects.isEmpty()) {
-            stack.set(DataComponents.POTION_CONTENTS, new PotionContents(Potions.MUNDANE));
+            org.kylepitcock.legacyconnector.core.data.PotionData.of(Potions.MUNDANE).applyTo(stack);
             return stack;
         }
-        stack.set(DataComponents.POTION_CONTENTS, new PotionContents(Optional.empty(), Optional.of(0xFF000000 | PotionHelper.func_77915_a(value, false)), effects));
+        new org.kylepitcock.legacyconnector.core.data.PotionData(Optional.empty(), Optional.of(0xFF000000 | PotionHelper.func_77915_a(value, false)), effects).applyTo(stack);
         CompoundTag tag = new CompoundTag();
         tag.putInt(TAG, value);
         org.kylepitcock.legacyconnector.core.data.ItemData.setCustomData(stack, tag);
-        stack.set(DataComponents.ITEM_NAME, Component.translatable(splash ? "legacyconnector.splash_potion_of" : "legacyconnector.potion_of", name));
+        stack.setHoverName(Component.translatable(splash ? "legacyconnector.splash_potion_of" : "legacyconnector.potion_of", name));
         return stack;
     }
 

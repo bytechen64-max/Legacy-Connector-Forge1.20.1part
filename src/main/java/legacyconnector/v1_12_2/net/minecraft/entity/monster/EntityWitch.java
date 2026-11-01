@@ -77,7 +77,7 @@ public class EntityWitch extends EntityMob implements legacyconnector.v1_12_2.ne
             potion = net.minecraft.world.item.alchemy.Potions.WEAKNESS;
         }
         var thrown = new net.minecraft.world.entity.projectile.ThrownPotion(m.level(), (net.minecraft.world.entity.LivingEntity) m);
-        thrown.setItem(net.minecraft.world.item.alchemy.PotionContents.createItemStack(net.minecraft.world.item.Items.SPLASH_POTION, potion));
+        thrown.setItem(org.kylepitcock.legacyconnector.core.data.PotionData.createItemStack(net.minecraft.world.item.Items.SPLASH_POTION, potion));
         thrown.setXRot(thrown.getXRot() + 20.0F);
         thrown.shoot(dx, ddy + f * 0.2F, dz, 0.75F, 8.0F);
         m.level().playSound(null, m.getX(), m.getY(), m.getZ(), SoundEvents.WITCH_THROW, m.getSoundSource(), 1.0F, 0.8F + rand.nextFloat() * 0.4F);

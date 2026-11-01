@@ -65,12 +65,12 @@ public final class Stacks1122 {
             if (all) data.remove("CustomPotionEffects");
         }
         if (potion.isPresent() || color.isPresent() || !effects.isEmpty()) {
-            out.set(DataComponents.POTION_CONTENTS, new net.minecraft.world.item.alchemy.PotionContents(potion, color, effects));
+            new org.kylepitcock.legacyconnector.core.data.PotionData(potion, color, effects).applyTo(out);
         }
     }
 
     /** The modern potion contents as 1.12's potion tags. */
-    private static void potionFromModern(net.minecraft.world.item.alchemy.PotionContents contents, ItemStack out) {
+    private static void potionFromModern(org.kylepitcock.legacyconnector.core.data.PotionData contents, ItemStack out) {
         NBTTagCompound tag = out.hasTagCompound() ? out.getTagCompound() : new NBTTagCompound();
         contents.potion().flatMap(net.minecraft.core.Holder::unwrapKey).ifPresent(k -> tag.setString("Potion", k.location().toString()));
         contents.customColor().ifPresent(c -> tag.setInteger("CustomPotionColor", c));

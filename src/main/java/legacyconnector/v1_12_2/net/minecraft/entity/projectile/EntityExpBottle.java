@@ -31,7 +31,7 @@ public class EntityExpBottle extends EntityThrowable {
     protected void onImpact(RayTraceResult result) {
         if (mcc$server()) {
             var level = mcc$entity.level();
-            level.levelEvent(2002, mcc$entity.blockPosition(), net.minecraft.world.item.alchemy.PotionContents.getColor(
+            level.levelEvent(2002, mcc$entity.blockPosition(), org.kylepitcock.legacyconnector.core.data.PotionData.getColor(
                     net.minecraft.world.item.alchemy.Potions.WATER));
             int xp = 3 + rand.nextInt(5) + rand.nextInt(5);
             if (level instanceof net.minecraft.server.level.ServerLevel sl) net.minecraft.world.entity.ExperienceOrb.award(sl, mcc$entity.position(), xp);

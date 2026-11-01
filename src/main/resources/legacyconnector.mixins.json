@@ -4,6 +4,7 @@
   "package": "org.kylepitcock.legacyconnector.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "access.AreaEffectCloudAccess",
     "access.ChunkMapAccess",
     "access.EntityAccess",
     "EntityGravityMixin",

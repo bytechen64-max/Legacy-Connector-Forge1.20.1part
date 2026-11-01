@@ -27,7 +27,7 @@ public abstract class EntityLivingBase extends Entity {
     public static final legacyconnector.v1_12_2.net.minecraft.network.datasync.DataParameter<Float> HEALTH = org.kylepitcock.legacyconnector.v1_12_2.entity.VanillaDataKey1122.of(7, legacyconnector.v1_12_2.net.minecraft.network.datasync.DataSerializers.FLOAT, EntityLivingBase.class, 0.0F, e -> e.mcc$living().getHealth(),
             (e, v) -> e.mcc$living().setHealth(v));
     public static final legacyconnector.v1_12_2.net.minecraft.network.datasync.DataParameter<Integer> POTION_EFFECTS = org.kylepitcock.legacyconnector.v1_12_2.entity.VanillaDataKey1122.of(8, legacyconnector.v1_12_2.net.minecraft.network.datasync.DataSerializers.VARINT, EntityLivingBase.class, 0,
-            e -> net.minecraft.world.item.alchemy.PotionContents.getColorOptional(e.mcc$living().getActiveEffects()).orElse(0), null);
+            e -> org.kylepitcock.legacyconnector.core.data.PotionData.getColorOptional(e.mcc$living().getActiveEffects()).orElse(0), null);
     public static final legacyconnector.v1_12_2.net.minecraft.network.datasync.DataParameter<Boolean> HIDE_PARTICLES = org.kylepitcock.legacyconnector.v1_12_2.entity.VanillaDataKey1122.of(9, legacyconnector.v1_12_2.net.minecraft.network.datasync.DataSerializers.BOOLEAN, EntityLivingBase.class, false,
             e -> !e.mcc$living().getActiveEffects().isEmpty() && net.minecraft.world.entity.LivingEntity.areAllEffectsAmbient(e.mcc$living().getActiveEffects()),
             null);
