@@ -214,8 +214,7 @@ public final class EntityBridge1122 {
             sp.teleportTo(target, sp.getX(), sp.getY(), sp.getZ(), sp.getYRot(), sp.getXRot());
             return entity;
         }
-        var moved = m.changeDimension(new net.minecraft.world.level.portal.DimensionTransition(target, m.position(), m.getDeltaMovement(), m.getYRot(),
-                m.getXRot(), net.minecraft.world.level.portal.DimensionTransition.DO_NOTHING));
+        var moved = org.kylepitcock.legacyconnector.core.Teleports.changeDimension(m, target);
         return moved == null ? null : wrap(moved);
     }
 

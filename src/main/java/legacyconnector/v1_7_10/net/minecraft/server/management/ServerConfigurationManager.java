@@ -167,8 +167,7 @@ public class ServerConfigurationManager {
         if (m instanceof net.minecraft.server.level.ServerPlayer sp) {
             sp.teleportTo(target, x, y, z, yaw, sp.getXRot());
         } else if (m.level() != target) {
-            var copy = m.changeDimension(new net.minecraft.world.level.portal.DimensionTransition(target, m.position(), m.getDeltaMovement(), yaw,
-                    m.getXRot(), net.minecraft.world.level.portal.DimensionTransition.DO_NOTHING));
+            var copy = org.kylepitcock.legacyconnector.core.Teleports.changeDimension(m, target);
             if (copy == null) return;
             moved = EntityBridge.wrap(copy);
         }

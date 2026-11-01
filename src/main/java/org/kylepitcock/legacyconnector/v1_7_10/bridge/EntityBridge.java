@@ -182,8 +182,7 @@ public final class EntityBridge {
             net.minecraft.core.BlockPos safe = safeSpot(target, sp.blockPosition());
             sp.teleportTo(target, safe.getX() + 0.5D, safe.getY(), safe.getZ() + 0.5D, sp.getYRot(), sp.getXRot());
         } else {
-            m.changeDimension(new net.minecraft.world.level.portal.DimensionTransition(target, m.position(), m.getDeltaMovement(), m.getYRot(),
-                    m.getXRot(), net.minecraft.world.level.portal.DimensionTransition.DO_NOTHING));
+            org.kylepitcock.legacyconnector.core.Teleports.changeDimension(m, target);
         }
     }
 

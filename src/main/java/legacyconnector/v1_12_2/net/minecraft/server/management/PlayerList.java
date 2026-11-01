@@ -238,8 +238,7 @@ public class PlayerList {
         var m = entityIn.mcc$modern();
         if (m == null) return;
         if (m.level() != target) {
-            m.changeDimension(new net.minecraft.world.level.portal.DimensionTransition(target, m.position(), m.getDeltaMovement(), m.getYRot(),
-                    m.getXRot(), net.minecraft.world.level.portal.DimensionTransition.DO_NOTHING));
+            org.kylepitcock.legacyconnector.core.Teleports.changeDimension(m, target);
         }
         if (teleporter != null) teleporter.placeEntity(toWorldIn, entityIn, m.getYRot());
     }
