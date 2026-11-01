@@ -37,6 +37,8 @@ public final class LegacyResourceConverter {
     private static final String BLOCK_ATLAS = """
             {
               "sources": [
+                { "type": "directory", "source": "block", "prefix": "block/" },
+                { "type": "directory", "source": "item", "prefix": "item/" },
                 { "type": "directory", "source": "blocks", "prefix": "blocks/" },
                 { "type": "directory", "source": "items", "prefix": "items/" }
               ]

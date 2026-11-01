@@ -51,15 +51,33 @@ public final class Effects1122 {
         }
     }
 
-    /** The modern effect of a mod potion, or null. */
+    /**
+     * The modern effect of a mod potion, or null. The registration is deferred (a legacy mod registers during its loading step,
+     * while the effect registry is only written during the registry event), so the holder is looked up in the registry the first
+     * time it is asked for: the eager lookup right after registering found nothing and the icon pass saw no mod effects at all.
+     */
     public static Holder<MobEffect> holder(Potion potion) {
-        return potion == null ? null : EFFECTS.get(potion);
+        if (potion == null) return null;
+        Holder<MobEffect> known = EFFECTS.get(potion);
+        if (known != null) return known;
+        for (var effect : BuiltInRegistries.MOB_EFFECT) {
+            if (effect instanceof LegacyEffect legacy && legacy.potion == potion) {
+                var id = BuiltInRegistries.MOB_EFFECT.getResourceKey(effect);
+                if (id.isEmpty()) return null;
+                Holder<MobEffect> holder = BuiltInRegistries.MOB_EFFECT.getHolder(id.get()).orElse(null);
+                if (holder == null) return null;
+                EFFECTS.putIfAbsent(potion, holder);
+                return holder;
+            }
+        }
+        return null;
     }
 
     /** The modern effects made for mod potions (their client icons are drawn by EffectIcons1122). */
     public static java.util.List<MobEffect> all() {
         java.util.List<MobEffect> out = new java.util.ArrayList<>();
-        for (Holder<MobEffect> h : EFFECTS.values()) out.add(h.value());
+        // the registry is the truth: a deferred registration may have happened after EFFECTS was written
+        for (var effect : BuiltInRegistries.MOB_EFFECT) if (effect instanceof LegacyEffect) out.add(effect);
         return out;
     }
 

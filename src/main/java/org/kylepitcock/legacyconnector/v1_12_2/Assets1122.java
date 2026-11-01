@@ -98,10 +98,58 @@ public final class Assets1122 implements GeneratedPack.Contributor {
     private static final boolean SHARE_MODELS = org.kylepitcock.legacyconnector.core.LegacyConfig.perfShareBlockModels();
     private static final Map<String, String> GENERATED_MODELS = new java.util.concurrent.ConcurrentHashMap<>();
 
+    /**
+     * Development aid (reachable through {@code -PserverTickScript}): runs the client's blockstate and item model translation and
+     * writes every generated file to {@code dir}, so the pack content can be inspected without starting a client.
+     */
+    public static int dumpTo(String dir) {
+        Map<String, Supplier<byte[]>> files = new TreeMap<>();
+        translateAll(files);
+        int written = 0;
+        for (var e : files.entrySet()) {
+            try {
+                java.nio.file.Path path = java.nio.file.Path.of(dir, e.getKey());
+                java.nio.file.Files.createDirectories(path.getParent());
+                java.nio.file.Files.write(path, e.getValue().get());
+                written++;
+            } catch (IOException | RuntimeException ex) {
+                LOG.warn("Could not write {}: {}", e.getKey(), ex.toString());
+            }
+        }
+        return written;
+    }
+    /**
+     * Development aid: every model a generated blockstate names has to exist in the mod's own pack. A missing one is what the client
+     * reports as "missing model for variant" (the block draws as the purple cube), and the client log does not say which model.
+     */
+    private static void checkGeneratedModels(Map<String, Supplier<byte[]>> out) {
+        java.util.Set<String> reported = new java.util.HashSet<>();
+        for (var e : out.entrySet()) {
+            if (!e.getKey().contains("/blockstates/")) continue;
+            String json = new String(e.getValue().get(), StandardCharsets.UTF_8);
+            var m = java.util.regex.Pattern.compile("\"model\"\\s*:\\s*\"([^\"]+)\"").matcher(json);
+            while (m.find()) {
+                String ref = m.group(1);
+                int colon = ref.indexOf(':');
+                String ns = colon < 0 ? "minecraft" : ref.substring(0, colon);
+                String path = colon < 0 ? ref : ref.substring(colon + 1);
+                String resource = "assets/" + ns + "/models/" + path + ".json";
+                if (out.containsKey(resource)) continue;
+                if (Thread.currentThread().getContextClassLoader().getResource(resource) != null) continue;
+                if (reported.add(ref) && reported.size() <= 25) {
+                    LOG.warn("Generated blockstate {} names the model {}, which no pack has", e.getKey(), ref);
+                }
+            }
+        }
+        if (!reported.isEmpty()) LOG.warn("{} model reference(s) of generated blockstates are missing", reported.size());
+    }
+
     private static void translateAll(Map<String, Supplier<byte[]>> out) {
         GENERATED_MODELS.clear();
         clientProxies();
         itemModels(out);
+        blockItemModels(out);
+        effectIcons(out);
         Stats stats = new Stats();
         for (Block block : Registries1122.BLOCKS.getValues()) {
             if (!(block.mcc$modern instanceof Legacy1122Block modern)) continue;
@@ -119,6 +167,7 @@ public final class Assets1122 implements GeneratedPack.Contributor {
                 }
             }
         }
+        checkGeneratedModels(out);
         LOG.info("1.12.2 render types: {} cutout, {} translucent, {} solid", stats.cutout, stats.translucent, stats.solid);
         LOG.info("1.12.2 blockstates: {} translated, {} fell back to a plain model{}", stats.translated, stats.fellBack,
                 stats.fallbacks.isEmpty() ? "" : " (" + String.join("; ", stats.fallbacks.subList(0, Math.min(60, stats.fallbacks.size())))
@@ -154,6 +203,87 @@ public final class Assets1122 implements GeneratedPack.Contributor {
     }
 
     /** Item models registered in code (ModelLoader): each subtype's modern item points at the model file the mod named. */
+    /**
+     * A 1.12 block item had no model file of its own: the item renderer asked the block's blockstate for its "inventory" variant. A
+     * modern item needs a model file, so every block item gets one that inherits the block's model (the missing ones were the
+     * "Unable to load model: ... #inventory ... models/item/<name>.json" lines of the client log, drawn as the purple cube).
+     */
+    private static void blockItemModels(Map<String, Supplier<byte[]>> out) {
+        for (legacyconnector.v1_12_2.net.minecraft.item.Item item : org.kylepitcock.legacyconnector.v1_12_2.bridge.ItemBridge1122.modItems()) {
+            if (!(item instanceof legacyconnector.v1_12_2.net.minecraft.item.ItemBlock blockItem) || item.getRegistryName() == null) continue;
+            var block = blockItem.getBlock();
+            if (block == null) continue;
+            var modern = org.kylepitcock.legacyconnector.v1_12_2.bridge.BlockBridge1122.modern(block);
+            if (modern == null) continue;
+            ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(org.kylepitcock.legacyconnector.v1_12_2.bridge.ItemBridge1122.modern(item, 0));
+            if (itemId == null) continue;
+            String itemPath = "assets/" + itemId.getNamespace() + "/models/item/" + itemId.getPath() + ".json";
+            if (out.containsKey(itemPath)) continue;
+            if (Thread.currentThread().getContextClassLoader().getResource(itemPath) != null) continue;
+            // the first model of the block's generated blockstate stands for its look
+            String parent = null;
+            var state = out.get("assets/" + itemId.getNamespace() + "/blockstates/" + BuiltInRegistries.BLOCK.getKey(modern).getPath() + ".json");
+            if (state != null) {
+                var m = java.util.regex.Pattern.compile("\"model\"\\s*:\\s*\"([^\"]+)\"").matcher(new String(state.get(), StandardCharsets.UTF_8));
+                if (m.find() && !m.group(1).startsWith("minecraft:block/")) parent = m.group(1);
+            }
+            if (parent == null) parent = itemId.getNamespace() + ":block/" + BuiltInRegistries.BLOCK.getKey(modern).getPath();
+            JsonObject model = new JsonObject();
+            model.addProperty("parent", parent);
+            byte[] bytes = GSON.toJson(model).getBytes(StandardCharsets.UTF_8);
+            out.put(itemPath, () -> bytes);
+        }
+    }
+
+    /**
+     * Status icons of the mod potions. A modern effect shows {@code assets/<ns>/textures/mob_effect/<name>.png}; a 1.12 potion drew its
+     * icon from a texture sheet instead, so the HUD and the inventory drew a magenta square. The liquid colour is the one thing a
+     * modern effect knows about such a potion, so the icon is a 16x16 tile of it.
+     */
+    private static void effectIcons(Map<String, Supplier<byte[]>> out) {
+        for (var effect : org.kylepitcock.legacyconnector.v1_12_2.entity.Effects1122.all()) {
+            var legacy = org.kylepitcock.legacyconnector.v1_12_2.entity.Effects1122.legacy(effect);
+            ResourceLocation id = BuiltInRegistries.MOB_EFFECT.getKey(effect);
+            if (legacy == null || id == null) continue;
+            String path = "assets/" + id.getNamespace() + "/textures/mob_effect/" + id.getPath() + ".png";
+            if (out.containsKey(path)) continue;
+            if (Thread.currentThread().getContextClassLoader().getResource(path) != null) continue;
+            byte[] png = iconPng(legacy.getLiquidColor());
+            if (png != null) out.put(path, () -> png);
+        }
+    }
+
+    /** A 16x16 tile of the potion's liquid colour, with a darker border and a highlight so it reads as an icon. */
+    private static byte[] iconPng(int argb) {
+        try {
+            int r = (argb >> 16) & 0xFF;
+            int g = (argb >> 8) & 0xFF;
+            int b = argb & 0xFF;
+            int body = 0xFF000000 | (r << 16) | (g << 8) | b;
+            int edge = 0xFF000000 | ((r * 55 / 100) << 16) | ((g * 55 / 100) << 8) | (b * 55 / 100);
+            var image = new java.awt.image.BufferedImage(16, 16, java.awt.image.BufferedImage.TYPE_INT_ARGB);
+            for (int x = 0; x < 16; x++) {
+                for (int y = 0; y < 16; y++) {
+                    boolean border = x == 0 || y == 0 || x == 15 || y == 15;
+                    image.setRGB(x, y, border ? edge : body);
+                }
+            }
+            for (int x = 3; x < 8; x++) {
+                for (int y = 2; y < 7; y++) {
+                    int c = image.getRGB(x, y);
+                    int light = 0xFF000000 | (Math.min(255, ((c >> 16) & 0xFF) + 70) << 16)
+                            | (Math.min(255, ((c >> 8) & 0xFF) + 70) << 8) | Math.min(255, (c & 0xFF) + 70);
+                    image.setRGB(x, y, light);
+                }
+            }
+            var bytes = new java.io.ByteArrayOutputStream();
+            javax.imageio.ImageIO.write(image, "png", bytes);
+            return bytes.toByteArray();
+        } catch (java.io.IOException | RuntimeException e) {
+            return null;
+        }
+    }
+
     private static void itemModels(Map<String, Supplier<byte[]>> out) {
         for (legacyconnector.v1_12_2.net.minecraft.item.Item item : org.kylepitcock.legacyconnector.v1_12_2.bridge.ItemBridge1122.modItems()) {
             if (item.getRegistryName() == null || item instanceof legacyconnector.v1_12_2.net.minecraft.item.ItemBlock) continue;
@@ -909,7 +1039,14 @@ public final class Assets1122 implements GeneratedPack.Contributor {
             Map.entry("block/trapdoor_top", "block/template_trapdoor_top"),
             Map.entry("block/grass_path", "block/dirt_path"), Map.entry("block/slime", "block/slime_block"),
             Map.entry("block/torch", "block/template_torch"), Map.entry("block/torch_wall", "block/template_torch_wall"),
-            Map.entry("block/grass_snowed", "block/grass_block_snow"));
+            Map.entry("block/grass_snowed", "block/grass_block_snow"),
+            // 1.13 collapsed the eight vine models into one
+            Map.entry("block/vine_1", "block/vine"), Map.entry("block/vine_2", "block/vine"),
+            Map.entry("block/vine_3", "block/vine"), Map.entry("block/vine_4", "block/vine"),
+            Map.entry("block/vine_u", "block/vine"), Map.entry("block/vine_1u", "block/vine"),
+            Map.entry("block/vine_2u", "block/vine"), Map.entry("block/vine_3u", "block/vine"),
+            Map.entry("block/vine_4u", "block/vine"), Map.entry("block/vine_2_opposite", "block/vine"),
+            Map.entry("block/vine_2u_opposite", "block/vine"));
 
     private static JsonObject blockModels(JsonObject source, ResourceLocation blockId, String key, Map<String, Supplier<byte[]>> out) {
         String defaultNamespace = blockId.getNamespace();
