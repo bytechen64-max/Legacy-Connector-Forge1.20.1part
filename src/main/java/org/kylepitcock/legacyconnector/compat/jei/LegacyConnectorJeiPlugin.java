@@ -1,5 +1,6 @@
 package org.kylepitcock.legacyconnector.compat.jei;
 
+import org.kylepitcock.legacyconnector.core.data.CompatComponents;
 import java.util.ArrayList;
 import java.util.List;
 import legacyconnector.v1_7_10.codechicken.nei.recipe.TemplateRecipeHandler;
@@ -53,7 +54,7 @@ public final class LegacyConnectorJeiPlugin implements IModPlugin {
             if (!(item instanceof org.kylepitcock.legacyconnector.v1_7_10.adapter.LegacyItemHolder)) continue;
             registration.registerSubtypeInterpreter(item, (stack, context) -> {
                 StringBuilder data = new StringBuilder();
-                Integer meta = stack.get(org.kylepitcock.legacyconnector.core.data.CompatComponents.legacyMeta());
+                Integer meta = CompatComponents.legacyMeta(stack);
                 if (meta != null) data.append('#').append(meta);
                 if (context == mezz.jei.api.ingredients.subtypes.UidContext.Ingredient) {
                     var custom = stack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);

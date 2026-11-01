@@ -1,26 +1,44 @@
 package org.kylepitcock.legacyconnector.core.data;
 
-import com.mojang.serialization.Codec;
-import net.minecraft.core.component.DataComponentType;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraftforge.registries.RegistryObject;
-import net.minecraftforge.registries.DeferredRegister;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.ItemStack;
 
-/** Data components that carry legacy state no modern component expresses. */
+/**
+ * Legacy item metadata that no modern item expresses.
+ *
+ * <p>NeoForge 1.21 kept it in a registered {@code DataComponentType} ({@code legacyconnector:legacy_meta}). Item data
+ * components only exist from 1.20.5 on, so on 1.20.1 the same value lives in the stack's tag under
+ * {@link #LEGACY_META_TAG}: it is persisted with the stack and synced with it exactly like the component was.</p>
+ */
 public final class CompatComponents {
-    public static final DeferredRegister<DataComponentType<?>> REGISTER = DeferredRegister.create(Registries.DATA_COMPONENT_TYPE, "legacyconnector");
-
-    /**
-     * Legacy item metadata for subtypes that were not flattened into their own modern item (for example values a
-     * mod only creates at runtime). Persisted and synced, so such stacks survive saving and network transfer.
-     */
-    public static final DeferredHolder<DataComponentType<?>, DataComponentType<Integer>> LEGACY_META = REGISTER.register("legacy_meta",
-            () -> DataComponentType.<Integer>builder().persistent(Codec.INT).networkSynchronized(ByteBufCodecs.VAR_INT).build());
+    /** Tag key the legacy metadata is stored under. */
+    public static final String LEGACY_META_TAG = "legacyconnector:legacy_meta";
 
     private CompatComponents() {}
 
-    public static DataComponentType<Integer> legacyMeta() {
-        return LEGACY_META.get();
+    /** The stored legacy metadata, or null when the stack carries none (also null for an empty stack). */
+    public static Integer legacyMeta(ItemStack stack) {
+        if (stack == null || stack.isEmpty()) return null;
+        CompoundTag tag = stack.getTag();
+        if (tag == null || !tag.contains(LEGACY_META_TAG)) return null;
+        return tag.getInt(LEGACY_META_TAG);
+    }
+
+    public static int legacyMetaOr(ItemStack stack, int fallback) {
+        Integer meta = legacyMeta(stack);
+        return meta == null ? fallback : meta;
+    }
+
+    public static void setLegacyMeta(ItemStack stack, int meta) {
+        if (stack == null || stack.isEmpty()) return;
+        stack.getOrCreateTag().putInt(LEGACY_META_TAG, meta);
+    }
+
+    public static void clearLegacyMeta(ItemStack stack) {
+        if (stack == null || stack.isEmpty()) return;
+        CompoundTag tag = stack.getTag();
+        if (tag == null) return;
+        tag.remove(LEGACY_META_TAG);
+        if (tag.isEmpty()) stack.setTag(null);
     }
 }

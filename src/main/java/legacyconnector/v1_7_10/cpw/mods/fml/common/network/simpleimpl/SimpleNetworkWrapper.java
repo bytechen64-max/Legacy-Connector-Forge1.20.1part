@@ -1,5 +1,6 @@
 package legacyconnector.v1_7_10.cpw.mods.fml.common.network.simpleimpl;
 
+import org.kylepitcock.legacyconnector.core.network.LegacyChannel;
 import legacyconnector.v1_7_10.cpw.mods.fml.common.network.NetworkRegistry;
 import legacyconnector.v1_7_10.cpw.mods.fml.relauncher.Side;
 import legacyconnector.v1_7_10.net.minecraft.entity.player.EntityPlayerMP;
@@ -67,12 +68,12 @@ public class SimpleNetworkWrapper {
 
         @Override
         public void mcc$send(net.minecraft.server.level.ServerPlayer player) {
-            net.minecraftforge.network.PacketDistributor.sendToPlayer(player, payload);
+            LegacyChannel.sendToPlayer(player, payload);
         }
 
         @Override
         public void mcc$sendToServer() {
-            net.minecraftforge.network.PacketDistributor.sendToServer(payload);
+            LegacyChannel.sendToServer(payload);
         }
     }
 }

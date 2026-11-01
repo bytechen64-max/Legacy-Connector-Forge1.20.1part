@@ -1,5 +1,6 @@
 package org.kylepitcock.legacyconnector.v1_12_2.bridge;
 
+import org.kylepitcock.legacyconnector.core.network.LegacyChannel;
 import io.netty.buffer.ByteBuf;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,8 +12,7 @@ import legacyconnector.v1_12_2.net.minecraftforge.fml.common.network.simpleimpl.
 import legacyconnector.v1_12_2.net.minecraftforge.fml.relauncher.Side;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.handling.IPayloadContext;
+import org.kylepitcock.legacyconnector.core.network.LegacyPayloadContext;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.kylepitcock.legacyconnector.core.network.LegacyNetwork;
 import org.kylepitcock.legacyconnector.core.network.LegacyPayload;
@@ -35,7 +35,7 @@ public final class NetworkBridge1122 {
         return CHANNELS.computeIfAbsent(name, Channel::new);
     }
 
-    private static void receive(LegacyPayload payload, IPayloadContext context) {
+    private static void receive(LegacyPayload payload, LegacyPayloadContext context) {
         Channel channel = CHANNELS.get(payload.channel());
         if (channel == null) {
             LOG.debug("Message on unknown legacy channel {}", payload.channel());
@@ -72,7 +72,7 @@ public final class NetworkBridge1122 {
             return new LegacyPayload(VERSION, name, d, data);
         }
 
-        void handle(LegacyPayload payload, IPayloadContext context) {
+        void handle(LegacyPayload payload, LegacyPayloadContext context) {
             boolean toServer = context.player() instanceof ServerPlayer;
             var handler = (toServer ? serverHandlers : clientHandlers).get(payload.discriminator());
             Class<? extends IMessage> type = types.get(payload.discriminator());
@@ -93,26 +93,26 @@ public final class NetworkBridge1122 {
         }
 
         public void sendToServer(IMessage message) {
-            PacketDistributor.sendToServer(encode(message));
+            LegacyChannel.sendToServer(encode(message));
         }
 
         public void sendTo(IMessage message, ServerPlayer player) {
-            PacketDistributor.sendToPlayer(player, encode(message));
+            LegacyChannel.sendToPlayer(player, encode(message));
         }
 
         public void sendToAll(IMessage message) {
-            PacketDistributor.sendToAllPlayers(encode(message));
+            LegacyChannel.sendToAllPlayers(encode(message));
         }
 
         public void sendToDimension(IMessage message, int dimension) {
             var server = ServerLifecycleHooks.getCurrentServer();
             ServerLevel level = server == null ? null : legacyconnector.v1_12_2.net.minecraftforge.common.DimensionManager.mcc$level(dimension);
-            if (level != null) PacketDistributor.sendToPlayersInDimension(level, encode(message));
+            if (level != null) LegacyChannel.sendToPlayersInDimension(level, encode(message));
         }
 
         /** To every player tracking the entity (and the entity itself when it is a player). */
         public void sendToAllTracking(IMessage message, net.minecraft.world.entity.Entity entity) {
-            if (entity != null) PacketDistributor.sendToPlayersTrackingEntityAndSelf(entity, encode(message));
+            if (entity != null) LegacyChannel.sendToPlayersTrackingEntityAndSelf(entity, encode(message));
         }
 
         /** To every player tracking the chunk the point is in. */
@@ -120,7 +120,7 @@ public final class NetworkBridge1122 {
             var server = ServerLifecycleHooks.getCurrentServer();
             ServerLevel level = server == null ? null : legacyconnector.v1_12_2.net.minecraftforge.common.DimensionManager.mcc$level(dimension);
             if (level != null) {
-                PacketDistributor.sendToPlayersTrackingChunk(level, new net.minecraft.world.level.ChunkPos(net.minecraft.util.Mth.floor(x) >> 4,
+                LegacyChannel.sendToPlayersTrackingChunk(level, new net.minecraft.world.level.ChunkPos(net.minecraft.util.Mth.floor(x) >> 4,
                         net.minecraft.util.Mth.floor(z) >> 4), encode(message));
             }
         }
@@ -133,7 +133,7 @@ public final class NetworkBridge1122 {
         public void sendToAllAround(IMessage message, int dimension, double x, double y, double z, double range) {
             var server = ServerLifecycleHooks.getCurrentServer();
             ServerLevel level = server == null ? null : legacyconnector.v1_12_2.net.minecraftforge.common.DimensionManager.mcc$level(dimension);
-            if (level != null) PacketDistributor.sendToPlayersNear(level, null, x, y, z, range, encode(message));
+            if (level != null) LegacyChannel.sendToPlayersNear(level, null, x, y, z, range, encode(message));
         }
     }
 }

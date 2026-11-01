@@ -2,7 +2,7 @@ package org.kylepitcock.legacyconnector.v1_12_2.entity;
 
 import legacyconnector.v1_12_2.net.minecraft.entity.Entity;
 import legacyconnector.v1_12_2.net.minecraftforge.fml.common.registry.IEntityAdditionalSpawnData;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 public final class SpawnData1122 {
     private SpawnData1122() {}
 
-    static void write(Host1122 host, Entity legacy, RegistryFriendlyByteBuf buf) {
+    static void write(Host1122 host, Entity legacy, FriendlyByteBuf buf) {
         boolean fallback = Hosts1122.isFallback(host.mcc$self().getType());
         buf.writeBoolean(fallback);
         if (fallback) buf.writeUtf(legacy == null ? "" : legacy.getClass().getName());
@@ -34,7 +34,7 @@ public final class SpawnData1122 {
     }
 
     /** Client: returns the legacy object created from the class name for fallback types (else the given one). */
-    static Entity read(Host1122 host, Entity legacy, RegistryFriendlyByteBuf buf) {
+    static Entity read(Host1122 host, Entity legacy, FriendlyByteBuf buf) {
         boolean fallback = buf.readBoolean();
         if (fallback) {
             String name = buf.readUtf();

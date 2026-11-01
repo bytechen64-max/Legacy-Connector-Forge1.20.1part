@@ -6,7 +6,7 @@ import legacyconnector.v1_7_10.net.minecraft.entity.EntityLivingBase;
 import legacyconnector.v1_7_10.net.minecraft.entity.player.EntityPlayer;
 import legacyconnector.v1_7_10.net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -602,12 +602,12 @@ public class LegacyMobHost extends PathfinderMob implements LegacyLivingHost, IE
     }
 
     @Override
-    public void writeSpawnData(RegistryFriendlyByteBuf buf) {
+    public void writeSpawnData(FriendlyByteBuf buf) {
         LegacySpawnData.write(this, legacy, buf);
     }
 
     @Override
-    public void readSpawnData(RegistryFriendlyByteBuf buf) {
+    public void readSpawnData(FriendlyByteBuf buf) {
         Entity read = LegacySpawnData.read(this, legacy, buf);
         if (legacy == null && read != null) {
             legacy = read;

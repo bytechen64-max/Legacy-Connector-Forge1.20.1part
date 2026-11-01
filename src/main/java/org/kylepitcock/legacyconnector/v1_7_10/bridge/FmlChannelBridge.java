@@ -1,5 +1,6 @@
 package org.kylepitcock.legacyconnector.v1_7_10.bridge;
 
+import org.kylepitcock.legacyconnector.core.network.LegacyChannel;
 import io.netty.buffer.Unpooled;
 import java.util.EnumMap;
 import java.util.Map;
@@ -14,8 +15,7 @@ import legacyconnector.v1_7_10.net.minecraft.client.network.NetHandlerPlayClient
 import legacyconnector.v1_7_10.net.minecraft.network.NetHandlerPlayServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.handling.IPayloadContext;
+import org.kylepitcock.legacyconnector.core.network.LegacyPayloadContext;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.kylepitcock.legacyconnector.core.network.LegacyNetwork;
 import org.kylepitcock.legacyconnector.core.network.LegacyPayload;
@@ -91,19 +91,19 @@ public final class FmlChannelBridge {
         LegacyPayload p = payload(packet);
         var server = ServerLifecycleHooks.getCurrentServer();
         switch (target) {
-            case TOSERVER -> PacketDistributor.sendToServer(p);
-            case ALL -> PacketDistributor.sendToAllPlayers(p);
+            case TOSERVER -> LegacyChannel.sendToServer(p);
+            case ALL -> LegacyChannel.sendToAllPlayers(p);
             case PLAYER -> {
-                if (args instanceof EntityPlayerMP player) PacketDistributor.sendToPlayer(player.mcc$serverPlayer(), p);
+                if (args instanceof EntityPlayerMP player) LegacyChannel.sendToPlayer(player.mcc$serverPlayer(), p);
             }
             case DIMENSION -> {
                 ServerLevel level = server == null || !(args instanceof Integer dim) ? null : DimensionBridge.loaded(server, dim);
-                if (level != null) PacketDistributor.sendToPlayersInDimension(level, p);
+                if (level != null) LegacyChannel.sendToPlayersInDimension(level, p);
             }
             case ALLAROUNDPOINT -> {
                 if (args instanceof NetworkRegistry.TargetPoint t && server != null) {
                     ServerLevel level = DimensionBridge.loaded(server, t.dimension);
-                    if (level != null) PacketDistributor.sendToPlayersNear(level, null, t.x, t.y, t.z, t.range, p);
+                    if (level != null) LegacyChannel.sendToPlayersNear(level, null, t.x, t.y, t.z, t.range, p);
                 }
             }
             case DISPATCHER, REPLY -> {
@@ -116,10 +116,10 @@ public final class FmlChannelBridge {
 
     /** A packet to every player who has the chunk loaded. */
     public static void sendToChunkWatchers(FMLProxyPacket packet, ServerLevel level, net.minecraft.world.level.ChunkPos chunk) {
-        PacketDistributor.sendToPlayersTrackingChunk(level, chunk, payload(packet));
+        LegacyChannel.sendToPlayersTrackingChunk(level, chunk, payload(packet));
     }
 
-    private static void receive(LegacyPayload payload, IPayloadContext context) {
+    private static void receive(LegacyPayload payload, LegacyPayloadContext context) {
         boolean server = context.player() instanceof ServerPlayer;
         var dispatcher = legacyconnector.v1_7_10.cpw.mods.fml.common.network.handshake.NetworkDispatcher.get(
                 legacyconnector.v1_7_10.net.minecraft.network.NetworkManager.mcc$of(context.connection()));

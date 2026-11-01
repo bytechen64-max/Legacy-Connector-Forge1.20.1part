@@ -1,5 +1,6 @@
 package org.kylepitcock.legacyconnector.v1_7_10.bridge;
 
+import org.kylepitcock.legacyconnector.core.network.LegacyChannel;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import java.nio.charset.StandardCharsets;
@@ -9,15 +10,14 @@ import legacyconnector.v1_7_10.cpw.mods.fml.common.network.IGuiHandler;
 import legacyconnector.v1_7_10.net.minecraft.entity.player.EntityPlayer;
 import legacyconnector.v1_7_10.net.minecraft.inventory.Container;
 import legacyconnector.v1_7_10.net.minecraft.world.World;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.handling.IPayloadContext;
+import org.kylepitcock.legacyconnector.core.network.LegacyPayloadContext;
 import org.kylepitcock.legacyconnector.core.LegacyModRecord;
 import org.kylepitcock.legacyconnector.core.LegacyMods;
 import org.kylepitcock.legacyconnector.core.network.LegacyNetwork;
@@ -108,7 +108,7 @@ public final class GuiBridge {
             buf.writeInt(modId.length).writeBytes(modId).writeInt(x).writeInt(y).writeInt(z);
             byte[] data = new byte[buf.readableBytes()];
             buf.readBytes(data);
-            PacketDistributor.sendToPlayer(sp, new LegacyPayload(FAMILY, "open", id, data));
+            LegacyChannel.sendToPlayer(sp, new LegacyPayload(FAMILY, "open", id, data));
         }
     }
 
@@ -129,14 +129,14 @@ public final class GuiBridge {
         ByteBuf buf = org.kylepitcock.legacyconnector.core.network.LegacyBuffers.buffer().writeInt(id);
         byte[] data = new byte[buf.readableBytes()];
         buf.readBytes(data);
-        PacketDistributor.sendToPlayer(sp, new LegacyPayload(FAMILY, "manual", 0, data));
+        LegacyChannel.sendToPlayer(sp, new LegacyPayload(FAMILY, "manual", 0, data));
         sp.containerMenu = menu;
         sp.initMenu(menu);
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerContainerEvent.Open(sp, menu));
     }
 
     /** Client side of {@link MenuType} creation: rebuild the legacy GUI from the menu extra data. */
-    public static LegacyMenu clientMenu(int windowId, Inventory inv, RegistryFriendlyByteBuf buf) {
+    public static LegacyMenu clientMenu(int windowId, Inventory inv, FriendlyByteBuf buf) {
         String modId = buf.readUtf();
         int id = buf.readVarInt();
         int x = buf.readInt(), y = buf.readInt(), z = buf.readInt();
@@ -147,10 +147,10 @@ public final class GuiBridge {
         ByteBuf buf = org.kylepitcock.legacyconnector.core.network.LegacyBuffers.buffer().writeInt(windowId).writeInt(id).writeInt(value);
         byte[] data = new byte[buf.readableBytes()];
         buf.readBytes(data);
-        PacketDistributor.sendToPlayer(player, new LegacyPayload(FAMILY, "bar", 0, data));
+        LegacyChannel.sendToPlayer(player, new LegacyPayload(FAMILY, "bar", 0, data));
     }
 
-    private static void receive(LegacyPayload payload, IPayloadContext context) {
+    private static void receive(LegacyPayload payload, LegacyPayloadContext context) {
         if (!FMLEnvironment.dist.isClient()) return;
         ByteBuf buf = org.kylepitcock.legacyconnector.core.network.LegacyBuffers.wrap(payload.data());
         context.enqueueWork(() -> {

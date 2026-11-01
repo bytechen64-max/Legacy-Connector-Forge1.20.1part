@@ -1,5 +1,6 @@
 package org.kylepitcock.legacyconnector.v1_12_2.bridge;
 
+import org.kylepitcock.legacyconnector.core.network.LegacyChannel;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,8 +17,7 @@ import legacyconnector.v1_12_2.net.minecraftforge.fml.common.network.simpleimpl.
 import legacyconnector.v1_12_2.net.minecraftforge.fml.relauncher.Side;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.handling.IPayloadContext;
+import org.kylepitcock.legacyconnector.core.network.LegacyPayloadContext;
 import net.minecraftforge.server.ServerLifecycleHooks;
 import org.kylepitcock.legacyconnector.core.network.LegacyNetwork;
 import org.kylepitcock.legacyconnector.core.network.LegacyPayload;
@@ -61,40 +61,40 @@ public final class FmlChannelBridge1122 {
     public static void send(FMLProxyPacket packet, FMLOutboundHandler.OutboundTarget target, Object args) {
         LegacyPayload p = payload(packet);
         switch (target) {
-            case TOSERVER -> PacketDistributor.sendToServer(p);
-            case ALL, DISPATCHER_REPLY_TO_ALL -> PacketDistributor.sendToAllPlayers(p);
+            case TOSERVER -> LegacyChannel.sendToServer(p);
+            case ALL, DISPATCHER_REPLY_TO_ALL -> LegacyChannel.sendToAllPlayers(p);
             case PLAYER -> {
-                if (args instanceof EntityPlayerMP player && player.mcc$serverPlayer() != null) PacketDistributor.sendToPlayer(player.mcc$serverPlayer(), p);
+                if (args instanceof EntityPlayerMP player && player.mcc$serverPlayer() != null) LegacyChannel.sendToPlayer(player.mcc$serverPlayer(), p);
             }
             case DIMENSION -> {
                 ServerLevel level = args instanceof Integer dim ? level(dim) : null;
-                if (level != null) PacketDistributor.sendToPlayersInDimension(level, p);
+                if (level != null) LegacyChannel.sendToPlayersInDimension(level, p);
             }
             case ALLAROUNDPOINT -> {
                 if (args instanceof NetworkRegistry.TargetPoint t) {
                     ServerLevel level = level(t.dimension);
-                    if (level != null) PacketDistributor.sendToPlayersNear(level, null, t.x, t.y, t.z, t.range, p);
+                    if (level != null) LegacyChannel.sendToPlayersNear(level, null, t.x, t.y, t.z, t.range, p);
                 }
             }
             case TRACKING_POINT -> {
                 if (args instanceof NetworkRegistry.TargetPoint t) {
                     ServerLevel level = level(t.dimension);
                     if (level != null) {
-                        PacketDistributor.sendToPlayersTrackingChunk(level, new net.minecraft.world.level.ChunkPos(net.minecraft.util.Mth.floor(t.x) >> 4,
+                        LegacyChannel.sendToPlayersTrackingChunk(level, new net.minecraft.world.level.ChunkPos(net.minecraft.util.Mth.floor(t.x) >> 4,
                                 net.minecraft.util.Mth.floor(t.z) >> 4), p);
                     }
                 }
             }
             case TRACKING_ENTITY -> {
                 if (args instanceof legacyconnector.v1_12_2.net.minecraft.entity.Entity e && e.mcc$modern() != null) {
-                    PacketDistributor.sendToPlayersTrackingEntity(e.mcc$modern(), p);
+                    LegacyChannel.sendToPlayersTrackingEntity(e.mcc$modern(), p);
                 }
             }
             case REPLY -> {
                 if (args instanceof NetHandlerPlayServer h && h.player != null && h.player.mcc$serverPlayer() != null) {
-                    PacketDistributor.sendToPlayer(h.player.mcc$serverPlayer(), p);
+                    LegacyChannel.sendToPlayer(h.player.mcc$serverPlayer(), p);
                 } else if (args != null) {
-                    PacketDistributor.sendToServer(p);
+                    LegacyChannel.sendToServer(p);
                 }
             }
             case DISPATCHER -> {
@@ -104,7 +104,7 @@ public final class FmlChannelBridge1122 {
         }
     }
 
-    private static void receive(LegacyPayload payload, IPayloadContext context) {
+    private static void receive(LegacyPayload payload, LegacyPayloadContext context) {
         boolean server = context.player() instanceof ServerPlayer;
         context.enqueueWork(() -> deliver(payload.channel(), payload.data(), server ? Side.SERVER : Side.CLIENT,
                 server ? new NetHandlerPlayServer((EntityPlayerMP) EntityBridge1122.wrap(context.player())) : MessageContext.CLIENT_HANDLER,

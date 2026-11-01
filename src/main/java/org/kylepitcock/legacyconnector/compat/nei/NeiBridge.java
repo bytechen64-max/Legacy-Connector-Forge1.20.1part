@@ -1,5 +1,6 @@
 package org.kylepitcock.legacyconnector.compat.nei;
 
+import org.kylepitcock.legacyconnector.core.data.CompatComponents;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -179,7 +180,7 @@ public final class NeiBridge {
     public static List<Recipe> lookup(TemplateRecipeHandler handler, net.minecraft.world.item.ItemStack stack, boolean usage) {
         if (stack == null || stack.isEmpty()) return List.of();
         String key = handler.getClass().getName() + (usage ? "|use|" : "|make|") + net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.getItem())
-                + "|" + stack.getOrDefault(org.kylepitcock.legacyconnector.core.data.CompatComponents.legacyMeta(), 0);
+                + "|" + CompatComponents.legacyMetaOr(stack, 0);
         List<Recipe> cached = LOOKUPS.get(key);
         if (cached != null) return cached;
         List<Recipe> out = new ArrayList<>();

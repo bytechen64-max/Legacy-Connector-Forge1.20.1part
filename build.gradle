@@ -202,6 +202,10 @@ dependencies {
     // org.openjdk.nashorn").
     compileOnly 'org.openjdk.nashorn:nashorn-core:15.4'
 
+    // MixinExtras: NeoForge bundles it, Forge 1.20.1 does not. The three @WrapOperation mixins (LevelChunk/ServerLevel block families,
+    // static tile entity tickers) need it at compile time; at runtime the MixinExtras mod must be installed (or the jar bundled).
+    compileOnly "io.github.llamalad7:mixinextras-common:${mixin_extras_version}"
+
     // Unit tests of the pure logic of the addon API (api.internal.AddonOrder).
     testImplementation platform('org.junit:junit-bom:5.10.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'
@@ -440,5 +444,12 @@ tasks.named('compileJava', JavaCompile) {
             mainClass = 'org.kylepitcock.legacyconnector.loader.shim.ShimAccessWidener'
             args destinationDirectory.get().asFile.absolutePath
         }
+    }
+}
+
+// Debug helper: prints the resolved compile classpath (used while porting to find the Forge/MC jars).
+tasks.register('printCompileCp') {
+    doLast {
+        sourceSets.main.compileClasspath.files.each { println "CP " + it }
     }
 }

@@ -13,7 +13,6 @@ import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
 import org.kylepitcock.legacyconnector.core.LegacyLifecycle;
 import org.kylepitcock.legacyconnector.core.LegacyMods;
-import org.kylepitcock.legacyconnector.core.data.CompatComponents;
 import org.kylepitcock.legacyconnector.core.network.LegacyNetwork;
 import org.kylepitcock.legacyconnector.core.pack.CoreData;
 import org.kylepitcock.legacyconnector.core.pack.GeneratedPack;
@@ -97,7 +96,6 @@ public final class LegacyConnector {
         LegacyMods.registerPlatform(new Platform1710());
         LegacyMods.registerPlatform(new org.kylepitcock.legacyconnector.v1_12_2.Platform1122());
 
-        CompatComponents.REGISTER.register(modBus);
         org.kylepitcock.legacyconnector.v1_7_10.adapter.LegacyCraftingRecipe.REGISTER.register(modBus);
         org.kylepitcock.legacyconnector.v1_7_10.bridge.LegacyFishingLoot.REGISTER.register(modBus);
         FEATURES.register(modBus);
@@ -128,7 +126,8 @@ public final class LegacyConnector {
         modBus.addListener(GeneratedPack::onAddPackFinders);
         modBus.addListener(org.kylepitcock.legacyconnector.core.pack.GameResourcesFolderPack::onAddPackFinders);
         modBus.addListener(org.kylepitcock.legacyconnector.v1_7_10.LegacyModPacks::onAddPackFinders);
-        modBus.addListener(LegacyNetwork::onRegisterPayloads);
+        // Forge 1.20.1 has no payload registration event: the one channel that carries every legacy family opens here.
+        LegacyNetwork.register();
         modBus.addListener(CreativeTabBridge::onBuildContents);
         modBus.addListener(org.kylepitcock.legacyconnector.v1_12_2.bridge.CreativeTabBridge1122::onBuildContents);
         modBus.addListener(org.kylepitcock.legacyconnector.v1_7_10.entity.LegacySpawnEggs::addToTab);

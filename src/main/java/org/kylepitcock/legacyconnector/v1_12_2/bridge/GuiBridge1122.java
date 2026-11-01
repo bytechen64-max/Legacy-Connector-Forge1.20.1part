@@ -1,5 +1,6 @@
 package org.kylepitcock.legacyconnector.v1_12_2.bridge;
 
+import org.kylepitcock.legacyconnector.core.network.LegacyChannel;
 import io.netty.buffer.ByteBuf;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
@@ -9,15 +10,14 @@ import legacyconnector.v1_12_2.net.minecraft.inventory.Container;
 import legacyconnector.v1_12_2.net.minecraft.item.ItemStack;
 import legacyconnector.v1_12_2.net.minecraft.world.World;
 import legacyconnector.v1_12_2.net.minecraftforge.fml.common.network.IGuiHandler;
-import net.minecraft.network.RegistryFriendlyByteBuf;
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraftforge.fml.loading.FMLEnvironment;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.handling.IPayloadContext;
+import org.kylepitcock.legacyconnector.core.network.LegacyPayloadContext;
 import org.kylepitcock.legacyconnector.core.LegacyModRecord;
 import org.kylepitcock.legacyconnector.core.LegacyMods;
 import org.kylepitcock.legacyconnector.core.network.LegacyNetwork;
@@ -112,12 +112,12 @@ public final class GuiBridge1122 {
             buf.writeInt(modId.length).writeBytes(modId).writeInt(x).writeInt(y).writeInt(z);
             byte[] data = new byte[buf.readableBytes()];
             buf.readBytes(data);
-            PacketDistributor.sendToPlayer(sp, new LegacyPayload(FAMILY, "open", id, data));
+            LegacyChannel.sendToPlayer(sp, new LegacyPayload(FAMILY, "open", id, data));
         }
     }
 
     /** Client side of {@link MenuType} creation: rebuild the legacy GUI from the menu extra data. */
-    public static LegacyMenu1122 clientMenu(int windowId, Inventory inv, RegistryFriendlyByteBuf buf) {
+    public static LegacyMenu1122 clientMenu(int windowId, Inventory inv, FriendlyByteBuf buf) {
         String modId = buf.readUtf();
         int id = buf.readVarInt();
         int x = buf.readInt(), y = buf.readInt(), z = buf.readInt();
@@ -129,7 +129,7 @@ public final class GuiBridge1122 {
         return r == null ? null : handler(r.instance);
     }
 
-    private static void receive(LegacyPayload payload, IPayloadContext context) {
+    private static void receive(LegacyPayload payload, LegacyPayloadContext context) {
         if (!FMLEnvironment.dist.isClient()) return;
         ByteBuf buf = org.kylepitcock.legacyconnector.core.network.LegacyBuffers.wrap(payload.data());
         context.enqueueWork(() -> {
