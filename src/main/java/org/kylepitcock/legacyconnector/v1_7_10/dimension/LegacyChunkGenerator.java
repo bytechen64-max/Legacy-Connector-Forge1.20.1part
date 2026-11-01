@@ -53,8 +53,9 @@ public class LegacyChunkGenerator extends ChunkGenerator {
     }
 
     @Override
-    protected MapCodec<? extends ChunkGenerator> codec() {
-        return CODEC;
+    protected com.mojang.serialization.Codec<? extends ChunkGenerator> codec() {
+        // 1.20.1 codecs are plain Codecs (MapCodec is 1.20.5+).
+        return CODEC.codec();
     }
 
     /** The mod's chunk provider (created once, from the provider of the dimension's level). */
@@ -78,7 +79,8 @@ public class LegacyChunkGenerator extends ChunkGenerator {
     }
 
     @Override
-    public CompletableFuture<ChunkAccess> fillFromNoise(Blender blender, RandomState random, StructureManager structures, ChunkAccess chunk) {
+    public CompletableFuture<ChunkAccess> fillFromNoise(java.util.concurrent.Executor executor, Blender blender, RandomState random,
+            StructureManager structures, ChunkAccess chunk) {
         return CompletableFuture.supplyAsync(() -> {
             IChunkProvider provider = legacy();
             if (provider == null) return chunk;

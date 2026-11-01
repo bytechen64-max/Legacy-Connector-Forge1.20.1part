@@ -53,7 +53,7 @@ public class LegacyItemAdapter extends net.minecraft.world.item.Item implements 
     }
 
     @Override
-    public int getUseDuration(ItemStack stack, LivingEntity entity) {
+    public int getUseDuration(ItemStack stack) {
         return ItemCallbacks.useDuration(legacy, stack);
     }
 

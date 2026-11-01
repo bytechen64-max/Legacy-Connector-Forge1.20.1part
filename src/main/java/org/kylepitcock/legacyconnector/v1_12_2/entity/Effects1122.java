@@ -83,19 +83,19 @@ public final class Effects1122 {
         }
 
         @Override
-        public boolean applyEffectTick(net.minecraft.world.entity.LivingEntity entity, int amplifier) {
+        public void applyEffectTick(net.minecraft.world.entity.LivingEntity entity, int amplifier) {
+            // 1.20.1's tick hook returns nothing (1.20.5 made the return value meaningful).
             EntityLivingBase target = view(entity);
-            if (target == null) return true;
+            if (target == null) return;
             try {
                 potion.performEffect(target, amplifier);
             } catch (RuntimeException | LinkageError e) {
                 Hosts1122.failed(potion.getClass(), "performEffect", e);
             }
-            return true;
         }
 
         @Override
-        public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+        public boolean isDurationEffectTick(int duration, int amplifier) {
             try {
                 return potion.isReady(duration, amplifier);
             } catch (RuntimeException | LinkageError e) {

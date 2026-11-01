@@ -52,8 +52,8 @@ public class LegacyBiomeSource extends BiomeSource {
     }
 
     @Override
-    protected MapCodec<? extends BiomeSource> codec() {
-        return CODEC;
+    protected com.mojang.serialization.Codec<? extends BiomeSource> codec() {
+        return CODEC.codec();
     }
 
     @Override

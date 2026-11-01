@@ -220,13 +220,13 @@ public class MobHost1122 extends PathfinderMob implements LivingHost1122, IEntit
     }
 
     @Override
-    protected net.minecraft.resources.ResourceKey<net.minecraft.world.level.storage.loot.LootTable> getDefaultLootTable() {
+    protected net.minecraft.resources.ResourceLocation getDefaultLootTable() {
+        // 1.20.1 names the default loot table by location (the ResourceKey form is 1.20.5+).
         if (legacy instanceof EntityLiving l) {
             var table = l.mcc$lootTable();
             if (table != null) {
-                return net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE,
-                        net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(org.kylepitcock.legacyconnector.core.Ids.modernModId(table.getNamespace()),
-                                table.getPath()));
+                return net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
+                        org.kylepitcock.legacyconnector.core.Ids.modernModId(table.getNamespace()), table.getPath());
             }
         }
         return super.getDefaultLootTable();

@@ -338,7 +338,7 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
     }
 
     @Override
-    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+    public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         if (harvested && !removed) {
             try {
                 legacy.onBlockHarvested(world(level), pos(pos), state(state), player(player));

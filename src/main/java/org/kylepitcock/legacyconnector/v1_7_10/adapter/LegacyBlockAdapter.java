@@ -409,11 +409,6 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
                 : InteractionResult.FAIL;
     }
 
-    @Override
-    protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        return activate(level, pos, player, hit) ? InteractionResult.sidedSuccess(level.isClientSide) : InteractionResult.PASS;
-    }
-
     private boolean activate(Level level, BlockPos pos, Player player, BlockHitResult hit) {
         Vec3 h = hit.getLocation();
         return legacy.onBlockActivated(world(level), pos.getX(), pos.getY(), pos.getZ(), player(player), hit.getDirection().get3DDataValue(),
@@ -551,7 +546,7 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
     }
 
     @Override
-    public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+    public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         legacy.onBlockHarvested(world(level), pos.getX(), pos.getY(), pos.getZ(), meta(state), player(player));
         return super.playerWillDestroy(level, pos, state, player);
     }
@@ -684,11 +679,6 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
     private static boolean onOwnThread(net.minecraft.world.level.Level level) {
         if (level instanceof net.minecraft.server.level.ServerLevel server) return server.getServer().isSameThread();
         return com.mojang.blaze3d.systems.RenderSystem.isOnRenderThread();
-    }
-
-    @Override
-    public boolean hasDynamicLightEmission(BlockState state) {
-        return dynamicLight || super.hasDynamicLightEmission(state);
     }
 
     @Override
@@ -869,17 +859,19 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
     }
 
     @Override
-    public boolean canSustainPlant(BlockState state, BlockGetter level, BlockPos pos, Direction facing, BlockState plant) {
-        if (!sustainsPlants || !(plant.getBlock() instanceof LegacyBlockAdapter adapter)
-                || !(adapter.legacy() instanceof legacyconnector.v1_7_10.net.minecraftforge.common.IPlantable plantable)) {
-            return super.canSustainPlant(state, level, pos, facing, plant);
+    public boolean canSustainPlant(BlockState state, BlockGetter level, BlockPos pos, Direction facing,
+            net.minecraftforge.common.IPlantable plantable) {
+        // 1.20.1 hands the IPlantable in (1.20.5 passes the plant's block state).
+        BlockState plant = plantable == null ? null : plantable.getPlant(level, pos.relative(facing));
+        if (!sustainsPlants || plant == null || !(plant.getBlock() instanceof LegacyBlockAdapter adapter)
+                || !(adapter.legacy() instanceof legacyconnector.v1_7_10.net.minecraftforge.common.IPlantable legacyPlant)) {
+            return super.canSustainPlant(state, level, pos, facing, plantable);
         }
         try {
-            boolean ok = legacy.canSustainPlant(BlockAccessView.of(level), pos.getX(), pos.getY(), pos.getZ(),
-                    legacyconnector.v1_7_10.net.minecraftforge.common.util.ForgeDirection.getOrientation(facing.get3DDataValue()), plantable);
-            return ok;
+            return legacy.canSustainPlant(BlockAccessView.of(level), pos.getX(), pos.getY(), pos.getZ(),
+                    legacyconnector.v1_7_10.net.minecraftforge.common.util.ForgeDirection.getOrientation(facing.get3DDataValue()), legacyPlant);
         } catch (RuntimeException | LinkageError e) {
-            return super.canSustainPlant(state, level, pos, facing, plant);
+            return super.canSustainPlant(state, level, pos, facing, plantable);
         }
     }
 

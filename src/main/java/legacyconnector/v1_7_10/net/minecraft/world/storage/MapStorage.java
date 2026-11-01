@@ -85,7 +85,7 @@ public class MapStorage {
         }
 
         @Override
-        public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
+        public CompoundTag save(CompoundTag tag) {
             if (legacy != null) {
                 NBTTagCompound data = new NBTTagCompound();
                 legacy.writeToNBT(data);

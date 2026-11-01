@@ -77,7 +77,7 @@ public class LegacyBlockItemAdapter extends BlockItem implements LegacyItemHolde
     }
 
     @Override
-    public int getUseDuration(ItemStack stack, LivingEntity entity) {
+    public int getUseDuration(ItemStack stack) {
         return ItemCallbacks.useDuration(legacy, stack);
     }
 
