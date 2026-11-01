@@ -48,6 +48,6 @@ public class CPacketCustomPayload implements Packet<INetHandlerPlayServer> {
     @Override
     public net.minecraft.network.protocol.Packet<?> mcc$modern() {
         var proxy = new legacyconnector.v1_12_2.net.minecraftforge.fml.common.network.internal.FMLProxyPacket(new PacketBuffer(data.copy()), channel);
-        return new net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket(org.kylepitcock.legacyconnector.v1_12_2.bridge.FmlChannelBridge1122.payload(proxy));
+        return new net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket(org.kylepitcock.legacyconnector.v1_12_2.bridge.FmlChannelBridge1122.CHANNEL, org.kylepitcock.legacyconnector.v1_12_2.bridge.FmlChannelBridge1122.buffer(org.kylepitcock.legacyconnector.v1_12_2.bridge.FmlChannelBridge1122.payload(proxy)));
     }
 }

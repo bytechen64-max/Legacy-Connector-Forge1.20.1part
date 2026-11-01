@@ -49,6 +49,18 @@ public final class FmlChannelBridge1122 {
         EVENT_CHANNELS.put(channel.mcc$name(), channel);
     }
 
+
+    /** The channel every legacy message travels on (its own family and channel are inside the payload). */
+    public static final net.minecraft.resources.ResourceLocation CHANNEL =
+            new net.minecraft.resources.ResourceLocation("legacyconnector", "legacy");
+
+    /** A legacy payload packed the way 1.20.1's custom payload packets carry it. */
+    public static net.minecraft.network.FriendlyByteBuf buffer(org.kylepitcock.legacyconnector.core.network.LegacyPayload payload) {
+        var buf = new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.buffer());
+        org.kylepitcock.legacyconnector.core.network.LegacyPayload.write(payload, buf);
+        return buf;
+    }
+
     public static LegacyPayload payload(FMLProxyPacket packet) {
         return new LegacyPayload(FAMILY, packet.channel(), 0, packet.mcc$bytes());
     }

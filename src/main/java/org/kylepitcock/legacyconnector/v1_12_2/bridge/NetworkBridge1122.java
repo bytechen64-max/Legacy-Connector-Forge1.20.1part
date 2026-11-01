@@ -127,7 +127,8 @@ public final class NetworkBridge1122 {
 
         /** The message as a modern packet (server to client). */
         public net.minecraft.network.protocol.Packet<?> packet(IMessage message) {
-            return new net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket(encode(message));
+            var p = encode(message);
+            return new net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket(org.kylepitcock.legacyconnector.v1_12_2.bridge.FmlChannelBridge1122.CHANNEL, org.kylepitcock.legacyconnector.v1_12_2.bridge.FmlChannelBridge1122.buffer(p));
         }
 
         public void sendToAllAround(IMessage message, int dimension, double x, double y, double z, double range) {

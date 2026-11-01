@@ -37,6 +37,7 @@ public class SPacketDisconnect implements Packet<INetHandlerPlayClient> {
 
     @Override
     public net.minecraft.network.protocol.Packet<?> mcc$modern() {
-        return new net.minecraft.network.protocol.common.ClientboundDisconnectPacket(reason == null ? net.minecraft.network.chat.Component.empty() : reason.mcc$modern());
+        // 1.20.1 has no play-phase disconnect packet (1.20.2+): the server closes the connection instead.
+        return null;
     }
 }

@@ -99,7 +99,9 @@ public class FMLProxyPacket implements Packet<INetHandler> {
     @Override
     public net.minecraft.network.protocol.Packet<?> mcc$modern() {
         var p = org.kylepitcock.legacyconnector.v1_12_2.bridge.FmlChannelBridge1122.payload(this);
-        return target == Side.SERVER ? new net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket(p)
-                : new net.minecraft.network.protocol.common.ClientboundCustomPayloadPacket(p);
+        var buf = org.kylepitcock.legacyconnector.v1_12_2.bridge.FmlChannelBridge1122.buffer(p);
+        return target == Side.SERVER
+                ? new net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket(org.kylepitcock.legacyconnector.v1_12_2.bridge.FmlChannelBridge1122.CHANNEL, buf)
+                : new net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket(org.kylepitcock.legacyconnector.v1_12_2.bridge.FmlChannelBridge1122.CHANNEL, buf);
     }
 }
