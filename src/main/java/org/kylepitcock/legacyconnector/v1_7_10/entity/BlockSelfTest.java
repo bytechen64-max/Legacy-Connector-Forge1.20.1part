@@ -290,7 +290,10 @@ public final class BlockSelfTest {
         try {
             modern.getName(stack);
             stage = "tooltip";
-            stack.getTooltipLines(player, net.minecraft.world.item.TooltipFlag.ADVANCED);
+            // tooltips are a client thing: a legacy addInformation reads the client player, which a dedicated server must not load
+            if (net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) {
+                stack.getTooltipLines(player, net.minecraft.world.item.TooltipFlag.ADVANCED);
+            }
             stage = "use";
             player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, stack.copy());
             modern.use(level, player, net.minecraft.world.InteractionHand.MAIN_HAND);

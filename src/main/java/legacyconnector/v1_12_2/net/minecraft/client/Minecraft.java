@@ -214,11 +214,15 @@ public class Minecraft implements legacyconnector.v1_12_2.net.minecraft.util.ITh
     // ------------------------------------------------------------------ phantom fields
 
     public static EntityPlayerSP mcc$get$player(Minecraft m) {
+        // a legacy mod's common code reads this; on a dedicated server there is no client player, and reading the field would
+        // load the client-only Minecraft.player type, which Forge's RuntimeDistCleaner turns into a hard failure
+        if (!net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) return null;
         var p = ClientAccess.player();
         return p == null ? null : EntityBridge1122.wrap(p) instanceof EntityPlayerSP sp ? sp : null;
     }
 
     public static WorldClient mcc$get$world(Minecraft m) {
+        if (!net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) return null;
         var level = ClientAccess.level();
         return level == null ? null : WorldBridge1122.wrap(level) instanceof WorldClient w ? w : null;
     }
