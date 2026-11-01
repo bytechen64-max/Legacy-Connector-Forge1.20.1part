@@ -68,8 +68,14 @@ Port work landed since (each in its own commit):
 ```bash
 ./gradlew :loader:compileJava                 # the service layer alone (seconds)
 ./gradlew compileJava -PskipShimWidener       # type-check the runtime mod only (no loader mappings, incremental)
-./gradlew build                               # everything, including the shim widener + shim index
+./gradlew compileJava generateShimIndex       # the same with the shim widener + the shim index
+./gradlew build                               # everything; also builds the testmods fixture
 ```
+
+`./gradlew build` stops at `:testmods:legacy1710Jar` on a machine without the reference data: the fixture is reobfuscated
+with `build/devtools/legacy-1.7.10.sig`, which `tools/extract_legacy_signatures.py` produces from a legacy jar (see
+`tools/fetch_devtools.sh`). The runtime jar itself builds (`build/libs/legacyconnector-*-runtime-only.jar`, ~10 MB, manifest
+with `MixinConfigs` and `Automatic-Module-Name`).
 
 `-PskipShimWidener` also puts `compileJava` back on incremental compilation; without it the widener rewrites the class
 files in place, which forces a full recompile every time. A full type-check of the runtime mod takes ~4-5 minutes.
