@@ -104,42 +104,46 @@ files in place, which forces a full recompile every time. A full type-check of t
 
 ## What is left
 
-515 compile errors at the last run (the count moves as javac gets further into the tree). Categories, highest value first:
+317 compile errors at the last run (`./gradlew compileJava -PskipShimWidener`, 2026-11-01). The count moves as javac gets
+further into the tree, and every batch below adds a few newly-visible ones.
 
-| Category | Sites | Where |
-|---|---|---|
-| `cannot find symbol` (per-site) | ~380 | spread over the 1.12.2 shim, the 1.7.10 shim and the bridges |
-| `incompatible parameter types in lambda` | 3 | `SoundHandler`, `CommandBlockBaseLogic`, ... |
-| `no instance(s) of type variable T` | 3 | generics that 1.20.1 infers differently |
-| `finalizeSpawn cannot be applied` | 3 | fixed for the four known calls; the rest need reading |
-| `ServerData.State` / `Type` | 3 + 3 | the shim's own ping state is in place; two GUIs still read the modern enum |
+Landed since the first type-check of the whole tree (each cluster in its own commit):
 
-The port had ~988 errors when the compiler first type-checked the whole tree; 473 of them are resolved.
+- **Brewing**: the four cluster entries that used to head this list are done. 1.20.1 has no `RegisterBrewingRecipesEvent`;
+  the legacy recipes go straight into `BrewingRecipeRegistry` (an `IBrewingRecipe`, a container recipe for mod potion
+  bottles), and the 1.12.2 shim's `VanillaBrewingRecipe` asks the static `PotionBrewing` table instead of the server's.
+- **Client extensions**: `Item#initializeClient`/`MobEffect#initializeClient` carry what `RegisterClientExtensionsEvent`
+  did in 1.21 (`LegacyItemExtensions`, `LegacyEffectIcons`).
+- **Skins**: authlib 4 returns one texture map per profile and fills the profile in place (`MinecraftProfileTextures` is
+  authlib 6), and 1.20.1's modern `SkinManager` exposes `getInsecureSkinLocation`.
+- **Music**: `SelectMusicEvent` is NeoForge-only; a `MusicManagerLegacyMixin` drops the song while a legacy music ticker
+  owns the music.
+- **Block/entity shape**: 1.20.1 declares the `BlockBehaviour`/`Entity` overrides `public` (1.21 made them `protected`),
+  fires one tick event with a phase (no `Pre`/`Post` classes), and has no block drop event: the legacy
+  `HarvestDropsEvent` and the shearable-block drops run in `LegacyBlockAdapter#getDrops`. `ChunkWatchEvent.Sent` does not
+  exist (only `Watch`), `MinecartUpdateEvent` has no tick event (mixin), and the bone meal, spawn position, critical hit,
+  mob griefing and sleep decisions are `Event.Result`/`PlayerSleepInBedEvent`/`MobSpawnEvent.FinalizeSpawn`.
+- **Item components** (partly): the effect cures are `MobEffectInstance#getCurativeItems` (cure tags are 1.20.5+), the
+  `MobEffects` constants are plain objects, and `DataComponents`/`CustomData` still need the NBT path (see below).
 
-Remaining clusters worth doing first (each a single sitting):
+Remaining clusters worth doing first:
 
-- `RegisterBrewingRecipesEvent` (3): `BrewingRecipeRegistry.addRecipe` instead of the 1.21 builder.
-- `RegisterClientExtensionsEvent` (3): item client extensions through `Item#initializeClient`.
-- `MinecraftProfileTextures` (2): the authlib 6 skin record has no 1.20.1 equivalent; `SkinManager` needs the old path.
-- `SelectMusicEvent` (2): no 1.20.1 hook; needs a `MusicManager` mixin.
-- `net.minecraft.core.component` leftovers (a handful), `DimensionTransition` (0 left), `EquipmentSlotGroup` (0 left).
-
-1. **Item components** (~20). `DataComponents`/`CustomData`/`ItemEnchantments`/`PotionContents`/`ItemAttributeModifiers`
-   are 1.20.5+; 1.20.1 has `stack.getTag()`/`getOrCreateTag()`, `EnchantmentHelper.getEnchantments`,
-   `PotionUtils.getPotion/setPotion`, `Item.getDefaultAttributeModifiers(EquipmentSlot)`. `PotionContents` maps to
-   `net.minecraft.world.item.alchemy.PotionUtils` (mind the shim's *legacy* `PotionUtils` class of the same name).
-   `MapId` is a plain `int` (`MapItem.getMapId`/`setMapId`). `ItemAbility`/`ItemAbilities` are NeoForge-only:
-   1.20.1 uses `net.minecraftforge.common.ToolAction`/`ToolActions` and `Item#canPerformAction(ToolAction)`.
-   `PackType`/`PackSource`/`Pack.Position`.
-5. **NeoForge-only hooks** (~10): `InsertableLinkedOpenCustomHashSet`, `RegisterClientExtensionsEvent`,
-   `RenderGuiLayerEvent`/`VanillaGuiLayers`. 1.20.1: `Boolean`/nullable for `TriState`, `Item#initializeClient` for
-   client extensions, `RenderGuiOverlayEvent` + `overlay.VanillaGuiOverlay` for GUI layers.
-6. **Worldgen / chunk status** (~8): `net.minecraft.world.level.chunk.status.*` is 1.20.5+; 1.20.1 uses `ChunkStatus`
-   directly, and `ChunkMap.getVisibleChunkIfPresent` needs an AT entry.
-7. **Smaller renames** (~10): `BlockSource` (dispenser), `ItemCost`, `PathType` (done), `Holder<MobEffect>` ->
-   `MobEffect`, `SynchedEntityData.Builder`, `getPartialTick().getGameTimeDeltaPartialTick()` -> `renderTickCounter`,
-   `RegisterBrewingRecipesEvent` -> `PotionBrewEvent`/`BrewingRecipeRegistry`, `LevelData#getSpawnPos`, `Explosion#center`,
-   `Entity#getTarget`/`accelerationPower`, `MapStorage`/`AdvancementList` overrides, `getVisibleChunkIfPresent` AT.
+1. **`DataComponents`/`CustomData`** (`Stacks1122`, ~7 left): 1.20.1 has `stack.getTag()`/`getOrCreateTag()`; the shim's
+   `CompatComponents` helpers already wrap them (`get/set/clear`), so the call sites can use those.
+2. **Item component leftovers** (~15): `ItemEnchantments` (`EnchantmentHelper.getEnchantments`), `PotionContents`
+   (`net.minecraft.world.item.alchemy.PotionUtils`, mind the shim's *legacy* class of the same name), `MapId` (plain
+   `int`), `ItemAbilities` -> `ToolAction`/`Item#canPerformAction`, `PackType`/`PackSource`/`Pack.Position`,
+   `transmuteCopy`, `getItem(int)` vs horse inventory, `TooltipContext`.
+3. **Access widening** (`jumpFromGround`, `BucketItem.content`, `getChunkIfPresent`, `NbtAccounter.create`, ...): the
+   established answer is an `@Accessor`/`@Invoker` mixin under `mixin/access` (a `MinecraftProfileTextures`-era AT does
+   not reach the compile classpath).
+4. **GUI leftovers** (`ServerData.State`, `VideoSettingsScreen`, `WorldSelectionList.getY`, `GuiButton.BUTTON_TEXTURES`,
+   `WorldOpenFlows`, `GenericMessageScreen`, `disconnect(TitleScreen)`).
+5. **1.12.2 shim odds and ends**: `PlayerList#respawn`, `EnchantmentHelper.enchantItem`, `canBeLeashed`,
+   `ModelRenderer.Cube.compile`, `SoundHandler` lambda, `EnumConnectionState`, `PathNodeType` switch, `AABB.INFINITE`,
+   `NbtAccounter.create`.
+6. **Small semantic gaps** already noted above (block drops through `getDrops`, `ChunkWatchEvent.Watch` instead of
+   `Sent`, the inventory pick-up event timing, DragonAPI's item/XP update events).
 
 Once the compile is clean: package the loader as a JPMS module (above), wire `FMLModType`/manifest packaging for the
 bundle jar, and run `runServerSubTest` with real legacy jars.
