@@ -118,7 +118,7 @@ public class Potion extends IForgeRegistryEntry.Impl<Potion> {
         if (own != null) return own;
         var name = getRegistryName();
         if (name == null) return null;
-        return net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.getHolder(name.mcc$modern())
+        return org.kylepitcock.legacyconnector.core.RegistryUtil.holder(net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT, name.mcc$modern())
                 .map(h -> (net.minecraft.core.Holder<net.minecraft.world.effect.MobEffect>) h).orElse(null);
     }
 

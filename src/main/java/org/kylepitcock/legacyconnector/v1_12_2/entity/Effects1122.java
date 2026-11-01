@@ -45,7 +45,7 @@ public final class Effects1122 {
                         mod.getAmount(), operation);
             }
             MobEffect registered = LegacyRegistrar.register(BuiltInRegistries.MOB_EFFECT, id, effect);
-            BuiltInRegistries.MOB_EFFECT.getHolder(BuiltInRegistries.MOB_EFFECT.getKey(registered)).ifPresent(h -> EFFECTS.put(potion, h));
+            org.kylepitcock.legacyconnector.core.RegistryUtil.holder(BuiltInRegistries.MOB_EFFECT, BuiltInRegistries.MOB_EFFECT.getKey(registered)).ifPresent(h -> EFFECTS.put(potion, h));
         } catch (RuntimeException | LinkageError e) {
             LoggerFactory.getLogger("LegacyConnector/Potions").warn("Potion {} could not become a modern effect: {}", name, e.toString());
         }

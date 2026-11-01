@@ -39,7 +39,7 @@ public interface IAttribute {
         };
         if (modern == null) return null;
         var id = modern.indexOf(':') >= 0 ? net.minecraft.resources.ResourceLocation.parse(modern) : net.minecraft.resources.ResourceLocation.withDefaultNamespace(modern);
-        return net.minecraft.core.registries.BuiltInRegistries.ATTRIBUTE.getHolder(id).map(h -> (net.minecraft.core.Holder<net.minecraft.world.entity.ai.attributes.Attribute>) h).orElse(null);
+        return org.kylepitcock.legacyconnector.core.RegistryUtil.holder(net.minecraft.core.registries.BuiltInRegistries.ATTRIBUTE, id).map(h -> (net.minecraft.core.Holder<net.minecraft.world.entity.ai.attributes.Attribute>) h).orElse(null);
     }
 
     /** The vanilla attribute constants (SharedMonsterAttributes.MAX_HEALTH, ...) for the synthesized classes declaring them, by "owner.field". */

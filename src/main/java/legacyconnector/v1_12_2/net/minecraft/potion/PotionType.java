@@ -46,7 +46,7 @@ public class PotionType extends IForgeRegistryEntry.Impl<PotionType> {
     public net.minecraft.core.Holder<net.minecraft.world.item.alchemy.Potion> mcc$modern() {
         ResourceLocation name = getRegistryName();
         if (name == null) return null;
-        var holder = net.minecraft.core.registries.BuiltInRegistries.POTION.getHolder(name.mcc$modern());
+        var holder = org.kylepitcock.legacyconnector.core.RegistryUtil.holder(net.minecraft.core.registries.BuiltInRegistries.POTION, name.mcc$modern());
         return holder.isPresent() ? holder.get() : null;
     }
 
