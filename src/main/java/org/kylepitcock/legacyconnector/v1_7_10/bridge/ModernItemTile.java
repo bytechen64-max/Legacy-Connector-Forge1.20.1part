@@ -77,7 +77,7 @@ public final class ModernItemTile extends ModernCapabilityTile implements ISided
         net.minecraft.world.item.ItemStack wanted = ItemStack.mcc$toModern(stack);
         net.minecraft.world.item.ItemStack current = h.getStackInSlot(slot);
         // an item handler has no "set": take what is there beyond what is wanted, then insert what is missing
-        if (!current.isEmpty() && (wanted.isEmpty() || !net.minecraft.world.item.ItemStack.isSameItemSameComponents(current, wanted))) {
+        if (!current.isEmpty() && (wanted.isEmpty() || !net.minecraft.world.item.ItemStack.isSameItemSameTags(current, wanted))) {
             h.extractItem(slot, current.getCount(), false);
             current = h.getStackInSlot(slot);
         }

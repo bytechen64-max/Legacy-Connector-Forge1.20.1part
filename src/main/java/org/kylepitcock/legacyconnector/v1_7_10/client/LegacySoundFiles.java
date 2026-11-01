@@ -57,7 +57,8 @@ public final class LegacySoundFiles {
 
         LegacyFile(ResourceLocation id, boolean stream, IoSupplier<InputStream> data) {
             this.id = id;
-            this.sound = new Sound(id, ConstantFloat.of(1.0F), ConstantFloat.of(1.0F), 1, Sound.Type.FILE, stream, false, 16);
+            // 1.20.1 names a sound with its id as a string (the ResourceLocation form is 1.20.5).
+        this.sound = new Sound(id.toString(), ConstantFloat.of(1.0F), ConstantFloat.of(1.0F), 1, Sound.Type.FILE, stream, false, 16);
             this.data = data;
         }
 

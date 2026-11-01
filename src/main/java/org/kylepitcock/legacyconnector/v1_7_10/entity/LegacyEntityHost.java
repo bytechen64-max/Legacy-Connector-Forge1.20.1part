@@ -216,12 +216,12 @@ public class LegacyEntityHost extends net.minecraft.world.entity.Entity implemen
     @Override
     public void lerpTo(double x, double y, double z, float yaw, float pitch, int steps) {
         if (legacy != null && LegacyHookState.customLerp(legacy)) legacy.setPositionAndRotation2(x, y + legacy.mcc$yShift(), z, yaw, pitch, steps);
-        else super.lerpTo(x, y, z, yaw, pitch, steps);
+        else super.lerpTo(x, y, z, yaw, pitch, steps, false);
     }
 
     @Override
     public void mcc$superLerpTo(double x, double y, double z, float yaw, float pitch, int steps) {
-        super.lerpTo(x, y, z, yaw, pitch, steps);
+        super.lerpTo(x, y, z, yaw, pitch, steps, false);
     }
 
     @Override

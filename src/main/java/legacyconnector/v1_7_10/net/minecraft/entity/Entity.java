@@ -762,7 +762,7 @@ public abstract class Entity implements ICommandSender {
                     if (old != null && old.amount() == wanted) return;
                     attr.removeModifier(id);
                     if (wanted != 0.0D) {
-                        attr.addTransientModifier(new net.minecraft.world.entity.ai.attributes.AttributeModifier(id, wanted,
+                        attr.addTransientModifier(new net.minecraft.world.entity.ai.attributes.AttributeModifier(id.toString(), wanted,
                                 net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADDITION));
                     }
                 }
@@ -1603,7 +1603,7 @@ public abstract class Entity implements ICommandSender {
         if (host != null) {
             host.mcc$superLerpTo(x, y - mcc$yShift(), z, yaw, pitch, increments);
         } else if (mcc$entity != null) {
-            mcc$entity.lerpTo(x, y - mcc$yShift(), z, yaw, pitch, increments);
+            mcc$entity.lerpTo(x, y - mcc$yShift(), z, yaw, pitch, increments, false);
         } else {
             setPosition(x, y, z);
             setRotation(yaw, pitch);

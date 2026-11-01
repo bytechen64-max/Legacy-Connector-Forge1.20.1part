@@ -114,7 +114,7 @@ public class EntityVillager extends EntityAgeable implements legacyconnector.v1_
         recipe.incrementToolUses();
         var sell = legacyconnector.v1_7_10.net.minecraft.item.ItemStack.mcc$toModern(recipe.getItemToSell());
         for (var offer : v.getOffers()) {
-            if (sell != null && net.minecraft.world.item.ItemStack.isSameItemSameComponents(offer.getResult(), sell)) {
+            if (sell != null && net.minecraft.world.item.ItemStack.isSameItemSameTags(offer.getResult(), sell)) {
                 v.notifyTrade(offer);
                 return;
             }

@@ -391,7 +391,7 @@ public class MobHost1122 extends PathfinderMob implements LivingHost1122, IEntit
 
     @Override
     public void mcc$superLerpTo(double x, double y, double z, float yaw, float pitch, int steps) {
-        super.lerpTo(x, y, z, yaw, pitch, steps);
+        super.lerpTo(x, y, z, yaw, pitch, steps, false);
     }
 
     @Override

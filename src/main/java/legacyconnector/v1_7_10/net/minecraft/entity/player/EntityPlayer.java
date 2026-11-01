@@ -268,7 +268,7 @@ public abstract class EntityPlayer extends EntityLivingBase {
         if (!p.isUsingItem()) return;
         var hand = p.getUsedItemHand();
         var using = p.getUseItem();
-        if (!net.minecraft.world.item.ItemStack.isSameItemSameComponents(using, p.getItemInHand(hand))) {
+        if (!net.minecraft.world.item.ItemStack.isSameItemSameTags(using, p.getItemInHand(hand))) {
             p.releaseUsingItem();
             return;
         }

@@ -85,7 +85,8 @@ public final class LegacySoundSystem1122 {
 
         @Override
         public WeighedSoundEvents resolve(net.minecraft.client.sounds.SoundManager manager) {
-            this.sound = new Sound(ID, ConstantFloat.of(1.0F), ConstantFloat.of(1.0F), 1, Sound.Type.FILE, true, false, (int) src.distance);
+            // 1.20.1 names a sound with its id as a string (the ResourceLocation form is 1.20.5).
+        this.sound = new Sound(ID.toString(), ConstantFloat.of(1.0F), ConstantFloat.of(1.0F), 1, Sound.Type.FILE, true, false, (int) src.distance);
             return new WeighedSoundEvents(ID, null);
         }
 

@@ -242,12 +242,12 @@ public class EntityHost1122 extends net.minecraft.world.entity.Entity implements
     @Override
     public void lerpTo(double x, double y, double z, float yaw, float pitch, int steps) {
         if (legacy != null && HookState1122.customLerp(legacy)) legacy.setPositionAndRotationDirect(x, y, z, yaw, pitch, steps, false);
-        else super.lerpTo(x, y, z, yaw, pitch, steps);
+        else super.lerpTo(x, y, z, yaw, pitch, steps, false);
     }
 
     @Override
     public void mcc$superLerpTo(double x, double y, double z, float yaw, float pitch, int steps) {
-        super.lerpTo(x, y, z, yaw, pitch, steps);
+        super.lerpTo(x, y, z, yaw, pitch, steps, false);
     }
 
     @Override

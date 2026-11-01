@@ -9,7 +9,7 @@ import legacyconnector.v1_12_2.net.minecraft.world.World;
  * dead bush, by the {@code BlockTallGrass.EnumType} it was made with) where it can stay.
  */
 public class WorldGenTallGrass extends WorldGenerator {
-    private net.minecraft.world.level.block.Block mcc$plant = net.minecraft.world.level.block.Blocks.SHORT_GRASS;
+    private net.minecraft.world.level.block.Block mcc$plant = net.minecraft.world.level.block.Blocks.GRASS;
 
     public WorldGenTallGrass() {
         super(false);
@@ -24,7 +24,7 @@ public class WorldGenTallGrass extends WorldGenerator {
     public WorldGenTallGrass mcc$setType(String name) {
         if ("FERN".equals(name)) mcc$plant = net.minecraft.world.level.block.Blocks.FERN;
         else if ("DEAD_BUSH".equals(name)) mcc$plant = net.minecraft.world.level.block.Blocks.DEAD_BUSH;
-        else mcc$plant = net.minecraft.world.level.block.Blocks.SHORT_GRASS;
+        else mcc$plant = net.minecraft.world.level.block.Blocks.GRASS;
         return this;
     }
 

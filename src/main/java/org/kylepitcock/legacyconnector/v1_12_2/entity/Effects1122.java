@@ -41,7 +41,7 @@ public final class Effects1122 {
                     case 2 -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.MULTIPLY_TOTAL;
                     default -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADDITION;
                 };
-                effect.addAttributeModifier(attribute, ResourceLocation.fromNamespaceAndPath(id.getNamespace(), id.getPath() + "_" + mod.getID().toString().toLowerCase(java.util.Locale.ROOT)),
+                effect.addAttributeModifier(attribute, ResourceLocation.fromNamespaceAndPath(id.getNamespace(), id.getPath() + "_" + mod.getID().toString().toLowerCase(java.util.Locale.ROOT)).toString(),
                         mod.getAmount(), operation);
             }
             MobEffect registered = LegacyRegistrar.register(BuiltInRegistries.MOB_EFFECT, id, effect);

@@ -34,7 +34,7 @@ public final class GrassSeeds1122 {
 
     private static void onDrops(BlockDropsEvent event) {
         var state = event.getState();
-        if (!state.is(Blocks.SHORT_GRASS) && !state.is(Blocks.FERN)) return;
+        if (!state.is(Blocks.GRASS) && !state.is(Blocks.FERN)) return;
         if (event.getTool().canPerformAction(net.minecraftforge.common.ToolActions.SHEARS_DIG)) return; // shears take the grass itself
         var random = ThreadLocalRandom.current();
         if (random.nextInt(8) != 0) return;

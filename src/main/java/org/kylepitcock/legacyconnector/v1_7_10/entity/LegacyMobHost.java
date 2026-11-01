@@ -378,7 +378,7 @@ public class LegacyMobHost extends PathfinderMob implements LegacyLivingHost, IE
 
     @Override
     public void mcc$superLerpTo(double x, double y, double z, float yaw, float pitch, int steps) {
-        super.lerpTo(x, y, z, yaw, pitch, steps);
+        super.lerpTo(x, y, z, yaw, pitch, steps, false);
     }
 
     @Override

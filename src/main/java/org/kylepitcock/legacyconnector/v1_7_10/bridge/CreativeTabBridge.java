@@ -112,7 +112,7 @@ public final class CreativeTabBridge {
             if (o instanceof ItemStack s && safeNonEmpty(s)) {
                 net.minecraft.world.item.ItemStack m = s.mcc$modern().copy();
                 m.setCount(1);
-                if (out.stream().noneMatch(x -> net.minecraft.world.item.ItemStack.isSameItemSameComponents(x, m))) out.add(m);
+                if (out.stream().noneMatch(x -> net.minecraft.world.item.ItemStack.isSameItemSameTags(x, m))) out.add(m);
             }
         }
         return out;

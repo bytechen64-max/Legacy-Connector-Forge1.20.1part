@@ -74,7 +74,7 @@ public class AttributeModifier {
             case 2 -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.MULTIPLY_TOTAL;
             default -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADDITION;
         };
-        return new net.minecraft.world.entity.ai.attributes.AttributeModifier(mcc$id(id), amount, op);
+        return new net.minecraft.world.entity.ai.attributes.AttributeModifier(mcc$id(id).toString(), amount, op);
     }
 
     public static AttributeModifier mcc$wrap(net.minecraft.world.entity.ai.attributes.AttributeModifier m) {

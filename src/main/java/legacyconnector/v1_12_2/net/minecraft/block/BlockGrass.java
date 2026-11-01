@@ -93,7 +93,7 @@ public class BlockGrass extends Block implements IGrowable {
             if (!placed || !worldIn.isAirBlock(p)) continue;
             var mp = org.kylepitcock.legacyconnector.v1_12_2.bridge.Inventories1122.pos(p);
             var plant = rand.nextInt(8) == 0 ? (rand.nextBoolean() ? net.minecraft.world.level.block.Blocks.DANDELION : net.minecraft.world.level.block.Blocks.POPPY)
-                    : net.minecraft.world.level.block.Blocks.SHORT_GRASS;
+                    : net.minecraft.world.level.block.Blocks.GRASS;
             level.setBlock(mp, plant.defaultBlockState(), 3);
         }
     }
