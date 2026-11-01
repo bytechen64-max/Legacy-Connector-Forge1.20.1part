@@ -23,7 +23,7 @@ public final class EffectIcons1122 {
     /** 1.12's inventory.png, bound while the potion picks its icon. */
     private static final ResourceLocation VANILLA_SHEET = ResourceLocation.fromNamespaceAndPath("minecraft", "textures/gui/container/inventory.png");
     /** The vanilla effects by their 1.12 icon cell (x + 8 * y): a mod potion pointing at one shows that effect's sprite. */
-    private static final Map<Integer, Holder<MobEffect>> VANILLA = Map.ofEntries(
+    private static final Map<Integer, MobEffect> VANILLA = Map.ofEntries(
             Map.entry(0, MobEffects.MOVEMENT_SPEED), Map.entry(1, MobEffects.MOVEMENT_SLOWDOWN), Map.entry(2, MobEffects.DIG_SPEED),
             Map.entry(3, MobEffects.DIG_SLOWDOWN), Map.entry(4, MobEffects.DAMAGE_BOOST), Map.entry(5, MobEffects.WEAKNESS),
             Map.entry(6, MobEffects.POISON), Map.entry(7, MobEffects.REGENERATION), Map.entry(8, MobEffects.INVISIBILITY),
@@ -65,8 +65,8 @@ public final class EffectIcons1122 {
                 graphics.setColor(1.0F, 1.0F, 1.0F, alpha);
                 try {
                     if (sheet == null || sheet.equals(VANILLA_SHEET)) {
-                        Holder<MobEffect> vanilla = VANILLA.get(index);
-                        if (vanilla != null) graphics.blit(x, y, 0, 18, 18, net.minecraft.client.Minecraft.getInstance().getMobEffectTextures().get(vanilla.value()));
+                        MobEffect vanilla = VANILLA.get(index);
+                        if (vanilla != null) graphics.blit(x, y, 0, 18, 18, net.minecraft.client.Minecraft.getInstance().getMobEffectTextures().get(vanilla));
                     } else {
                         graphics.blit(sheet, x, y, index % 8 * 18, 198 + index / 8 * 18, 18, 18, 256, 256);
                     }

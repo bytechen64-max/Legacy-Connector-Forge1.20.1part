@@ -71,7 +71,7 @@ public final class GeneratedPack implements PackResources {
             BUILDING.decrementAndGet();
         }
         if (SPILL && !files.isEmpty()) {
-            PackSpill spill = new PackSpill(location.id());
+            PackSpill spill = new PackSpill(id);
             files.replaceAll((path, data) -> spill.wrap(data));
         }
         LoggerFactory.getLogger("LegacyConnector/Pack").info("Generated {} {} file(s) for legacy mods", files.size(), type == PackType.SERVER_DATA ? "data" : "asset");

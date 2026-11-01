@@ -18,21 +18,24 @@ import net.minecraftforge.common.MinecraftForge;
  * layers; legacy overlays draw in the Post events through the emulated GL state.
  */
 public final class HudEvents1710 {
-    private static final Map<ResourceLocation, ElementType> LAYERS = Map.ofEntries(
-            Map.entry(VanillaGuiOverlay.CROSSHAIR, ElementType.CROSSHAIRS),
-            Map.entry(VanillaGuiOverlay.HOTBAR, ElementType.HOTBAR),
-            Map.entry(VanillaGuiOverlay.PLAYER_HEALTH, ElementType.HEALTH),
-            Map.entry(VanillaGuiOverlay.ARMOR_LEVEL, ElementType.ARMOR),
-            Map.entry(VanillaGuiOverlay.FOOD_LEVEL, ElementType.FOOD),
-            Map.entry(VanillaGuiOverlay.AIR_LEVEL, ElementType.AIR),
-            Map.entry(VanillaGuiOverlay.EXPERIENCE_BAR, ElementType.EXPERIENCE),
-            Map.entry(VanillaGuiOverlay.MOUNT_HEALTH, ElementType.HEALTHMOUNT),
-            Map.entry(VanillaGuiOverlay.JUMP_BAR, ElementType.JUMPBAR),
-            Map.entry(VanillaGuiOverlay.BOSS_EVENT_PROGRESS, ElementType.BOSSHEALTH),
-            Map.entry(VanillaGuiOverlay.CHAT_PANEL, ElementType.CHAT),
-            Map.entry(VanillaGuiOverlay.PLAYER_LIST, ElementType.PLAYER_LIST),
-            Map.entry(VanillaGuiOverlay.DEBUG_TEXT, ElementType.DEBUG),
-            Map.entry(VanillaGuiOverlay.HELMET, ElementType.HELMET));
+        private static final Map<net.minecraftforge.client.gui.overlay.NamedGuiOverlay, ElementType> LAYERS = new java.util.HashMap<>();
+
+    static {
+        LAYERS.put(VanillaGuiOverlay.CROSSHAIR.type(), ElementType.CROSSHAIRS);
+        LAYERS.put(VanillaGuiOverlay.HOTBAR.type(), ElementType.HOTBAR);
+        LAYERS.put(VanillaGuiOverlay.PLAYER_HEALTH.type(), ElementType.HEALTH);
+        LAYERS.put(VanillaGuiOverlay.ARMOR_LEVEL.type(), ElementType.ARMOR);
+        LAYERS.put(VanillaGuiOverlay.FOOD_LEVEL.type(), ElementType.FOOD);
+        LAYERS.put(VanillaGuiOverlay.AIR_LEVEL.type(), ElementType.AIR);
+        LAYERS.put(VanillaGuiOverlay.EXPERIENCE_BAR.type(), ElementType.EXPERIENCE);
+        LAYERS.put(VanillaGuiOverlay.MOUNT_HEALTH.type(), ElementType.HEALTHMOUNT);
+        LAYERS.put(VanillaGuiOverlay.JUMP_BAR.type(), ElementType.JUMPBAR);
+        LAYERS.put(VanillaGuiOverlay.BOSS_EVENT_PROGRESS.type(), ElementType.BOSSHEALTH);
+        LAYERS.put(VanillaGuiOverlay.CHAT_PANEL.type(), ElementType.CHAT);
+        LAYERS.put(VanillaGuiOverlay.PLAYER_LIST.type(), ElementType.PLAYER_LIST);
+        LAYERS.put(VanillaGuiOverlay.DEBUG_TEXT.type(), ElementType.DEBUG);
+        LAYERS.put(VanillaGuiOverlay.HELMET.type(), ElementType.HELMET);
+    }
 
     private HudEvents1710() {}
 
@@ -76,12 +79,12 @@ public final class HudEvents1710 {
 
     private static void registerLayers() {
         MinecraftForge.EVENT_BUS.addListener((RenderGuiOverlayEvent.Pre e) -> {
-            ElementType type = LAYERS.get(e.getOverlay().id());
+            ElementType type = LAYERS.get(e.getOverlay());
             if (type != null && wants(RenderGameOverlayEvent.Pre.class) && drawnForMode(type)
                     && post(e.getGuiGraphics(), e.getPartialTick(), type, false)) e.setCanceled(true);
         });
         MinecraftForge.EVENT_BUS.addListener((RenderGuiOverlayEvent.Post e) -> {
-            ElementType type = LAYERS.get(e.getOverlay().id());
+            ElementType type = LAYERS.get(e.getOverlay());
             if (type != null && drawnForMode(type)) advanceStack(type);
             if (type != null && wants(RenderGameOverlayEvent.Post.class) && drawnForMode(type)) post(e.getGuiGraphics(), e.getPartialTick(), type, true);
         });

@@ -156,7 +156,7 @@ public final class Vanilla1122 {
             if (modern instanceof net.minecraft.world.item.ShovelItem) return new VanillaSpade(m);
             if (modern instanceof net.minecraft.world.item.HoeItem) return new VanillaHoe(m);
         }
-        if (modern instanceof net.minecraft.world.item.ArmorItem armor && armor.getType() != net.minecraft.world.item.ArmorItem.Type.BODY) {
+        if (modern instanceof net.minecraft.world.item.ArmorItem armor) {
             // vanilla armor as ItemArmor with its 1.12 material (EpicFight reads the damage reduction of each piece)
             var mat = armor.getMaterial();
             legacyconnector.v1_12_2.net.minecraft.item.ItemArmor.ArmorMaterial m =
@@ -415,7 +415,7 @@ public final class Vanilla1122 {
     /** The modern item of a vanilla legacy item and metadata (the 1.13 flattening, through the game's own data fixers). */
     public static net.minecraft.world.item.Item modernVariant(Item item, int meta) {
         net.minecraft.world.item.Item base = item.mcc$vanillaModern;
-        if (meta <= 0 || meta == 32767 || !base.isDamageableItem()) return base;
+        if (meta <= 0 || meta == 32767 || !base.canBeDepleted()) return base;
         var name = item.getRegistryName();
         if (name == null || !"minecraft".equals(name.getNamespace())) return base;
         var flat = org.kylepitcock.legacyconnector.core.flatten.VanillaFlattening.item(name.getPath(), meta);

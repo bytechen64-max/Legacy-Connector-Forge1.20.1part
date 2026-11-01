@@ -40,8 +40,8 @@ public final class RecipeSyncGuard {
     private static boolean sendable(Recipe<?> recipe, net.minecraft.core.RegistryAccess access) {
         try {
             if (recipe.getResultItem(access).isEmpty() && !recipe.isSpecial()) return false;
+            // 1.20.1 has no custom ingredients (isCustom is 1.20.5+); the empty-stack check covers the same recipes
             for (Ingredient ing : recipe.getIngredients()) {
-                if (ing.isCustom()) continue;
                 for (var stack : ing.getItems()) if (stack.isEmpty()) return false;
             }
             return true;

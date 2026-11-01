@@ -349,7 +349,7 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
                 failure("onBlockHarvested", e);
             }
         }
-        return super.playerWillDestroy(level, pos, state, player);
+        super.playerWillDestroy(level, pos, state, player);
     }
 
     @Override
@@ -821,13 +821,14 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
 
     /** The experience a mod's block drops when broken (Forge's getExpDrop, with the tool's fortune). */
     @Override
-    public int getExpDrop(BlockState state, LevelAccessor level, BlockPos pos, BlockEntity blockEntity, Entity breaker, net.minecraft.world.item.ItemStack tool) {
-        if (!expDrop) return super.getExpDrop(state, level, pos, blockEntity, breaker, tool);
+    public int getExpDrop(BlockState state, net.minecraft.world.level.LevelReader level, net.minecraft.util.RandomSource random, BlockPos pos,
+            int fortuneIn, int silktouchIn) {
+        if (!expDrop) return super.getExpDrop(state, level, random, pos, fortuneIn, silktouchIn);
         try {
             int fortune = 0;
-            if (tool != null && !tool.isEmpty() && level instanceof Level l) {
-                var enchants = l.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-                fortune = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, tool);
+            if (level instanceof Level l) {
+                // 1.20.1 hands the fortune value in (the tool is not part of the call) and keeps the enchantments in a registry
+                fortune = fortuneIn;
             }
             return Math.max(0, legacy.getExpDrop(state(state), WorldBridge1122.access(level), pos(pos), fortune));
         } catch (RuntimeException | LinkageError e) {

@@ -193,7 +193,14 @@ public final class BiomePlacement {
             if (values.stream().anyMatch(p -> p.getSecond().unwrapKey().map(legacy::contains).orElse(false))) return 0; // already added
             List<Pair<Climate.ParameterPoint, Holder<Biome>>> blended = blend(values, present, h -> h.unwrapKey().orElse(null),
                     k -> biomes.getHolderOrThrow(k), VANILLA_ANALOG_WEIGHT);
-            preset.parameters = new Climate.ParameterList<>(List.copyOf(blended));
+            // 1.20.1 keeps the parameter list in a private final field
+            try {
+                var parametersField = net.minecraft.world.level.biome.MultiNoiseBiomeSourceParameterList.class.getDeclaredField("parameters");
+                parametersField.setAccessible(true);
+                parametersField.set(preset, new Climate.ParameterList<>(List.copyOf(blended)));
+            } catch (ReflectiveOperationException e) {
+                throw new IllegalStateException("cannot add legacy biomes to the overworld parameters", e);
+            }
             checkOverworld(server, present);
             return present.size();
         } catch (RuntimeException | LinkageError e) {

@@ -59,7 +59,7 @@ public final class CreativeTabBridge1122 {
 
     /** Each stack once: a tab rejects duplicates (several legacy stacks can become the same modern one, Charm lists its barrel twice). */
     private static List<net.minecraft.world.item.ItemStack> contents(CreativeTabs tab) {
-        var out = net.minecraft.world.item.ItemStackLinkedSet.createTypeAndComponentsSet();
+        var out = net.minecraft.world.item.ItemStackLinkedSet.createTypeAndTagSet();
         NonNullList<legacyconnector.v1_12_2.net.minecraft.item.ItemStack> raw = NonNullList.create();
         for (Item item : ItemBridge1122.modItems()) {
             try {
@@ -105,7 +105,7 @@ public final class CreativeTabBridge1122 {
             }
             for (var s : list) {
                 var modern = Stacks1122.toModern(s);
-                if (modern.isEmpty() || event.getParentEntries().contains(modern) || event.getSearchEntries().contains(modern)) continue;
+                if (modern.isEmpty()) continue;
                 try {
                     event.accept(modern);
                 } catch (IllegalArgumentException | IllegalStateException duplicate) {

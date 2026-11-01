@@ -13,6 +13,8 @@
     "access.LivingEntityAccess",
     "access.AbstractArrowAccess",
     "access.RandomizableContainerAccess",
+    "access.LevelChunkTickerAccess",
+    "access.DispenserBlockAccess",
     "EntityGravityMixin",
     "PlayerStepSoundMixin",
     "FoodDataHealRateMixin",

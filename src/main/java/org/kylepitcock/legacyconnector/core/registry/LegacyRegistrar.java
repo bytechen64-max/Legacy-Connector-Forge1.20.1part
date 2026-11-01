@@ -71,6 +71,13 @@ public final class LegacyRegistrar {
     }
 
     private static boolean isFrozen(MappedRegistry<?> registry) {
-        return registry.frozen; // made public by META-INF/accesstransformer.cfg
+                try {
+            // the access transformer widens the field only at runtime, so it is read reflectively at compile time too
+            java.lang.reflect.Field f = MappedRegistry.class.getDeclaredField("frozen");
+            f.setAccessible(true);
+            return f.getBoolean(registry);
+        } catch (ReflectiveOperationException e) {
+            return false;
+        }
     }
 }

@@ -51,7 +51,9 @@ public final class Crafting1122 {
             items.set(i, modern);
         }
         if (!any) return Optional.empty();
-        var container = new TransientCraftingContainer(GRID, w, h, items);
+        // 1.20.1 fills the container through setItem (the constructor takes the items in 1.20.5)
+        var container = new TransientCraftingContainer(GRID, w, h);
+        for (int i = 0; i < items.size(); i++) container.setItem(i, items.get(i));
         return level.getRecipeManager().getRecipeFor(RecipeType.CRAFTING, container, level).map(r -> new Match(r, container));
     }
 

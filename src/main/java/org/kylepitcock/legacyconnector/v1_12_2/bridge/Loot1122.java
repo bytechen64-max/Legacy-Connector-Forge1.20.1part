@@ -32,7 +32,7 @@ public final class Loot1122 {
     public static final class LegacyEntry extends LootPoolSingletonContainer {
         final LootEntry legacy;
 
-        LegacyEntry(LootEntry legacy, int weight, int quality, List<LootItemCondition> conditions, List<LootItemFunction> functions) {
+        LegacyEntry(LootEntry legacy, int weight, int quality, LootItemCondition[] conditions, LootItemFunction[] functions) {
             super(weight, quality, conditions, functions);
             this.legacy = legacy;
         }

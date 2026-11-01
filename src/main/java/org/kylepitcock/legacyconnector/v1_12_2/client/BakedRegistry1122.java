@@ -13,10 +13,10 @@ import net.minecraft.client.resources.model.BakedModel;
 
 /** The modern baked model map as ModelBakeEvent's registry: keyed by legacy locations (see {@link Models1122#modernLocations}). */
 public final class BakedRegistry1122 implements IRegistry<ModelResourceLocation, IBakedModel> {
-    private final Map<net.minecraft.client.resources.model.ModelResourceLocation, BakedModel> models;
+    private final Map<net.minecraft.resources.ResourceLocation, BakedModel> models;
     int replaced;
 
-    public BakedRegistry1122(Map<net.minecraft.client.resources.model.ModelResourceLocation, BakedModel> models) {
+    public BakedRegistry1122(Map<net.minecraft.resources.ResourceLocation, BakedModel> models) {
         this.models = models;
     }
 

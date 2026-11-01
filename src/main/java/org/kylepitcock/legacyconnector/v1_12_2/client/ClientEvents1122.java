@@ -42,23 +42,26 @@ import org.kylepitcock.legacyconnector.v1_7_10.client.RenderContext;
 public final class ClientEvents1122 {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger("LegacyConnector/ClientEvents");
     private static final Map<String, Integer> FAILURES = new java.util.concurrent.ConcurrentHashMap<>();
-    private static final Map<NamedGuiOverlay, ElementType> LAYERS = Map.ofEntries(
-            Map.entry(VanillaGuiOverlay.CROSSHAIR, ElementType.CROSSHAIRS),
-            Map.entry(VanillaGuiOverlay.HOTBAR, ElementType.HOTBAR),
-            Map.entry(VanillaGuiOverlay.PLAYER_HEALTH, ElementType.HEALTH),
-            Map.entry(VanillaGuiOverlay.ARMOR_LEVEL, ElementType.ARMOR),
-            Map.entry(VanillaGuiOverlay.FOOD_LEVEL, ElementType.FOOD),
-            Map.entry(VanillaGuiOverlay.AIR_LEVEL, ElementType.AIR),
-            Map.entry(VanillaGuiOverlay.EXPERIENCE_BAR, ElementType.EXPERIENCE),
-            Map.entry(VanillaGuiOverlay.MOUNT_HEALTH, ElementType.HEALTHMOUNT),
-            Map.entry(VanillaGuiOverlay.JUMP_BAR, ElementType.JUMPBAR),
-            Map.entry(VanillaGuiOverlay.BOSS_EVENT_PROGRESS, ElementType.BOSSHEALTH),
-            Map.entry(VanillaGuiOverlay.CHAT_PANEL, ElementType.CHAT),
-            Map.entry(VanillaGuiOverlay.PLAYER_LIST, ElementType.PLAYER_LIST),
-            Map.entry(VanillaGuiOverlay.DEBUG_TEXT, ElementType.DEBUG),
-            Map.entry(VanillaGuiOverlay.POTION_ICONS, ElementType.POTION_ICONS),
-            Map.entry(VanillaGuiOverlay.SUBTITLES, ElementType.SUBTITLES),
-            Map.entry(VanillaGuiOverlay.HELMET, ElementType.HELMET));
+        private static final Map<net.minecraftforge.client.gui.overlay.NamedGuiOverlay, ElementType> LAYERS = new java.util.HashMap<>();
+
+    static {
+        LAYERS.put(VanillaGuiOverlay.CROSSHAIR.type(), ElementType.CROSSHAIRS);
+        LAYERS.put(VanillaGuiOverlay.HOTBAR.type(), ElementType.HOTBAR);
+        LAYERS.put(VanillaGuiOverlay.PLAYER_HEALTH.type(), ElementType.HEALTH);
+        LAYERS.put(VanillaGuiOverlay.ARMOR_LEVEL.type(), ElementType.ARMOR);
+        LAYERS.put(VanillaGuiOverlay.FOOD_LEVEL.type(), ElementType.FOOD);
+        LAYERS.put(VanillaGuiOverlay.AIR_LEVEL.type(), ElementType.AIR);
+        LAYERS.put(VanillaGuiOverlay.EXPERIENCE_BAR.type(), ElementType.EXPERIENCE);
+        LAYERS.put(VanillaGuiOverlay.MOUNT_HEALTH.type(), ElementType.HEALTHMOUNT);
+        LAYERS.put(VanillaGuiOverlay.JUMP_BAR.type(), ElementType.JUMPBAR);
+        LAYERS.put(VanillaGuiOverlay.BOSS_EVENT_PROGRESS.type(), ElementType.BOSSHEALTH);
+        LAYERS.put(VanillaGuiOverlay.CHAT_PANEL.type(), ElementType.CHAT);
+        LAYERS.put(VanillaGuiOverlay.PLAYER_LIST.type(), ElementType.PLAYER_LIST);
+        LAYERS.put(VanillaGuiOverlay.DEBUG_TEXT.type(), ElementType.DEBUG);
+        LAYERS.put(VanillaGuiOverlay.POTION_ICONS.type(), ElementType.POTION_ICONS);
+        LAYERS.put(VanillaGuiOverlay.SUBTITLES.type(), ElementType.SUBTITLES);
+        LAYERS.put(VanillaGuiOverlay.HELMET.type(), ElementType.HELMET);
+    }
 
     private ClientEvents1122() {}
 
@@ -322,7 +325,7 @@ public final class ClientEvents1122 {
         if (!wants(DrawBlockHighlightEvent.class) || mc.player == null) return;
         if (!(EntityBridge1122.wrap(mc.player) instanceof legacyconnector.v1_12_2.net.minecraft.entity.player.EntityPlayer player)) return;
         var legacy = new DrawBlockHighlightEvent(legacyconnector.v1_12_2.net.minecraft.client.Minecraft.mcc$get$renderGlobal(legacyMc()), player,
-                legacyconnector.v1_12_2.net.minecraft.util.math.RayTraceResult.mcc$of(e.getTarget()), 0, e.getDeltaTracker().getGameTimeDeltaPartialTick(false));
+                legacyconnector.v1_12_2.net.minecraft.util.math.RayTraceResult.mcc$of(e.getTarget()), 0, e.getPartialTick());
         setCamera(e.getCamera().getPosition());
         RenderContext.beginWorld(e.getPoseStack(), e.getMultiBufferSource(), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
         try {

@@ -20,16 +20,16 @@ import org.slf4j.LoggerFactory;
  */
 public final class CustomModels1122 {
     private static final Logger LOG = LoggerFactory.getLogger("LegacyConnector/Models1122");
-    private static volatile Map<net.minecraft.client.resources.model.ModelResourceLocation, BakedModel> baking;
+    private static volatile Map<net.minecraft.resources.ResourceLocation, BakedModel> baking;
 
     private CustomModels1122() {}
 
     /** The models of the bake in progress (ModelBakeEvent), or null. */
-    public static Map<net.minecraft.client.resources.model.ModelResourceLocation, BakedModel> baking() {
+    public static Map<net.minecraft.resources.ResourceLocation, BakedModel> baking() {
         return baking;
     }
 
-    static void setBaking(Map<net.minecraft.client.resources.model.ModelResourceLocation, BakedModel> models) {
+    static void setBaking(Map<net.minecraft.resources.ResourceLocation, BakedModel> models) {
         baking = models;
     }
 
@@ -59,7 +59,7 @@ public final class CustomModels1122 {
     }
 
     /** Bakes the loader models and puts them in place of the game's models of the same locations. */
-    static void bakeInto(Map<net.minecraft.client.resources.model.ModelResourceLocation, BakedModel> models) {
+    static void bakeInto(Map<net.minecraft.resources.ResourceLocation, BakedModel> models) {
         if (!anyLoader()) return;
         for (var e : Models1122.allLocations().entrySet()) {
             IModel model = load(e.getKey());

@@ -163,7 +163,7 @@ public final class InPlaceStructureGuard {
                 CompoundTag be = null;
                 if (prev.hasBlockEntity()) {
                     try {
-                        be = j.region.getChunk(pos).getBlockEntityNbtForSaving(pos, j.region.registryAccess());
+                        be = j.region.getChunk(pos).getBlockEntityNbtForSaving(pos);
                     } catch (RuntimeException e) {
                         be = null;
                     }

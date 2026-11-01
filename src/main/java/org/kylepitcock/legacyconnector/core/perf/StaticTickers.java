@@ -38,7 +38,7 @@ public final class StaticTickers {
         try {
             // only the chunk that holds this very block entity (a copy in another mod's virtual level has no LevelChunk of its own)
             if (level.getChunk(be.getBlockPos()) instanceof LevelChunk chunk && chunk.getBlockEntities().get(be.getBlockPos()) == be) {
-                chunk.updateBlockEntityTicker(be);
+                ((org.kylepitcock.legacyconnector.mixin.access.LevelChunkTickerAccess) chunk).legacyconnector$updateBlockEntityTicker(be);
             }
         } catch (RuntimeException e) {
             // keeps its ticker (the old, slower path)
