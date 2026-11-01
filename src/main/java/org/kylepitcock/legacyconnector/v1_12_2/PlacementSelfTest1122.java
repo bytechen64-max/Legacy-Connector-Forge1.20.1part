@@ -62,7 +62,13 @@ public final class PlacementSelfTest1122 {
                 var s = b.getStateForPlacement(ctx);
                 if (s == null) return ": the block gave no placement state";
                 if (!s.canSurvive(level, ctx.getClickedPos())) return ": the state cannot survive (canBlockStay/canPlaceBlockAt)";
-                return ": getPlacementState was null (canPlace: collision or the player's own box)";
+                // BlockItem.canPlace let survive pass, so the obstruction check refused it: say which box and what is in it
+                var box = s.getShape(level, ctx.getClickedPos()).bounds().move(ctx.getClickedPos());
+                var players = level.getEntities(player, box);
+                var others = level.getEntities((net.minecraft.world.entity.Entity) null, box, e -> e != player);
+                return ": getPlacementState was null (unobstructed=" + level.isUnobstructed(s, ctx.getClickedPos(),
+                        net.minecraft.world.phys.shapes.CollisionContext.of(player)) + " box=" + box
+                        + " entities(player)=" + players + " entities(all)=" + others + ")";
             }
             return ": placed state " + state + " but the item refused (its own onItemUse/placeBlockAt)"
                     + (System.getProperty("legacyconnector.placementDiag") != null ? legacyChecks(item, level, player, stack, ctx.getClickedPos()) : "");
@@ -115,6 +121,12 @@ public final class PlacementSelfTest1122 {
             try {
                 for (int dx = -2; dx <= 2; dx++) for (int dy = 0; dy <= 4; dy++) for (int dz = -2; dz <= 2; dz++) {
                     level.setBlock(ground.offset(dx, dy, dz), dy == 0 ? Blocks.STONE.defaultBlockState() : Blocks.AIR.defaultBlockState(), 2);
+                }
+                // the self test's earlier stages drop items and spawn mobs in this area, and a 1.12 ItemBlock also refuses to
+                // place where an entity stands (world.checkNoEntityCollision): clear the box so the test measures placement
+                var area = new net.minecraft.world.phys.AABB(ground.offset(-3, 0, -3)).expandTowards(6, 6, 6);
+                for (var entity : level.getEntities((net.minecraft.world.entity.Entity) null, area, e -> !(e instanceof net.minecraft.world.entity.player.Player))) {
+                    entity.discard();
                 }
                 player.setPos(ground.getX() - 1.0, ground.getY() + 1, ground.getZ() + 0.5);
                 ItemStack stack = new ItemStack(item);
