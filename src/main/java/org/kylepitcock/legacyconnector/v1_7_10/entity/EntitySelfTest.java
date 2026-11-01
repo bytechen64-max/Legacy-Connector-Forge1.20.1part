@@ -89,7 +89,7 @@ public final class EntitySelfTest {
                 }
                 e.moveTo(x + 0.5, y, z + 0.5, 0, 0);
                 if (e instanceof net.minecraft.world.entity.Mob mob) {
-                    mob.finalizeSpawn(level, level.getCurrentDifficultyAt(e.blockPosition()), MobSpawnType.COMMAND, null);
+                    mob.finalizeSpawn(level, level.getCurrentDifficultyAt(e.blockPosition()), MobSpawnType.COMMAND, null, null);
                 }
                 // Save and load into a fresh entity.
                 CompoundTag tag = new CompoundTag();

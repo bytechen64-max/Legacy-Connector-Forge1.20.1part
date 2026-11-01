@@ -249,7 +249,7 @@ public final class DevCommands1710 {
             if (entity == null) continue;
             entity.moveTo(player.getX() + look.x * 4 + (i % 4) * 1.5, player.getY(), player.getZ() + look.z * 4 + (i / 4) * 1.5, player.getYRot() + 180.0F, 0.0F);
             if (entity instanceof Mob mob) mob.finalizeSpawn(player.serverLevel(), player.serverLevel().getCurrentDifficultyAt(player.blockPosition()),
-                    net.minecraft.world.entity.MobSpawnType.COMMAND, null);
+                    net.minecraft.world.entity.MobSpawnType.COMMAND, null, null);
             if (player.serverLevel().addFreshEntity(entity)) made++;
         }
         int total = made;

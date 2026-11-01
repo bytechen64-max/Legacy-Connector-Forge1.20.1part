@@ -157,7 +157,7 @@ public final class VillagerBridge {
         Villager villager = net.minecraft.world.entity.EntityType.VILLAGER.create(accessor.getLevel());
         if (villager == null) return;
         villager.moveTo(x, y, z, 0.0F, 0.0F);
-        villager.finalizeSpawn(accessor, accessor.getCurrentDifficultyAt(villager.blockPosition()), net.minecraft.world.entity.MobSpawnType.STRUCTURE, null);
+        villager.finalizeSpawn(accessor, accessor.getCurrentDifficultyAt(villager.blockPosition()), net.minecraft.world.entity.MobSpawnType.STRUCTURE, null, null);
         var p = professionOf(profession);
         if (p != null) {
             villager.setVillagerData(villager.getVillagerData().setProfession(p));

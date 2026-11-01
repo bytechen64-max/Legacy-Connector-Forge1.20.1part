@@ -164,7 +164,7 @@ public class StructureVillagePieces {
                 entity.moveTo(j + 0.5D, k, l + 0.5D, 0.0F, 0.0F);
                 if (entity instanceof net.minecraft.world.entity.Mob mob) mob.setPersistenceRequired();
                 if (access instanceof net.minecraft.world.level.ServerLevelAccessor server && entity instanceof net.minecraft.world.entity.Mob mob) {
-                    mob.finalizeSpawn(server, server.getCurrentDifficultyAt(entity.blockPosition()), net.minecraft.world.entity.MobSpawnType.STRUCTURE, null);
+                    mob.finalizeSpawn(server, server.getCurrentDifficultyAt(entity.blockPosition()), net.minecraft.world.entity.MobSpawnType.STRUCTURE, null, null);
                 }
                 access.addFreshEntity(entity);
             }
