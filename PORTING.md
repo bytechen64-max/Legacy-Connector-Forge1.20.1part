@@ -88,7 +88,7 @@ files in place, which forces a full recompile every time. A full type-check of t
 
 ## What is left
 
-284 compile errors at the last run (the count moves as javac gets further into the tree). Categories, highest value first:
+238 compile errors at the last run (the count moves as javac gets further into the tree). Categories, highest value first:
 
 1. **Item components** (~20). `DataComponents`/`CustomData`/`ItemEnchantments`/`PotionContents`/`ItemAttributeModifiers`
    are 1.20.5+; 1.20.1 has `stack.getTag()`/`getOrCreateTag()`, `EnchantmentHelper.getEnchantments`,
@@ -96,12 +96,8 @@ files in place, which forces a full recompile every time. A full type-check of t
    `net.minecraft.world.item.alchemy.PotionUtils` (mind the shim's *legacy* `PotionUtils` class of the same name).
    `MapId` is a plain `int` (`MapItem.getMapId`/`setMapId`). `ItemAbility`/`ItemAbilities` are NeoForge-only:
    1.20.1 uses `net.minecraftforge.common.ToolAction`/`ToolActions` and `Item#canPerformAction(ToolAction)`.
-3. **Recipes** (~12). `RecipeHolder` and `CraftingInput` are 1.20.2+; 1.20.1 `RecipeManager` stores `Recipe<?>` and
-   crafting gets a `CraftingContainer`. `LegacyCraftingRecipe`'s `StreamCodec` becomes a `RecipeSerializer`
-   (`fromJson`/`toNetwork`/`fromNetwork`).
-4. **Resource packs** (~12). `PackLocationInfo`/`PackSelectionConfig` are 1.20.4+; 1.20.1 uses `PackResources` +
    `PackType`/`PackSource`/`Pack.Position`.
-5. **NeoForge-only hooks** (~10): `TriState`, `InsertableLinkedOpenCustomHashSet`, `RegisterClientExtensionsEvent`,
+5. **NeoForge-only hooks** (~10): `InsertableLinkedOpenCustomHashSet`, `RegisterClientExtensionsEvent`,
    `RenderGuiLayerEvent`/`VanillaGuiLayers`. 1.20.1: `Boolean`/nullable for `TriState`, `Item#initializeClient` for
    client extensions, `RenderGuiOverlayEvent` + `overlay.VanillaGuiOverlay` for GUI layers.
 6. **Worldgen / chunk status** (~8): `net.minecraft.world.level.chunk.status.*` is 1.20.5+; 1.20.1 uses `ChunkStatus`

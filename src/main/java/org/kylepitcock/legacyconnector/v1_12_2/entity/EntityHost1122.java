@@ -46,8 +46,8 @@ public class EntityHost1122 extends net.minecraft.world.entity.Entity implements
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(DATA, new CompoundTag());
+    protected void defineSynchedData() {
+        entityData.define(DATA, new CompoundTag());
     }
 
     @Override

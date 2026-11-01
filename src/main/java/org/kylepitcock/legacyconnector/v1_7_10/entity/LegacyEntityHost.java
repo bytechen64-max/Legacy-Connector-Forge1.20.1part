@@ -46,8 +46,8 @@ public class LegacyEntityHost extends net.minecraft.world.entity.Entity implemen
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        builder.define(WATCHER, new CompoundTag());
+    protected void defineSynchedData() {
+        entityData.define(WATCHER, new CompoundTag());
     }
 
     @Override

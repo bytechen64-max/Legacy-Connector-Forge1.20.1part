@@ -40,7 +40,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.common.util.TriState;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.level.LevelEvent;
@@ -193,8 +192,8 @@ public final class EventBridge1710 {
                     p.getX(), p.getY(), p.getZ(), e.getFace() == null ? -1 : e.getFace().get3DDataValue(), World.mcc$wrap(e.getLevel()));
             forge().post(legacy);
             if (legacy.isCanceled()) e.setCanceled(true);
-            e.setUseBlock(tri(legacy.useBlock));
-            e.setUseItem(tri(legacy.useItem));
+            e.setUseBlock(useResult(legacy.useBlock));
+            e.setUseItem(useResult(legacy.useItem));
         });
         gameBus.addListener((net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickItem e) -> {
             if (!wants(forge(), PlayerInteractEvent.class)) return;
@@ -330,7 +329,7 @@ public final class EventBridge1710 {
             if (forge().post(new legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.ArrowNockEvent(player(p), stack))) e.setCanceled(true);
         });
         gameBus.addListener((net.minecraftforge.event.level.BlockEvent.BlockToolModificationEvent e) -> {
-            if (e.getItemAbility() != net.minecraftforge.common.ItemAbilities.HOE_TILL || e.isSimulated() || e.getPlayer() == null
+            if (e.getToolAction() != net.minecraftforge.common.ToolActions.HOE_TILL || e.isSimulated() || e.getPlayer() == null
                     || !(e.getLevel() instanceof net.minecraft.world.level.Level level)
                     || !wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.UseHoeEvent.class)) return;
             var p = e.getPos();
@@ -361,13 +360,13 @@ public final class EventBridge1710 {
             var legacy = new legacyconnector.v1_7_10.net.minecraftforge.event.entity.item.ItemTossEvent((EntityItem) EntityBridge.wrap(e.getEntity()), player(e.getPlayer()));
             if (forge().post(legacy)) e.setCanceled(true);
         });
-        gameBus.addListener((ItemEntityPickupEvent.Pre e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.player.EntityItemPickupEvent e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.EntityItemPickupEvent.class)) return;
             // an item entity that was merged away has an empty stack; 1.7.10 never reported those, and handlers read the stack unchecked
-            if (e.getItemEntity().getItem().isEmpty()) return;
-            var legacy = new legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.EntityItemPickupEvent(player(e.getPlayer()), (EntityItem) EntityBridge.wrap(e.getItemEntity()));
-            if (forge().post(legacy) || legacy.getResult() == Event.Result.DENY) e.setCanPickup(net.minecraftforge.common.util.TriState.FALSE);
-            else if (legacy.getResult() == Event.Result.ALLOW) e.setCanPickup(net.minecraftforge.common.util.TriState.TRUE);
+            if (e.getItem().getItem().isEmpty()) return;
+            var legacy = new legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.EntityItemPickupEvent(player(e.getEntity()), (EntityItem) EntityBridge.wrap(e.getItem()));
+            // 1.20.1 has a single pickup event whose cancellation forbids the pickup (1.20.5 added the force-pickup verdict)
+            if (forge().post(legacy) || legacy.getResult() == Event.Result.DENY) e.setCanceled(true);
         });
         gameBus.addListener((net.minecraftforge.event.AnvilUpdateEvent e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.AnvilUpdateEvent.class)) return;
@@ -947,11 +946,12 @@ public final class EventBridge1710 {
         return (EntityPlayer) EntityBridge.wrap(p);
     }
 
-    private static TriState tri(Event.Result r) {
+    /** The legacy verdict as the modern interact event's ({@code TriState} does not exist on 1.20.1}). */
+    private static net.minecraftforge.eventbus.api.Event.Result useResult(Event.Result r) {
         return switch (r) {
-            case ALLOW -> TriState.TRUE;
-            case DENY -> TriState.FALSE;
-            default -> TriState.DEFAULT;
+            case ALLOW -> net.minecraftforge.eventbus.api.Event.Result.ALLOW;
+            case DENY -> net.minecraftforge.eventbus.api.Event.Result.DENY;
+            default -> net.minecraftforge.eventbus.api.Event.Result.DEFAULT;
         };
     }
 

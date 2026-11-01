@@ -175,9 +175,10 @@ public final class EventBridge1122 {
                 : legacyconnector.v1_12_2.net.minecraft.util.EnumHand.MAIN_HAND;
     }
 
-    private static net.minecraftforge.common.util.TriState tri(Event.Result r) {
-        return r == Event.Result.ALLOW ? net.minecraftforge.common.util.TriState.TRUE
-                : r == Event.Result.DENY ? net.minecraftforge.common.util.TriState.FALSE : net.minecraftforge.common.util.TriState.DEFAULT;
+    /** The legacy verdict as the modern interact event's ({@code TriState} does not exist on 1.20.1}). */
+    private static net.minecraftforge.eventbus.api.Event.Result useResult(Event.Result r) {
+        return r == Event.Result.ALLOW ? net.minecraftforge.eventbus.api.Event.Result.ALLOW
+                : r == Event.Result.DENY ? net.minecraftforge.eventbus.api.Event.Result.DENY : net.minecraftforge.eventbus.api.Event.Result.DEFAULT;
     }
 
     private static net.minecraft.world.InteractionResult result(legacyconnector.v1_12_2.net.minecraft.util.EnumActionResult r) {
@@ -304,8 +305,8 @@ public final class EventBridge1122 {
                 e.setCancellationResult(result(event.getCancellationResult()));
                 return;
             }
-            e.setUseBlock(tri(event.getUseBlock()));
-            e.setUseItem(tri(event.getUseItem()));
+            e.setUseBlock(useResult(event.getUseBlock()));
+            e.setUseItem(useResult(event.getUseItem()));
         });
         bus.addListener((net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickItem e) -> {
             if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickItem.class)) return;
@@ -328,8 +329,8 @@ public final class EventBridge1122 {
                 e.setCanceled(true);
                 return;
             }
-            e.setUseBlock(tri(event.getUseBlock()));
-            e.setUseItem(tri(event.getUseItem()));
+            e.setUseBlock(useResult(event.getUseBlock()));
+            e.setUseItem(useResult(event.getUseItem()));
         });
         bus.addListener((net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract e) -> {
             if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract.class)) return;

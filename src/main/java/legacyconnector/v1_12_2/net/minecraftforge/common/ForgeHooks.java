@@ -357,9 +357,10 @@ public class ForgeHooks {
         return event;
     }
 
-    private static legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result mcc$result(net.minecraftforge.common.util.TriState s) {
-        return s == net.minecraftforge.common.util.TriState.TRUE ? legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW
-                : s == net.minecraftforge.common.util.TriState.FALSE ? legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.DENY
+    /** 1.20.1 has no {@code TriState}: the interact event's use-block/use-item verdict is an {@code Event.Result} on both sides. */
+    private static legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result mcc$result(net.minecraftforge.eventbus.api.Event.Result r) {
+        return r == net.minecraftforge.eventbus.api.Event.Result.ALLOW ? legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW
+                : r == net.minecraftforge.eventbus.api.Event.Result.DENY ? legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.DENY
                 : legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.DEFAULT;
     }
 

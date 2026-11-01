@@ -94,7 +94,7 @@ public final class ForgeEvents1122 {
             else if (event.getResult() == Event.Result.ALLOW) e.setSuccessful(true);
         });
         game.addListener((net.minecraftforge.event.level.BlockEvent.BlockToolModificationEvent e) -> {
-            if (e.getItemAbility() != net.minecraftforge.common.ItemAbilities.HOE_TILL || e.isSimulated()) return;
+            if (e.getToolAction() != net.minecraftforge.common.ToolActions.HOE_TILL || e.isSimulated()) return;
             EntityPlayer p = player(e.getPlayer());
             if (p == null || !(e.getLevel() instanceof net.minecraft.world.level.Level level)) return;
             var event = new UseHoeEvent(p, Stacks1122.view(e.getHeldItemStack()), WorldBridge1122.wrap(level), BlockPos.mcc$of(e.getPos()));

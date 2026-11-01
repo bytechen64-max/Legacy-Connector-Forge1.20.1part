@@ -67,9 +67,9 @@ public class MobHost1122 extends PathfinderMob implements LivingHost1122, IEntit
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(DATA, new CompoundTag());
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        entityData.define(DATA, new CompoundTag());
     }
 
     @Override

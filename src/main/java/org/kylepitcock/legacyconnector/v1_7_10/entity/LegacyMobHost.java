@@ -70,9 +70,9 @@ public class LegacyMobHost extends PathfinderMob implements LegacyLivingHost, IE
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-        super.defineSynchedData(builder);
-        builder.define(WATCHER, new CompoundTag());
+    protected void defineSynchedData() {
+        super.defineSynchedData();
+        entityData.define(WATCHER, new CompoundTag());
     }
 
     @Override

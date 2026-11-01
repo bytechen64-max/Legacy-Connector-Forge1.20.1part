@@ -128,12 +128,11 @@ public class ForgeEventFactory {
         return e != null && e.mcc$modern() instanceof net.minecraft.world.entity.LivingEntity l ? l : null;
     }
 
-    /** Fires the pickup check: -1 when a mod forbids the pickup, 1 when one forces it, 0 to pick up as usual. */
+    /** Fires the pickup check: -1 when a mod forbids the pickup, 0 to pick up as usual (1.20.1's hook cannot force it). */
     public static int onItemPickup(legacyconnector.v1_12_2.net.minecraft.entity.item.EntityItem entityItem, EntityPlayer player) {
         var p = player(player);
         if (p == null || entityItem == null || !(entityItem.mcc$modern() instanceof net.minecraft.world.entity.item.ItemEntity item)) return 0;
-        var result = EventHooks.fireItemPickupPre(item, p).canPickup();
-        return result == net.minecraftforge.common.util.TriState.FALSE ? -1 : result == net.minecraftforge.common.util.TriState.TRUE ? 1 : 0;
+        return net.minecraftforge.event.ForgeEventFactory.onItemPickup(item, p);
     }
 
     /** The extra ticks a mod gives an expiring item entity (a negative number lets it despawn). */
