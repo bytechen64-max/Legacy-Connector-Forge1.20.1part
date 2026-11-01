@@ -111,9 +111,21 @@ public final class LegacyModLocator implements IModLocator {
         return true;
     }
 
+    /**
+     * Hands FML the class files of one of our mod files: its scanner reads every path this method exposes to collect the
+     * {@code @Mod} annotations (and access transformers, coremods) of the file. A translated jar is one flat jar -- nested jars
+     * are 1.20.5+ -- so its own class entries are all there is. Without this the runtime jar and every translated jar scan as
+     * empty, and FML stops with "constructed 0 mods: [], but had 1 mods specified".
+     */
     @Override
     public void scanFile(IModFile modFile, java.util.function.Consumer<Path> pathConsumer) {
-        // nothing nested to expose: translated jars are flat mod jars
+        try (Stream<Path> paths = Files.walk(modFile.getSecureJar().getRootPath())) {
+            paths.filter(p -> p.getFileName() != null && p.getFileName().toString().endsWith(".class")).forEach(pathConsumer);
+        } catch (IOException | RuntimeException e) {
+            LOG.error("Legacy Connector: cannot scan the classes of {}", modFile.getFilePath(), e);
+        }
+        // the jars the loader writes are generated, not signed
+        modFile.setSecurityStatus(SecureJar.Status.NONE);
     }
 
     @Override

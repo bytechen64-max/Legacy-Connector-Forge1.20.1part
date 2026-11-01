@@ -90,13 +90,20 @@ public final class CapabilityRules implements LegacyCapabilities {
         addons.rules.forEach((cap, list) -> RULES.computeIfAbsent(cap, c -> new ArrayList<>()).addAll(list));
         registrar.rules.forEach((cap, list) -> RULES.computeIfAbsent(cap, c -> new ArrayList<>()).addAll(list));
         // The capability interfaces must exist before a provider can be asked for them. Forge registers its own interfaces (item
-        // handlers, fluid handlers, energy) itself, before the mods are asked, so those are already there.
+        // handlers, fluid handlers, energy) itself before the mods are asked; registering one of those again logs an error and
+        // throws, so they are skipped (the try/catch stays for a capability another mod registered first).
         for (Class<?> capability : RULES.keySet()) {
+            if (capability == net.minecraftforge.items.IItemHandler.class
+                    || capability == net.minecraftforge.fluids.capability.IFluidHandler.class
+                    || capability == net.minecraftforge.fluids.capability.IFluidHandlerItem.class
+                    || capability == net.minecraftforge.energy.IEnergyStorage.class) {
+                continue;
+            }
             try {
                 event.register((Class) capability);
             } catch (IllegalArgumentException alreadyRegistered) {
                 org.slf4j.LoggerFactory.getLogger("LegacyConnector/Capabilities")
-                        .debug("Capability {} is registered by Forge already", capability.getName());
+                        .debug("Capability {} is registered already", capability.getName());
             }
         }
         MinecraftForge.EVENT_BUS.addGenericListener(BlockEntity.class, CapabilityRules::attach);
