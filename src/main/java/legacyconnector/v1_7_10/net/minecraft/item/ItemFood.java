@@ -17,7 +17,8 @@ public class ItemFood extends Item {
     public ItemFood(org.kylepitcock.legacyconnector.v1_7_10.bridge.VanillaInfo info) {
         super(info);
         net.minecraft.world.item.Item modern = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(net.minecraft.resources.ResourceLocation.parse(info.legacyName()));
-        net.minecraft.world.food.FoodProperties food = modern == null ? null : modern.components().get(net.minecraft.core.component.DataComponents.FOOD);
+        // 1.20.1 asks the item for its food properties (the FOOD data component is 1.20.5).
+        net.minecraft.world.food.FoodProperties food = modern == null ? null : modern.getFoodProperties();
         this.itemUseDuration = 32;
         this.healAmount = food == null ? 0 : food.nutrition();
         this.saturationModifier = food == null || food.nutrition() <= 0 ? 0.6F : food.saturation() / (2.0F * food.nutrition());

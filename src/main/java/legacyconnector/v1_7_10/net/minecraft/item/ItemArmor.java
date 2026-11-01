@@ -139,7 +139,11 @@ public class ItemArmor extends legacyconnector.v1_7_10.net.minecraft.item.Item {
     /** Whether a leather (cloth) armor stack was dyed. */
     public boolean hasColor(ItemStack stack) {
         if (material != ArmorMaterial.CLOTH || stack == null) return false;
-        if (mcc$vanilla != null) return ItemStack.mcc$toModern(stack).has(net.minecraft.core.component.DataComponents.DYED_COLOR);
+        if (mcc$vanilla != null) {
+            // 1.20.1 keeps the dye in display.color (the DYED_COLOR component is 1.20.5).
+            var t = ItemStack.mcc$toModern(stack).getTag();
+            return t != null && t.contains("display", 10) && t.getCompound("display").contains("color", 3);
+        }
         legacyconnector.v1_7_10.net.minecraft.nbt.NBTTagCompound tag = stack.getTagCompound();
         return tag != null && tag.hasKey("display", 10) && tag.getCompoundTag("display").hasKey("color", 3);
     }
