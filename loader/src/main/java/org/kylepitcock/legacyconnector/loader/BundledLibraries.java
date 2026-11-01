@@ -58,6 +58,9 @@ final class BundledLibraries {
             new Group("trove", "trove4j", List.of("trove4j-"), List.of("gnu/trove/"), false, true),
             // The 1.12.2 shim itself is written against vecmath.
             new Group("vecmath", "vecmath", List.of("vecmath-"), List.of("javax/vecmath/"), true, true),
+            // ASM was on the legacy game class path: coremods and mods that generate classes at run time reference it
+            new Group("asm", "ASM", List.of("asm-", "asm-tree-", "asm-commons-", "asm-analysis-", "asm-util-"),
+                    List.of("org/objectweb/asm/"), false, true),
             new Group("activation", "javax.activation", List.of("jakarta.activation-"), List.of("javax/activation/"), false, true));
 
     /** What was decided, for the log and the report. */

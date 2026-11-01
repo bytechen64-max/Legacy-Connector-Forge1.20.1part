@@ -653,4 +653,272 @@ public class GL11 extends GL11Guard {
             glEnd();
         }
     };
+
+    // ------------------------------------------------------------------------------------------------------------------------
+    // State and queries that exist in a core profile too: the fixed-function parts of GL11 are emulated above, the rest goes
+    // straight to the real call (the shim used to leave these to the synthesized defaults, so glClearColor, glViewport,
+    // glScissor, the stencil calls and the texture parameters of a legacy renderer did nothing at all).
+    // ------------------------------------------------------------------------------------------------------------------------
+
+    private static void run(Runnable action) {
+        if (DisplayLists.recording() && DisplayLists.record(action)) return;
+        if (!RenderSystem.isOnRenderThread()) return;
+        action.run();
+    }
+
+    public static void glClearColor(float r, float g, float b, float a) {
+        run(() -> GL11Guard.glClearColor(r, g, b, a));
+    }
+
+    public static void glClearDepth(double depth) {
+        run(() -> GL11Guard.glClearDepth(depth));
+    }
+
+    public static void glClearStencil(int stencil) {
+        run(() -> GL11Guard.glClearStencil(stencil));
+    }
+
+    public static void glClearAccum(float r, float g, float b, float a) {
+        run(() -> GL11Guard.glClearAccum(r, g, b, a));
+    }
+
+    public static void glLineWidth(float width) {
+        run(() -> GL11Guard.glLineWidth(width));
+    }
+
+    public static void glPointSize(float size) {
+        run(() -> GL11Guard.glPointSize(size));
+    }
+
+    public static void glLineStipple(int factor, short pattern) {
+        // line stipple has no core-profile equivalent
+    }
+
+    public static void glPolygonOffset(float factor, float units) {
+        run(() -> GL11Guard.glPolygonOffset(factor, units));
+    }
+
+    public static void glHint(int target, int mode) {
+        run(() -> GL11Guard.glHint(target, mode));
+    }
+
+    public static void glCullFace(int mode) {
+        run(() -> GL11Guard.glCullFace(mode));
+    }
+
+    public static void glFrontFace(int mode) {
+        run(() -> GL11Guard.glFrontFace(mode));
+    }
+
+    public static void glViewport(int x, int y, int width, int height) {
+        run(() -> GL11Guard.glViewport(x, y, width, height));
+    }
+
+    public static void glScissor(int x, int y, int width, int height) {
+        run(() -> GL11Guard.glScissor(x, y, width, height));
+    }
+
+    public static void glDepthRange(double near, double far) {
+        run(() -> GL11Guard.glDepthRange(near, far));
+    }
+
+    public static void glStencilFunc(int func, int ref, int mask) {
+        run(() -> GL11Guard.glStencilFunc(func, ref, mask));
+    }
+
+    public static void glStencilMask(int mask) {
+        run(() -> GL11Guard.glStencilMask(mask));
+    }
+
+    public static void glStencilOp(int fail, int passDepthFail, int passDepthPass) {
+        run(() -> GL11Guard.glStencilOp(fail, passDepthFail, passDepthPass));
+    }
+
+    public static void glLogicOp(int opcode) {
+        run(() -> GL11Guard.glLogicOp(opcode));
+    }
+
+    public static void glDrawBuffer(int buffer) {
+        run(() -> GL11Guard.glDrawBuffer(buffer));
+    }
+
+    public static void glReadBuffer(int buffer) {
+        run(() -> GL11Guard.glReadBuffer(buffer));
+    }
+
+    public static void glPixelStorei(int pname, int param) {
+        run(() -> GL11Guard.glPixelStorei(pname, param));
+    }
+
+    public static void glPixelStoref(int pname, float param) {
+        run(() -> GL11Guard.glPixelStoref(pname, param));
+    }
+
+    public static void glPixelZoom(float x, float y) {
+        // a raster operation: nothing to draw in a core profile
+    }
+
+    public static void glTexParameteri(int target, int pname, int param) {
+        run(() -> GL11Guard.glTexParameteri(target, pname, param));
+    }
+
+    public static void glTexParameterf(int target, int pname, float param) {
+        run(() -> GL11Guard.glTexParameterf(target, pname, param));
+    }
+
+    public static int glGenTextures() {
+        return GL11Guard.glGenTextures();
+    }
+
+    public static void glGenTextures(java.nio.IntBuffer textures) {
+        GL11Guard.glGenTextures(textures);
+    }
+
+    public static void glGenTextures(int[] textures) {
+        for (int i = 0; i < textures.length; i++) textures[i] = GL11Guard.glGenTextures();
+    }
+
+    public static void glDeleteTextures(java.nio.IntBuffer textures) {
+        GL11Guard.glDeleteTextures(textures);
+    }
+
+    public static void glDeleteTextures(int[] textures) {
+        for (int texture : textures) GL11Guard.glDeleteTextures(texture);
+    }
+
+    public static void glDeleteTextures(int texture) {
+        GL11Guard.glDeleteTextures(texture);
+    }
+
+    public static void glFinish() {
+        run(GL11Guard::glFinish);
+    }
+
+    public static void glFlush() {
+        run(GL11Guard::glFlush);
+    }
+
+    public static int glGetError() {
+        return GL11Guard.glGetError();
+    }
+
+    public static String glGetString(int name) {
+        return GL11Guard.glGetString(name);
+    }
+
+    public static void glColorMaterial(int face, int mode) {
+        // lighting state; the emulated colour is used as-is
+    }
+
+    public static void glLightModeli(int pname, int param) {
+        // fixed-function lighting: emulated colour comes from glColor
+    }
+
+    public static void glLightModelf(int pname, float param) {
+    }
+
+    public static void glLightf(int light, int pname, float param) {
+    }
+
+    public static void glLighti(int light, int pname, int param) {
+    }
+
+    public static void glMaterialf(int face, int pname, float param) {
+    }
+
+    public static void glMateriali(int face, int pname, int param) {
+    }
+
+    public static void glTexEnvi(int target, int pname, int param) {
+        run(() -> GL11Guard.glTexEnvi(target, pname, param));
+    }
+
+    public static void glTexEnvf(int target, int pname, float param) {
+        run(() -> GL11Guard.glTexEnvf(target, pname, param));
+    }
+
+    public static void glRasterPos2f(float x, float y) {
+        // raster position is gone; 2D mods that set it before glDrawPixels draw nothing either way
+    }
+
+    public static void glRasterPos2d(double x, double y) {
+    }
+
+    public static void glRasterPos3f(float x, float y, float z) {
+    }
+
+    public static void glArrayElement(int index) {
+        // client-array draws are emulated by ClientArrays, which reads the arrays directly
+    }
+
+    public static void glPushClientAttrib(int mask) {
+    }
+
+    public static void glPopClientAttrib() {
+    }
+
+    public static void glCopyTexImage2D(int target, int level, int internalFormat, int x, int y, int width, int height, int border) {
+        run(() -> GL11Guard.glCopyTexImage2D(target, level, internalFormat, x, y, width, height, border));
+    }
+
+    public static void glCopyTexSubImage2D(int target, int level, int xOffset, int yOffset, int x, int y, int width, int height) {
+        run(() -> GL11Guard.glCopyTexSubImage2D(target, level, xOffset, yOffset, x, y, width, height));
+    }
+
+    public static void glTexImage1D(int target, int level, int internalFormat, int width, int border, int format, int type, java.nio.ByteBuffer pixels) {
+        // 1D textures are not sampled by the modern pipeline
+    }
+
+    public static void glTexSubImage1D(int target, int level, int xOffset, int width, int format, int type, java.nio.ByteBuffer pixels) {
+    }
+
+    public static void glVertex4f(float x, float y, float z, float w) {
+        if (DisplayLists.recording() && DisplayLists.record(() -> glVertex4f(x, y, z, w))) return;
+        RenderContext.immediate().vertex(x, y, z);
+    }
+
+    public static void glVertex4d(double x, double y, double z, double w) {
+        glVertex4f((float) x, (float) y, (float) z, (float) w);
+    }
+
+    public static void glVertex2d(double x, double y) {
+        glVertex2f((float) x, (float) y);
+    }
+
+    public static void glNormal3b(byte x, byte y, byte z) {
+        glNormal3f(x / 127.0F, y / 127.0F, z / 127.0F);
+    }
+
+    public static void glNormal3d(double x, double y, double z) {
+        glNormal3f((float) x, (float) y, (float) z);
+    }
+
+    public static void glTexCoord1f(float s) {
+        glTexCoord2f(s, 0.0F);
+    }
+
+    public static void glTexCoord2i(int s, int t) {
+        glTexCoord2f(s, t);
+    }
+
+    public static void glTexCoord3f(float s, float t, float r) {
+        glTexCoord2f(s, t);
+    }
+
+    public static void glTexCoord4f(float s, float t, float r, float q) {
+        glTexCoord2f(s, t);
+    }
+
+    public static void glRectf(float x1, float y1, float x2, float y2) {
+        glBegin(7); // GL_QUADS
+        glVertex2f(x1, y1);
+        glVertex2f(x2, y1);
+        glVertex2f(x2, y2);
+        glVertex2f(x1, y2);
+        glEnd();
+    }
+
+    public static void glRecti(int x1, int y1, int x2, int y2) {
+        glRectf(x1, y1, x2, y2);
+    }
 }
