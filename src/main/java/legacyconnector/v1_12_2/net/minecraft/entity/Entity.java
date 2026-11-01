@@ -808,7 +808,7 @@ public abstract class Entity implements legacyconnector.v1_12_2.net.minecraft.co
     public static void mcc$set$entityUniqueID(Entity e, java.util.UUID v) {
         if (v == null) return;
         var m = e.mcc$entity;
-        if (m != null && !m.isAddedToLevel()) m.setUUID(v);
+        if (m != null && !m.isAddedToWorld()) m.setUUID(v);
         e.mcc$local_entityUniqueID = v;
     }
 
@@ -976,7 +976,7 @@ public abstract class Entity implements legacyconnector.v1_12_2.net.minecraft.co
     /** Mods number client-side entities they build from their own packets; the id of an entity already in a level is left alone. */
     public void setEntityId(int id) {
         if (mcc$entity == null) mcc$localId = id;
-        else if (!mcc$entity.isAddedToLevel()) mcc$entity.setId(id);
+        else if (!mcc$entity.isAddedToWorld()) mcc$entity.setId(id);
     }
 
     public java.util.UUID getUniqueID() {
@@ -2171,7 +2171,7 @@ public abstract class Entity implements legacyconnector.v1_12_2.net.minecraft.co
     }
 
     public boolean isAddedToWorld() {
-        return mcc$entity != null && mcc$entity.isAddedToLevel();
+        return mcc$entity != null && mcc$entity.isAddedToWorld();
     }
 
     /** Takes {@code passenger} off this entity. */

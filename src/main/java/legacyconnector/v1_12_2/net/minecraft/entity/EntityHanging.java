@@ -59,7 +59,7 @@ public abstract class EntityHanging extends Entity {
     /** Moves an entity a mod made (not yet in the world) through its saved data: position and facing of the modern hanging entity. */
     protected final void mcc$placeModern(BlockPos pos, EnumFacing facing) {
         var h = mcc$hanging();
-        if (h == null || h.isAddedToLevel() || pos == null || facing == null) return;
+        if (h == null || h.isAddedToWorld() || pos == null || facing == null) return;
         var tag = new net.minecraft.nbt.CompoundTag();
         h.saveWithoutId(tag);
         tag.putInt("TileX", pos.getX());

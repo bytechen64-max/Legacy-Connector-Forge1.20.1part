@@ -340,11 +340,10 @@ final class ItemCallbacks1122 {
     }
 
     /** The legacy tooltip lines (addInformation; a block item asks its block), added as text (section-sign formatting kept). */
-    void appendHoverText(net.minecraft.world.item.ItemStack stack, net.minecraft.world.item.Item.TooltipContext context,
+    void appendHoverText(net.minecraft.world.item.ItemStack stack, Level level,
             java.util.List<net.minecraft.network.chat.Component> lines, net.minecraft.world.item.TooltipFlag flag) {
         try {
             java.util.List<String> out = new java.util.ArrayList<>();
-            Level level = context == null ? null : context.level();
             legacy.addInformation(Stacks1122.fromModern(stack), level == null ? null : world(level), out,
                     legacyconnector.v1_12_2.net.minecraft.client.util.ITooltipFlag.mcc$of(flag != null && flag.isAdvanced()));
             for (String s : out) if (s != null) lines.add(net.minecraft.network.chat.Component.literal(s));

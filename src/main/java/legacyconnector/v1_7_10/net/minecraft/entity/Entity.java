@@ -587,7 +587,7 @@ public abstract class Entity implements ICommandSender {
     /** Whether the entity is in its world (JourneyMap maps only while the player is: the declared field stayed false). */
     public static boolean mcc$get$addedToChunk(Entity e) {
         var m = e.mcc$entity;
-        return m != null ? m.isAddedToLevel() && !m.isRemoved() : e.mcc$local_addedToChunk;
+        return m != null ? m.isAddedToWorld() && !m.isRemoved() : e.mcc$local_addedToChunk;
     }
 
     /** Chunk bookkeeping of the legacy world: the modern entity keeps its own. */
@@ -930,7 +930,7 @@ public abstract class Entity implements ICommandSender {
      */
     public void setEntityId(int id) {
         if (mcc$entity == null) mcc$localId = id;
-        else if (!mcc$entity.isAddedToLevel()) mcc$entity.setId(id);
+        else if (!mcc$entity.isAddedToWorld()) mcc$entity.setId(id);
     }
 
     /** Forge: the id that persists across sessions (the player's profile id). */

@@ -273,7 +273,7 @@ public abstract class EntityPlayer extends EntityLivingBase {
             return;
         }
         var copy = using.copy();
-        var result = net.minecraftforge.event.EventHooks.onItemUseFinish(p, copy, p.getUseItemRemainingTicks(), using.finishUsingItem(p.level(), p));
+        var result = net.minecraftforge.event.ForgeEventFactory.onItemUseFinish(p, copy, p.getUseItemRemainingTicks(), using.finishUsingItem(p.level(), p));
         if (result != using) p.setItemInHand(hand, result);
         p.stopUsingItem();
     }

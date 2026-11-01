@@ -16,7 +16,7 @@ public final class LegacyToasts {
 
     public static void achievement(String name) {
         Minecraft mc = Minecraft.getInstance();
-        mc.execute(() -> SystemToast.add(mc.getToasts(), SystemToast.SystemToastId.PERIODIC_NOTIFICATION,
+        mc.execute(() -> SystemToast.add(mc.getToasts(), SystemToast.SystemToastIds.PERIODIC_NOTIFICATION,
                 Component.literal("Achievement get!"), Component.literal(name)));
     }
 }

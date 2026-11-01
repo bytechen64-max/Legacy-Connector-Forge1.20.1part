@@ -7,7 +7,7 @@ import legacyconnector.v1_7_10.net.minecraft.util.MathHelper;
 import legacyconnector.v1_7_10.net.minecraft.world.World;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.entity.decoration.BlockAttachedEntity;
+import net.minecraft.world.entity.decoration.HangingEntity;
 import net.minecraft.world.entity.decoration.HangingEntity;
 
 /**
@@ -52,20 +52,20 @@ public abstract class EntityHanging extends Entity {
     }
 
     /** View of a modern painting, item frame or leash knot. */
-    protected EntityHanging(BlockAttachedEntity modern) {
+    protected EntityHanging(HangingEntity modern) {
         super(modern);
     }
 
     // ------------------------------------------------------------------ the modern entity this may be a view of
 
     /** The modern entity when this is a view of one (not for a mod's hanging entity, which a host runs). */
-    protected final BlockAttachedEntity mcc$attached() {
-        return mcc$entity instanceof BlockAttachedEntity a && !mcc$hosted() ? a : null;
+    protected final HangingEntity mcc$attached() {
+        return mcc$entity instanceof HangingEntity a && !mcc$hosted() ? a : null;
     }
 
     /** The legacy block of a view: the modern entity's block, behind it for a painting or frame. */
     private BlockPos mcc$modernTile() {
-        BlockAttachedEntity a = mcc$attached();
+        HangingEntity a = mcc$attached();
         if (a == null || a.getPos() == null) return null;
         return a instanceof HangingEntity h ? a.getPos().relative(h.getDirection().getOpposite()) : a.getPos();
     }
@@ -82,7 +82,7 @@ public abstract class EntityHanging extends Entity {
 
     /** Moves and turns a view's modern entity to the local block and facing. */
     private void mcc$pushToModern() {
-        BlockAttachedEntity a = mcc$attached();
+        HangingEntity a = mcc$attached();
         if (a == null) return;
         BlockPos tile = new BlockPos(mcc$local_field_146063_b, mcc$local_field_146064_c, mcc$local_field_146062_d);
         if (a instanceof HangingEntity h) {
@@ -212,7 +212,7 @@ public abstract class EntityHanging extends Entity {
      * answers with the modern survival check).
      */
     public boolean onValidSurface() {
-        BlockAttachedEntity a = mcc$attached();
+        HangingEntity a = mcc$attached();
         if (a != null) {
             // a world generator placing a frame (Immersive Engineering's village house) runs on a generation thread: the modern
             // check reads the real level, which waits for the server thread while it waits for this generation (server hang)

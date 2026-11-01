@@ -14,11 +14,11 @@ public class DefaultPlayerSkin {
     }
 
     public static ResourceLocation getDefaultSkin(UUID id) {
-        return legacy(net.minecraft.client.resources.DefaultPlayerSkin.get(id).texture());
+        return legacy(net.minecraft.client.resources.DefaultPlayerSkin.getDefaultSkin(id));
     }
 
     /** "slim" or "default". */
     public static String getSkinType(UUID id) {
-        return net.minecraft.client.resources.DefaultPlayerSkin.get(id).model() == net.minecraft.client.resources.PlayerSkin.Model.SLIM ? "slim" : "default";
+        return net.minecraft.client.resources.DefaultPlayerSkin.getSkinModelName(id);
     }
 }

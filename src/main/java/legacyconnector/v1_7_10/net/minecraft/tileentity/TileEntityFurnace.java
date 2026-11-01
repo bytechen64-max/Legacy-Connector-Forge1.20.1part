@@ -96,7 +96,7 @@ public class TileEntityFurnace extends TileEntity implements ISidedInventory {
         // The modern table is a data map, which is empty while mods load; mods read burn times then (to scale their own
         // recipes), so fall back to the 1.7.10 table.
         if (time <= 0) time = vanillaBurnTime(modern);
-        return Math.max(0, net.minecraftforge.event.EventHooks.getItemBurnTime(modern, time, RecipeType.SMELTING));
+        return Math.max(0, net.minecraftforge.event.ForgeEventFactory.getItemBurnTime(modern, time, RecipeType.SMELTING));
     }
 
     /** The fuel values of the 1.7.10 {@code TileEntityFurnace.getItemBurnTime}. */

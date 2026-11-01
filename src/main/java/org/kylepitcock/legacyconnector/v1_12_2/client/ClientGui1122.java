@@ -158,8 +158,8 @@ public final class ClientGui1122 {
         var mc = Minecraft.getInstance();
         var modern = org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.toModern(stack);
         var flag = mc.options.advancedItemTooltips ? net.minecraft.world.item.TooltipFlag.Default.ADVANCED : net.minecraft.world.item.TooltipFlag.Default.NORMAL;
-        var context = mc.level == null ? net.minecraft.world.item.Item.TooltipContext.EMPTY : net.minecraft.world.item.Item.TooltipContext.of(mc.level);
-        for (var line : modern.getTooltipLines(context, mc.player, flag)) out.add(legacyText(line));
+        // 1.20.5 passes a TooltipContext; 1.20.1 derives it from the player.
+        for (var line : modern.getTooltipLines(mc.player, flag)) out.add(legacyText(line));
         return out;
     }
 

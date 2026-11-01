@@ -179,7 +179,7 @@ public final class WorldScreenshotTest {
 
     private static Action debug(boolean on) {
         return mc -> {
-            mc.getDebugOverlay().toggleOverlay();
+            mc.options.renderDebug = !mc.options.renderDebug;
             return true;
         };
     }

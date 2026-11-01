@@ -51,7 +51,7 @@ public class SkinManager {
             java.nio.file.Path root = mc().gameDirectory.toPath().resolve("assets").resolve("skins");
             java.io.File file = root.resolve(sha.length() > 2 ? sha.substring(0, 2) : "xx").resolve(sha).toFile();
             manager.register(modern, new net.minecraft.client.renderer.texture.HttpTexture(file, texture.getUrl(),
-                    net.minecraft.client.resources.DefaultPlayerSkin.getDefaultTexture(), type == MinecraftProfileTexture.Type.SKIN, () -> {
+                    net.minecraft.client.resources.DefaultPlayerSkin.getDefaultSkin(), type == MinecraftProfileTexture.Type.SKIN, () -> {
                         if (callback != null) callback.skinAvailable(type, legacy, texture);
                     }));
         };

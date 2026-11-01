@@ -68,7 +68,7 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData {
             net.minecraft.nbt.NbtIo.writeCompressed(tag, tmp);
             net.minecraft.Util.safeReplaceFile(dir.toPath().resolve(modern.getStringUUID() + ".dat"), tmp,
                     dir.toPath().resolve(modern.getStringUUID() + ".dat_old"));
-            net.minecraftforge.event.EventHooks.firePlayerSavingEvent(modern, dir, modern.getStringUUID());
+            net.minecraftforge.event.ForgeEventFactory.firePlayerSavingEvent(modern, dir, modern.getStringUUID());
         } catch (Exception e) {
             org.slf4j.LoggerFactory.getLogger("LegacyConnector/SaveHandler").warn("Failed to save player data for {}", modern.getName().getString());
         }
@@ -93,7 +93,7 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData {
                             net.minecraft.nbt.NbtUtils.getDataVersion(tag, -1));
                 }
                 modern.load(tag);
-                net.minecraftforge.event.EventHooks.firePlayerLoadingEvent(modern, dir, modern.getStringUUID());
+                net.minecraftforge.event.ForgeEventFactory.firePlayerLoadingEvent(modern, dir, modern.getStringUUID());
                 return new NBTTagCompound(tag);
             } catch (Exception e) {
                 org.slf4j.LoggerFactory.getLogger("LegacyConnector/SaveHandler").warn("Failed to load player data for {}", modern.getName().getString());

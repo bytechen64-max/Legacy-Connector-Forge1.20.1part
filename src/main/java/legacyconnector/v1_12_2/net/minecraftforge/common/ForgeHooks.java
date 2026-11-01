@@ -198,7 +198,7 @@ public class ForgeHooks {
         if (level == null || p == null || pos == null) return true;
         var mp = pos(pos);
         var state = level.getBlockState(mp);
-        return net.minecraftforge.event.EventHooks.doPlayerHarvestCheck(p, state, level, mp);
+        return net.minecraftforge.event.ForgeEventFactory.doPlayerHarvestCheck(p, state, level, mp);
     }
 
     /** Whether the stack is a tool that breaks the block at {@code pos} faster (its tool type matches). */

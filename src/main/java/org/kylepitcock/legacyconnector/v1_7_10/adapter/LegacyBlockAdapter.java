@@ -18,7 +18,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -401,11 +401,12 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
     // ------------------------------------------------------------------ interaction
 
     @Override
-    protected ItemInteractionResult useItemOn(net.minecraft.world.item.ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
+    // 1.20.5 split this into useItemOn (item first); 1.20.1 has the single Block#use.
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
                                               InteractionHand hand, BlockHitResult hit) {
-        if (hand != InteractionHand.MAIN_HAND) return ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
-        return activate(level, pos, player, hit) ? ItemInteractionResult.sidedSuccess(level.isClientSide)
-                : ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+        if (hand != InteractionHand.MAIN_HAND) return InteractionResult.FAIL;
+        return activate(level, pos, player, hit) ? InteractionResult.sidedSuccess(level.isClientSide)
+                : InteractionResult.FAIL;
     }
 
     @Override

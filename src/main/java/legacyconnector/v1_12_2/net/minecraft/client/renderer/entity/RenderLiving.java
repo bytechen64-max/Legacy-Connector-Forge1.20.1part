@@ -59,7 +59,7 @@ public abstract class RenderLiving<T extends EntityLiving> extends RenderLivingB
         double cos = Math.cos(holderYaw);
         double sin = Math.sin(holderYaw);
         double pitchSin = Math.sin(holderPitch);
-        if (holder.mcc$entity instanceof net.minecraft.world.entity.decoration.BlockAttachedEntity) {
+        if (holder.mcc$entity instanceof net.minecraft.world.entity.decoration.HangingEntity) {
             cos = 0.0D;
             sin = 0.0D;
             pitchSin = -1.0D;

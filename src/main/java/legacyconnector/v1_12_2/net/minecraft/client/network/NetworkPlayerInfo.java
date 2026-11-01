@@ -55,7 +55,7 @@ public class NetworkPlayerInfo {
     }
 
     private synchronized void refreshTextures() {
-        var skin = mcc$modern().getSkin();
+        var skin = mcc$modern().getSkinLocation();
         refresh(MinecraftProfileTexture.Type.SKIN, skin.textureUrl() == null ? null : legacy(skin.texture()));
         refresh(MinecraftProfileTexture.Type.CAPE, legacy(skin.capeTexture()));
         refresh(MinecraftProfileTexture.Type.ELYTRA, legacy(skin.elytraTexture()));
@@ -96,13 +96,13 @@ public class NetworkPlayerInfo {
 
     /** "slim" or "default" (the arm width of the skin's model). */
     public String getSkinType() {
-        return mcc$modern().getSkin().model() == net.minecraft.client.resources.PlayerSkin.Model.SLIM ? "slim" : "default";
+        return mcc$modern().getModelName();
     }
 
     /** The player's skin (the default skin for its UUID while it downloads or when there is none). */
     public ResourceLocation getLocationSkin() {
         ResourceLocation skin = mcc$get$playerTextures(this).get(MinecraftProfileTexture.Type.SKIN);
-        return skin != null ? skin : legacy(mcc$modern().getSkin().texture());
+        return skin != null ? skin : legacy(mcc$modern().getSkinLocation());
     }
 
     public ResourceLocation getLocationCape() {

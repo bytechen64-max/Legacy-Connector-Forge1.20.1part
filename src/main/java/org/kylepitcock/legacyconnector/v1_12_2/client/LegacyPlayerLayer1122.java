@@ -104,7 +104,8 @@ public class LegacyPlayerLayer1122 extends RenderLayer<AbstractClientPlayer, Pla
         for (var skin : event.getSkins()) {
             var r = event.getSkin(skin);
             if (r instanceof net.minecraft.client.renderer.entity.player.PlayerRenderer player) {
-                player.addLayer(new LegacyPlayerLayer1122(player, skin == net.minecraft.client.resources.PlayerSkin.Model.SLIM));
+                // 1.20.1's AddLayers names the skin model ("default"/"slim"); 1.20.5 passes a PlayerSkin.Model.
+                player.addLayer(new LegacyPlayerLayer1122(player, "slim".equals(skin)));
             }
         }
     }

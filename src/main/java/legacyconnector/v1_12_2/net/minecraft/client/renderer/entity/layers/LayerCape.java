@@ -17,7 +17,7 @@ public class LayerCape implements LayerRenderer<AbstractClientPlayer> {
     @Override
     public void doRenderLayer(AbstractClientPlayer entitylivingbaseIn, float limbSwing, float limbSwingAmount, float partialTicks, float ageInTicks, float netHeadYaw, float headPitch, float scale) {
         if (entitylivingbaseIn.isInvisible() || !(entitylivingbaseIn.mcc$entity instanceof net.minecraft.client.player.AbstractClientPlayer player)) return;
-        var cape = player.getSkin().capeTexture();
+        var cape = player.getCloakTextureLocation();
         if (cape == null || !player.isModelPartShown(net.minecraft.world.entity.player.PlayerModelPart.CAPE)) return;
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
         playerRenderer.bindTexture(new ResourceLocation(cape.getNamespace(), cape.getPath()));

@@ -205,7 +205,8 @@ public class GameSettings {
     public static boolean mcc$get$showDebugInfo(GameSettings s) {
         try {
             var mc = mc();
-            return mc.getDebugOverlay().showDebugScreen();
+            // 1.20.2 moved the debug overlay behind Minecraft.getDebugOverlay(); 1.20.1 keeps plain options.
+        return mc.options.renderDebug;
         } catch (RuntimeException | LinkageError e) {
             return false;
         }
@@ -784,7 +785,7 @@ public class GameSettings {
 
     public static boolean mcc$get$showDebugProfilerChart(GameSettings s) {
         try {
-            return mc().getDebugOverlay().showProfilerChart();
+            return mc().options.renderDebugCharts;
         } catch (RuntimeException | LinkageError e) {
             return false;
         }
@@ -792,7 +793,7 @@ public class GameSettings {
 
     public static boolean mcc$get$showLagometer(GameSettings s) {
         try {
-            return mc().getDebugOverlay().showFpsCharts();
+            return mc().options.renderDebugCharts;
         } catch (RuntimeException | LinkageError e) {
             return false;
         }

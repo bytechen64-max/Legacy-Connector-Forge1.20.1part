@@ -26,14 +26,14 @@ public abstract class AbstractClientPlayer extends legacyconnector.v1_12_2.net.m
 
     /** "slim" for the thin-armed skin model, "default" otherwise (the key of RenderManager.getSkinMap()). */
     public String getSkinType() {
-        return mcc$player() instanceof net.minecraft.client.player.AbstractClientPlayer p && p.getSkin().model() == net.minecraft.client.resources.PlayerSkin.Model.SLIM
+        return mcc$player() instanceof net.minecraft.client.player.AbstractClientPlayer p && "slim".equals(p.getModelName())
                 ? "slim" : "default";
     }
 
     /** The skin texture (the modern skin manager's, a downloaded or default skin). */
     public legacyconnector.v1_12_2.net.minecraft.util.ResourceLocation getLocationSkin() {
         net.minecraft.resources.ResourceLocation skin = mcc$player() instanceof net.minecraft.client.player.AbstractClientPlayer p
-                ? p.getSkin().texture() : net.minecraft.client.resources.DefaultPlayerSkin.getDefaultTexture();
+                ? p.getSkinTextureLocation() : net.minecraft.client.resources.DefaultPlayerSkin.getDefaultSkin();
         return new legacyconnector.v1_12_2.net.minecraft.util.ResourceLocation(skin.getNamespace(), skin.getPath());
     }
 

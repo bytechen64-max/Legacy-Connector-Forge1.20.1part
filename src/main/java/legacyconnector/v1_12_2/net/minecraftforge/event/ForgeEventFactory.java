@@ -11,7 +11,6 @@ import legacyconnector.v1_12_2.net.minecraft.util.EnumActionResult;
 import legacyconnector.v1_12_2.net.minecraft.util.EnumHand;
 import legacyconnector.v1_12_2.net.minecraft.util.math.BlockPos;
 import legacyconnector.v1_12_2.net.minecraft.world.World;
-import net.minecraftforge.event.EventHooks;
 import org.kylepitcock.legacyconnector.v1_12_2.bridge.StatesBridge1122;
 import org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122;
 
@@ -46,68 +45,68 @@ public class ForgeEventFactory {
     public static boolean getMobGriefingEvent(World world, Entity entity) {
         var level = world == null ? null : world.mcc$level();
         if (level == null) return true;
-        return EventHooks.canEntityGrief(level, entity == null ? null : entity.mcc$modern());
+        return net.minecraftforge.event.ForgeEventFactory.canEntityGrief(level, entity == null ? null : entity.mcc$modern());
     }
 
     public static int onArrowLoose(ItemStack stack, World world, EntityPlayer player, int charge, boolean hasAmmo) {
         var p = player(player);
         if (p == null || world == null) return charge;
-        return EventHooks.onArrowLoose(Stacks1122.toModern(stack), world.mcc$level(), p, charge, hasAmmo);
+        return net.minecraftforge.event.ForgeEventFactory.onArrowLoose(Stacks1122.toModern(stack), world.mcc$level(), p, charge, hasAmmo);
     }
 
     /** Null when nobody took over nocking the arrow, else the result to return from the bow's use. */
     public static ActionResult<ItemStack> onArrowNock(ItemStack item, World world, EntityPlayer player, EnumHand hand, boolean hasAmmo) {
         var p = player(player);
         if (p == null || world == null) return null;
-        var result = EventHooks.onArrowNock(Stacks1122.toModern(item), world.mcc$level(), p, hand.mcc$modern(), hasAmmo);
+        var result = net.minecraftforge.event.ForgeEventFactory.onArrowNock(Stacks1122.toModern(item), world.mcc$level(), p, hand.mcc$modern(), hasAmmo);
         if (result == null) return null;
         return new ActionResult<>(EnumActionResult.mcc$of(result.getResult()), item);
     }
 
     public static void onPlayerDestroyItem(EntityPlayer player, ItemStack stack, EnumHand hand) {
         var p = player(player);
-        if (p != null) EventHooks.onPlayerDestroyItem(p, Stacks1122.toModern(stack), hand == null ? null : hand.mcc$modern());
+        if (p != null) net.minecraftforge.event.ForgeEventFactory.onPlayerDestroyItem(p, Stacks1122.toModern(stack), hand == null ? null : hand.mcc$modern());
     }
 
     /** Whether an entity may break the block (withers, dragons and mods' mobs ask). */
     public static boolean onEntityDestroyBlock(EntityLivingBase entity, BlockPos pos, IBlockState state) {
         if (entity == null || !(entity.mcc$modern() instanceof net.minecraft.world.entity.LivingEntity living)) return true;
-        return EventHooks.onEntityDestroyBlock(living, pos(pos), state(state));
+        return net.minecraftforge.event.ForgeEventFactory.onEntityDestroyBlock(living, pos(pos), state(state));
     }
 
     /** True when the impact was canceled. */
     public static boolean onProjectileImpact(Entity entity, legacyconnector.v1_12_2.net.minecraft.util.math.RayTraceResult ray) {
         if (entity == null || !(entity.mcc$modern() instanceof net.minecraft.world.entity.projectile.Projectile projectile) || ray == null) return false;
-        return EventHooks.onProjectileImpact(projectile, ray.mcc$modern());
+        return net.minecraftforge.event.ForgeEventFactory.onProjectileImpact(projectile, ray.mcc$modern());
     }
 
     public static int getExperienceDrop(EntityLivingBase entity, EntityPlayer attackingPlayer, int originalExperience) {
         if (entity == null || !(entity.mcc$modern() instanceof net.minecraft.world.entity.LivingEntity living)) return originalExperience;
-        return EventHooks.getExperienceDrop(living, player(attackingPlayer), originalExperience);
+        return net.minecraftforge.event.ForgeEventFactory.getExperienceDrop(living, player(attackingPlayer), originalExperience);
     }
 
     /** -1 when bone meal use was canceled, 1 when another mod applied it, 0 to let the block grow as usual. */
     public static int onApplyBonemeal(EntityPlayer player, World world, BlockPos pos, IBlockState state, ItemStack stack, EnumHand hand) {
         if (world == null) return 0;
-        var event = EventHooks.fireBonemealEvent(player(player), world.mcc$level(), pos(pos), state(state), Stacks1122.toModern(stack));
+        var event = net.minecraftforge.event.ForgeEventFactory.fireBonemealEvent(player(player), world.mcc$level(), pos(pos), state(state), Stacks1122.toModern(stack));
         if (event.isCanceled()) return -1;
         return event.isSuccessful() ? 1 : 0;
     }
 
     public static float getBreakSpeed(EntityPlayer player, IBlockState state, float original, BlockPos pos) {
         var p = player(player);
-        return p == null ? original : EventHooks.getBreakSpeed(p, state(state), original, pos(pos));
+        return p == null ? original : net.minecraftforge.event.ForgeEventFactory.getBreakSpeed(p, state(state), original, pos(pos));
     }
 
     public static int onItemUseTick(EntityLivingBase entity, ItemStack item, int duration) {
         if (entity == null || !(entity.mcc$modern() instanceof net.minecraft.world.entity.LivingEntity living)) return duration;
-        return EventHooks.onItemUseTick(living, Stacks1122.toModern(item), duration);
+        return net.minecraftforge.event.ForgeEventFactory.onItemUseTick(living, Stacks1122.toModern(item), duration);
     }
 
     /** The state a fluid places when it flows into another (lava and water making stone, as mods change it). */
     public static IBlockState fireFluidPlaceBlockEvent(World world, BlockPos pos, BlockPos liquidPos, IBlockState state) {
         if (world == null) return state;
-        var result = EventHooks.fireFluidPlaceBlockEvent(world.mcc$level(), pos(pos), pos(liquidPos), state(state));
+        var result = net.minecraftforge.event.ForgeEventFactory.fireFluidPlaceBlockEvent(world.mcc$level(), pos(pos), pos(liquidPos), state(state));
         var legacy = StatesBridge1122.toLegacy(result);
         return legacy == null ? state : legacy;
     }
@@ -138,26 +137,26 @@ public class ForgeEventFactory {
     /** The extra ticks a mod gives an expiring item entity (a negative number lets it despawn). */
     public static int onItemExpire(legacyconnector.v1_12_2.net.minecraft.entity.item.EntityItem entity, ItemStack item) {
         if (entity == null || !(entity.mcc$modern() instanceof net.minecraft.world.entity.item.ItemEntity modern)) return -1;
-        return EventHooks.onItemExpire(modern);
+        return net.minecraftforge.event.ForgeEventFactory.onItemExpire(modern);
     }
 
     /** True when a mod stops the taming. */
     public static boolean onAnimalTame(legacyconnector.v1_12_2.net.minecraft.entity.passive.EntityAnimal animal, EntityPlayer tamer) {
         var p = player(tamer);
         if (p == null || animal == null || !(animal.mcc$modern() instanceof net.minecraft.world.entity.animal.Animal modern)) return false;
-        return EventHooks.onAnimalTame(modern, p);
+        return net.minecraftforge.event.ForgeEventFactory.onAnimalTame(modern, p);
     }
 
     public static ItemStack onItemUseFinish(EntityLivingBase entity, ItemStack item, int duration, ItemStack result) {
         var l = living(entity);
         if (l == null) return result;
-        return Stacks1122.fromModern(EventHooks.onItemUseFinish(l, Stacks1122.toModern(item), duration, Stacks1122.toModern(result)));
+        return Stacks1122.fromModern(net.minecraftforge.event.ForgeEventFactory.onItemUseFinish(l, Stacks1122.toModern(item), duration, Stacks1122.toModern(result)));
     }
 
     /** True when a mod canceled stopping the use. */
     public static boolean onUseItemStop(EntityLivingBase entity, ItemStack item, int duration) {
         var l = living(entity);
-        return l != null && EventHooks.onUseItemStop(l, Stacks1122.toModern(item), duration);
+        return l != null && net.minecraftforge.event.ForgeEventFactory.onUseItemStop(l, Stacks1122.toModern(item), duration);
     }
 
     /** Whether the player can harvest the state (the harvest check event, after the block's own rule). */
@@ -171,13 +170,13 @@ public class ForgeEventFactory {
     /** The burn time mods give the stack (-1: the item's own). */
     public static int getItemBurnTime(ItemStack itemStack) {
         if (itemStack == null || itemStack.isEmpty()) return 0;
-        return EventHooks.getItemBurnTime(Stacks1122.toModern(itemStack), -1, null);
+        return net.minecraftforge.event.ForgeEventFactory.getItemBurnTime(Stacks1122.toModern(itemStack), -1, null);
     }
 
     /** True when a mod stops the lightning bolt hitting the entity. */
     public static boolean onEntityStruckByLightning(Entity entity, legacyconnector.v1_12_2.net.minecraft.entity.effect.EntityLightningBolt bolt) {
         if (entity == null || entity.mcc$modern() == null || bolt == null || !(bolt.mcc$modern() instanceof net.minecraft.world.entity.LightningBolt modern)) return false;
-        return EventHooks.onEntityStruckByLightning(entity.mcc$modern(), modern);
+        return net.minecraftforge.event.ForgeEventFactory.onEntityStruckByLightning(entity.mcc$modern(), modern);
     }
 
     /** The neighbour notification event for a block change; returns the legacy event (canceled when a mod canceled the modern one). */
@@ -188,7 +187,7 @@ public class ForgeEventFactory {
         if (level != null) {
             java.util.EnumSet<net.minecraft.core.Direction> sides = java.util.EnumSet.noneOf(net.minecraft.core.Direction.class);
             if (notifiedSides != null) for (var f : notifiedSides) sides.add(f.mcc$modern());
-            if (EventHooks.onNeighborNotify(level, pos(pos), state(state), sides, forceRedstoneUpdate).isCanceled()) event.setCanceled(true);
+            if (net.minecraftforge.event.ForgeEventFactory.onNeighborNotify(level, pos(pos), state(state), sides, forceRedstoneUpdate).isCanceled()) event.setCanceled(true);
         }
         return event;
     }
@@ -211,7 +210,7 @@ public class ForgeEventFactory {
         var placedAgainst = world == null ? null : world.getBlockState(blockSnapshot.getPos().offset(direction.getOpposite()));
         var event = new legacyconnector.v1_12_2.net.minecraftforge.event.world.BlockEvent.PlaceEvent(blockSnapshot, placedAgainst, player, hand);
         var modern = mcc$modernSnapshot(blockSnapshot);
-        if (modern != null && EventHooks.onBlockPlace(player(player), modern, direction.mcc$modern())) event.setCanceled(true);
+        if (modern != null && net.minecraftforge.event.ForgeEventFactory.onBlockPlace(player(player), modern, direction.mcc$modern())) event.setCanceled(true);
         return event;
     }
 
@@ -222,7 +221,7 @@ public class ForgeEventFactory {
         var placedAgainst = world == null || direction == null ? null : world.getBlockState(blockSnapshot.getPos().offset(direction.getOpposite()));
         var event = new legacyconnector.v1_12_2.net.minecraftforge.event.world.BlockEvent.EntityPlaceEvent(blockSnapshot, placedAgainst, entity);
         var modern = mcc$modernSnapshot(blockSnapshot);
-        if (modern != null && EventHooks.onBlockPlace(entity == null ? null : entity.mcc$modern(), modern,
+        if (modern != null && net.minecraftforge.event.ForgeEventFactory.onBlockPlace(entity == null ? null : entity.mcc$modern(), modern,
                 direction == null ? net.minecraft.core.Direction.UP : direction.mcc$modern())) {
             event.setCanceled(true);
         }
@@ -315,7 +314,7 @@ public class ForgeEventFactory {
 
     public static int getMaxSpawnPackSize(legacyconnector.v1_12_2.net.minecraft.entity.EntityLiving entity) {
         var mob = mcc$mob(entity);
-        return mob == null ? 4 : EventHooks.getMaxSpawnClusterSize(mob);
+        return mob == null ? 4 : net.minecraftforge.event.ForgeEventFactory.getMaxSpawnClusterSize(mob);
     }
 
     // ---- area F: terrain, explosion, projectile, bucket, tooltip and sound hooks
@@ -437,7 +436,7 @@ public class ForgeEventFactory {
         var sound = event.getSound() == null ? null : event.getSound().mcc$event();
         if (modern == null || sound == null || event.getCategory() == null) return event;
         var holder = net.minecraft.core.registries.BuiltInRegistries.SOUND_EVENT.wrapAsHolder(sound);
-        var result = EventHooks.onPlaySoundAtEntity(modern, holder, event.getCategory().mcc$modern(), event.getVolume(), event.getPitch());
+        var result = net.minecraftforge.event.ForgeEventFactory.onPlaySoundAtEntity(modern, holder, event.getCategory().mcc$modern(), event.getVolume(), event.getPitch());
         if (result.isCanceled() || result.getSound() == null) {
             event.setCanceled(true);
             return event;

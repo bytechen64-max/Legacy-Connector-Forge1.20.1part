@@ -13,7 +13,7 @@ public class EntityFireworkRocket extends legacyconnector.v1_12_2.net.minecraft.
         this(world);
         setPosition(x, y, z);
         var m = mcc$self();
-        if (m != null && !m.isAddedToLevel()) {
+        if (m != null && !m.isAddedToWorld()) {
             var modern = org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.toModern(stack);
             var tag = new net.minecraft.nbt.CompoundTag();
             m.saveWithoutId(tag);

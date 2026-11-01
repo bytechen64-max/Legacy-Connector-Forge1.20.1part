@@ -15,7 +15,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.ItemInteractionResult;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -213,11 +213,12 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
     // ------------------------------------------------------------------ interaction
 
     @Override
-    protected ItemInteractionResult useItemOn(net.minecraft.world.item.ItemStack stack, BlockState state, Level level, BlockPos pos, Player player,
+    // 1.20.5 split this into useItemOn (item first); 1.20.1 has the single Block#use.
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player,
             InteractionHand hand, BlockHitResult hit) {
-        if (!activated) return super.useItemOn(stack, state, level, pos, player, hand, hit);
+        if (!activated) return super.use(state, level, pos, player, hand, hit);
         EntityPlayer p = player(player);
-        if (p == null) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+        if (p == null) return InteractionResult.PASS;
         Vec3 h = hit.getLocation();
         boolean done;
         try {
@@ -229,7 +230,7 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
         } finally {
             Stacks1122.flushViews();
         }
-        return done ? ItemInteractionResult.sidedSuccess(level.isClientSide) : ItemInteractionResult.SKIP_DEFAULT_BLOCK_INTERACTION;
+        return done ? InteractionResult.sidedSuccess(level.isClientSide) : InteractionResult.FAIL;
     }
 
     @Override

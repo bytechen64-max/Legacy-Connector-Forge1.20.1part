@@ -97,7 +97,7 @@ public class TileEntitySkullRenderer extends TileEntitySpecialRenderer {
                 // fall back to the default skin
             }
         }
-        return net.minecraft.client.resources.DefaultPlayerSkin.getDefaultTexture();
+        return net.minecraft.client.resources.DefaultPlayerSkin.getDefaultSkin();
     }
 
     /** A head with an owner name: the profile of that player as the client knows it (null when unknown). */

@@ -278,10 +278,10 @@ public class Legacy1122Item extends net.minecraft.world.item.Item {
     }
 
     @Override
-    public void appendHoverText(net.minecraft.world.item.ItemStack stack, TooltipContext context, java.util.List<net.minecraft.network.chat.Component> lines,
+    public void appendHoverText(net.minecraft.world.item.ItemStack stack, Level level, java.util.List<net.minecraft.network.chat.Component> lines,
             net.minecraft.world.item.TooltipFlag flag) {
-        super.appendHoverText(stack, context, lines, flag);
-        if (cb().tooltip) cb().appendHoverText(stack, context, lines, flag);
+        super.appendHoverText(stack, level, lines, flag);
+        if (cb().tooltip) cb().appendHoverText(stack, level, lines, flag);
     }
 
     @Override

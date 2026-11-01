@@ -151,7 +151,7 @@ public final class ClientEvents1122 {
         float partial = e.getPartialTick().getGameTimeDeltaPartialTick(false);
         GuiGraphics graphics = e.getGuiGraphics();
         // 1.12 posted the HUD text every frame and drew what handlers added (on top of the debug screen's lines when it was open)
-        if (wants(RenderGameOverlayEvent.Text.class) && !Minecraft.getInstance().getDebugOverlay().showDebugScreen()) {
+        if (wants(RenderGameOverlayEvent.Text.class) && !Minecraft.getInstance().options.renderDebug) {
             ArrayList<String> left = new ArrayList<>();
             ArrayList<String> right = new ArrayList<>();
             RenderContext.beginGui(graphics);
@@ -381,7 +381,7 @@ public final class ClientEvents1122 {
         var manager = legacyMc().getRenderManager();
         if (manager == null) return null;
         String type = player instanceof net.minecraft.client.player.AbstractClientPlayer p
-                && p.getSkin().model() == net.minecraft.client.resources.PlayerSkin.Model.SLIM ? "slim" : "default";
+                && "slim".equals(p.getModelName()) ? "slim" : "default";
         try {
             return manager.getSkinMap().get(type);
         } catch (RuntimeException | LinkageError e) {
@@ -594,7 +594,7 @@ public final class ClientEvents1122 {
         Minecraft mc = Minecraft.getInstance();
         try {
             var flag = mc.options.advancedItemTooltips ? net.minecraft.world.item.TooltipFlag.Default.ADVANCED : net.minecraft.world.item.TooltipFlag.Default.NORMAL;
-            for (var line : stack.getTooltipLines(net.minecraft.world.item.Item.TooltipContext.of(mc.level), mc.player, flag)) out.add(ClientGui1122.legacyText(line));
+            for (var line : stack.getTooltipLines(mc.player, flag)) out.add(ClientGui1122.legacyText(line));
         } catch (RuntimeException | LinkageError e) {
             // a tooltip that fails to build has no lines here
         }

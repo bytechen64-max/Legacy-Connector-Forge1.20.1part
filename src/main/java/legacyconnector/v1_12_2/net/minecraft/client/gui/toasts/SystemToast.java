@@ -59,12 +59,13 @@ public class SystemToast implements IToast {
     }
 
     public enum Type {
-        NARRATOR_TOGGLE(net.minecraft.client.gui.components.toasts.SystemToast.SystemToastId.NARRATOR_TOGGLE),
-        TUTORIAL_HINT(new net.minecraft.client.gui.components.toasts.SystemToast.SystemToastId());
+        NARRATOR_TOGGLE(net.minecraft.client.gui.components.toasts.SystemToast.SystemToastIds.NARRATOR_TOGGLE),
+        // 1.20.1's toast ids are an enum (1.20.5 made them instantiable), so a custom toast reuses the tutorial-hint slot.
+        TUTORIAL_HINT(net.minecraft.client.gui.components.toasts.SystemToast.SystemToastIds.TUTORIAL_HINT);
 
-        private final net.minecraft.client.gui.components.toasts.SystemToast.SystemToastId modern;
+        private final net.minecraft.client.gui.components.toasts.SystemToast.SystemToastIds modern;
 
-        Type(net.minecraft.client.gui.components.toasts.SystemToast.SystemToastId modern) {
+        Type(net.minecraft.client.gui.components.toasts.SystemToast.SystemToastIds modern) {
             this.modern = modern;
         }
     }

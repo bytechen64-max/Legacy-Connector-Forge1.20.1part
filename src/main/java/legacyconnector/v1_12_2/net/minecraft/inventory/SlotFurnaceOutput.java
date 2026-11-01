@@ -56,6 +56,6 @@ public class SlotFurnaceOutput extends Slot {
             if (i > 0) net.minecraft.world.entity.ExperienceOrb.award(level, modern.position(), i);
         }
         removeCount = 0;
-        if (modern != null) net.minecraftforge.event.EventHooks.firePlayerSmeltedEvent(modern, org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.toModern(stack));
+        if (modern != null) net.minecraftforge.event.ForgeEventFactory.firePlayerSmeltedEvent(modern, org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.toModern(stack));
     }
 }
