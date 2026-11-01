@@ -433,10 +433,11 @@ public final class RuntimeApis1122 {
         var modern = bp.mcc$modern();
         try {
             if ("IN_WATER".equals(enumName(type))) {
-                return net.minecraft.world.entity.SpawnPlacementTypes.IN_WATER.isSpawnPositionOk(access, modern, net.minecraft.world.entity.EntityType.SQUID)
-                        && access.getFluidState(modern.below()).is(net.minecraft.tags.FluidTags.WATER);
+                return net.minecraft.world.level.NaturalSpawner.isSpawnPositionOk(net.minecraft.world.entity.SpawnPlacements.Type.IN_WATER, access, modern,
+                        net.minecraft.world.entity.EntityType.SQUID) && access.getFluidState(modern.below()).is(net.minecraft.tags.FluidTags.WATER);
             }
-            return net.minecraft.world.entity.SpawnPlacementTypes.ON_GROUND.isSpawnPositionOk(access, modern, net.minecraft.world.entity.EntityType.ZOMBIE);
+            return net.minecraft.world.level.NaturalSpawner.isSpawnPositionOk(net.minecraft.world.entity.SpawnPlacements.Type.ON_GROUND, access, modern,
+                    net.minecraft.world.entity.EntityType.ZOMBIE);
         } catch (RuntimeException e) {
             return false;
         }

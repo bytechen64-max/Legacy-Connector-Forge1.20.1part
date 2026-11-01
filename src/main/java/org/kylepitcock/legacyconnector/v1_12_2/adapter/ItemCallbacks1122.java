@@ -129,7 +129,7 @@ final class ItemCallbacks1122 {
         try {
             var r = legacy.onItemRightClick(world(level), p, hand(hand));
             if (r == null) return InteractionResultHolder.pass(held);
-            net.minecraft.world.item.ItemStack out = r.getResult() instanceof ItemStack s ? Stacks1122.toModernLive(s) : held;
+            net.minecraft.world.item.ItemStack out = r.getResult() == null ? held : Stacks1122.toModernLive(r.getResult());
             return switch (r.getType()) {
                 case SUCCESS -> InteractionResultHolder.sidedSuccess(out, level.isClientSide);
                 case FAIL -> InteractionResultHolder.fail(out);

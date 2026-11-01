@@ -98,7 +98,7 @@ public final class ClientGui1122 {
             case "GuiOptions" -> new net.minecraft.client.gui.screens.OptionsScreen(parent, mc.options);
             case "GuiLanguage" -> new net.minecraft.client.gui.screens.LanguageSelectScreen(parent, mc.options, mc.getLanguageManager());
             case "GuiScreenOptionsSounds" -> new net.minecraft.client.gui.screens.SoundOptionsScreen(parent, mc.options);
-            case "GuiVideoSettings" -> new net.minecraft.client.gui.screens.VideoSettingsScreen(parent, mc, mc.options);
+            case "GuiVideoSettings" -> new net.minecraft.client.gui.screens.VideoSettingsScreen(parent, mc.options);
             case "GuiControls" -> new net.minecraft.client.gui.screens.controls.ControlsScreen(parent, mc.options);
             case "GuiIngameMenu" -> new net.minecraft.client.gui.screens.PauseScreen(true);
             case "GuiStats" -> mc.player == null ? null : new net.minecraft.client.gui.screens.achievement.StatsScreen(parent, mc.player.getStats());

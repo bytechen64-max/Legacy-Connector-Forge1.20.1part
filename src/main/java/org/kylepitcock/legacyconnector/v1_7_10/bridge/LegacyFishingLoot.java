@@ -24,11 +24,12 @@ import org.slf4j.LoggerFactory;
  * that 1.7.10 category, replaces it with one of them. Other catches (modern-only fish, other mods' loot) stay.
  */
 public final class LegacyFishingLoot extends LootModifier {
-    public static final DeferredRegister<MapCodec<? extends IGlobalLootModifier>> REGISTER =
+    // 1.20.1 registers the Codec of a loot modifier (the MapCodec is 1.20.5+).
+    public static final DeferredRegister<com.mojang.serialization.Codec<? extends IGlobalLootModifier>> REGISTER =
             DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, "legacyconnector");
     public static final MapCodec<LegacyFishingLoot> CODEC = RecordCodecBuilder.mapCodec(inst -> codecStart(inst).apply(inst, LegacyFishingLoot::new));
-    public static final net.minecraftforge.registries.RegistryObject<MapCodec<LegacyFishingLoot>> SERIALIZER =
-            REGISTER.register("legacy_fishing", () -> CODEC);
+    public static final net.minecraftforge.registries.RegistryObject<com.mojang.serialization.Codec<LegacyFishingLoot>> SERIALIZER =
+            REGISTER.register("legacy_fishing", () -> CODEC.codec());
     /** The data files that switch the modifier on (served by the generated data pack). */
     public static final String MODIFIER_JSON = "{\"type\":\"legacyconnector:legacy_fishing\",\"conditions\":[]}";
     public static final String LIST_JSON = "{\"replace\":false,\"entries\":[\"legacyconnector:legacy_fishing\"]}";

@@ -56,7 +56,7 @@ public class EntityPainting extends EntityHanging {
         var p = e.mcc$painting();
         if (p != null) {
             var id = net.minecraft.resources.ResourceLocation.withDefaultNamespace(v.name().toLowerCase(java.util.Locale.ROOT));
-            p.level().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.PAINTING_VARIANT).getHolder(id).ifPresent(h -> {
+            p.level().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.PAINTING_VARIANT).getHolder(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.PAINTING_VARIANT, id)).ifPresent(h -> {
                 var tag = new net.minecraft.nbt.CompoundTag();
                 p.saveWithoutId(tag);
                 tag.putString("variant", id.toString());

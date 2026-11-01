@@ -150,8 +150,8 @@ public abstract class EntityMinecartContainer extends EntityMinecart implements 
     @Override
     public boolean processInitialInteract(legacyconnector.v1_12_2.net.minecraft.entity.player.EntityPlayer player, legacyconnector.v1_12_2.net.minecraft.util.EnumHand hand) {
         if (!mcc$hosted()) return super.processInitialInteract(player, hand);
-        if (mcc$entity != null && !mcc$entity.level().isClientSide() && this instanceof legacyconnector.v1_12_2.net.minecraft.inventory.IInventory inv) {
-            player.displayGUIChest(inv);
+        if (mcc$entity != null && !mcc$entity.level().isClientSide()) {
+            player.displayGUIChest((legacyconnector.v1_12_2.net.minecraft.inventory.IInventory) this);
         }
         return true;
     }

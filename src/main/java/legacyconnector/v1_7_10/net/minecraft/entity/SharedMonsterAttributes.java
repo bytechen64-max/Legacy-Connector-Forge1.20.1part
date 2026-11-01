@@ -147,7 +147,7 @@ public class SharedMonsterAttributes {
 
         @Override
         public void applyModifier(AttributeModifier modifier) {
-            if (modern.hasModifier(AttributeModifier.mcc$id(modifier.getID())))
+            if (modern.getModifier(modifier.getID()) != null)
                 throw new IllegalArgumentException("Modifier is already applied on this attribute!");
             if (modifier.isSaved()) modern.addPermanentModifier(modifier.mcc$modern());
             else modern.addTransientModifier(modifier.mcc$modern());
@@ -155,7 +155,7 @@ public class SharedMonsterAttributes {
 
         @Override
         public void removeModifier(AttributeModifier modifier) {
-            modern.removeModifier(AttributeModifier.mcc$id(modifier.getID()));
+            modern.removeModifier(modifier.getID());
         }
 
         @Override

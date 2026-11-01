@@ -37,8 +37,9 @@ public class FluidBucketWrapper implements IFluidHandlerItem, ICapabilityProvide
         if (container == null || container.isEmpty()) return null;
         var modern = org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.toModern(container);
         if (modern.getItem() instanceof net.minecraft.world.item.BucketItem bucket) {
-            Fluid fluid = BlockWrapper.mcc$legacy(bucket.content);
-            if (fluid != null && bucket.content != net.minecraft.world.level.material.Fluids.EMPTY) return new FluidStack(fluid, Fluid.BUCKET_VOLUME);
+            // 1.20.1 keeps the fluid private behind getFluid()
+            Fluid fluid = BlockWrapper.mcc$legacy(bucket.getFluid());
+            if (fluid != null && bucket.getFluid() != net.minecraft.world.level.material.Fluids.EMPTY) return new FluidStack(fluid, Fluid.BUCKET_VOLUME);
         }
         if (modern.is(net.minecraft.world.item.Items.MILK_BUCKET)) {
             Fluid milk = FluidRegistry.getFluid("milk");

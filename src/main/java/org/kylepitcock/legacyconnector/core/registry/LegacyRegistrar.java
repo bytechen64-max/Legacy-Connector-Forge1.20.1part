@@ -13,6 +13,16 @@ import org.kylepitcock.legacyconnector.core.LegacyLifecycle;
 public final class LegacyRegistrar {
     private LegacyRegistrar() {}
 
+    /** Forge's own registries (fluid types, ...) are {@code IForgeRegistry}, not {@code Registry}. */
+    public static <T> T register(net.minecraftforge.registries.IForgeRegistry<T> registry, ResourceLocation id, T value) {
+        if (registry.containsKey(id)) {
+            org.slf4j.LoggerFactory.getLogger("Legacy Connector").warn("Duplicate legacy registration of {} in {}; keeping the first", id, registry.getRegistryName());
+            return registry.getValue(id);
+        }
+        registry.register(id, value);
+        return value;
+    }
+
     public static <T> T register(Registry<T> registry, ResourceLocation id, T value) {
         if (!LegacyLifecycle.isRegistrationOpen() && registry instanceof MappedRegistry<?> mapped && isFrozen(mapped)) {
             throw new IllegalStateException("Legacy mod registered " + id + " into " + registry.key().location()

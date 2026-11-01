@@ -132,10 +132,8 @@ public final class CommandBridge1710 {
     }
 
     static ICommandSender sender(CommandSourceStack source) {
-        if (source.getEntity() != null) {
-            var view = EntityBridge.wrap(source.getEntity());
-            if (view instanceof ICommandSender s) return s;
-        }
+        // the shim's Entity is an ICommandSender itself (1.7.10 only had EntityPlayerMP and the server answer commands)
+        if (source.getEntity() != null) return EntityBridge.wrap(source.getEntity());
         return MinecraftServer.mcc$wrap(source.getServer());
     }
 

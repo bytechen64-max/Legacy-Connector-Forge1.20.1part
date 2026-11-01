@@ -26,7 +26,7 @@ public final class WorldClient1122 {
         var old = client.getEntity(id);
         if (old != null && old != modern) client.removeEntity(id, net.minecraft.world.entity.Entity.RemovalReason.DISCARDED);
         modern.setId(id);
-        client.addEntity(modern);
+        client.addEntity(id, modern);
     }
 
     /** {@code WorldClient.removeEntityFromWorld}. */

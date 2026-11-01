@@ -98,7 +98,7 @@ public final class GuiBridge1122 {
             return;
         }
         if (element instanceof Container container) {
-            sp.openMenu(new SimpleMenuProvider((windowId, inv, p) -> new LegacyMenu1122(menuType, windowId, inv, container, null), Component.empty()),
+            net.minecraftforge.network.NetworkHooks.openScreen(sp, new SimpleMenuProvider((windowId, inv, p) -> new LegacyMenu1122(menuType, windowId, inv, container, null), Component.empty()),
                     buf -> {
                         buf.writeUtf(record.legacyId);
                         buf.writeVarInt(id);

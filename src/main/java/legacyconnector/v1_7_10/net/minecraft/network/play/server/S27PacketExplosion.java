@@ -112,12 +112,8 @@ public class S27PacketExplosion extends Packet {
         for (Object o : field_149155_e) {
             if (o instanceof ChunkPosition p) blocks.add(new net.minecraft.core.BlockPos(p.chunkPosX, p.chunkPosY, p.chunkPosZ));
         }
-        boolean large = field_149154_d >= 2.0F;
+        // 1.20.1's packet carries the position, strength, the blocks and the player's velocity (the particle and sound came later)
         player.connection.send(new net.minecraft.network.protocol.game.ClientboundExplodePacket(field_149158_a, field_149156_b, field_149157_c,
-                field_149154_d, blocks, new net.minecraft.world.phys.Vec3(field_149152_f, field_149153_g, field_149159_h),
-                blocks.isEmpty() ? net.minecraft.world.level.Explosion.BlockInteraction.KEEP : net.minecraft.world.level.Explosion.BlockInteraction.DESTROY,
-                net.minecraft.core.particles.ParticleTypes.EXPLOSION, large ? net.minecraft.core.particles.ParticleTypes.EXPLOSION_EMITTER
-                        : net.minecraft.core.particles.ParticleTypes.EXPLOSION,
-                net.minecraft.sounds.SoundEvents.GENERIC_EXPLODE));
+                field_149154_d, blocks, new net.minecraft.world.phys.Vec3(field_149152_f, field_149153_g, field_149159_h)));
     }
 }

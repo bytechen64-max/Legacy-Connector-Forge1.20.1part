@@ -131,7 +131,7 @@ public class FMLClientHandler {
                 serverEntry.serverIP, false);
         net.minecraft.client.gui.screens.Screen parent = mc.screen != null ? mc.screen : new net.minecraft.client.gui.screens.TitleScreen();
         net.minecraft.client.gui.screens.ConnectScreen.startConnecting(parent, mc,
-                net.minecraft.client.multiplayer.resolver.ServerAddress.parseString(serverEntry.serverIP), modern, false, null);
+                net.minecraft.client.multiplayer.resolver.ServerAddress.parseString(serverEntry.serverIP), modern, false);
     }
 
     /** FML reset its extended server list data (mod lists of pinged servers) here; the modern game keeps its own. */

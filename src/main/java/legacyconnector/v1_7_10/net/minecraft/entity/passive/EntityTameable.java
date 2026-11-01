@@ -47,7 +47,7 @@ public abstract class EntityTameable extends EntityAnimal implements IEntityOwna
     public void setTamed(boolean tamed) {
         var t = mcc$tamable();
         if (t != null) {
-            t.setTame(tamed, true);
+            t.setTame(tamed);
             return;
         }
         byte f = dataWatcher.getWatchableObjectByte(16);

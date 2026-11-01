@@ -92,7 +92,7 @@ public abstract class CommandBlockBaseLogic {
         var pos = getPositionVector();
         var source = new net.minecraft.commands.CommandSourceStack(net.minecraft.commands.CommandSource.NULL,
                 pos, net.minecraft.world.phys.Vec2.ZERO, server, 2, getName(), net.minecraft.network.chat.Component.literal(getName()), server.getServer(), null)
-                .withCallback((success, result) -> {
+                .withCallback((callbackSource, success, result) -> {
                     if (success) ++successCount;
                 });
         successCount = 0;

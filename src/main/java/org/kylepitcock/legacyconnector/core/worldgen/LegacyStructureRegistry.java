@@ -72,7 +72,7 @@ public final class LegacyStructureRegistry {
         if (registered || !enabled() || !LegacyLifecycle.isRegistrationOpen()) return;
         registered = true;
         try {
-            StructureType<LegacyStructure> type = () -> LegacyStructure.CODEC;
+            StructureType<LegacyStructure> type = () -> LegacyStructure.CODEC.codec();
             LegacyRegistrar.register(BuiltInRegistries.STRUCTURE_TYPE, ResourceLocation.fromNamespaceAndPath("legacyconnector", "legacy_structure"), type);
             LegacyStructure.TYPE = type;
             StructurePieceType.ContextlessType piece = LegacyStructurePiece::new;

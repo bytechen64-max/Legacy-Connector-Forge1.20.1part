@@ -175,7 +175,7 @@ public class PacketBuffer extends ByteBuf {
         readerIndex(start);
         try {
             var tag = net.minecraft.nbt.NbtIo.read(new ByteBufInputStream(this), new net.minecraft.nbt.NbtAccounter(2097152L));
-            return tag instanceof net.minecraft.nbt.CompoundTag c ? new NBTTagCompound(c) : new NBTTagCompound();
+            return tag == null ? new NBTTagCompound() : new NBTTagCompound(tag);
         } catch (RuntimeException e) {
             throw new IOException(e);
         }

@@ -45,18 +45,19 @@ public final class LegacyConnector {
         FEATURES.register("legacy_worldgen_deep", org.kylepitcock.legacyconnector.v1_7_10.bridge.LegacyDeepWorldGenFeature::new);
     }
 
-    private static final DeferredRegister<com.mojang.serialization.MapCodec<? extends net.minecraft.world.level.chunk.ChunkGenerator>> CHUNK_GENERATORS =
+    // 1.20.1's registries hold the Codec itself (1.20.5+ hold a MapCodec).
+    private static final DeferredRegister<com.mojang.serialization.Codec<? extends net.minecraft.world.level.chunk.ChunkGenerator>> CHUNK_GENERATORS =
             DeferredRegister.create(Registries.CHUNK_GENERATOR, MOD_ID);
-    private static final DeferredRegister<com.mojang.serialization.MapCodec<? extends net.minecraft.world.level.biome.BiomeSource>> BIOME_SOURCES =
+    private static final DeferredRegister<com.mojang.serialization.Codec<? extends net.minecraft.world.level.biome.BiomeSource>> BIOME_SOURCES =
             DeferredRegister.create(Registries.BIOME_SOURCE, MOD_ID);
 
     static {
         // Mod dimensions (see org.kylepitcock.legacyconnector.v1_7_10.dimension): ids "legacyconnector:legacy".
-        CHUNK_GENERATORS.register("legacy", () -> org.kylepitcock.legacyconnector.v1_7_10.dimension.LegacyChunkGenerator.CODEC);
-        CHUNK_GENERATORS.register("legacy_1122", () -> org.kylepitcock.legacyconnector.v1_12_2.dimension.LegacyChunkGenerator1122.CODEC);
-        BIOME_SOURCES.register("legacy", () -> org.kylepitcock.legacyconnector.v1_7_10.dimension.LegacyBiomeSource.CODEC);
+        CHUNK_GENERATORS.register("legacy", () -> org.kylepitcock.legacyconnector.v1_7_10.dimension.LegacyChunkGenerator.CODEC.codec());
+        CHUNK_GENERATORS.register("legacy_1122", () -> org.kylepitcock.legacyconnector.v1_12_2.dimension.LegacyChunkGenerator1122.CODEC.codec());
+        BIOME_SOURCES.register("legacy", () -> org.kylepitcock.legacyconnector.v1_7_10.dimension.LegacyBiomeSource.CODEC.codec());
         // World presets of legacy mod world types: the overworld multi-noise source with the world type's legacy biome layers.
-        BIOME_SOURCES.register("legacy_layers", () -> org.kylepitcock.legacyconnector.v1_7_10.bridge.LegacyLayeredBiomeSource.CODEC);
+        BIOME_SOURCES.register("legacy_layers", () -> org.kylepitcock.legacyconnector.v1_7_10.bridge.LegacyLayeredBiomeSource.CODEC.codec());
     }
 
     private static final DeferredRegister<net.minecraft.world.level.levelgen.structure.StructureType<?>> STRUCTURE_TYPES =
@@ -69,7 +70,7 @@ public final class LegacyConnector {
         // Registered always, so recorded starts load even with structures.locatable=false.
         STRUCTURE_TYPES.register("legacy_generator_structure", () -> {
             net.minecraft.world.level.levelgen.structure.StructureType<org.kylepitcock.legacyconnector.core.worldgen.LegacyGeneratorStructure> t =
-                    () -> org.kylepitcock.legacyconnector.core.worldgen.LegacyGeneratorStructure.CODEC;
+                    () -> org.kylepitcock.legacyconnector.core.worldgen.LegacyGeneratorStructure.CODEC.codec();
             org.kylepitcock.legacyconnector.core.worldgen.LegacyGeneratorStructure.TYPE = t;
             return t;
         });

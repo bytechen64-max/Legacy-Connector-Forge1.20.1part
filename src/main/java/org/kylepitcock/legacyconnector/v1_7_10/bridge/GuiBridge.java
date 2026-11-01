@@ -94,7 +94,7 @@ public final class GuiBridge {
         if (!(player.mcc$entity instanceof ServerPlayer sp)) return;
         Object element = handler.getServerGuiElement(id, player, world, x, y, z);
         if (element instanceof Container container) {
-            sp.openMenu(new SimpleMenuProvider((windowId, inv, p) -> new LegacyMenu(menuType, windowId, inv, container, null), Component.empty()),
+            net.minecraftforge.network.NetworkHooks.openScreen(sp, new SimpleMenuProvider((windowId, inv, p) -> new LegacyMenu(menuType, windowId, inv, container, null), Component.empty()),
                     buf -> {
                         buf.writeUtf(record.legacyId);
                         buf.writeVarInt(id);

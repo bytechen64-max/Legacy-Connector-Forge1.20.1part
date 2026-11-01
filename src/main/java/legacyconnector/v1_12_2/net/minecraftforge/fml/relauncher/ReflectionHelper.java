@@ -179,7 +179,7 @@ public class ReflectionHelper {
             if (f.getDeclaringClass() == Dummy.class) return null;
             return (T) f.get(instance);
         } catch (ReflectiveOperationException | RuntimeException e) {
-            throw new UnableToAccessFieldException(new String[] {"#" + fieldIndex}, e instanceof Exception ex ? ex : null);
+            throw new UnableToAccessFieldException(new String[] {"#" + fieldIndex}, e);
         }
     }
 
@@ -200,7 +200,7 @@ public class ReflectionHelper {
             if (f.getDeclaringClass() == Dummy.class) return;
             f.set(instance, value);
         } catch (ReflectiveOperationException | RuntimeException e) {
-            throw new UnableToAccessFieldException(new String[] {"#" + fieldIndex}, e instanceof Exception ex ? ex : null);
+            throw new UnableToAccessFieldException(new String[] {"#" + fieldIndex}, e);
         }
     }
 

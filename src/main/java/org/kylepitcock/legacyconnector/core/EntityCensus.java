@@ -36,7 +36,7 @@ public final class EntityCensus {
             int levels = 0, allEntities = 0, allChunks = 0;
             for (ServerLevel level : e.getServer().getAllLevels()) {
                 levels++;
-                allEntities += level.getEntities().getAll() instanceof Iterable<?> it ? count(it) : 0;
+                allEntities += count(level.getEntities().getAll());
                 allChunks += level.getChunkSource().getLoadedChunksCount();
             }
             LOG.info("Census: {} levels, {} entities, {} loaded chunks in all", levels, allEntities, allChunks);

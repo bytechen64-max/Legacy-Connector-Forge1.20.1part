@@ -86,7 +86,7 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData {
             File file = new File(dir, modern.getStringUUID() + suffix);
             if (!file.isFile()) continue;
             try {
-                CompoundTag tag = net.minecraft.nbt.NbtIo.readCompressed(file.toPath(), net.minecraft.nbt.NbtAccounter.UNLIMITED);
+                CompoundTag tag = net.minecraft.nbt.NbtIo.readCompressed(file);
                 var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
                 if (server != null) {
                     tag = net.minecraft.util.datafix.DataFixTypes.PLAYER.updateToCurrentVersion(server.getFixerUpper(), tag,

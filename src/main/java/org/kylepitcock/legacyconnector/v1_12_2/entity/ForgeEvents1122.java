@@ -342,7 +342,7 @@ public final class ForgeEvents1122 {
         });
         game.addListener((net.minecraftforge.event.entity.player.SleepingTimeCheckEvent e) -> {
             if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.player.SleepingTimeCheckEvent.class)) return;
-            if (!(e.getEntity() instanceof net.minecraft.world.entity.player.Player modern)) return;
+            net.minecraft.world.entity.player.Player modern = e.getEntity();
             EntityPlayer p = player(modern);
             if (p == null) return;
             var event = new legacyconnector.v1_12_2.net.minecraftforge.event.entity.player.SleepingTimeCheckEvent(p,

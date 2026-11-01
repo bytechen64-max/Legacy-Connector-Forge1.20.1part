@@ -30,7 +30,7 @@ public class SoundHandler implements legacyconnector.v1_12_2.net.minecraft.clien
     /** Told about every sound that starts (with the legacy view of the sound and its event). */
     public void addListener(ISoundEventListener listener) {
         if (listener == null) return;
-        net.minecraft.client.sounds.SoundEventListener modern = (sound, accessor, range) -> {
+        net.minecraft.client.sounds.SoundEventListener modern = (sound, accessor) -> {
             var id = sound.getLocation();
             var location = new legacyconnector.v1_12_2.net.minecraft.util.ResourceLocation(id.getNamespace(), id.getPath());
             listener.soundPlay(org.kylepitcock.legacyconnector.v1_12_2.client.LegacySounds1122.legacy(sound), SoundEventAccessor.mcc$of(location, accessor));

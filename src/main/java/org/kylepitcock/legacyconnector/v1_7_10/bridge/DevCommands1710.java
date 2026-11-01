@@ -261,7 +261,7 @@ public final class DevCommands1710 {
         ServerPlayer player = source.getPlayerOrException();
         ServerLevel level = player.serverLevel();
         var registry = source.getServer().registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.BIOME);
-        var holder = registry.getHolder(ResourceLocation.parse(id.toString()));
+        var holder = registry.getHolder(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.BIOME, ResourceLocation.parse(id.toString())));
         if (holder.isEmpty()) {
             source.sendFailure(Component.literal("Unknown biome " + id));
             return 0;
@@ -287,8 +287,8 @@ public final class DevCommands1710 {
         var to = from.add(player.getLookAngle().scale(10.0));
         var entityHit = net.minecraft.world.entity.projectile.ProjectileUtil.getEntityHitResult(player.level(), player, from, to,
                 player.getBoundingBox().expandTowards(player.getLookAngle().scale(10.0)).inflate(1.0), e -> !e.isSpectator());
-        if (entityHit instanceof EntityHitResult eh) {
-            var e = eh.getEntity();
+        if (entityHit != null) {
+            var e = entityHit.getEntity();
             var view = EntityBridge.wrap(e);
             source.sendSuccess(() -> Component.literal("Entity " + BuiltInRegistries.ENTITY_TYPE.getKey(e.getType()) + " legacy class " + view.getClass().getName()
                     + " at " + e.blockPosition().toShortString()), false);

@@ -87,11 +87,8 @@ public class SPacketExplosion implements Packet<INetHandlerPlayClient> {
     public net.minecraft.network.protocol.Packet<?> mcc$modern() {
         List<net.minecraft.core.BlockPos> blocks = new ArrayList<>();
         if (affectedBlockPositions != null) for (BlockPos p : affectedBlockPositions) blocks.add(new net.minecraft.core.BlockPos(p.getX(), p.getY(), p.getZ()));
-        boolean large = strength >= 2.0F && !blocks.isEmpty();
+        // 1.20.1's packet carries the position, strength, the blocks and the player's velocity (the particle and sound came later)
         return new net.minecraft.network.protocol.game.ClientboundExplodePacket(posX, posY, posZ, strength, blocks,
-                new net.minecraft.world.phys.Vec3(motionX, motionY, motionZ),
-                blocks.isEmpty() ? net.minecraft.world.level.Explosion.BlockInteraction.KEEP : net.minecraft.world.level.Explosion.BlockInteraction.DESTROY,
-                net.minecraft.core.particles.ParticleTypes.EXPLOSION, large ? net.minecraft.core.particles.ParticleTypes.EXPLOSION_EMITTER
-                        : net.minecraft.core.particles.ParticleTypes.EXPLOSION, net.minecraft.sounds.SoundEvents.GENERIC_EXPLODE);
+                new net.minecraft.world.phys.Vec3(motionX, motionY, motionZ));
     }
 }

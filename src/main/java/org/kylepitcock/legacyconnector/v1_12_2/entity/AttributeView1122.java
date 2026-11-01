@@ -18,9 +18,6 @@ public final class AttributeView1122 extends legacyconnector.v1_12_2.net.minecra
         this.modern = modern;
     }
 
-    private static net.minecraft.resources.ResourceLocation id(UUID id) {
-        return net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("legacyconnector", "modifier/" + id);
-    }
 
     private static AttributeModifier legacy(net.minecraft.world.entity.ai.attributes.AttributeModifier m) {
         // 1.20.1 names a modifier with a plain String (the ResourceLocation id is 1.21).
@@ -71,12 +68,12 @@ public final class AttributeView1122 extends legacyconnector.v1_12_2.net.minecra
 
     @Override
     public boolean hasModifier(AttributeModifier modifier) {
-        return modifier != null && modern.hasModifier(id(modifier.getID()));
+        return modifier != null && modern.getModifier(modifier.getID()) != null;
     }
 
     @Override
     public AttributeModifier getModifier(UUID id) {
-        var m = modern.getModifier(id(id));
+        var m = modern.getModifier(id);
         return m == null ? null : legacy(m);
     }
 
@@ -90,12 +87,12 @@ public final class AttributeView1122 extends legacyconnector.v1_12_2.net.minecra
 
     @Override
     public void removeModifier(AttributeModifier modifier) {
-        if (modifier != null) modern.removeModifier(id(modifier.getID()));
+        if (modifier != null) modern.removeModifier(modifier.getID());
     }
 
     @Override
     public void removeModifier(UUID id) {
-        modern.removeModifier(id(id));
+        modern.removeModifier(id);
     }
 
     @Override

@@ -40,6 +40,6 @@ public class SPacketEntityEffect implements Packet<INetHandlerPlayClient> {
     @Override
     public net.minecraft.network.protocol.Packet<?> mcc$modern() {
         var modern = effect == null ? null : effect.mcc$toModern();
-        return modern == null ? null : new net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket(entityId, modern, false);
+        return modern == null ? null : new net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket(entityId, modern);
     }
 }

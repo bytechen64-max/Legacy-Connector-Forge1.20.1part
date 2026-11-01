@@ -17,7 +17,7 @@ import net.minecraft.nbt.NbtIo;
 /** NBT file/stream IO (the format did not change between 1.12.2 and 1.21). */
 public class CompressedStreamTools {
     public static NBTTagCompound readCompressed(InputStream in) throws IOException {
-        return new NBTTagCompound(NbtIo.readCompressed(in, NbtAccounter.UNLIMITED));
+        return new NBTTagCompound(NbtIo.readCompressed(in));
     }
 
     public static void writeCompressed(NBTTagCompound tag, OutputStream out) throws IOException {

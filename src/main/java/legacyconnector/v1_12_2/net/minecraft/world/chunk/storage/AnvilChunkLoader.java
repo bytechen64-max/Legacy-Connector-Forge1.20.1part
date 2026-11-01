@@ -77,7 +77,9 @@ public class AnvilChunkLoader implements IChunkLoader {
 
     protected static Entity createEntityFromNBT(NBTTagCompound compound, World worldIn) {
         var level = worldIn == null ? null : worldIn.mcc$level();
-        if (level == null || compound == null || !(compound.mcc$modern() instanceof net.minecraft.nbt.CompoundTag tag)) return null;
+                if (level == null || compound == null) return null;
+        net.minecraft.nbt.CompoundTag tag = compound.mcc$modern();
+        if (tag == null) return null;
         try {
             var created = net.minecraft.world.entity.EntityType.loadEntityRecursive(tag.copy(), level, e -> e);
             return org.kylepitcock.legacyconnector.v1_12_2.bridge.EntityBridge1122.wrap(created);

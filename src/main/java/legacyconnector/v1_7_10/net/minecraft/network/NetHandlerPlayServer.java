@@ -49,7 +49,7 @@ public class NetHandlerPlayServer implements legacyconnector.v1_7_10.net.minecra
             if (be == null) return;
             net.minecraft.nbt.CompoundTag tag = s35.getNbtCompound().mcc$modern().copy();
             tag.putInt("mcc$type", s35.getTileEntityType());
-            player.connection.send(net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket.create(be, (b, registries) -> tag));
+            player.connection.send(net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket.create(be, b -> tag));
         } else if (packet instanceof legacyconnector.v1_7_10.cpw.mods.fml.common.network.internal.FMLProxyPacket fml) {
             org.kylepitcock.legacyconnector.v1_7_10.bridge.FmlChannelBridge.send(fml,
                     legacyconnector.v1_7_10.cpw.mods.fml.common.network.FMLOutboundHandler.OutboundTarget.PLAYER, playerEntity);

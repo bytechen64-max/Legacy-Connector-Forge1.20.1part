@@ -16,6 +16,6 @@ public class S1DPacketEntityEffect extends Packet {
     @Override
     public void mcc$send(net.minecraft.server.level.ServerPlayer player) {
         var inst = effect.mcc$modern();
-        if (inst != null) player.connection.send(new net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket(entityId, inst, false));
+        if (inst != null) player.connection.send(new net.minecraft.network.protocol.game.ClientboundUpdateMobEffectPacket(entityId, inst));
     }
 }

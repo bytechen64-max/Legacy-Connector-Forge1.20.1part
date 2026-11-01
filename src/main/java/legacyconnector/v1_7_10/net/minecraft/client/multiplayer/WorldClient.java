@@ -42,7 +42,7 @@ public class WorldClient extends World {
         var old = level.getEntity(id);
         if (old != null && old != modern) level.removeEntity(id, net.minecraft.world.entity.Entity.RemovalReason.DISCARDED);
         modern.setId(id);
-        level.addEntity(modern);
+        level.addEntity(id, modern);
     }
 
     /** Takes the entity with the network id out of the client world; returns it (null when there was none). */
