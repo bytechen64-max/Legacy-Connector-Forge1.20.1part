@@ -40,7 +40,7 @@ public class SaveFormatOld implements ISaveFormat {
             var gameType = legacyconnector.v1_7_10.net.minecraft.world.WorldSettings.GameType.SURVIVAL;
             boolean hardcore = false, cheats = false;
             try {
-                var data = net.minecraft.nbt.NbtIo.readCompressed(level.toPath(), net.minecraft.nbt.NbtAccounter.unlimitedHeap()).getCompound("Data");
+                var data = net.minecraft.nbt.NbtIo.readCompressed(level.toPath(), net.minecraft.nbt.NbtAccounter.UNLIMITED).getCompound("Data");
                 if (data.contains("LevelName")) name = data.getString("LevelName");
                 if (data.contains("LastPlayed")) lastPlayed = data.getLong("LastPlayed");
                 gameType = legacyconnector.v1_7_10.net.minecraft.world.WorldSettings.GameType.getByID(data.getInt("GameType"));

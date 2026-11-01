@@ -29,7 +29,7 @@ public final class ModernScreens1122 {
     static GuiScreen viewOf(Screen screen) {
         try {
             if (screen instanceof TitleScreen) return new MainMenuView(screen);
-            if (screen instanceof net.minecraft.client.gui.screens.options.controls.ControlsScreen cs) return new ControlsView(cs);
+            if (screen instanceof net.minecraft.client.gui.screens.controls.ControlsScreen cs) return new ControlsView(cs);
             if (screen instanceof net.minecraft.client.gui.screens.worldselection.SelectWorldScreen ws) return new WorldSelectionView(ws);
             if (screen instanceof CreativeModeInventoryScreen cs) return new CreativeView(cs);
             if (screen instanceof InventoryScreen is) return new InventoryView(is);
@@ -179,7 +179,7 @@ public final class ModernScreens1122 {
             if (s == null) return;
             setGuiSize(s.width, s.height);
             if (parentScreen == null) {
-                Object last = Fields1122.get(net.minecraft.client.gui.screens.options.OptionsSubScreen.class, s, "lastScreen");
+                Object last = Fields1122.get(net.minecraft.client.gui.screens.OptionsSubScreen.class, s, "lastScreen");
                 if (last instanceof Screen ls) parentScreen = ScreenEvents1122.legacyOf(ls);
             }
         }

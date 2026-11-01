@@ -66,7 +66,9 @@ public final class VillageSelfTest {
         log.info("VILLAGE TEST: village near {} {}; blocks of mods in the 9x9 chunks around it: {}; villagers loaded: {}", found.getX(), found.getZ(), blocks, villagers);
         final int[] ticks = {0};
         final int fcx = cx, fcz = cz;
-        MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.tick.ServerTickEvent.Post e) -> {
+        MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.TickEvent.ServerTickEvent e) -> {
+            // 1.21 has separate Pre/Post events; 1.20.1 fires one event with a phase.
+            if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
             if (++ticks[0] != 600) return;
             int stone = 0, wallgen = 0;
             BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();

@@ -107,7 +107,7 @@ public class PotionEffect implements Comparable<PotionEffect> {
     /** The modern effect, or null when the potion has no modern counterpart (mod potions are not bridged yet). */
     public net.minecraft.world.effect.MobEffectInstance mcc$toModern() {
         var modern = potion == null ? null : potion.mcc$modern();
-        return modern == null ? null : new net.minecraft.world.effect.MobEffectInstance(modern, duration, amplifier, isAmbient, showParticles);
+        return modern == null ? null : new net.minecraft.world.effect.MobEffectInstance(modern.value(), duration, amplifier, isAmbient, showParticles);
     }
 
     @Override

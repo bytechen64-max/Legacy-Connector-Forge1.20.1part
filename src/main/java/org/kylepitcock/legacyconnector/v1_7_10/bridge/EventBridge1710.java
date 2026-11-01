@@ -95,10 +95,14 @@ public final class EventBridge1710 {
 
     public static void register(IEventBus gameBus) {
         // ---- FML bus: ticks
-        gameBus.addListener((ServerTickEvent.Pre e) -> {
+        gameBus.addListener((net.minecraftforge.event.TickEvent.ServerTickEvent e) -> {
+            // 1.21 has separate Pre/Post events; 1.20.1 fires one event with a phase.
+            if (e.phase != net.minecraftforge.event.TickEvent.Phase.START) return;
             if (wants(fml(), TickEvent.ServerTickEvent.class)) fml().post(new TickEvent.ServerTickEvent(TickEvent.Phase.START));
         });
-        gameBus.addListener((ServerTickEvent.Post e) -> {
+        gameBus.addListener((net.minecraftforge.event.TickEvent.ServerTickEvent e) -> {
+            // 1.21 has separate Pre/Post events; 1.20.1 fires one event with a phase.
+            if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
             if (wants(fml(), TickEvent.ServerTickEvent.class)) fml().post(new TickEvent.ServerTickEvent(TickEvent.Phase.END));
         });
         gameBus.addListener((LevelTickEvent.Pre e) -> worldTick(e.getLevel(), TickEvent.Phase.START));

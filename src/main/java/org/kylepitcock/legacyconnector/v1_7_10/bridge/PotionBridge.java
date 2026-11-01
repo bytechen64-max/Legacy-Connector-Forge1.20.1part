@@ -87,12 +87,12 @@ public final class PotionBridge {
 
     public static boolean isActive(LivingEntity entity, int id) {
         Holder<MobEffect> h = effectOrNull(id);
-        return h != null && entity.hasEffect(h);
+        return h != null && entity.hasEffect(h.value());
     }
 
     public static void remove(LivingEntity entity, int id) {
         Holder<MobEffect> h = effectOrNull(id);
-        if (h != null) entity.removeEffect(h);
+        if (h != null) entity.removeEffect(h.value());
     }
 
     /** A mod potion's attribute modifier on a vanilla attribute, applied by its modern effect while active (amount x (amplifier + 1)). */
@@ -102,9 +102,9 @@ public final class PotionBridge {
         var target = legacyconnector.v1_7_10.net.minecraft.entity.SharedMonsterAttributes.mcc$modern(attribute);
         if (effect == null || target == null) return;
         var op = switch (modifier.getOperation()) {
-            case 1 -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_BASE;
-            case 2 -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL;
-            default -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE;
+            case 1 -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.MULTIPLY_BASE;
+            case 2 -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.MULTIPLY_TOTAL;
+            default -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADDITION;
         };
         ResourceLocation key = ResourceLocation.fromNamespaceAndPath("legacyconnector", "potion_" + potion.id + "_" + modifier.getID());
         try {

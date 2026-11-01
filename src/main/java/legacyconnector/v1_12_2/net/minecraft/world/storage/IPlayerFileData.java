@@ -56,7 +56,7 @@ public interface IPlayerFileData {
             java.io.File file = new java.io.File(dir, p.getStringUUID() + ".dat");
             if (!file.isFile()) return null;
             try {
-                var tag = net.minecraft.nbt.NbtIo.readCompressed(file.toPath(), net.minecraft.nbt.NbtAccounter.unlimitedHeap());
+                var tag = net.minecraft.nbt.NbtIo.readCompressed(file.toPath(), net.minecraft.nbt.NbtAccounter.UNLIMITED);
                 p.load(tag);
                 return new NBTTagCompound(tag);
             } catch (Exception e) {

@@ -37,13 +37,13 @@ public final class Stacks1122 {
 
     /** 1.12's potion tags (Potion, CustomPotionColor, CustomPotionEffects) as the modern potion contents; unknown potions stay in the tag. */
     private static void potionToModern(net.minecraft.nbt.CompoundTag data, net.minecraft.world.item.ItemStack out) {
-        java.util.Optional<net.minecraft.core.Holder<net.minecraft.world.item.alchemy.Potion>> potion = java.util.Optional.empty();
+        java.util.Optional<net.minecraft.world.item.alchemy.Potion> potion = java.util.Optional.empty();
         if (data.contains("Potion", 8)) {
+            // 1.20.1 holds the potion itself; the 1.21 holder is looked up by id.
             var id = net.minecraft.resources.ResourceLocation.tryParse(data.getString("Potion"));
-            var holder = id == null ? java.util.Optional.<net.minecraft.core.Holder.Reference<net.minecraft.world.item.alchemy.Potion>>empty()
-                    : net.minecraft.core.registries.BuiltInRegistries.POTION.getHolder(id);
-            if (holder.isPresent()) {
-                potion = java.util.Optional.of(holder.get());
+            var found = id == null ? null : net.minecraft.core.registries.BuiltInRegistries.POTION.get(id);
+            if (found != null) {
+                potion = java.util.Optional.of(found);
                 data.remove("Potion");
             }
         }
@@ -72,7 +72,10 @@ public final class Stacks1122 {
     /** The modern potion contents as 1.12's potion tags. */
     private static void potionFromModern(org.kylepitcock.legacyconnector.core.data.PotionData contents, ItemStack out) {
         NBTTagCompound tag = out.hasTagCompound() ? out.getTagCompound() : new NBTTagCompound();
-        contents.potion().flatMap(net.minecraft.core.Holder::unwrapKey).ifPresent(k -> tag.setString("Potion", k.location().toString()));
+        contents.potion().ifPresent(p -> {
+            var key = net.minecraft.core.registries.BuiltInRegistries.POTION.getKey(p);
+            if (key != null) tag.setString("Potion", key.toString());
+        });
         contents.customColor().ifPresent(c -> tag.setInteger("CustomPotionColor", c));
         if (!contents.customEffects().isEmpty()) {
             var list = new legacyconnector.v1_12_2.net.minecraft.nbt.NBTTagList();

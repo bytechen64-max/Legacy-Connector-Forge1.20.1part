@@ -95,11 +95,11 @@ public final class ClientGui1122 {
             case "GuiMultiplayer" -> new net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen(parent);
             case "GuiScreenAddServer" -> screen instanceof legacyconnector.v1_12_2.net.minecraft.client.gui.GuiScreenAddServer add ? add.mcc$modern(parent) : null;
             case "GuiScreenResourcePacks" -> screen instanceof legacyconnector.v1_12_2.net.minecraft.client.gui.GuiScreenResourcePacks packs ? packs.mcc$modern(parent) : null;
-            case "GuiOptions" -> new net.minecraft.client.gui.screens.options.OptionsScreen(parent, mc.options);
-            case "GuiLanguage" -> new net.minecraft.client.gui.screens.options.LanguageSelectScreen(parent, mc.options, mc.getLanguageManager());
-            case "GuiScreenOptionsSounds" -> new net.minecraft.client.gui.screens.options.SoundOptionsScreen(parent, mc.options);
-            case "GuiVideoSettings" -> new net.minecraft.client.gui.screens.options.VideoSettingsScreen(parent, mc, mc.options);
-            case "GuiControls" -> new net.minecraft.client.gui.screens.options.controls.ControlsScreen(parent, mc.options);
+            case "GuiOptions" -> new net.minecraft.client.gui.screens.OptionsScreen(parent, mc.options);
+            case "GuiLanguage" -> new net.minecraft.client.gui.screens.LanguageSelectScreen(parent, mc.options, mc.getLanguageManager());
+            case "GuiScreenOptionsSounds" -> new net.minecraft.client.gui.screens.SoundOptionsScreen(parent, mc.options);
+            case "GuiVideoSettings" -> new net.minecraft.client.gui.screens.VideoSettingsScreen(parent, mc, mc.options);
+            case "GuiControls" -> new net.minecraft.client.gui.screens.controls.ControlsScreen(parent, mc.options);
             case "GuiIngameMenu" -> new net.minecraft.client.gui.screens.PauseScreen(true);
             case "GuiStats" -> mc.player == null ? null : new net.minecraft.client.gui.screens.achievement.StatsScreen(parent, mc.player.getStats());
             case "GuiModList" -> new net.minecraftforge.client.gui.ModListScreen(parent);

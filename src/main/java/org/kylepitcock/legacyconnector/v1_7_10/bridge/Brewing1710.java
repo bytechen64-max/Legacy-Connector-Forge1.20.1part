@@ -36,13 +36,13 @@ public final class Brewing1710 {
     private static final String TAG = "legacyconnector:potion";
     private static final int SPLASH = 16384;
     /** Brewed 1.7.10 values of the vanilla potions (without the splash bit). */
-    private static final Map<Integer, Holder<Potion>> VANILLA = new HashMap<>();
-    private static final Map<Holder<Potion>, Integer> VALUE = new HashMap<>();
+    private static final Map<Integer, Potion> VANILLA = new HashMap<>();
+    private static final Map<Potion, Integer> VALUE = new HashMap<>();
     private static boolean listening;
 
     private Brewing1710() {}
 
-    private static void put(int value, Holder<Potion> potion) {
+    private static void put(int value, Potion potion) {
         VANILLA.put(value, potion);
         VALUE.putIfAbsent(potion, value);
     }
@@ -122,7 +122,7 @@ public final class Brewing1710 {
         boolean splash = (value & SPLASH) != 0;
         int plain = value & ~SPLASH;
         ItemStack stack = new ItemStack(splash ? Items.SPLASH_POTION : Items.POTION);
-        Holder<Potion> vanilla = VANILLA.get(plain);
+        Potion vanilla = VANILLA.get(plain);
         String signature = signature(plain);
         if (vanilla == null) {
             for (var e : VANILLA.entrySet()) {
@@ -146,7 +146,7 @@ public final class Brewing1710 {
             PotionEffect e = (PotionEffect) o;
             Holder<MobEffect> effect = PotionBridge.effectOrNull(e.getPotionID());
             if (effect == null) continue;
-            effects.add(new MobEffectInstance(effect, e.getDuration(), e.getAmplifier()));
+            effects.add(new MobEffectInstance(effect.value(), e.getDuration(), e.getAmplifier()));
             if (name == null) name = effect.value().getDisplayName();
         }
         if (effects.isEmpty()) {

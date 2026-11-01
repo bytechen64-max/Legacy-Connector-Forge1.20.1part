@@ -70,9 +70,9 @@ public class AttributeModifier {
 
     public net.minecraft.world.entity.ai.attributes.AttributeModifier mcc$modern() {
         var op = switch (operation) {
-            case 1 -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_BASE;
-            case 2 -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL;
-            default -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE;
+            case 1 -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.MULTIPLY_BASE;
+            case 2 -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.MULTIPLY_TOTAL;
+            default -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADDITION;
         };
         return new net.minecraft.world.entity.ai.attributes.AttributeModifier(mcc$id(id), amount, op);
     }

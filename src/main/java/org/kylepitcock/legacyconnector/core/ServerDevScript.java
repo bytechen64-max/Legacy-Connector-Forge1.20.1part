@@ -19,7 +19,9 @@ public final class ServerDevScript {
         if (dir == null || dir.isEmpty()) return;
         Path root = Path.of(dir);
         int[] tick = {0};
-        MinecraftForge.EVENT_BUS.addListener((ServerTickEvent.Post e) -> {
+        MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.TickEvent.ServerTickEvent e) -> {
+            // 1.21 has separate Pre/Post events; 1.20.1 fires one event with a phase.
+            if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
             if (++tick[0] % 10 != 0) return;
             try (var files = Files.list(root)) {
                 for (Path p : files.filter(f -> f.getFileName().toString().endsWith(".js")).toList()) {

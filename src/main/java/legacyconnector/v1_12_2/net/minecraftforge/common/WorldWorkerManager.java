@@ -17,10 +17,14 @@ public class WorldWorkerManager {
         workers.add(worker);
         if (!listening) {
             listening = true;
-            net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.tick.ServerTickEvent.Pre e) -> {
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.TickEvent.ServerTickEvent e) -> {
+                // 1.21 has separate Pre/Post events; 1.20.1 fires one event with a phase.
+                if (e.phase != net.minecraftforge.event.TickEvent.Phase.START) return;
                 startTime = System.currentTimeMillis();
             });
-            net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.tick.ServerTickEvent.Post e) -> {
+            net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.TickEvent.ServerTickEvent e) -> {
+                // 1.21 has separate Pre/Post events; 1.20.1 fires one event with a phase.
+                if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
                 tick(true);
             });
             net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.server.ServerStoppedEvent e) -> clear());

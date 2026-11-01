@@ -9,7 +9,7 @@ public class NBTSizeTracker {
 
         @Override
         net.minecraft.nbt.NbtAccounter mcc$accounter() {
-            return net.minecraft.nbt.NbtAccounter.unlimitedHeap();
+            return net.minecraft.nbt.NbtAccounter.UNLIMITED;
         }
     };
 

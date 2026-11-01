@@ -29,7 +29,9 @@ public final class EntityCensus {
     public static void register() {
         if (!Boolean.getBoolean("legacyconnector.memoryLog") && System.getProperty("legacyconnector.shotScenario") == null
                 && !Boolean.getBoolean("legacyconnector.entitySelfTest")) return;
-        MinecraftForge.EVENT_BUS.addListener((ServerTickEvent.Post e) -> {
+        MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.TickEvent.ServerTickEvent e) -> {
+            // 1.21 has separate Pre/Post events; 1.20.1 fires one event with a phase.
+            if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
             if (++ticks % 600 != 0) return;
             int levels = 0, allEntities = 0, allChunks = 0;
             for (ServerLevel level : e.getServer().getAllLevels()) {

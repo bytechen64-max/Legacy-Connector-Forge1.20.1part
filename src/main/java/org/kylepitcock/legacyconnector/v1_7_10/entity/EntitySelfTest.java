@@ -35,7 +35,10 @@ public final class EntitySelfTest {
     public static void register() {
         if (!Boolean.getBoolean("legacyconnector.entitySelfTest")) return;
         MinecraftForge.EVENT_BUS.addListener((ServerStartedEvent e) -> start(e.getServer()));
-        MinecraftForge.EVENT_BUS.addListener((ServerTickEvent.Post e) -> tick());
+        MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.TickEvent.ServerTickEvent e) -> {
+            if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
+            tick();
+        });
         // Other dev fixtures may stop the server early: report what there is.
         MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.server.ServerStoppingEvent e) -> {
             if (ticks >= 0 && ticks < 100) {

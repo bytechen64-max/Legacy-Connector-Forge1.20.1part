@@ -182,7 +182,8 @@ public class PotionEffect {
     }
 
     public MobEffectInstance mcc$modern() {
-        MobEffectInstance instance = new MobEffectInstance(PotionBridge.effect(potionID), duration, amplifier, isAmbient, true);
+        var effect = PotionBridge.effect(potionID);
+        MobEffectInstance instance = new MobEffectInstance(effect == null ? null : effect.value(), duration, amplifier, isAmbient, true);
         if (curativeItems != null) {
             instance.getCures().remove(EffectCures.MILK); // the legacy list decides about milk; modern cures (totem, honey) stay
             for (ItemStack stack : curativeItems) {
@@ -198,7 +199,7 @@ public class PotionEffect {
         LivingEntity owner = mcc$owner;
         if (owner == null || owner.level().isClientSide()) return;
         var holder = PotionBridge.effectOrNull(potionID);
-        if (holder == null || !owner.hasEffect(holder)) return;
+        if (holder == null || !owner.hasEffect(holder.value())) return;
         owner.forceAddEffect(mcc$modern(), null);
     }
 }

@@ -29,7 +29,10 @@ public final class ServerScript {
         String dir = System.getProperty("legacyconnector.serverScript");
         if (dir == null || dir.isEmpty()) return;
         Path path = Path.of(dir);
-        MinecraftForge.EVENT_BUS.addListener((ServerTickEvent.Post e) -> poll(e.getServer(), path));
+        MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.TickEvent.ServerTickEvent e) -> {
+            if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
+            poll(e.getServer(), path);
+        });
     }
 
     private static void poll(net.minecraft.server.MinecraftServer server, Path dir) {

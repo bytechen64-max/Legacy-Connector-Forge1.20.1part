@@ -179,7 +179,9 @@ public final class LegacyConnector {
         int stopTicks = Integer.getInteger("legacyconnector.autostopTicks", 0);
         if (stopTicks > 0) {
             int[] ticks = {0};
-            game.addListener((net.minecraftforge.event.tick.ServerTickEvent.Post e) -> {
+            game.addListener((net.minecraftforge.event.TickEvent.ServerTickEvent e) -> {
+                // 1.21 has separate Pre/Post events; 1.20.1 fires one event with a phase.
+                if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
                 if (++ticks[0] != stopTicks) return;
                 LOGGER.info("Test autostop after {} ticks: saving and stopping", stopTicks);
                 long chunks = 0;

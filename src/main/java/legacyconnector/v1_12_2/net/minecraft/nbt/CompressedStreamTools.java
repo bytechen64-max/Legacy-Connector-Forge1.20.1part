@@ -17,7 +17,7 @@ import net.minecraft.nbt.NbtIo;
 /** NBT file/stream IO (the format did not change between 1.12.2 and 1.21). */
 public class CompressedStreamTools {
     public static NBTTagCompound readCompressed(InputStream in) throws IOException {
-        return new NBTTagCompound(NbtIo.readCompressed(in, NbtAccounter.unlimitedHeap()));
+        return new NBTTagCompound(NbtIo.readCompressed(in, NbtAccounter.UNLIMITED));
     }
 
     public static void writeCompressed(NBTTagCompound tag, OutputStream out) throws IOException {
@@ -44,7 +44,7 @@ public class CompressedStreamTools {
 
     /** The size limit is the modern reader's: legacy callers passed {@link NBTSizeTracker#INFINITE} or a 2 MB limit. */
     public static NBTTagCompound read(DataInput in, NBTSizeTracker tracker) throws IOException {
-        return new NBTTagCompound(NbtIo.read(in, tracker == null ? NbtAccounter.unlimitedHeap() : tracker.mcc$accounter()));
+        return new NBTTagCompound(NbtIo.read(in, tracker == null ? NbtAccounter.UNLIMITED : tracker.mcc$accounter()));
     }
 
     public static void write(NBTTagCompound tag, File file) throws IOException {

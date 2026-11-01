@@ -58,10 +58,14 @@ public final class EventBridge1122 {
         if (registered) return;
         registered = true;
         IEventBus bus = net.minecraftforge.common.MinecraftForge.EVENT_BUS;
-        bus.addListener((net.minecraftforge.event.tick.ServerTickEvent.Pre e) -> {
+        bus.addListener((net.minecraftforge.event.TickEvent.ServerTickEvent e) -> {
+            // 1.21 has separate Pre/Post events; 1.20.1 fires one event with a phase.
+            if (e.phase != net.minecraftforge.event.TickEvent.Phase.START) return;
             if (wants(TickEvent.ServerTickEvent.class)) post(new TickEvent.ServerTickEvent(TickEvent.Phase.START));
         });
-        bus.addListener((net.minecraftforge.event.tick.ServerTickEvent.Post e) -> {
+        bus.addListener((net.minecraftforge.event.TickEvent.ServerTickEvent e) -> {
+            // 1.21 has separate Pre/Post events; 1.20.1 fires one event with a phase.
+            if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
             if (wants(TickEvent.ServerTickEvent.class)) post(new TickEvent.ServerTickEvent(TickEvent.Phase.END));
         });
         bus.addListener((net.minecraftforge.event.tick.LevelTickEvent.Pre e) -> worldTick(e.getLevel(), TickEvent.Phase.START));

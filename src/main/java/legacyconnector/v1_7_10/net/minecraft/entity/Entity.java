@@ -763,7 +763,7 @@ public abstract class Entity implements ICommandSender {
                     attr.removeModifier(id);
                     if (wanted != 0.0D) {
                         attr.addTransientModifier(new net.minecraft.world.entity.ai.attributes.AttributeModifier(id, wanted,
-                                net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE));
+                                net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADDITION));
                     }
                 }
             }

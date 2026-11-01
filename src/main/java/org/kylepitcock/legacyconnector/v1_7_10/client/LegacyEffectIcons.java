@@ -56,7 +56,7 @@ public final class LegacyEffectIcons {
             try {
                 if (sheet == null || sheet.equals(VANILLA_SHEET)) {
                     var vanilla = PotionBridge.vanillaWithIcon(index);
-                    if (vanilla != null) graphics.blit(x, y, 0, 18, 18, Minecraft.getInstance().getMobEffectTextures().get(vanilla));
+                    if (vanilla != null) graphics.blit(x, y, 0, 18, 18, Minecraft.getInstance().getMobEffectTextures().get(vanilla.value()));
                 } else {
                     graphics.blit(sheet, x, y, index % 8 * 18, 198 + index / 8 * 18, 18, 18, 256, 256);
                 }

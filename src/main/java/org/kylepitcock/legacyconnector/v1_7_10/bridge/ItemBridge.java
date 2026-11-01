@@ -533,7 +533,7 @@ public final class ItemBridge {
             modifiers.add(net.minecraft.world.entity.ai.attributes.Attributes.ARMOR,
                     new net.minecraft.world.entity.ai.attributes.AttributeModifier(
                             net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("legacyconnector", "legacy_armor_" + armor.armorType),
-                            armor.damageReduceAmount, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE), group);
+                            armor.damageReduceAmount, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADDITION), group);
             anyModifier = true;
         }
         if (anyModifier && damage <= 0) p.attributes(modifiers.build());
@@ -542,7 +542,7 @@ public final class ItemBridge {
             p.attributes(net.minecraft.world.item.component.ItemAttributeModifiers.builder()
                     .add(net.minecraft.world.entity.ai.attributes.Attributes.ATTACK_DAMAGE,
                             new net.minecraft.world.entity.ai.attributes.AttributeModifier(net.minecraft.world.item.Item.BASE_ATTACK_DAMAGE_ID,
-                                    damage, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE),
+                                    damage, net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADDITION),
                             net.minecraft.world.entity.EquipmentSlotGroup.MAINHAND)
                     .build());
         }

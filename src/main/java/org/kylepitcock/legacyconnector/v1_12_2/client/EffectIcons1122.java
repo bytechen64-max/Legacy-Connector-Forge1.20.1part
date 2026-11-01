@@ -94,7 +94,7 @@ public final class EffectIcons1122 {
                 try {
                     if (sheet == null || sheet.equals(VANILLA_SHEET)) {
                         Holder<MobEffect> vanilla = VANILLA.get(index);
-                        if (vanilla != null) graphics.blit(x, y, 0, 18, 18, net.minecraft.client.Minecraft.getInstance().getMobEffectTextures().get(vanilla));
+                        if (vanilla != null) graphics.blit(x, y, 0, 18, 18, net.minecraft.client.Minecraft.getInstance().getMobEffectTextures().get(vanilla.value()));
                     } else {
                         graphics.blit(sheet, x, y, index % 8 * 18, 198 + index / 8 * 18, 18, 18, 256, 256);
                     }

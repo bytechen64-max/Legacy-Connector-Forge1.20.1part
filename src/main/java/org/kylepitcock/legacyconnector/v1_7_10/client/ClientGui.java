@@ -79,14 +79,14 @@ public final class ClientGui {
                 yield mc.screen;
             }
             case "GuiMultiplayer" -> new net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen(parent);
-            case "GuiOptions", "GuiSnooper", "GuiScreenResourcePacks" -> new net.minecraft.client.gui.screens.options.OptionsScreen(parent, mc.options);
-            case "GuiLanguage" -> new net.minecraft.client.gui.screens.options.LanguageSelectScreen(parent, mc.options, mc.getLanguageManager());
-            case "GuiScreenOptionsSounds" -> new net.minecraft.client.gui.screens.options.SoundOptionsScreen(parent, mc.options);
-            case "GuiVideoSettings" -> new net.minecraft.client.gui.screens.options.VideoSettingsScreen(parent, mc, mc.options);
-            case "GuiControls" -> new net.minecraft.client.gui.screens.options.controls.ControlsScreen(parent, mc.options);
+            case "GuiOptions", "GuiSnooper", "GuiScreenResourcePacks" -> new net.minecraft.client.gui.screens.OptionsScreen(parent, mc.options);
+            case "GuiLanguage" -> new net.minecraft.client.gui.screens.LanguageSelectScreen(parent, mc.options, mc.getLanguageManager());
+            case "GuiScreenOptionsSounds" -> new net.minecraft.client.gui.screens.SoundOptionsScreen(parent, mc.options);
+            case "GuiVideoSettings" -> new net.minecraft.client.gui.screens.VideoSettingsScreen(parent, mc, mc.options);
+            case "GuiControls" -> new net.minecraft.client.gui.screens.controls.ControlsScreen(parent, mc.options);
             case "GuiIngameMenu" -> new net.minecraft.client.gui.screens.PauseScreen(true);
             case "GuiModList" -> new net.minecraftforge.client.gui.ModListScreen(parent);
-            case "ScreenChatOptions" -> new net.minecraft.client.gui.screens.options.ChatOptionsScreen(parent, mc.options);
+            case "ScreenChatOptions" -> new net.minecraft.client.gui.screens.ChatOptionsScreen(parent, mc.options);
             case "GuiInventory" -> mc.player == null ? null : new net.minecraft.client.gui.screens.inventory.InventoryScreen(mc.player);
             case "GuiStats" -> mc.player == null ? null : new net.minecraft.client.gui.screens.achievement.StatsScreen(parent, mc.player.getStats());
             case "GuiChat" -> screen instanceof legacyconnector.v1_7_10.net.minecraft.client.gui.GuiChat chat

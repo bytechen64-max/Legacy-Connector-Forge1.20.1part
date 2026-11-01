@@ -39,7 +39,10 @@ public final class FiskHeroesHooks {
 
     /** The hooks that run on the server too: slow motion changes the server's tick rate (the hero's TickrateHandler computes it). */
     public static void register(net.minecraftforge.eventbus.api.IEventBus gameBus) {
-        gameBus.addListener((net.minecraftforge.event.tick.ServerTickEvent.Post e) -> serverTick(e.getServer()));
+        gameBus.addListener((net.minecraftforge.event.TickEvent.ServerTickEvent e) -> {
+            if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
+            serverTick(e.getServer());
+        });
         if (net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) FiskHeroesClient.register(gameBus);
     }
 

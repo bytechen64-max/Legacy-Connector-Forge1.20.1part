@@ -47,7 +47,10 @@ public final class BlockSelfTest {
     public static void register() {
         if (!Boolean.getBoolean("legacyconnector.entitySelfTest")) return;
         MinecraftForge.EVENT_BUS.addListener((ServerStartedEvent e) -> start(e.getServer()));
-        MinecraftForge.EVENT_BUS.addListener((ServerTickEvent.Post e) -> tick(e.getServer()));
+        MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.TickEvent.ServerTickEvent e) -> {
+            if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
+            tick(e.getServer());
+        });
         // Other dev fixtures stop the server early (the fixture mod after its own test): report what there is.
         MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.server.ServerStoppingEvent e) -> {
             if (ticks >= 0 && ticks < 60) {

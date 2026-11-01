@@ -37,7 +37,10 @@ public final class ChromaDimensionBarriers {
     private ChromaDimensionBarriers() {}
 
     public static void register(IEventBus game) {
-        game.addListener((ServerTickEvent.Post e) -> tick(e.getServer()));
+        game.addListener((net.minecraftforge.event.TickEvent.ServerTickEvent e) -> {
+            if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
+            tick(e.getServer());
+        });
     }
 
     private static boolean ready() {

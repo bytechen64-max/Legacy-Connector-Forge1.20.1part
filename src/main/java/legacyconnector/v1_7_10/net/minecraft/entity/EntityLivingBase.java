@@ -292,7 +292,7 @@ public abstract class EntityLivingBase extends Entity {
     public legacyconnector.v1_7_10.net.minecraft.potion.PotionEffect getActivePotionEffect(legacyconnector.v1_7_10.net.minecraft.potion.Potion potion) {
         if (mcc$entity == null || potion == null) return null;
         var holder = org.kylepitcock.legacyconnector.v1_7_10.bridge.PotionBridge.effectOrNull(potion.id);
-        var modern = holder == null ? null : mcc$living().getEffect(holder);
+        var modern = holder == null ? null : mcc$living().getEffect(holder.value());
         return modern == null ? null : legacyconnector.v1_7_10.net.minecraft.potion.PotionEffect.mcc$wrap(modern, mcc$living());
     }
 

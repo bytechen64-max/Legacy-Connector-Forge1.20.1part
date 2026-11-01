@@ -26,7 +26,9 @@ public final class ServerTickScript {
         String file = System.getProperty("legacyconnector.serverTickScript");
         if (file == null || file.isBlank()) return;
         int from = Integer.getInteger("legacyconnector.serverTickScriptFrom", 200);
-        game.addListener((ServerTickEvent.Post e) -> {
+        game.addListener((net.minecraftforge.event.TickEvent.ServerTickEvent e) -> {
+            // 1.21 has separate Pre/Post events; 1.20.1 fires one event with a phase.
+            if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
             if (++ticks < from || failed) return;
             try {
                 String out = DevScript.eval(Files.readString(Path.of(file)), Map.of("server", e.getServer(), "tick", ran++, "log", LOG));

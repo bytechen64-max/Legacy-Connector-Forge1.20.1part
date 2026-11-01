@@ -40,6 +40,6 @@ public class SPacketRemoveEntityEffect implements Packet<INetHandlerPlayClient> 
     @Override
     public net.minecraft.network.protocol.Packet<?> mcc$modern() {
         var modern = effectId == null ? null : effectId.mcc$modern();
-        return modern == null ? null : new net.minecraft.network.protocol.game.ClientboundRemoveMobEffectPacket(entityId, modern);
+        return modern == null ? null : new net.minecraft.network.protocol.game.ClientboundRemoveMobEffectPacket(entityId, modern.value());
     }
 }

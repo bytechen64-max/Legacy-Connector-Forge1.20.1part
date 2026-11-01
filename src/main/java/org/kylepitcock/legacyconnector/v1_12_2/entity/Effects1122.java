@@ -37,9 +37,9 @@ public final class Effects1122 {
                 if (attribute == null) continue;
                 var mod = e.getValue();
                 var operation = switch (mod.getOperation()) {
-                    case 1 -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_BASE;
-                    case 2 -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL;
-                    default -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE;
+                    case 1 -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.MULTIPLY_BASE;
+                    case 2 -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.MULTIPLY_TOTAL;
+                    default -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADDITION;
                 };
                 effect.addAttributeModifier(attribute, ResourceLocation.fromNamespaceAndPath(id.getNamespace(), id.getPath() + "_" + mod.getID().toString().toLowerCase(java.util.Locale.ROOT)),
                         mod.getAmount(), operation);
