@@ -148,7 +148,14 @@ depend on `runServer`/`runClient`).
 - **MixinExtras is not part of Forge 1.20.1**: `@WrapOperation`/`@Local` need the library, so the three mixins that used
   them are plain `@Redirect`/`@Inject` now.
 - **Forge registers its own capability interfaces** (item handler, fluid handler, item fluid handler, energy) before the
-  mods are asked; `RegisterCapabilitiesEvent.register` throws for them.
+  mods are asked; `RegisterCapabilitiesEvent.register` throws for them *and* logs an error first, so they are skipped
+  rather than caught.
+- **`IModLocator.scanFile` decides what FML reads from a mod file.** `ModFile.scanFile` delegates to the locator's
+  `IModProvider.scanFile`, and Forge's `Scanner` reads every path it receives as a **class file** to collect `@Mod`,
+  access transformers and coremods. An empty implementation therefore makes every file the locator produces scan as empty
+  and FML stops with `constructed 0 mods: [], but had 1 mods specified: [...]`. The development runs never show it (the
+  mod comes from ForgeGradle's own locator), so this only appears from an installed bundle: walk
+  `modFile.getSecureJar().getRootPath()` and pass the `.class` entries.
 
 ## What is left
 
