@@ -207,13 +207,13 @@ public final class ForgeEvents1122 {
                     (float) e.getX(), (float) e.getY(), (float) e.getZ(), null);
             if (post(event)) e.setCanceled(true);
         });
-        game.addListener((net.minecraftforge.event.entity.living.MobDespawnEvent e) -> {
+        game.addListener((net.minecraftforge.event.entity.living.MobSpawnEvent.AllowDespawn e) -> {
             if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.LivingSpawnEvent.AllowDespawn.class)) return;
             if (!(entity(e.getEntity()) instanceof legacyconnector.v1_12_2.net.minecraft.entity.EntityLiving mob)) return;
             var event = new legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.LivingSpawnEvent.AllowDespawn(mob);
             post(event);
-            if (event.getResult() == Event.Result.ALLOW) e.setResult(net.minecraftforge.event.entity.living.MobDespawnEvent.Result.ALLOW);
-            else if (event.getResult() == Event.Result.DENY) e.setResult(net.minecraftforge.event.entity.living.MobDespawnEvent.Result.DENY);
+            // 1.20.1 expresses it as a cancel: DENY keeps the mob alive.
+            if (event.getResult() == Event.Result.DENY) e.setResult(net.minecraftforge.eventbus.api.Event.Result.DENY);
         });
         game.addListener((net.minecraftforge.event.PlayLevelSoundEvent.AtEntity e) -> {
             if (e.getSound() == null || !wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.PlaySoundAtEntityEvent.class)) return;

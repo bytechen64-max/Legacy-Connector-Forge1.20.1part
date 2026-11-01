@@ -23,9 +23,10 @@ final class LegacyGlState {
         if ((saved & part) != 0) return;
         saved |= part;
         switch (part) {
-            case DEPTH_TEST -> depthTest = GlStateManager.DEPTH.mode.enabled;
-            case BLEND -> blend = GlStateManager.BLEND.mode.enabled;
-            case CULL -> cull = GlStateManager.CULL.enable.enabled;
+            // 1.20.1's BooleanState has no getter, so the capability is asked directly (this runs on the render thread).
+            case DEPTH_TEST -> depthTest = org.lwjgl.opengl.GL11.glIsEnabled(org.lwjgl.opengl.GL11.GL_DEPTH_TEST);
+            case BLEND -> blend = org.lwjgl.opengl.GL11.glIsEnabled(org.lwjgl.opengl.GL11.GL_BLEND);
+            case CULL -> cull = org.lwjgl.opengl.GL11.glIsEnabled(org.lwjgl.opengl.GL11.GL_CULL_FACE);
             case DEPTH_MASK -> depthMask = GlStateManager.DEPTH.mask;
             case COLOR_MASK -> {
                 red = GlStateManager.COLOR_MASK.red;
@@ -39,10 +40,10 @@ final class LegacyGlState {
                 srcAlpha = GlStateManager.BLEND.srcAlpha;
                 dstAlpha = GlStateManager.BLEND.dstAlpha;
             }
-            case POLYGON_OFFSET -> polygonOffset = GlStateManager.POLY_OFFSET.fill.enabled;
-            case LOGIC_OP -> logicOp = GlStateManager.COLOR_LOGIC.enable.enabled;
+            case POLYGON_OFFSET -> polygonOffset = org.lwjgl.opengl.GL11.glIsEnabled(org.lwjgl.opengl.GL11.GL_POLYGON_OFFSET_FILL);
+            case LOGIC_OP -> logicOp = org.lwjgl.opengl.GL11.glIsEnabled(org.lwjgl.opengl.GL11.GL_COLOR_LOGIC_OP);
             case DEPTH_FUNC -> depthFunc = GlStateManager.DEPTH.func;
-            case SCISSOR -> scissor = GlStateManager.SCISSOR.mode.enabled;
+            case SCISSOR -> scissor = org.lwjgl.opengl.GL11.glIsEnabled(org.lwjgl.opengl.GL11.GL_SCISSOR_TEST);
             case BLEND_EQUATION -> {
                 // not cached by GlStateManager: modern code draws with GL_FUNC_ADD and only changes it around its own draws
             }

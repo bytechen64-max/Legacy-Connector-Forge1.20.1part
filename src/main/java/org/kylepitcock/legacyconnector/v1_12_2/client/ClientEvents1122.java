@@ -302,8 +302,9 @@ public final class ClientEvents1122 {
         var buffers = mc.renderBuffers().bufferSource();
         // camera-relative and turned to the camera (only the event's model-view holds the camera rotation at this stage)
         var pose = new com.mojang.blaze3d.vertex.PoseStack();
-        pose.last().pose().set(e.getModelViewMatrix());
-        pose.last().normal().set(new org.joml.Matrix3f(e.getModelViewMatrix()));
+        // 1.20.1's event hands out the pose stack (the model-view matrix accessor is 1.20.5+).
+        pose.last().pose().set(e.getPoseStack().last().pose());
+        pose.last().normal().set(e.getPoseStack().last().normal());
         RenderContext.beginWorld(pose, buffers, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
         try {
             post(new RenderWorldLastEvent(legacyconnector.v1_12_2.net.minecraft.client.Minecraft.mcc$get$renderGlobal(legacyMc()),

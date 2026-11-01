@@ -71,8 +71,9 @@ public final class DragonApiClientEvents {
         RenderManager.renderPosZ = cam.z;
         var buffers = mc.renderBuffers().bufferSource();
         var pose = new com.mojang.blaze3d.vertex.PoseStack();
-        pose.last().pose().set(e.getModelViewMatrix());
-        pose.last().normal().set(new org.joml.Matrix3f(e.getModelViewMatrix()));
+        // 1.20.1's event hands out the pose stack (the model-view matrix accessor is 1.20.5+).
+        pose.last().pose().set(e.getPoseStack().last().pose());
+        pose.last().normal().set(e.getPoseStack().last().normal());
         int previousPass = ForgeHooksClient.renderPass;
         ForgeHooksClient.renderPass = pass; // MinecraftForgeClient.getRenderPass(), as during renderEntities
         RenderContext.beginWorld(pose, buffers, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);

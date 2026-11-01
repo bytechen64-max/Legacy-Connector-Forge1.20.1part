@@ -214,13 +214,13 @@ public final class ForgeEvents1710 {
                     target instanceof EntityLivingBase t ? t : null));
         });
 
-        game.addListener((net.minecraftforge.event.entity.living.MobDespawnEvent e) -> {
+        game.addListener((net.minecraftforge.event.entity.living.MobSpawnEvent.AllowDespawn e) -> {
             if (!wants(legacyconnector.v1_7_10.net.minecraftforge.event.entity.living.LivingSpawnEvent.AllowDespawn.class)) return;
             if (!(EntityBridge.wrap(e.getEntity()) instanceof EntityLivingBase living)) return;
             var legacy = new legacyconnector.v1_7_10.net.minecraftforge.event.entity.living.LivingSpawnEvent.AllowDespawn(living);
             forge().post(legacy);
-            if (legacy.getResult() == Event.Result.ALLOW) e.setResult(net.minecraftforge.event.entity.living.MobDespawnEvent.Result.ALLOW);
-            else if (legacy.getResult() == Event.Result.DENY) e.setResult(net.minecraftforge.event.entity.living.MobDespawnEvent.Result.DENY);
+            // 1.20.1 expresses it as a cancel: DENY keeps the mob alive.
+            if (legacy.getResult() == Event.Result.DENY) e.setResult(net.minecraftforge.eventbus.api.Event.Result.DENY);
         });
 
         game.addListener((net.minecraftforge.event.entity.EntityStruckByLightningEvent e) -> {

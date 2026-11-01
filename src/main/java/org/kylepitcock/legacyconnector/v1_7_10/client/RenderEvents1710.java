@@ -59,8 +59,9 @@ public final class RenderEvents1710 {
         // holds the camera rotation (only the event's model-view does), so everything legacy code drew here was unrotated
         // (Thaumcraft's particles and beams appeared turned by the camera's pitch and yaw, away from where they belong).
         var pose = new com.mojang.blaze3d.vertex.PoseStack();
-        pose.last().pose().set(e.getModelViewMatrix());
-        pose.last().normal().set(new org.joml.Matrix3f(e.getModelViewMatrix()));
+        // 1.20.1's event hands out the pose stack (the model-view matrix accessor is 1.20.5+).
+        pose.last().pose().set(e.getPoseStack().last().pose());
+        pose.last().normal().set(e.getPoseStack().last().normal());
         RenderContext.beginWorld(pose, buffers, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
         try {
             legacyconnector.v1_7_10.net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new RenderWorldLastEvent(legacyconnector.v1_7_10.net.minecraft.client.Minecraft.getMinecraft().renderGlobal,
