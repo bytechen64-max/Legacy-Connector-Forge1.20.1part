@@ -234,7 +234,7 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
     }
 
     @Override
-    protected void attack(BlockState state, Level level, BlockPos pos, Player player) {
+    public void attack(BlockState state, Level level, BlockPos pos, Player player) {
         if (!clicked) return;
         try {
             legacy.onBlockClicked(world(level), pos(pos), player(player));
@@ -248,7 +248,7 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
     // ------------------------------------------------------------------ lifecycle in the world
 
     @Override
-    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean moving) {
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean moving) {
         super.onPlace(state, level, pos, oldState, moving);
         if (!added || oldState.is(this)) return;
         try {
@@ -259,7 +259,7 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moving) {
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moving) {
         // A tile entity block removed as "moving" is carried away whole (Create contraptions, Sable sub-levels copy its NBT); 1.12.2's
         // pistons never moved tile entities, so breakBlock meant destruction and would drop the inventory that also travels (a duplicate).
         boolean carried = moving && state.hasBlockEntity() && level.getBlockEntity(pos) instanceof Legacy1122BlockEntity;
@@ -274,11 +274,14 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
     }
 
     @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, net.minecraft.world.level.block.Block neighborBlock, BlockPos from,
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, net.minecraft.world.level.block.Block neighborBlock, BlockPos from,
             boolean moving) {
         super.neighborChanged(state, level, pos, neighborBlock, from, moving);
         // what a legacy tile offers per side can depend on its neighbours: let cached capabilities (Create, pipes) re-ask
-        if (!level.isClientSide && state.hasBlockEntity()) level.invalidateCapabilities(pos);
+        if (!level.isClientSide && state.hasBlockEntity()) {
+            var blockEntity = level.getBlockEntity(pos);
+            if (blockEntity != null) blockEntity.invalidateCaps();
+        }
         if (!neighbor) return;
         try {
             legacy.neighborChanged(state(state), world(level), pos(pos), StatesBridge1122.legacyBlock(neighborBlock.defaultBlockState()), pos(from));
@@ -288,7 +291,7 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
     }
 
     @Override
-    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         if (!updateTick) return;
         World w = world(level);
         try {
@@ -299,12 +302,12 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
     }
 
     @Override
-    protected boolean isRandomlyTicking(BlockState state) {
+    public boolean isRandomlyTicking(BlockState state) {
         return legacy.getTickRandomly() && randomTick;
     }
 
     @Override
-    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         World w = world(level);
         try {
             legacy.randomTick(w, pos(pos), state(state), w.rand);
@@ -374,7 +377,7 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
     }
 
     @Override
-    protected boolean triggerEvent(BlockState state, Level level, BlockPos pos, int id, int param) {
+    public boolean triggerEvent(BlockState state, Level level, BlockPos pos, int id, int param) {
         boolean handled = super.triggerEvent(state, level, pos, id, param);
         if (!event) {
             // BlockContainer.eventReceived passed the event to the tile entity
@@ -395,7 +398,7 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
     // ------------------------------------------------------------------ entities
 
     @Override
-    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         if (!collision) return;
         try {
             legacy.onEntityCollision(world(level), pos(pos), state(state), entity(entity));
@@ -435,7 +438,7 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
 
     /** BlockBreakable (glass, ice): the faces between two of the same block in the same state are not drawn. */
     @Override
-    protected boolean skipRendering(BlockState state, BlockState adjacent, net.minecraft.core.Direction direction) {
+    public boolean skipRendering(BlockState state, BlockState adjacent, net.minecraft.core.Direction direction) {
         if (legacy instanceof legacyconnector.v1_12_2.net.minecraft.block.BlockBreakable b && b.mcc$hidesSimilarNeighbours() && adjacent.is(this)
                 && adjacent.getValue(META).equals(state.getValue(META))) {
             return true;
@@ -509,7 +512,7 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
     }
 
     @Override
-    protected net.minecraft.world.phys.shapes.VoxelShape getShape(BlockState state, net.minecraft.world.level.BlockGetter getter, BlockPos pos,
+    public net.minecraft.world.phys.shapes.VoxelShape getShape(BlockState state, net.minecraft.world.level.BlockGetter getter, BlockPos pos,
             net.minecraft.world.phys.shapes.CollisionContext context) {
         if (bounds && !IN_LEGACY_SHAPE.get()[0]) {
             var b = legacyBox(state, getter, pos, false);
@@ -542,7 +545,7 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
 
     /** Several collision boxes (machines, pipes, frames): what the mod's addCollisionBoxToList adds for a mask around the block. */
     @Override
-    protected net.minecraft.world.phys.shapes.VoxelShape getCollisionShape(BlockState state, net.minecraft.world.level.BlockGetter getter, BlockPos pos,
+    public net.minecraft.world.phys.shapes.VoxelShape getCollisionShape(BlockState state, net.minecraft.world.level.BlockGetter getter, BlockPos pos,
             net.minecraft.world.phys.shapes.CollisionContext context) {
         if (collisionBox && !collisionList && !IN_LEGACY_SHAPE.get()[0]) {
             var b = legacyBox(state, getter, pos, true);
@@ -593,7 +596,7 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
     }
 
     @Override
-    protected float getDestroyProgress(BlockState state, Player player, net.minecraft.world.level.BlockGetter getter, BlockPos pos) {
+    public float getDestroyProgress(BlockState state, Player player, net.minecraft.world.level.BlockGetter getter, BlockPos pos) {
         boolean[] guard = IN_LEGACY_HARDNESS.get();
         if (relativeHardness && getter instanceof Level level && !guard[0]) {
             guard[0] = true;
@@ -611,7 +614,7 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
     // ------------------------------------------------------------------ redstone
 
     @Override
-    protected boolean hasAnalogOutputSignal(BlockState state) {
+    public boolean hasAnalogOutputSignal(BlockState state) {
         if (!comparator) return false;
         try {
             return legacy.hasComparatorInputOverride(state(state));
@@ -621,7 +624,7 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
     }
 
     @Override
-    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
         try {
             return legacy.getComparatorInputOverride(state(state), world(level), pos(pos));
         } catch (RuntimeException | LinkageError e) {
@@ -649,7 +652,7 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
     }
 
     @Override
-    protected List<net.minecraft.world.item.ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+    public List<net.minecraft.world.item.ItemStack> getDrops(BlockState state, LootParams.Builder params) {
         ServerLevel level = params.getLevel();
         Vec3 origin = params.getOptionalParameter(LootContextParams.ORIGIN);
         if (origin == null) return List.of();
@@ -726,7 +729,7 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
     // ------------------------------------------------------------------ hooks taking an IBlockAccess
 
     @Override
-    protected boolean canBeReplaced(BlockState state, net.minecraft.world.item.context.BlockPlaceContext context) {
+    public boolean canBeReplaced(BlockState state, net.minecraft.world.item.context.BlockPlaceContext context) {
         if (!replaceable) return super.canBeReplaced(state, context);
         try {
             return legacy.isReplaceable(world(context.getLevel()), pos(context.getClickedPos()));
@@ -748,7 +751,7 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
     }
 
     @Override
-    protected int getLightBlock(BlockState state, net.minecraft.world.level.BlockGetter level, BlockPos pos) {
+    public int getLightBlock(BlockState state, net.minecraft.world.level.BlockGetter level, BlockPos pos) {
         if (!lightOpacity) return super.getLightBlock(state, level, pos);
         try {
             return Math.max(0, Math.min(15, legacy.getLightOpacity(state(state), WorldBridge1122.access(level), pos(pos))));
@@ -785,7 +788,7 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
     // ------------------------------------------------------------------ redstone output (buttons, levers, mod emitters)
 
     @Override
-    protected boolean isSignalSource(BlockState state) {
+    public boolean isSignalSource(BlockState state) {
         if (!powerSource) return super.isSignalSource(state);
         try {
             return legacy.canProvidePower(state(state));
@@ -795,7 +798,7 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
     }
 
     @Override
-    protected int getSignal(BlockState state, net.minecraft.world.level.BlockGetter level, BlockPos pos, net.minecraft.core.Direction direction) {
+    public int getSignal(BlockState state, net.minecraft.world.level.BlockGetter level, BlockPos pos, net.minecraft.core.Direction direction) {
         if (!weakPower) return super.getSignal(state, level, pos, direction);
         try {
             return Math.max(0, Math.min(15, legacy.getWeakPower(state(state), WorldBridge1122.access(level), pos(pos), EnumFacing.mcc$of(direction))));
@@ -806,7 +809,7 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
     }
 
     @Override
-    protected int getDirectSignal(BlockState state, net.minecraft.world.level.BlockGetter level, BlockPos pos, net.minecraft.core.Direction direction) {
+    public int getDirectSignal(BlockState state, net.minecraft.world.level.BlockGetter level, BlockPos pos, net.minecraft.core.Direction direction) {
         if (!strongPower) return super.getDirectSignal(state, level, pos, direction);
         try {
             return Math.max(0, Math.min(15, legacy.getStrongPower(state(state), WorldBridge1122.access(level), pos(pos), EnumFacing.mcc$of(direction))));

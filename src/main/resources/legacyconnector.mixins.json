@@ -19,6 +19,7 @@
     "JigsawStructureLegacyVillageMixin",
     "ServerLevelBlockFamilyMixin",
     "LevelChunkBlockFamilyMixin",
+    "MinecartTickMixin",
     "perf.BlockSlotMixin",
     "perf.BlockStateSlotMixin",
     "perf.LevelSlotMixin",
@@ -31,7 +32,8 @@
     "MinecraftAttackMixin",
     "MultiPlayerGameModeMixin",
     "MusicManagerLegacyMixin",
-    "ClientLanguageLegacyKeysMixin"
+    "ClientLanguageLegacyKeysMixin",
+    "access.RenderTypeAccess"
   ],
   "injectors": {
     "defaultRequire": 1

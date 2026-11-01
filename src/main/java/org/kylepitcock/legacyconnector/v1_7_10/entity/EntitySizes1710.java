@@ -18,28 +18,37 @@ import virtuoel.pehkui.api.ScaleTypes;
 public final class EntitySizes1710 {
     /** Entities whose eye height a mod set explicitly (otherwise it follows the height). */
     private static final Set<Entity> EXPLICIT_EYE = Collections.synchronizedSet(Collections.newSetFromMap(new WeakHashMap<>()));
+    /**
+     * The eye height an entity had before a mod set one. 1.20.1 keeps no eye height on the type's dimensions (1.20.2 added
+     * {@code EntityDimensions.eyeHeight}), so the baseline is the entity's own eye height at the first explicit set.
+     */
+    private static final java.util.Map<Entity, Float> BASE_EYE = Collections.synchronizedMap(new WeakHashMap<>());
 
     private EntitySizes1710() {}
 
     /** {@code Entity.setSize} on an entity that is not a host: the box, the model and (unless set explicitly) the eye height change now. */
     public static void setSize(Entity entity, float width, float height) {
         EntityDimensions own = entity.getType().getDimensions();
-        if (own.width() <= 0 || own.height() <= 0) return;
-        float h = height / own.height();
-        set(ScaleTypes.HITBOX_WIDTH, entity, width / own.width());
+        if (own.width <= 0 || own.height <= 0) return;
+        float h = height / own.height;
+        set(ScaleTypes.HITBOX_WIDTH, entity, width / own.width);
         set(ScaleTypes.HITBOX_HEIGHT, entity, h);
-        set(ScaleTypes.MODEL_WIDTH, entity, width / own.width());
+        set(ScaleTypes.MODEL_WIDTH, entity, width / own.width);
         set(ScaleTypes.MODEL_HEIGHT, entity, h);
         if (!EXPLICIT_EYE.contains(entity)) set(ScaleTypes.EYE_HEIGHT, entity, h);
     }
 
     /** The {@code eyeHeight} field of a player: the camera height above the feet. */
     public static void setEyeHeight(Entity entity, float eye) {
-        float own = entity.getType().getDimensions().eyeHeight();
+        float own = BASE_EYE.computeIfAbsent(entity, Entity::getEyeHeight);
         if (own <= 0) return;
         float scale = eye / own;
-        if (Math.abs(scale - 1.0F) < 1.0E-4F) EXPLICIT_EYE.remove(entity);
-        else EXPLICIT_EYE.add(entity);
+        if (Math.abs(scale - 1.0F) < 1.0E-4F) {
+            EXPLICIT_EYE.remove(entity);
+            BASE_EYE.remove(entity);
+        } else {
+            EXPLICIT_EYE.add(entity);
+        }
         set(ScaleTypes.EYE_HEIGHT, entity, scale);
     }
 

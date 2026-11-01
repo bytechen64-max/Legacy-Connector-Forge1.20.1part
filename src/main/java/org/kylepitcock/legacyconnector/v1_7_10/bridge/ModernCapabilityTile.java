@@ -38,21 +38,28 @@ public class ModernCapabilityTile extends TileEntity implements IEnergyHandler, 
         Level level = be.getLevel();
         if (level == null || be.isRemoved()) return false;
         var pos = be.getBlockPos();
-        if (level.getCapability(ForgeCapabilities.ENERGY, pos, null) != null || level.getCapability(ForgeCapabilities.FLUID_HANDLER, pos, null) != null) return true;
+        if (capability(level, pos, ForgeCapabilities.ENERGY, null) != null || capability(level, pos, ForgeCapabilities.FLUID_HANDLER, null) != null) return true;
         for (Direction d : Direction.values()) {
-            if (level.getCapability(ForgeCapabilities.ENERGY, pos, d) != null || level.getCapability(ForgeCapabilities.FLUID_HANDLER, pos, d) != null) return true;
+            if (capability(level, pos, ForgeCapabilities.ENERGY, d) != null || capability(level, pos, ForgeCapabilities.FLUID_HANDLER, d) != null) return true;
         }
         return ModernItemTile.hasItems(be);
     }
 
     private IEnergyStorage energy(ForgeDirection from) {
         Level level = host.getLevel();
-        return level == null || host.isRemoved() ? null : level.getCapability(ForgeCapabilities.ENERGY, host.getBlockPos(), from == null ? null : from.mcc$modern());
+        return level == null || host.isRemoved() ? null : capability(level, host.getBlockPos(), ForgeCapabilities.ENERGY, from == null ? null : from.mcc$modern());
     }
 
     private net.minecraftforge.fluids.capability.IFluidHandler fluids(ForgeDirection from) {
         Level level = host.getLevel();
-        return level == null || host.isRemoved() ? null : level.getCapability(ForgeCapabilities.FLUID_HANDLER, host.getBlockPos(), from == null ? null : from.mcc$modern());
+        return level == null || host.isRemoved() ? null : capability(level, host.getBlockPos(), ForgeCapabilities.FLUID_HANDLER, from == null ? null : from.mcc$modern());
+    }
+
+    /** 1.20.1 has no {@code Level#getCapability} at a position (that overload is 1.20.2+): ask the block entity there. */
+    private static <T> T capability(Level level, net.minecraft.core.BlockPos pos, net.minecraftforge.common.capabilities.Capability<T> cap,
+            Direction side) {
+        var blockEntity = level.getBlockEntity(pos);
+        return blockEntity == null ? null : blockEntity.getCapability(cap, side).orElse(null);
     }
 
     // ------------------------------------------------------------------ RF

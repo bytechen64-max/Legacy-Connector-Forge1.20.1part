@@ -233,7 +233,7 @@ public class MobHost1122 extends PathfinderMob implements LivingHost1122, IEntit
     }
 
     @Override
-    protected int getExperienceReward() {
+    public int getExperienceReward() {
         EntityLivingBase l = living();
         return l != null ? l.mcc$experience() : super.getExperienceReward();
     }
@@ -715,7 +715,7 @@ public class MobHost1122 extends PathfinderMob implements LivingHost1122, IEntit
     }
 
     @Override
-    protected EntityDimensions getDimensions(Pose pose) {
+    public EntityDimensions getDimensions(Pose pose) {
         return width > 0 ? EntityDimensions.scalable(width, height) : super.getDimensions(pose);
     }
 

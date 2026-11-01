@@ -27,7 +27,8 @@ import org.slf4j.LoggerFactory;
  * Legacy Connector (and the vanilla code they patched does not exist), so those events never fired: VoidMonster's
  * darkening ({@code MonsterFX.monsterScreenFactor}) only decays in its {@code EntityRenderingLoopEvent} handler and stayed at
  * full strength for good after one Void Monster was drawn, ChromatiCraft's liquid-chroma pool recipes run from
- * {@code ItemUpdateEvent}, RotaryCraft builds its worktable from {@code PlayerPlaceBlockEvent}, and so on. This class posts
+ * {@code ItemUpdateEvent} (one of the events without a modern hook, see below), RotaryCraft builds its worktable from
+ * {@code PlayerPlaceBlockEvent}, and so on. This class posts
  * the events Reika's mods subscribe to from the closest NeoForge event, building them through their own constructors (the
  * classes are DragonAPI's, loaded from its class loader by name). Every hook first checks that a legacy listener exists, so
  * nothing is built without DragonAPI or without a subscriber.</p>
@@ -37,6 +38,8 @@ import org.slf4j.LoggerFactory;
  * (vanilla random/scheduled ticks), {@code BlockConsumedByFireEvent}, {@code FireSpreadEvent}, {@code FireChanceEvent},
  * {@code LavaSpawnFireEvent}, {@code LeafDecayEvent}, {@code BlockSpreadEvent}, {@code IceFreezeEvent},
  * {@code LavaFreezeEvent}, {@code CanSeeSkyEvent}, {@code GrassSustainCropEvent} (all inside vanilla block logic),
+ * {@code ItemUpdateEvent} and {@code XPUpdateEvent} (EntityItem/EntityXPOrb ticks: 1.20.1 has no tick event for a non-living
+ * entity and no hook to post them from),
  * {@code ApplyPotionEvent} (replaces the effect being added; NeoForge's MobEffectEvent.Applicable can only veto),
  * {@code SplashPotionEvent} (VoidMonster: instant health hurting ghost monsters), {@code MobTargetingEvent},
  * {@code AttackAggroEvent}, {@code PigZombieAggroSpreadEvent}, {@code EnderAttackTPEvent}, {@code EnderLookAggroEvent},
@@ -57,10 +60,6 @@ public final class DragonApiEvents {
 
     // ItemBlock.placeBlockAt (DragonAPI posts it before the block is set; cancelling stops the placement)
     static final LegacyEvent PLAYER_PLACE_BLOCK = new LegacyEvent(EVENTS + "PlayerPlaceBlockEvent", 9);
-    // EntityItem.onUpdate (ChromatiCraft's liquid chroma pool recipes, DragonAPI's item clearing)
-    static final LegacyEvent ITEM_UPDATE = new LegacyEvent(EVENTS + "ItemUpdateEvent", 1);
-    // EntityXPOrb.onUpdate (DragonAPI merges orbs)
-    static final LegacyEvent XP_UPDATE = new LegacyEvent(EVENTS + "XPUpdateEvent", 1);
     // ItemStack.updateAnimation, called for every stack of InventoryPlayer.mainInventory each tick (ChromatiCraft's tools)
     static final LegacyEvent ITEMSTACK_UPDATE = new LegacyEvent(EVENTS + "ItemStackUpdateEvent", 4);
     // BlockFarmland.onFallenUpon (ChromatiCraft floatstone boots, RotaryCraft spring boots)
@@ -102,17 +101,11 @@ public final class DragonApiEvents {
         org.kylepitcock.legacyconnector.v1_7_10.dimension.LegacyChunkGenerator.addPopulationInterceptor((world, chunkX, chunkZ, generator) ->
                 CHUNK_POPULATION.wanted() && CHUNK_POPULATION.post(world, chunkX, chunkZ, generator, generator));
         bus.addListener(EventPriority.HIGH, (net.minecraftforge.event.level.BlockEvent.EntityPlaceEvent e) -> onPlace(e));
-        bus.addListener((net.minecraftforge.event.entity.living.LivingEvent.LivingTickEvent e) -> {
-            var entity = e.getEntity();
-            if (entity instanceof net.minecraft.world.entity.item.ItemEntity) {
-                if (ITEM_UPDATE.wanted()) ITEM_UPDATE.post(EntityBridge.wrap(entity));
-            } else if (entity instanceof net.minecraft.world.entity.ExperienceOrb) {
-                if (XP_UPDATE.wanted()) XP_UPDATE.post(EntityBridge.wrap(entity));
-            }
-        });
-        bus.addListener((net.minecraftforge.event.tick.PlayerTickEvent.Post e) -> {
+        // 1.20.1 fires one player tick event with a phase (the separate Pre/Post events are 1.20.2+).
+        bus.addListener((net.minecraftforge.event.TickEvent.PlayerTickEvent e) -> {
+            if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
             if (!ITEMSTACK_UPDATE.wanted()) return;
-            var player = e.getEntity();
+            var player = e.player;
             var items = player.getInventory().items;
             Object legacy = null;
             for (int i = 0; i < items.size(); i++) {
@@ -129,12 +122,12 @@ public final class DragonApiEvents {
             // DragonAPI: DENY keeps the farmland, ALLOW tramples, DEFAULT keeps vanilla's decision (NeoForge only asks when vanilla would trample)
             if (ev != null && (FARMLAND_TRAMPLE.send(ev) || ev.getResult() == Event.Result.DENY)) e.setCanceled(true);
         });
-        bus.addListener((net.minecraftforge.event.entity.living.MobDespawnEvent e) -> {
-            if (e.getResult() != net.minecraftforge.event.entity.living.MobDespawnEvent.Result.DEFAULT || e.getEntity().isPersistenceRequired()
+        bus.addListener((net.minecraftforge.event.entity.living.MobSpawnEvent.AllowDespawn e) -> {
+            if (e.getResult() != net.minecraftforge.eventbus.api.Event.Result.DEFAULT || e.getEntity().isPersistenceRequired()
                     || !FAR_DESPAWN.wanted()) return;
             // the patched canDespawn() returned "vanilla && !post(event)": a cancelled event keeps the mob
             Event ev = FAR_DESPAWN.create(EntityBridge.wrap(e.getEntity()));
-            if (ev != null && FAR_DESPAWN.send(ev)) e.setResult(net.minecraftforge.event.entity.living.MobDespawnEvent.Result.DENY);
+            if (ev != null && FAR_DESPAWN.send(ev)) e.setResult(net.minecraftforge.eventbus.api.Event.Result.DENY);
         });
         bus.addListener((net.minecraftforge.event.entity.living.LivingBreatheEvent e) -> {
             if (!DECREASE_AIR.wanted()) return;
@@ -175,7 +168,7 @@ public final class DragonApiEvents {
     /** The face the player clicked to place at {@code pos} (NeoForge's event does not carry it): the look ray, else top. */
     private static int side(net.minecraft.world.entity.player.Player player, net.minecraft.core.BlockPos pos) {
         try {
-            if (player.pick(player.blockInteractionRange(), 1.0F, false) instanceof net.minecraft.world.phys.BlockHitResult hit
+            if (player.pick(player.getAttributeValue(net.minecraftforge.common.ForgeMod.BLOCK_REACH.get()), 1.0F, false) instanceof net.minecraft.world.phys.BlockHitResult hit
                     && hit.getType() == net.minecraft.world.phys.HitResult.Type.BLOCK
                     && (hit.getBlockPos().equals(pos) || hit.getBlockPos().relative(hit.getDirection()).equals(pos))) {
                 return hit.getDirection().get3DDataValue();

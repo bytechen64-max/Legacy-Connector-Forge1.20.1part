@@ -44,7 +44,7 @@ public final class ForgeEvents1710 {
             ItemStack stack = item.getEntityItem();
             int life = stack == null || stack.getItem() == null ? 6000 : stack.getItem().getEntityLifespan(stack, item.mcc$world());
             var legacy = new legacyconnector.v1_7_10.net.minecraftforge.event.entity.item.ItemExpireEvent(item, life);
-            if (forge().post(legacy) && legacy.extraLife > 0) e.addExtraLife(legacy.extraLife);
+            if (forge().post(legacy) && legacy.extraLife > 0) e.setExtraLife(e.getExtraLife() + legacy.extraLife);
         });
 
         game.addListener(EventPriority.LOW, (net.minecraftforge.event.CommandEvent e) -> {
@@ -135,7 +135,7 @@ public final class ForgeEvents1710 {
             if (legacy.displayname != null && !legacy.displayname.equals(current)) e.setDisplayname(net.minecraft.network.chat.Component.literal(legacy.displayname));
         });
 
-        game.addListener((net.minecraftforge.event.entity.player.CanPlayerSleepEvent e) -> {
+        game.addListener((net.minecraftforge.event.entity.player.PlayerSleepInBedEvent e) -> {
             if (!wants(legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.PlayerSleepInBedEvent.class)) return;
             EntityPlayer p = player(e.getEntity());
             if (p == null) return;
@@ -143,7 +143,7 @@ public final class ForgeEvents1710 {
             var legacy = new legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.PlayerSleepInBedEvent(p, pos.getX(), pos.getY(), pos.getZ());
             forge().post(legacy);
             if (legacy.result == null) return;
-            e.setProblem(switch (legacy.result) {
+            e.setResult(switch (legacy.result) {
                 case OK -> null;
                 case NOT_POSSIBLE_HERE -> Player.BedSleepingProblem.NOT_POSSIBLE_HERE;
                 case NOT_POSSIBLE_NOW -> Player.BedSleepingProblem.NOT_POSSIBLE_NOW;
@@ -209,7 +209,7 @@ public final class ForgeEvents1710 {
         game.addListener(EventPriority.LOWEST, (net.minecraftforge.event.entity.living.LivingChangeTargetEvent e) -> {
             if (e.isCanceled() || !wants(legacyconnector.v1_7_10.net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent.class)) return;
             if (!(EntityBridge.wrap(e.getEntity()) instanceof EntityLivingBase living)) return;
-            var target = e.getNewAboutToBeSetTarget() == null ? null : EntityBridge.wrap(e.getNewAboutToBeSetTarget());
+            var target = e.getNewTarget() == null ? null : EntityBridge.wrap(e.getNewTarget());
             forge().post(new legacyconnector.v1_7_10.net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent(living,
                     target instanceof EntityLivingBase t ? t : null));
         });
@@ -229,15 +229,19 @@ public final class ForgeEvents1710 {
             if (entity == null || !(EntityBridge.wrap(e.getLightning()) instanceof legacyconnector.v1_7_10.net.minecraft.entity.effect.EntityLightningBolt bolt)) return;
             if (forge().post(new legacyconnector.v1_7_10.net.minecraftforge.event.entity.EntityStruckByLightningEvent(entity, bolt))) e.setCanceled(true);
         });
+    }
 
-        game.addListener((net.minecraftforge.event.entity.living.LivingEvent.LivingTickEvent e) -> {
-            if (!(e.getEntity() instanceof net.minecraft.world.entity.vehicle.AbstractMinecart cart) || cart.level().isClientSide()) return;
-            if (!wants(legacyconnector.v1_7_10.net.minecraftforge.event.entity.minecart.MinecartUpdateEvent.class)) return;
-            if (!(EntityBridge.wrap(cart) instanceof legacyconnector.v1_7_10.net.minecraft.entity.item.EntityMinecart legacy)) return;
-            int x = net.minecraft.util.Mth.floor(cart.getX()), y = net.minecraft.util.Mth.floor(cart.getY()), z = net.minecraft.util.Mth.floor(cart.getZ());
-            if (net.minecraft.world.level.block.BaseRailBlock.isRail(cart.level(), new net.minecraft.core.BlockPos(x, y - 1, z))) y--;
-            forge().post(new legacyconnector.v1_7_10.net.minecraftforge.event.entity.minecart.MinecartUpdateEvent(legacy, x, y, z));
-        });
+    /**
+     * 1.7.10 posted MinecartUpdateEvent from the minecart's own tick; 1.20.1 has no tick event for a non-living entity, so
+     * {@code mixin.MinecartTickMixin} calls this from {@code AbstractMinecart.tick}.
+     */
+    public static void minecartTick(net.minecraft.world.entity.vehicle.AbstractMinecart cart) {
+        if (cart.level().isClientSide()) return;
+        if (!wants(legacyconnector.v1_7_10.net.minecraftforge.event.entity.minecart.MinecartUpdateEvent.class)) return;
+        if (!(EntityBridge.wrap(cart) instanceof legacyconnector.v1_7_10.net.minecraft.entity.item.EntityMinecart legacy)) return;
+        int x = net.minecraft.util.Mth.floor(cart.getX()), y = net.minecraft.util.Mth.floor(cart.getY()), z = net.minecraft.util.Mth.floor(cart.getZ());
+        if (net.minecraft.world.level.block.BaseRailBlock.isRail(cart.level(), new net.minecraft.core.BlockPos(x, y - 1, z))) y--;
+        forge().post(new legacyconnector.v1_7_10.net.minecraftforge.event.entity.minecart.MinecartUpdateEvent(legacy, x, y, z));
     }
 
     /** The legacy command a command line runs: a mod's own, or a stand-in for a modern command. */
@@ -297,7 +301,7 @@ public final class ForgeEvents1710 {
             list.add(entry);
         }
         var pos = e.getPos();
-        World world = e.getLevel() instanceof net.minecraft.world.level.LevelAccessor l ? World.mcc$wrap(l) : null;
+        World world = World.mcc$wrap(e.getLevel());
         var legacy = new legacyconnector.v1_7_10.net.minecraftforge.event.world.WorldEvent.PotentialSpawns(world, type, pos.getX(), pos.getY(), pos.getZ(), list);
         if (forge().post(legacy)) {
             e.setCanceled(true);

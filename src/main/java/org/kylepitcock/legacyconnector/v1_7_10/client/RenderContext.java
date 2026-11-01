@@ -678,7 +678,7 @@ public final class RenderContext {
         return STATED.computeIfAbsent(key, k -> withBatchingClass(base, new RenderType(
                 base + (k.depthFunc() < 0 ? "" : "/legacy_depth_" + k.depthFunc() + (k.depthWrite() ? "w" : "") + "_c" + k.colorWrite())
                         + (k.blendSrc() < 0 ? "" : "/legacy_blend_" + k.blendSrc() + "_" + k.blendDst()), base.format(), base.mode(),
-                base.bufferSize(), base.affectsCrumbling(), base.sortOnUpload(), () -> {
+                base.bufferSize(), base.affectsCrumbling(), org.kylepitcock.legacyconnector.mixin.access.RenderTypeAccess.sortOnUpload(base), () -> {
                     base.setupRenderState();
                     if (k.depthFunc() >= 0) {
                         RenderSystem.depthFunc(k.depthFunc());
@@ -824,8 +824,9 @@ public final class RenderContext {
         var vc = buffer.vertex(last.pose(), (float) x[0], (float) x[1], (float) x[2]).color(argb);
         if (s.texture2d) vc.uv((float) x[3], (float) x[4]);
         if (entity) {
-            vc.setOverlay(overlay);
-            vc.setLight(s.lightmap ? (int) x[6] : LightTexture.FULL_BRIGHT); // lightmap unit off: its brightness was not applied
+            vc.overlayCoords(overlay & 0xFFFF, overlay >>> 16);
+            int light = s.lightmap ? (int) x[6] : LightTexture.FULL_BRIGHT; // lightmap unit off: its brightness was not applied
+            vc.uv2(light & 0xFFFF, light >>> 16);
             vc.normal(nx, ny, nz);
         }
     }
@@ -1086,8 +1087,8 @@ public final class RenderContext {
         s.foldedPose = p.last();
         s.foldedPose.pose().mulLocal(s.savedModelView);
         var stack = RenderSystem.getModelViewStack();
-        stack.pushMatrix();
-        stack.identity();
+        stack.pushPose();
+        stack.setIdentity();
         RenderSystem.applyModelViewMatrix();
         return true;
     }
@@ -1103,7 +1104,7 @@ public final class RenderContext {
         if (s.projection == null) return;
         flushBatch(s);
         RenderSystem.setProjectionMatrix(s.savedProjection, s.savedSorting);
-        RenderSystem.getModelViewStack().popMatrix();
+        RenderSystem.getModelViewStack().popPose();
         RenderSystem.applyModelViewMatrix();
         PoseStack p = pose(s);
         if (p != null && p.last() == s.foldedPose) s.foldedPose.pose().mulLocal(new org.joml.Matrix4f(s.savedModelView).invert());

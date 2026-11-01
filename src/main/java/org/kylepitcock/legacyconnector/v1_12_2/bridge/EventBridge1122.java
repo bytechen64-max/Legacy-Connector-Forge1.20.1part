@@ -68,10 +68,11 @@ public final class EventBridge1122 {
             if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
             if (wants(TickEvent.ServerTickEvent.class)) post(new TickEvent.ServerTickEvent(TickEvent.Phase.END));
         });
-        bus.addListener((net.minecraftforge.event.tick.LevelTickEvent.Pre e) -> worldTick(e.getLevel(), TickEvent.Phase.START));
-        bus.addListener((net.minecraftforge.event.tick.LevelTickEvent.Post e) -> worldTick(e.getLevel(), TickEvent.Phase.END));
-        bus.addListener((net.minecraftforge.event.tick.PlayerTickEvent.Pre e) -> playerTick(e.getEntity(), TickEvent.Phase.START));
-        bus.addListener((net.minecraftforge.event.tick.PlayerTickEvent.Post e) -> playerTick(e.getEntity(), TickEvent.Phase.END));
+        // 1.20.1 fires one tick event per side with a phase (the separate Pre/Post events are 1.20.2+).
+        bus.addListener((net.minecraftforge.event.TickEvent.LevelTickEvent e) -> worldTick(e.level,
+                e.phase == net.minecraftforge.event.TickEvent.Phase.START ? TickEvent.Phase.START : TickEvent.Phase.END));
+        bus.addListener((net.minecraftforge.event.TickEvent.PlayerTickEvent e) -> playerTick(e.player,
+                e.phase == net.minecraftforge.event.TickEvent.Phase.START ? TickEvent.Phase.START : TickEvent.Phase.END));
 
         bus.addListener((net.minecraftforge.event.entity.player.PlayerEvent.PlayerLoggedInEvent e) -> {
             if (wants(PlayerEvent.PlayerLoggedInEvent.class) && player(e.getEntity()) != null) post(new PlayerEvent.PlayerLoggedInEvent(player(e.getEntity())));
@@ -192,7 +193,7 @@ public final class EventBridge1122 {
 
     private static void registerLiving(IEventBus bus) {
         // 1.12.2 posted LivingAttackEvent and then LivingHurtEvent before armour, LivingDamageEvent after it
-        bus.addListener((net.minecraftforge.event.entity.living.LivingIncomingDamageEvent e) -> {
+        bus.addListener((net.minecraftforge.event.entity.living.LivingHurtEvent e) -> {
             boolean attack = wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.LivingAttackEvent.class);
             boolean hurt = wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.LivingHurtEvent.class);
             if (!attack && !hurt) return;
@@ -209,15 +210,15 @@ public final class EventBridge1122 {
                 else e.setAmount(event.getAmount());
             }
         });
-        bus.addListener((net.minecraftforge.event.entity.living.LivingDamageEvent.Pre e) -> {
+        bus.addListener((net.minecraftforge.event.entity.living.LivingDamageEvent e) -> {
             if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.LivingDamageEvent.class)) return;
             var entity = living(e.getEntity());
             if (entity == null) return;
             var event = new legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.LivingDamageEvent(entity,
-                    legacyconnector.v1_12_2.net.minecraft.util.DamageSource.mcc$of(e.getSource()), e.getNewDamage());
+                    legacyconnector.v1_12_2.net.minecraft.util.DamageSource.mcc$of(e.getSource()), e.getAmount());
             // the modern event can no longer be canceled here: a canceled legacy one deals no damage
-            if (post(event)) e.setNewDamage(0);
-            else e.setNewDamage(event.getAmount());
+            if (post(event)) e.setAmount(0);
+            else e.setAmount(event.getAmount());
         });
         bus.addListener((net.minecraftforge.event.entity.living.LivingDeathEvent e) -> {
             if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.LivingDeathEvent.class)) return;
@@ -410,13 +411,14 @@ public final class EventBridge1122 {
     // ------------------------------------------------------------------ area F: FML item pickup
 
     private static void registerAreaF(IEventBus bus) {
-        bus.addListener((net.minecraftforge.event.entity.player.ItemEntityPickupEvent.Post e) -> {
-            if (!wants(PlayerEvent.ItemPickupEvent.class) || player(e.getPlayer()) == null) return;
-            var item = EntityBridge1122.wrap(e.getItemEntity()) instanceof legacyconnector.v1_12_2.net.minecraft.entity.item.EntityItem i ? i : null;
-            var picked = e.getOriginalStack().copy();
-            picked.setCount(e.getOriginalStack().getCount() - e.getCurrentStack().getCount());
+        // 1.20.1 has no post-pickup event: EntityItemPickupEvent fires just before the pickup, with the item entity that will be
+        // consumed (the whole stack), which is the closest thing to FML's ItemPickupEvent.
+        bus.addListener((net.minecraftforge.event.entity.player.EntityItemPickupEvent e) -> {
+            if (!wants(PlayerEvent.ItemPickupEvent.class) || player(e.getEntity()) == null) return;
+            var item = EntityBridge1122.wrap(e.getItem()) instanceof legacyconnector.v1_12_2.net.minecraft.entity.item.EntityItem i ? i : null;
+            var picked = e.getItem().getItem().copy();
             if (picked.isEmpty()) return;
-            post(new PlayerEvent.ItemPickupEvent(player(e.getPlayer()), item, Stacks1122.fromModern(picked)));
+            post(new PlayerEvent.ItemPickupEvent(player(e.getEntity()), item, Stacks1122.fromModern(picked)));
         });
     }
 }

@@ -221,7 +221,7 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
 
     /** As BlockBreakable.shouldSideBeRendered: two neighbouring glass-like blocks of the same kind draw no faces between them. */
     @Override
-    protected boolean skipRendering(BlockState state, BlockState adjacent, Direction direction) {
+    public boolean skipRendering(BlockState state, BlockState adjacent, Direction direction) {
         return sameFamily(adjacent) && legacy instanceof legacyconnector.v1_7_10.net.minecraft.block.BlockBreakable bb && bb.mcc$hidesSimilarNeighbours()
                 && metaOf(adjacent) == metaIn(state);
     }
@@ -416,14 +416,14 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
     }
 
     @Override
-    protected void attack(BlockState state, Level level, BlockPos pos, Player player) {
+    public void attack(BlockState state, Level level, BlockPos pos, Player player) {
         legacy.onBlockClicked(world(level), pos.getX(), pos.getY(), pos.getZ(), player(player));
     }
 
     // ------------------------------------------------------------------ lifecycle in the world
 
     @Override
-    protected void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean moving) {
+    public void onPlace(BlockState state, Level level, BlockPos pos, BlockState oldState, boolean moving) {
         // a metadata change moving the state to another flattened block of the same legacy block is no new block (1.7.10's setBlockMetadata)
         if (!sameFamily(oldState)) {
             legacy.onBlockAdded(world(level), pos.getX(), pos.getY(), pos.getZ());
@@ -459,7 +459,7 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
     }
 
     @Override
-    protected void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moving) {
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean moving) {
         // another flattened block of the same legacy block: a metadata change; the tile entity stays (the host type accepts the whole family)
         if (newState.getBlock() != this && sameFamily(newState)) return;
         try {
@@ -488,9 +488,12 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
     }
 
     @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, net.minecraft.world.level.block.Block neighbor, BlockPos from, boolean moving) {
+    public void neighborChanged(BlockState state, Level level, BlockPos pos, net.minecraft.world.level.block.Block neighbor, BlockPos from, boolean moving) {
         // what a legacy tile offers per side (canConnectEnergy, accessible slots, ...) can depend on its neighbours: let cached capabilities (Create, pipes) re-ask
-        if (!level.isClientSide && state.hasBlockEntity()) level.invalidateCapabilities(pos);
+        if (!level.isClientSide && state.hasBlockEntity()) {
+            var blockEntity = level.getBlockEntity(pos);
+            if (blockEntity != null) blockEntity.invalidateCaps();
+        }
         try {
             legacy.onNeighborBlockChange(world(level), pos.getX(), pos.getY(), pos.getZ(), BlockBridge.legacyBlock(neighbor.defaultBlockState()));
         } catch (RuntimeException | LinkageError e) {
@@ -499,7 +502,7 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
     }
 
     @Override
-    protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         World w = world(level);
         try {
             legacy.updateTick(w, pos.getX(), pos.getY(), pos.getZ(), w.rand);
@@ -509,7 +512,7 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
     }
 
     @Override
-    protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
+    public void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         World w = world(level);
         try {
             legacy.updateTick(w, pos.getX(), pos.getY(), pos.getZ(), w.rand);
@@ -548,7 +551,7 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
     @Override
     public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
         legacy.onBlockHarvested(world(level), pos.getX(), pos.getY(), pos.getZ(), meta(state), player(player));
-        return super.playerWillDestroy(level, pos, state, player);
+        super.playerWillDestroy(level, pos, state, player);
     }
 
     @Override
@@ -557,24 +560,24 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
     }
 
     @Override
-    protected boolean triggerEvent(BlockState state, Level level, BlockPos pos, int id, int param) {
+    public boolean triggerEvent(BlockState state, Level level, BlockPos pos, int id, int param) {
         return legacy.onBlockEventReceived(world(level), pos.getX(), pos.getY(), pos.getZ(), id, param);
     }
 
     @Override
-    protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+    public boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
         return !(level instanceof LevelAccessor acc) || legacy.canBlockStay(world(acc), pos.getX(), pos.getY(), pos.getZ());
     }
 
     @Override
-    protected boolean isRandomlyTicking(BlockState state) {
+    public boolean isRandomlyTicking(BlockState state) {
         return legacy.getTickRandomly();
     }
 
     // ------------------------------------------------------------------ entities
 
     @Override
-    protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+    public void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
         legacy.onEntityCollidedWithBlock(world(level), pos.getX(), pos.getY(), pos.getZ(), EntityBridge.wrap(entity));
     }
 
@@ -590,7 +593,7 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
     }
 
     @Override
-    protected float getDestroyProgress(BlockState state, Player player, BlockGetter getter, BlockPos pos) {
+    public float getDestroyProgress(BlockState state, Player player, BlockGetter getter, BlockPos pos) {
         if (customHardness && getter instanceof LevelAccessor level) {
             return legacy.getPlayerRelativeBlockHardness(player(player), world(level), pos.getX(), pos.getY(), pos.getZ());
         }
@@ -600,27 +603,27 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
     // ------------------------------------------------------------------ redstone
 
     @Override
-    protected boolean isSignalSource(BlockState state) {
+    public boolean isSignalSource(BlockState state) {
         return legacy.canProvidePower();
     }
 
     @Override
-    protected int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+    public int getSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
         return legacy.isProvidingWeakPower(BlockAccessView.of(level), pos.getX(), pos.getY(), pos.getZ(), direction.get3DDataValue());
     }
 
     @Override
-    protected int getDirectSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
+    public int getDirectSignal(BlockState state, BlockGetter level, BlockPos pos, Direction direction) {
         return legacy.isProvidingStrongPower(BlockAccessView.of(level), pos.getX(), pos.getY(), pos.getZ(), direction.get3DDataValue());
     }
 
     @Override
-    protected boolean hasAnalogOutputSignal(BlockState state) {
+    public boolean hasAnalogOutputSignal(BlockState state) {
         return legacy.hasComparatorInputOverride();
     }
 
     @Override
-    protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
+    public int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos) {
         return legacy.getComparatorInputOverride(world(level), pos.getX(), pos.getY(), pos.getZ(), 0);
     }
 
@@ -645,7 +648,7 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
      * so full-sized non-opaque blocks (Thaumcraft's crystals and banners) cast shadows.
      */
     @Override
-    protected int getLightBlock(BlockState state, BlockGetter level, BlockPos pos) {
+    public int getLightBlock(BlockState state, BlockGetter level, BlockPos pos) {
         if (legacy.isOpaqueCube()) return super.getLightBlock(state, level, pos);
         try {
             return Math.min(15, Math.max(0, legacy.getLightOpacity()));
@@ -666,8 +669,8 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
             // the light engine's worker threads: the legacy code reads the chunk being lit, never the level, whose block reads
             // wait for chunks the busy server thread cannot finish (ChromatiCraft's pylon reads its tile entity: the server hung)
             var chunk = l.getChunkSource().getChunkForLighting(pos.getX() >> 4, pos.getZ() >> 4);
-            if (!(chunk instanceof BlockGetter c)) return super.getLightEmission(state, level, pos);
-            view = c;
+            if (chunk == null) return super.getLightEmission(state, level, pos);
+            view = chunk;
         }
         try {
             return Math.min(15, Math.max(0, legacy.getLightValue(BlockAccessView.of(view), pos.getX(), pos.getY(), pos.getZ())));
@@ -682,7 +685,7 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
     }
 
     @Override
-    protected boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
+    public boolean propagatesSkylightDown(BlockState state, BlockGetter level, BlockPos pos) {
         if (legacy.isOpaqueCube() || !state.getFluidState().isEmpty()) return super.propagatesSkylightDown(state, level, pos);
         try {
             return legacy.getLightOpacity() == 0;
@@ -692,7 +695,7 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
     }
 
     @Override
-    protected float getShadeBrightness(BlockState state, BlockGetter level, BlockPos pos) {
+    public float getShadeBrightness(BlockState state, BlockGetter level, BlockPos pos) {
         try {
             return legacy.getAmbientOcclusionLightValue();
         } catch (RuntimeException | LinkageError e) {
@@ -701,7 +704,7 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
     }
 
     @Override
-    protected RenderShape getRenderShape(BlockState state) {
+    public RenderShape getRenderShape(BlockState state) {
         int type;
         try {
             type = legacy.getRenderType();
@@ -715,7 +718,7 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
     }
 
     @Override
-    protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         // air and liquids are never targeted (1.7.10's canCollideCheck): a mod fluid (Thaumcraft's purifying fluid) broke at a click
         if (legacy.getMaterial() == Material.air || legacy.getMaterial().isLiquid()) return Shapes.empty();
         if (selectedBox && level instanceof LevelAccessor acc) {
@@ -771,7 +774,7 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
     }
 
     @Override
-    protected VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+    public VoxelShape getCollisionShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
         if (!hasCollision) return Shapes.empty();
         if (collisionList && level instanceof LevelAccessor acc) {
             // Several boxes (machines, frames): collect what the legacy block adds for a mask around the block.
@@ -883,7 +886,7 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
         }
         try {
             World world = World.mcc$wrap(level);
-            var center = explosion.center();
+            var center = explosion.getPosition();
             legacy.onBlockExploded(world, pos.getX(), pos.getY(), pos.getZ(),
                     new legacyconnector.v1_7_10.net.minecraft.world.Explosion(world, null, center.x, center.y, center.z, 4.0F));
         } catch (RuntimeException | LinkageError e) {
@@ -904,7 +907,7 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
     // ------------------------------------------------------------------ drops
 
     @Override
-    protected List<net.minecraft.world.item.ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+    public List<net.minecraft.world.item.ItemStack> getDrops(BlockState state, LootParams.Builder params) {
         ServerLevel level = params.getLevel();
         Vec3 origin = params.getOptionalParameter(LootContextParams.ORIGIN);
         if (origin == null) return List.of();
@@ -939,9 +942,10 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
             }
         }
         List<net.minecraft.world.item.ItemStack> out = new ArrayList<>();
-        if (legacyDrops != null) {
-            for (ItemStack s : legacyDrops) if (s != null && s.mcc$count() > 0) out.add(s.mcc$modern());
-        }
+        if (legacyDrops == null) legacyDrops = new ArrayList<>();
+        // the 1.7.10 drop hooks, which 1.20.1 has no block drop event for (see EventBridge1710#harvestDrops)
+        legacyDrops = org.kylepitcock.legacyconnector.v1_7_10.bridge.EventBridge1710.harvestDrops(level, pos, state, breaker, tool, fortune, silk, legacyDrops);
+        for (ItemStack s : legacyDrops) if (s != null && s.mcc$count() > 0) out.add(s.mcc$modern());
         return out;
     }
 

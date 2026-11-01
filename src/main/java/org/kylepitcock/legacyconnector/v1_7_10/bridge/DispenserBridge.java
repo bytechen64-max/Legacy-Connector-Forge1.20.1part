@@ -31,37 +31,37 @@ public final class DispenserBridge {
     private record Source(BlockSource source) implements IBlockSource {
         @Override
         public double getX() {
-            return source.pos().getX() + 0.5D;
+            return source.getPos().getX() + 0.5D;
         }
 
         @Override
         public double getY() {
-            return source.pos().getY() + 0.5D;
+            return source.getPos().getY() + 0.5D;
         }
 
         @Override
         public double getZ() {
-            return source.pos().getZ() + 0.5D;
+            return source.getPos().getZ() + 0.5D;
         }
 
         @Override
         public int getXInt() {
-            return source.pos().getX();
+            return source.getPos().getX();
         }
 
         @Override
         public int getYInt() {
-            return source.pos().getY();
+            return source.getPos().getY();
         }
 
         @Override
         public int getZInt() {
-            return source.pos().getZ();
+            return source.getPos().getZ();
         }
 
         @Override
         public int getBlockMetadata() {
-            var state = source.state();
+            var state = source.getBlockState();
             return state.hasProperty(DispenserBlock.FACING) ? state.getValue(DispenserBlock.FACING).get3DDataValue() : BlockBridge.legacyMeta(state);
         }
 
@@ -72,7 +72,7 @@ public final class DispenserBridge {
 
         @Override
         public World getWorld() {
-            return World.mcc$wrap(source.level());
+            return World.mcc$wrap(source.getLevel());
         }
     }
 }

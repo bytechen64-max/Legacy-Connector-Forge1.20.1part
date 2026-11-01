@@ -255,7 +255,7 @@ public class LegacyMobHost extends PathfinderMob implements LegacyLivingHost, IE
     }
 
     @Override
-    protected int getExperienceReward() {
+    public int getExperienceReward() {
         return legacy instanceof EntityLiving l ? l.mcc$experience() : super.getExperienceReward();
     }
 
@@ -569,7 +569,7 @@ public class LegacyMobHost extends PathfinderMob implements LegacyLivingHost, IE
     }
 
     @Override
-    protected EntityDimensions getDimensions(Pose pose) {
+    public EntityDimensions getDimensions(Pose pose) {
         return width > 0 ? EntityDimensions.scalable(width, height) : super.getDimensions(pose);
     }
 

@@ -85,6 +85,44 @@ public final class EventBridge1710 {
         return MinecraftForge.EVENT_BUS;
     }
 
+    /**
+     * The 1.7.10 block-drop hooks, at the point where 1.20.1 asks a block for its drops (the block drop event is 1.20.2+):
+     * shears on a block that is shearable the 1.7.10 way (leaves, tall grass, vines) drop what the block says, then
+     * {@code BlockEvent.HarvestDropsEvent} handlers may edit the list. Called from {@code LegacyBlockAdapter#getDrops}.
+     */
+    public static List<ItemStack> harvestDrops(net.minecraft.server.level.ServerLevel level, net.minecraft.core.BlockPos pos,
+            net.minecraft.world.level.block.state.BlockState state, net.minecraft.world.entity.Entity breaker,
+            net.minecraft.world.item.ItemStack tool, int fortune, boolean silk, List<ItemStack> drops) {
+        List<ItemStack> out = drops;
+        if (tool != null && !tool.isEmpty() && isShears(tool)
+                && BlockBridge.legacyBlock(state) instanceof legacyconnector.v1_7_10.net.minecraftforge.common.IShearable shearable) {
+            try {
+                var view = BlockAccessView.of(level);
+                ItemStack legacyTool = ItemStack.mcc$wrap(tool);
+                if (shearable.isShearable(legacyTool, view, pos.getX(), pos.getY(), pos.getZ())) {
+                    out = new ArrayList<>();
+                    var sheared = shearable.onSheared(legacyTool, view, pos.getX(), pos.getY(), pos.getZ(), fortune);
+                    if (sheared != null) for (ItemStack s : sheared) if (s != null && s.mcc$count() > 0) out.add(s);
+                }
+            } catch (RuntimeException | LinkageError e) {
+                org.slf4j.LoggerFactory.getLogger("LegacyConnector/Shears").warn("Shearing {} failed: {}", state, e.toString());
+            }
+        }
+        if (!wants(forge(), BlockEvent.HarvestDropsEvent.class)) return out;
+        var stacks = new ArrayList<ItemStack>(out);
+        BlockEvent.HarvestDropsEvent legacy = new BlockEvent.HarvestDropsEvent(pos.getX(), pos.getY(), pos.getZ(), World.mcc$wrap(level),
+                BlockBridge.legacyBlock(state), BlockBridge.legacyMeta(state), fortune, 1.0F, stacks,
+                breaker instanceof net.minecraft.world.entity.player.Player pl ? player(pl) : null, silk);
+        forge().post(legacy);
+        List<ItemStack> result = new ArrayList<>();
+        for (ItemStack s : legacy.drops) {
+            if (s == null || s.mcc$count() <= 0) continue;
+            if (legacy.dropChance < 1.0F && level.random.nextFloat() > legacy.dropChance) continue;
+            result.add(s);
+        }
+        return result;
+    }
+
     private static EventBus fml() {
         return FMLCommonHandler.instance().bus();
     }
@@ -105,14 +143,16 @@ public final class EventBridge1710 {
             if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
             if (wants(fml(), TickEvent.ServerTickEvent.class)) fml().post(new TickEvent.ServerTickEvent(TickEvent.Phase.END));
         });
-        gameBus.addListener((LevelTickEvent.Pre e) -> worldTick(e.getLevel(), TickEvent.Phase.START));
-        gameBus.addListener((LevelTickEvent.Post e) -> worldTick(e.getLevel(), TickEvent.Phase.END));
-        gameBus.addListener((PlayerTickEvent.Pre e) -> {
-            if (wants(fml(), TickEvent.PlayerTickEvent.class)) fml().post(new TickEvent.PlayerTickEvent(TickEvent.Phase.START, player(e.getEntity())));
-        });
-        gameBus.addListener((PlayerTickEvent.Post e) -> armorTick(e.getEntity()));
-        gameBus.addListener((PlayerTickEvent.Post e) -> {
-            if (wants(fml(), TickEvent.PlayerTickEvent.class)) fml().post(new TickEvent.PlayerTickEvent(TickEvent.Phase.END, player(e.getEntity())));
+        // 1.20.1 fires one tick event per side with a phase (the separate Pre/Post events are 1.20.2+).
+        gameBus.addListener((LevelTickEvent e) -> worldTick(e.level,
+                e.phase == net.minecraftforge.event.TickEvent.Phase.START ? TickEvent.Phase.START : TickEvent.Phase.END));
+        gameBus.addListener((PlayerTickEvent e) -> {
+            if (e.phase == net.minecraftforge.event.TickEvent.Phase.START) {
+                if (wants(fml(), TickEvent.PlayerTickEvent.class)) fml().post(new TickEvent.PlayerTickEvent(TickEvent.Phase.START, player(e.player)));
+            } else {
+                armorTick(e.player);
+                if (wants(fml(), TickEvent.PlayerTickEvent.class)) fml().post(new TickEvent.PlayerTickEvent(TickEvent.Phase.END, player(e.player)));
+            }
         });
 
         // ---- Forge bus: player data files (Thaumcraft keeps research in <uuid>.thaum next to the player's .dat)
@@ -181,9 +221,11 @@ public final class EventBridge1710 {
                 fml().post(new PlayerEvent.ItemSmeltedEvent(player(e.getEntity()), ItemStack.mcc$wrap(e.getSmelting())));
             }
         });
-        gameBus.addListener((ItemEntityPickupEvent.Post e) -> {
+        // 1.20.1 has no post-pickup event: its EntityItemPickupEvent fires just before the item is picked up, which is the
+        // closest thing to 1.7.10's ItemPickupEvent (the item entity is already the one that will be consumed).
+        gameBus.addListener((EntityItemPickupEvent e) -> {
             if (wants(fml(), PlayerEvent.ItemPickupEvent.class)) {
-                fml().post(new PlayerEvent.ItemPickupEvent(player(e.getPlayer()), (EntityItem) EntityBridge.wrap(e.getItemEntity())));
+                fml().post(new PlayerEvent.ItemPickupEvent(player(e.getEntity()), (EntityItem) EntityBridge.wrap(e.getItem())));
             }
         });
 
@@ -245,74 +287,34 @@ public final class EventBridge1710 {
                     player(pl), ItemStack.mcc$wrap(pl.getMainHandItem()));
             if (forge().post(legacy)) e.setCanceled(true);
         });
-        gameBus.addListener((net.minecraftforge.event.level.BlockDropsEvent e) -> {
-            var p = e.getPos();
-            // Shears on a block that is shearable the legacy way (leaves, tall grass, vines) drop what the block says.
-            if (isShears(e.getTool())
-                    && BlockBridge.legacyBlock(e.getState()) instanceof legacyconnector.v1_7_10.net.minecraftforge.common.IShearable shearable) {
-                try {
-                    var view = BlockAccessView.of(e.getLevel());
-                    ItemStack tool = ItemStack.mcc$wrap(e.getTool());
-                    if (shearable.isShearable(tool, view, p.getX(), p.getY(), p.getZ())) {
-                        var sheared = shearable.onSheared(tool, view, p.getX(), p.getY(), p.getZ(), 0);
-                        e.getDrops().clear();
-                        if (sheared != null) {
-                            for (ItemStack s : sheared) {
-                                var modern = s == null ? net.minecraft.world.item.ItemStack.EMPTY : s.mcc$modern();
-                                if (!modern.isEmpty()) e.getDrops().add(new net.minecraft.world.entity.item.ItemEntity(e.getLevel(), p.getX() + 0.5D, p.getY() + 0.5D, p.getZ() + 0.5D, modern));
-                            }
-                        }
-                    }
-                } catch (RuntimeException | LinkageError ex) {
-                    org.slf4j.LoggerFactory.getLogger("LegacyConnector/Shears").warn("Shearing {} failed: {}", e.getState(), ex.toString());
-                }
-            }
-            if (!wants(forge(), BlockEvent.HarvestDropsEvent.class)) return;
-            java.util.ArrayList<ItemStack> stacks = new java.util.ArrayList<>();
-            for (var item : e.getDrops()) stacks.add(ItemStack.mcc$wrap(item.getItem()));
-            boolean silk = false;
-            BlockEvent.HarvestDropsEvent legacy = new BlockEvent.HarvestDropsEvent(p.getX(), p.getY(), p.getZ(), World.mcc$wrap(e.getLevel()),
-                    BlockBridge.legacyBlock(e.getState()), BlockBridge.legacyMeta(e.getState()), 0, 1.0F, stacks,
-                    e.getBreaker() instanceof net.minecraft.world.entity.player.Player pl ? player(pl) : null, silk);
-            forge().post(legacy);
-            // Handlers edit the list of stacks; the modern drops are rebuilt from it.
-            e.getDrops().clear();
-            for (ItemStack s : legacy.drops) {
-                if (s == null) continue;
-                var modern = s.mcc$modern();
-                if (modern.isEmpty() || legacy.dropChance < 1.0F && e.getLevel().random.nextFloat() > legacy.dropChance) continue;
-                e.getDrops().add(new net.minecraft.world.entity.item.ItemEntity(e.getLevel(), p.getX() + 0.5D, p.getY() + 0.5D, p.getZ() + 0.5D, modern));
-            }
-        });
+        // Block drops have no event before 1.20.2: the legacy HarvestDropsEvent and the shearable-block drops run in
+        // LegacyBlockAdapter#getDrops, where 1.20.1 asks a block for its drops (see harvestDrops below).
         // Bone meal, as 1.7.10's ItemDye.applyBonemeal: the legacy BonemealEvent first (handlers grow the block and answer ALLOW),
         // then a legacy IGrowable block (Thaumcraft's greatwood/silverwood saplings) is fertilized directly.
         gameBus.addListener((net.minecraftforge.event.entity.player.BonemealEvent e) -> {
-            var block = BlockBridge.legacyBlock(e.getState());
+            var block = BlockBridge.legacyBlock(e.getBlock());
             var p = e.getPos();
             World world = World.mcc$wrap(e.getLevel());
             if (wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.BonemealEvent.class)) {
-                var legacy = new legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.BonemealEvent(player(e.getPlayer()), world,
+                var legacy = new legacyconnector.v1_7_10.net.minecraftforge.event.entity.player.BonemealEvent(player(e.getEntity()), world,
                         block, p.getX(), p.getY(), p.getZ());
                 if (forge().post(legacy)) {
                     e.setCanceled(true);
                     return;
                 }
                 if (legacy.getResult() == Event.Result.ALLOW) {
-                    // a canceled event's item is not consumed by the game: 1.7.10 used one bone meal on ALLOW
-                    if (!e.getLevel().isClientSide) e.getStack().shrink(1);
-                    e.setSuccessful(true);
-                    e.setCanceled(true);
+                    // 1.20.1: ALLOW means "handled, use up one bone meal, do no further processing"
+                    e.setResult(net.minecraftforge.eventbus.api.Event.Result.ALLOW);
                     return;
                 }
             }
-            if (block instanceof legacyconnector.v1_7_10.net.minecraft.block.IGrowable growable && !(e.getState().getBlock() instanceof net.minecraft.world.level.block.BonemealableBlock)) {
+            if (block instanceof legacyconnector.v1_7_10.net.minecraft.block.IGrowable growable && !(e.getBlock().getBlock() instanceof net.minecraft.world.level.block.BonemealableBlock)) {
                 boolean remote = e.getLevel().isClientSide;
                 if (growable.canFertilize(world, p.getX(), p.getY(), p.getZ(), remote)) {
                     if (!remote && growable.shouldFertilize(world, world.rand, p.getX(), p.getY(), p.getZ())) {
                         growable.fertilize(world, world.rand, p.getX(), p.getY(), p.getZ());
                     }
                     if (!remote) e.getStack().shrink(1);
-                    e.setSuccessful(true);
                 }
                 e.setCanceled(true);
             }
@@ -379,7 +381,7 @@ public final class EventBridge1710 {
                 e.setCanceled(true);
             } else if (legacy.output != null) {
                 e.setOutput(legacy.output.mcc$modern());
-                e.setCost((long) legacy.cost);
+                e.setCost(legacy.cost);
                 e.setMaterialCost(legacy.materialCost);
             }
         });
@@ -423,8 +425,8 @@ public final class EventBridge1710 {
             var legacy = new legacyconnector.v1_7_10.net.minecraftforge.event.entity.living.LivingSpawnEvent.CheckSpawn(
                     (EntityLivingBase) EntityBridge.wrap(e.getEntity()), World.mcc$wrap(e.getLevel()), (float) e.getX(), (float) e.getY(), (float) e.getZ());
             forge().post(legacy);
-            if (legacy.getResult() == Event.Result.ALLOW) e.setResult(net.minecraftforge.event.entity.living.MobSpawnEvent.PositionCheck.Result.SUCCEED);
-            else if (legacy.getResult() == Event.Result.DENY) e.setResult(net.minecraftforge.event.entity.living.MobSpawnEvent.PositionCheck.Result.FAIL);
+            if (legacy.getResult() == Event.Result.ALLOW) e.setResult(net.minecraftforge.eventbus.api.Event.Result.ALLOW);
+            else if (legacy.getResult() == Event.Result.DENY) e.setResult(net.minecraftforge.eventbus.api.Event.Result.DENY);
         });
         gameBus.addListener((net.minecraftforge.client.event.ComputeFovModifierEvent e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.client.event.FOVUpdateEvent.class)) return;
@@ -444,7 +446,8 @@ public final class EventBridge1710 {
         });
         // 1.20.1 has no all-entity tick event; this listener only cares about living entities anyway.
         gameBus.addListener((net.minecraftforge.event.entity.living.LivingEvent.LivingTickEvent e) -> {
-            if (!(e.getEntity() instanceof LivingEntity l) || !wants(forge(), LivingEvent.LivingUpdateEvent.class)) return;
+            LivingEntity l = e.getEntity();
+            if (!wants(forge(), LivingEvent.LivingUpdateEvent.class)) return;
             EntityLivingBase view = (EntityLivingBase) EntityBridge.wrap(l);
             if (forge().post(new LivingEvent.LivingUpdateEvent(view))) e.setCanceled(true);
             view.mcc$syncPreviousEquipment();
@@ -504,9 +507,10 @@ public final class EventBridge1710 {
             var legacy = playerUse(e, 3);
             if (legacy != null) forge().post(legacy);
         });
-        // 1.7.10 posted Watch after the chunk packet was sent and mods send their tile entities' data from it (IC2's initial data):
-        // NeoForge's Watch fires while the chunk is only queued (the client does not know it yet), its Sent fires right after the packet.
-        gameBus.addListener((net.minecraftforge.event.level.ChunkWatchEvent.Sent e) -> {
+        // 1.7.10 posted Watch after the chunk packet was sent and mods send their tile entities' data from it (IC2's initial
+        // data). 1.20.1 only has Watch, which fires while the chunk is still queued (the Sent event is 1.20.2+), so such a mod
+        // is one packet early here -- the data still travels with the chunk.
+        gameBus.addListener((net.minecraftforge.event.level.ChunkWatchEvent.Watch e) -> {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.event.world.ChunkWatchEvent.Watch.class)) return;
             if (!(EntityBridge.wrap(e.getPlayer()) instanceof legacyconnector.v1_7_10.net.minecraft.entity.player.EntityPlayerMP player)) return;
             forge().post(new legacyconnector.v1_7_10.net.minecraftforge.event.world.ChunkWatchEvent.Watch(
@@ -570,7 +574,7 @@ public final class EventBridge1710 {
                         e.getLevel().addFreshEntity(drop);
                     }
                 }
-                held.hurtAndBreak(1, e.getEntity(), net.minecraft.world.entity.EquipmentSlot.MAINHAND);
+                held.hurtAndBreak(1, e.getEntity(), broken -> broken.broadcastBreakEvent(net.minecraft.world.entity.EquipmentSlot.MAINHAND));
                 e.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
                 e.setCanceled(true);
             } catch (RuntimeException | LinkageError ex) {
@@ -772,7 +776,7 @@ public final class EventBridge1710 {
             if (!wants(forge(), legacyconnector.v1_7_10.net.minecraftforge.client.event.MouseEvent.class)) return;
             if (!mouseEventsInGame()) return;
             var event = new legacyconnector.v1_7_10.net.minecraftforge.client.event.MouseEvent((int) e.getMouseX(), (int) e.getMouseY(), 0, 0,
-                    (int) Math.signum(e.getScrollDeltaY()) * 120, -1, false);
+                    (int) Math.signum(e.getScrollDelta()) * 120, -1, false);
             if (forge().post(event)) e.setCanceled(true);
         });
         gameBus.addListener((net.minecraftforge.client.event.InputEvent.MouseButton.Pre e) -> {
@@ -855,9 +859,9 @@ public final class EventBridge1710 {
 
     private static legacyconnector.v1_7_10.net.minecraft.world.Explosion legacyExplosion(World world, net.minecraft.world.level.Explosion modern) {
         var source = modern.getDirectSourceEntity();
-        var center = modern.center();
+        var center = modern.getPosition();
         return new legacyconnector.v1_7_10.net.minecraft.world.Explosion(world, source == null ? null : EntityBridge.wrap(source),
-                center.x, center.y, center.z, modern.radius());
+                center.x, center.y, center.z, org.kylepitcock.legacyconnector.mixin.access.ExplosionAccess.radius(modern));
     }
 
     /** Legacy listeners see the blocks and entities the explosion hits; what they remove is spared. */

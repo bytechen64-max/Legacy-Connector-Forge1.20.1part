@@ -59,14 +59,14 @@ public final class ForgeEvents1122 {
     }
 
     public static void register(net.minecraftforge.eventbus.api.IEventBus game) {
-        game.addListener((net.minecraftforge.event.entity.player.CanPlayerSleepEvent e) -> {
+        game.addListener((net.minecraftforge.event.entity.player.PlayerSleepInBedEvent e) -> {
             EntityPlayer p = player(e.getEntity());
             if (p == null) return;
             var event = new PlayerSleepInBedEvent(p, BlockPos.mcc$of(e.getPos()));
             post(event);
             var r = event.getResultStatus();
             if (r == null) return;
-            e.setProblem(switch (r) {
+            e.setResult(switch (r) {
                 case OK -> null;
                 case NOT_POSSIBLE_HERE -> net.minecraft.world.entity.player.Player.BedSleepingProblem.NOT_POSSIBLE_HERE;
                 case NOT_POSSIBLE_NOW -> net.minecraft.world.entity.player.Player.BedSleepingProblem.NOT_POSSIBLE_NOW;
@@ -85,13 +85,14 @@ public final class ForgeEvents1122 {
             if (post(new PlayerSetSpawnEvent(p, e.getNewSpawn() == null ? null : BlockPos.mcc$of(e.getNewSpawn()), e.isForced()))) e.setCanceled(true);
         });
         game.addListener((net.minecraftforge.event.entity.player.BonemealEvent e) -> {
-            EntityPlayer p = player(e.getPlayer());
-            if (p == null || !(e.getLevel() instanceof net.minecraft.world.level.Level level)) return;
-            var event = new BonemealEvent(p, WorldBridge1122.wrap(level), BlockPos.mcc$of(e.getPos()), StatesBridge1122.toLegacy(e.getState()),
+            EntityPlayer p = player(e.getEntity());
+            if (p == null) return;
+            var level = e.getLevel();
+            var event = new BonemealEvent(p, WorldBridge1122.wrap(level), BlockPos.mcc$of(e.getPos()), StatesBridge1122.toLegacy(e.getBlock()),
                     legacyconnector.v1_12_2.net.minecraft.util.EnumHand.MAIN_HAND, Stacks1122.view(e.getStack()));
             boolean canceled = post(event);
             if (canceled) e.setCanceled(true);
-            else if (event.getResult() == Event.Result.ALLOW) e.setSuccessful(true);
+            else if (event.getResult() == Event.Result.ALLOW) e.setResult(net.minecraftforge.eventbus.api.Event.Result.ALLOW);
         });
         game.addListener((net.minecraftforge.event.level.BlockEvent.BlockToolModificationEvent e) -> {
             if (e.getToolAction() != net.minecraftforge.common.ToolActions.HOE_TILL || e.isSimulated()) return;
@@ -105,7 +106,8 @@ public final class ForgeEvents1122 {
                 e.setCanceled(true);
                 var context = e.getContext();
                 if (context.getPlayer() != null) context.getItemInHand().hurtAndBreak(1, context.getPlayer(),
-                        net.minecraft.world.entity.LivingEntity.getSlotForHand(context.getHand()));
+                        broken -> broken.broadcastBreakEvent(context.getHand() == net.minecraft.world.InteractionHand.MAIN_HAND
+                                ? net.minecraft.world.entity.EquipmentSlot.MAINHAND : net.minecraft.world.entity.EquipmentSlot.OFFHAND));
             }
         });
         game.addListener((net.minecraftforge.event.entity.player.PlayerInteractEvent.RightClickItem e) -> {
@@ -113,7 +115,7 @@ public final class ForgeEvents1122 {
             EntityPlayer p = player(e.getEntity());
             if (p == null) return;
             var modern = e.getEntity();
-            var hit = modern.pick(modern.blockInteractionRange(), 1.0F, e.getItemStack().is(net.minecraft.world.item.Items.BUCKET));
+            var hit = modern.pick(modern.getAttributeValue(net.minecraftforge.common.ForgeMod.BLOCK_REACH.get()), 1.0F, e.getItemStack().is(net.minecraft.world.item.Items.BUCKET));
             var event = new FillBucketEvent(p, Stacks1122.view(e.getItemStack()), WorldBridge1122.wrap(e.getLevel()),
                     hit.getType() == net.minecraft.world.phys.HitResult.Type.MISS ? null : legacyconnector.v1_12_2.net.minecraft.util.math.RayTraceResult.mcc$of(hit));
             if (post(event)) {
@@ -172,11 +174,12 @@ public final class ForgeEvents1122 {
         game.addListener((net.minecraftforge.event.entity.player.CriticalHitEvent e) -> {
             EntityPlayer p = player(e.getEntity());
             if (p == null) return;
-            var event = new CriticalHitEvent(p, EntityBridge1122.wrap(e.getTarget()), e.getDamageMultiplier(), e.isVanillaCritical());
+            var event = new CriticalHitEvent(p, EntityBridge1122.wrap(e.getTarget()), e.getDamageModifier(), e.isVanillaCritical());
             post(event);
-            if (event.getResult() == Event.Result.ALLOW) e.setCriticalHit(true);
-            else if (event.getResult() == Event.Result.DENY) e.setCriticalHit(false);
-            if (event.getDamageModifier() != event.getOldDamageModifier()) e.setDamageMultiplier(event.getDamageModifier());
+            // 1.20.1 expresses the forced/forbidden critical hit as the event result (1.21 has setCriticalHit)
+            if (event.getResult() == Event.Result.ALLOW) e.setResult(net.minecraftforge.eventbus.api.Event.Result.ALLOW);
+            else if (event.getResult() == Event.Result.DENY) e.setResult(net.minecraftforge.eventbus.api.Event.Result.DENY);
+            if (event.getDamageModifier() != event.getOldDamageModifier()) e.setDamageModifier(event.getDamageModifier());
         });
         registerEntityEvents(game);
     }
@@ -197,15 +200,15 @@ public final class ForgeEvents1122 {
             var event = new legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.LivingSpawnEvent.CheckSpawn(mob, WorldBridge1122.wrap(e.getLevel()),
                     (float) e.getX(), (float) e.getY(), (float) e.getZ(), e.getSpawner() != null);
             post(event);
-            if (event.getResult() == Event.Result.ALLOW) e.setResult(net.minecraftforge.event.entity.living.MobSpawnEvent.PositionCheck.Result.SUCCEED);
-            else if (event.getResult() == Event.Result.DENY) e.setResult(net.minecraftforge.event.entity.living.MobSpawnEvent.PositionCheck.Result.FAIL);
+            if (event.getResult() == Event.Result.ALLOW) e.setResult(net.minecraftforge.eventbus.api.Event.Result.ALLOW);
+            else if (event.getResult() == Event.Result.DENY) e.setResult(net.minecraftforge.eventbus.api.Event.Result.DENY);
         });
-        game.addListener((net.minecraftforge.event.entity.living.FinalizeSpawnEvent e) -> {
+        game.addListener((net.minecraftforge.event.entity.living.MobSpawnEvent.FinalizeSpawn e) -> {
             if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.LivingSpawnEvent.SpecialSpawn.class)) return;
             if (!(entity(e.getEntity()) instanceof legacyconnector.v1_12_2.net.minecraft.entity.EntityLiving mob)) return;
             var event = new legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.LivingSpawnEvent.SpecialSpawn(mob, WorldBridge1122.wrap(e.getLevel()),
                     (float) e.getX(), (float) e.getY(), (float) e.getZ(), null);
-            if (post(event)) e.setCanceled(true);
+            if (post(event)) e.setSpawnCancelled(true);
         });
         game.addListener((net.minecraftforge.event.entity.living.MobSpawnEvent.AllowDespawn e) -> {
             if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.LivingSpawnEvent.AllowDespawn.class)) return;
@@ -304,8 +307,9 @@ public final class ForgeEvents1122 {
             if (view == null) return;
             var event = new legacyconnector.v1_12_2.net.minecraftforge.event.entity.EntityMobGriefingEvent(view);
             post(event);
-            if (event.getResult() == Event.Result.ALLOW) e.setCanGrief(true);
-            else if (event.getResult() == Event.Result.DENY) e.setCanGrief(false);
+            // 1.20.1 asks with the event result (1.21 has setCanGrief)
+            if (event.getResult() == Event.Result.ALLOW) e.setResult(net.minecraftforge.eventbus.api.Event.Result.ALLOW);
+            else if (event.getResult() == Event.Result.DENY) e.setResult(net.minecraftforge.eventbus.api.Event.Result.DENY);
         });
         game.addListener((net.minecraftforge.event.entity.living.BabyEntitySpawnEvent e) -> {
             if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.BabyEntitySpawnEvent.class)) return;
@@ -324,28 +328,28 @@ public final class ForgeEvents1122 {
                 e.setChild(child instanceof net.minecraft.world.entity.AgeableMob m ? m : null);
             }
         });
-        game.addListener((net.minecraftforge.event.entity.player.CanContinueSleepingEvent e) -> {
-            if (!(e.getEntity() instanceof net.minecraft.world.entity.player.Player modern)) return;
-            boolean time = wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.player.SleepingTimeCheckEvent.class);
-            boolean location = wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.player.SleepingLocationCheckEvent.class);
-            if (!time && !location) return;
+        // 1.20.1 fires the two sleep checks separately (CanContinueSleepingEvent is 1.20.2+): the legacy events answer
+        // DEFAULT (the game decides), ALLOW or DENY.
+        game.addListener((net.minecraftforge.event.entity.player.SleepingLocationCheckEvent e) -> {
+            if (!(e.getEntity() instanceof net.minecraft.world.entity.player.Player modern)
+                    || !wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.player.SleepingLocationCheckEvent.class)) return;
             EntityPlayer p = player(modern);
             if (p == null) return;
-            var pos = modern.getSleepingPos().map(BlockPos::mcc$of).orElse(null);
-            if (location) {
-                var where = new legacyconnector.v1_12_2.net.minecraftforge.event.entity.player.SleepingLocationCheckEvent(p, pos);
-                post(where);
-                if (where.getResult() == Event.Result.DENY) {
-                    e.setContinueSleeping(false);
-                    return;
-                }
-                if (where.getResult() == Event.Result.ALLOW) e.setContinueSleeping(true);
-            }
-            if (!time) return;
-            var event = new legacyconnector.v1_12_2.net.minecraftforge.event.entity.player.SleepingTimeCheckEvent(p, pos);
+            var where = new legacyconnector.v1_12_2.net.minecraftforge.event.entity.player.SleepingLocationCheckEvent(p, BlockPos.mcc$of(e.getSleepingLocation()));
+            post(where);
+            if (where.getResult() == Event.Result.ALLOW) e.setResult(net.minecraftforge.eventbus.api.Event.Result.ALLOW);
+            else if (where.getResult() == Event.Result.DENY) e.setResult(net.minecraftforge.eventbus.api.Event.Result.DENY);
+        });
+        game.addListener((net.minecraftforge.event.entity.player.SleepingTimeCheckEvent e) -> {
+            if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.player.SleepingTimeCheckEvent.class)) return;
+            if (!(e.getEntity() instanceof net.minecraft.world.entity.player.Player modern)) return;
+            EntityPlayer p = player(modern);
+            if (p == null) return;
+            var event = new legacyconnector.v1_12_2.net.minecraftforge.event.entity.player.SleepingTimeCheckEvent(p,
+                    e.getSleepingLocation().map(BlockPos::mcc$of).orElse(null));
             post(event);
-            if (event.getResult() == Event.Result.ALLOW) e.setContinueSleeping(true);
-            else if (event.getResult() == Event.Result.DENY) e.setContinueSleeping(false);
+            if (event.getResult() == Event.Result.ALLOW) e.setResult(net.minecraftforge.eventbus.api.Event.Result.ALLOW);
+            else if (event.getResult() == Event.Result.DENY) e.setResult(net.minecraftforge.eventbus.api.Event.Result.DENY);
         });
         game.addListener((net.minecraftforge.event.entity.player.PlayerInteractEvent.EntityInteract e) -> {
             if (!(e.getTarget() instanceof net.minecraft.world.entity.vehicle.AbstractMinecart)
@@ -359,15 +363,20 @@ public final class ForgeEvents1122 {
                 e.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
             }
         });
-        game.addListener((net.minecraftforge.event.entity.living.LivingEvent.LivingTickEvent e) -> {
-            if (!(e.getEntity() instanceof net.minecraft.world.entity.vehicle.AbstractMinecart modern) || modern.level().isClientSide()
-                    || !wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.minecart.MinecartUpdateEvent.class)) {
-                return;
-            }
-            if (entity(modern) instanceof legacyconnector.v1_12_2.net.minecraft.entity.item.EntityMinecart cart) {
-                post(new legacyconnector.v1_12_2.net.minecraftforge.event.entity.minecart.MinecartUpdateEvent(cart, BlockPos.mcc$of(modern.blockPosition())));
-            }
-        });
+    }
+
+    /**
+     * 1.12.2 posted MinecartUpdateEvent from the minecart's own tick; 1.20.1 has no tick event for a non-living entity, so
+     * {@code mixin.MinecartTickMixin} calls this from {@code AbstractMinecart.tick}.
+     */
+    public static void minecartTick(net.minecraft.world.entity.vehicle.AbstractMinecart modern) {
+        if (modern.level().isClientSide()
+                || !wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.minecart.MinecartUpdateEvent.class)) {
+            return;
+        }
+        if (entity(modern) instanceof legacyconnector.v1_12_2.net.minecraft.entity.item.EntityMinecart cart) {
+            post(new legacyconnector.v1_12_2.net.minecraftforge.event.entity.minecart.MinecartUpdateEvent(cart, BlockPos.mcc$of(modern.blockPosition())));
+        }
     }
 
     /** ForgeHooks.getLootingLevel: the looting level of a kill after the 1.12 handlers changed it. */
