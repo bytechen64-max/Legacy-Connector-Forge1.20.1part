@@ -26,12 +26,11 @@ public class EnchantWithLevels extends LootFunction {
         var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (stack == null || server == null) return stack;
         try {
-            var access = server.registryAccess();
-            var tag = isTreasure ? net.minecraft.tags.EnchantmentTags.ON_RANDOM_LOOT : net.minecraft.tags.EnchantmentTags.IN_ENCHANTING_TABLE;
-            var options = access.registryOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT).getTag(tag);
+            // 1.20.1's enchantItem takes a treasure flag (the tag options are 1.21).
             var random = net.minecraft.util.RandomSource.create(rand == null ? 0L : rand.nextLong());
             var modern = org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.toModern(stack);
-            var enchanted = net.minecraft.world.item.enchantment.EnchantmentHelper.enchantItem(random, modern, randomLevel.generateInt(rand), access, options);
+            var enchanted = net.minecraft.world.item.enchantment.EnchantmentHelper.enchantItem(random, modern,
+                    randomLevel.generateInt(rand), isTreasure);
             return org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.fromModern(enchanted);
         } catch (RuntimeException e) {
             return stack;

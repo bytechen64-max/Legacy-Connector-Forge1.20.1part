@@ -230,14 +230,15 @@ public class EnchantmentHelper {
     public static ItemStack addRandomEnchantment(java.util.Random random, ItemStack stack, int level) {
         var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (stack == null || server == null) return stack;
-        var registry = server.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
         var modern = stack.mcc$modern();
-        var result = net.minecraft.world.item.enchantment.EnchantmentHelper.enchantItem(net.minecraft.util.RandomSource.create(random.nextLong()),
-                modern, level, server.registryAccess(), registry.getTag(net.minecraft.tags.EnchantmentTags.IN_ENCHANTING_TABLE));
+        // 1.20.1's enchantItem takes a treasure flag and hands back the stack it changed.
+        var result = net.minecraft.world.item.enchantment.EnchantmentHelper.enchantItem(
+                net.minecraft.util.RandomSource.create(random.nextLong()), modern, level, false);
         if (result != modern) { // a book: vanilla turned this very stack into an enchanted book
             stack.setItem(legacyconnector.v1_7_10.net.minecraft.init.Items.enchanted_book);
-            stack.mcc$modern().set(net.minecraft.core.component.DataComponents.STORED_ENCHANTMENTS,
-                    result.get(net.minecraft.core.component.DataComponents.STORED_ENCHANTMENTS));
+            // 1.20.1 keeps stored enchantments in the item tag (the component is 1.20.5).
+            var stored = result.getTagElement("StoredEnchantments");
+            if (stored != null) stack.mcc$modern().getOrCreateTag().put("StoredEnchantments", stored.copy());
         }
         return stack;
     }

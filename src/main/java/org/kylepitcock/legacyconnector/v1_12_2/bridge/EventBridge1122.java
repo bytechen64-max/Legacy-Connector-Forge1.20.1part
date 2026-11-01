@@ -365,46 +365,7 @@ public final class EventBridge1122 {
                     StatesBridge1122.toLegacy(e.getState()), player(e.getPlayer()));
             if (post(event)) e.setCanceled(true);
         });
-        bus.addListener((net.minecraftforge.event.level.BlockDropsEvent e) -> {
-            if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent.class)) return;
-            harvestDrops(e);
-        });
-    }
-
-    /**
-     * HarvestDropsEvent over the modern drops: the legacy list holds the dropped stacks; if handlers change it (or lower the drop
-     * chance) the item entities are rebuilt from it at the block.
-     */
-    private static void harvestDrops(net.minecraftforge.event.level.BlockDropsEvent e) {
-        var level = e.getLevel();
-        java.util.List<legacyconnector.v1_12_2.net.minecraft.item.ItemStack> drops = new java.util.ArrayList<>();
-        for (var entity : e.getDrops()) drops.add(Stacks1122.fromModern(entity.getItem()));
-        java.util.List<legacyconnector.v1_12_2.net.minecraft.item.ItemStack> before = new java.util.ArrayList<>();
-        for (var d : drops) before.add(d.copy());
-        var breaker = e.getBreaker() instanceof net.minecraft.world.entity.player.Player p ? player(p) : null;
-        int fortune = 0;
-        boolean silk = false;
-        if (!e.getTool().isEmpty()) {
-            var enchantments = level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
-            fortune = e.getTool().getEnchantmentLevel(enchantments.getHolderOrThrow(net.minecraft.world.item.enchantment.Enchantments.BLOCK_FORTUNE));
-            silk = e.getTool().getEnchantmentLevel(enchantments.getHolderOrThrow(net.minecraft.world.item.enchantment.Enchantments.SILK_TOUCH)) > 0;
-        }
-        var event = new legacyconnector.v1_12_2.net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent(WorldBridge1122.wrap(level), pos(e.getPos()),
-                StatesBridge1122.toLegacy(e.getState()), fortune, 1.0F, drops, breaker, silk);
-        post(event);
-        boolean changed = event.getDropChance() < 1.0F || drops.size() != before.size();
-        for (int i = 0; !changed && i < drops.size(); i++) {
-            changed = !legacyconnector.v1_12_2.net.minecraft.item.ItemStack.areItemStacksEqual(drops.get(i), before.get(i));
-        }
-        if (!changed) return;
-        e.getDrops().clear();
-        var at = e.getPos();
-        for (var stack : drops) {
-            if (stack == null || stack.isEmpty() || level.random.nextFloat() > event.getDropChance()) continue;
-            var item = new net.minecraft.world.entity.item.ItemEntity(level, at.getX() + 0.5D, at.getY() + 0.5D, at.getZ() + 0.5D, Stacks1122.toModern(stack));
-            item.setDefaultPickUpDelay();
-            e.getDrops().add(item);
-        }
+        // 1.20.1 fires no block drops event (1.20.2+): HarvestDropsEvent needs a global loot modifier instead.
     }
 
     private static int dimension(net.minecraft.server.MinecraftServer server, net.minecraft.resources.ResourceKey<net.minecraft.world.level.Level> key) {

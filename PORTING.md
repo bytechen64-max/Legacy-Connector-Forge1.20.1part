@@ -81,6 +81,8 @@ files in place, which forces a full recompile every time. A full type-check of t
   `EffectRenderingInventoryScreen`; until then a mod potion shows the modern atlas icon.
 - **Item client extensions** (`IClientItemExtensions`, custom `BlockEntityWithoutLevelRenderer`s) move from NeoForge's
   `RegisterClientExtensionsEvent` to `Item#initializeClient`, which the legacy item adapters have to override.
+- **Block drops** (BlockDropsEvent) do not exist before 1.20.2, so the legacy HarvestDropsEvent and the extra grass-seed drops need a
+  global loot modifier, which the shim does not generate yet.
 - **Play-phase disconnect** has no packet before 1.20.2; the legacy packet yields null and the server closes the connection.
 
 ## Gotchas found the hard way
@@ -102,7 +104,7 @@ files in place, which forces a full recompile every time. A full type-check of t
 
 ## What is left
 
-529 compile errors at the last run (the count moves as javac gets further into the tree). Categories, highest value first:
+519 compile errors at the last run (the count moves as javac gets further into the tree). Categories, highest value first:
 
 1. **Item components** (~20). `DataComponents`/`CustomData`/`ItemEnchantments`/`PotionContents`/`ItemAttributeModifiers`
    are 1.20.5+; 1.20.1 has `stack.getTag()`/`getOrCreateTag()`, `EnchantmentHelper.getEnchantments`,

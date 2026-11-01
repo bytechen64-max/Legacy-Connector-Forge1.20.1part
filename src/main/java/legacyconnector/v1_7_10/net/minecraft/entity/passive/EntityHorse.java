@@ -172,7 +172,7 @@ public class EntityHorse extends EntityAnimal {
     public int func_110241_cb() {
         var h = mcc$horse();
         if (h != null) {
-            var armor = h.getBodyArmorItem().getItem();
+            var armor = h.getItem(net.minecraft.world.entity.animal.horse.AbstractHorse.INV_SLOT_ARMOR).getItem();
             if (armor == net.minecraft.world.item.Items.IRON_HORSE_ARMOR) return 1;
             if (armor == net.minecraft.world.item.Items.GOLDEN_HORSE_ARMOR) return 2;
             if (armor == net.minecraft.world.item.Items.DIAMOND_HORSE_ARMOR) return 3;

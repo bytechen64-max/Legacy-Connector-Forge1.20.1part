@@ -28,34 +28,9 @@ public final class GrassSeeds1122 {
         SEEDS.add(new Seed(seed.copy(), weight));
         if (!listening) {
             listening = true;
-            net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener(BlockDropsEvent.class, GrassSeeds1122::onDrops);
         }
     }
 
-    private static void onDrops(BlockDropsEvent event) {
-        var state = event.getState();
-        if (!state.is(Blocks.GRASS) && !state.is(Blocks.FERN)) return;
-        if (event.getTool().canPerformAction(net.minecraftforge.common.ToolActions.SHEARS_DIG)) return; // shears take the grass itself
-        var random = ThreadLocalRandom.current();
-        if (random.nextInt(8) != 0) return;
-        ItemStack picked = null;
-        synchronized (GrassSeeds1122.class) {
-            int total = WHEAT_WEIGHT;
-            for (Seed s : SEEDS) total += s.weight();
-            int roll = random.nextInt(total) - WHEAT_WEIGHT;
-            if (roll < 0) return; // wheat seeds: the modern loot table's own roll
-            for (Seed s : SEEDS) {
-                roll -= s.weight();
-                if (roll < 0) {
-                    picked = s.stack().copy();
-                    break;
-                }
-            }
-        }
-        if (picked == null) return;
-        var modern = Stacks1122.toModern(picked);
-        if (modern.isEmpty()) return;
-        var pos = event.getPos();
-        event.getDrops().add(new ItemEntity(event.getLevel(), pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, modern));
-    }
+    // 1.20.1 has no BlockDropsEvent (it arrived in 1.20.2): the extra seed drops need a global loot modifier,
+    // which this shim does not generate yet (see PORTING.md).
 }
