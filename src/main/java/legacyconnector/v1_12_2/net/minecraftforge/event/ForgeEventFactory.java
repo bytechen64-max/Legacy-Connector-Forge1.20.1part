@@ -88,9 +88,9 @@ public class ForgeEventFactory {
     /** -1 when bone meal use was canceled, 1 when another mod applied it, 0 to let the block grow as usual. */
     public static int onApplyBonemeal(EntityPlayer player, World world, BlockPos pos, IBlockState state, ItemStack stack, EnumHand hand) {
         if (world == null) return 0;
-        var event = net.minecraftforge.event.ForgeEventFactory.fireBonemealEvent(player(player), world.mcc$level(), pos(pos), state(state), Stacks1122.toModern(stack));
-        if (event.isCanceled()) return -1;
-        return event.isSuccessful() ? 1 : 0;
+        // 1.20.1 answers with -1 (canceled), 1 (another mod applied it) or 0 (grow as usual).
+        return net.minecraftforge.event.ForgeEventFactory.onApplyBonemeal(player(player), world.mcc$level(), pos(pos),
+                state(state), Stacks1122.toModern(stack));
     }
 
     public static float getBreakSpeed(EntityPlayer player, IBlockState state, float original, BlockPos pos) {

@@ -84,13 +84,13 @@ public class ForgeHooks {
     public static boolean onCropsGrowPre(World worldIn, BlockPos pos, IBlockState state, boolean def) {
         if (worldIn == null || worldIn.mcc$level() == null) return def;
         var modern = StatesBridge1122.toModern(state);
-        return modern == null ? def : ForgeHooks.canCropGrow(worldIn.mcc$level(), pos(pos), modern, def);
+        return modern == null ? def : ForgeHooks.onCropsGrowPre(worldIn.mcc$level(), pos(pos), modern, def);
     }
 
     public static void onCropsGrowPost(World worldIn, BlockPos pos, IBlockState state, IBlockState blockState) {
         if (worldIn == null || worldIn.mcc$level() == null) return;
         var modern = StatesBridge1122.toModern(blockState != null ? blockState : state);
-        if (modern != null) ForgeHooks.fireCropGrowPost(worldIn.mcc$level(), pos(pos), modern);
+        if (modern != null) ForgeHooks.onCropsGrowPost(worldIn.mcc$level(), pos(pos), modern);
     }
 
     /** The chance the anvil is damaged by this repair. */
@@ -185,8 +185,10 @@ public class ForgeHooks {
         var sp = entityPlayer == null ? null : entityPlayer.mcc$serverPlayer();
         if (level == null || sp == null || pos == null) return 0;
         var p = pos(pos);
-        var event = ForgeHooks.fireBlockBreak(level, gameType == null ? sp.gameMode.getGameModeForPlayer() : gameType.mcc$modern(), sp, p, level.getBlockState(p));
-        return event.isCanceled() ? -1 : 0;
+        int event = ForgeHooks.onBlockBreakEvent(level,
+                gameType == null ? sp.gameMode.getGameModeForPlayer() : gameType.mcc$modern(), sp, p);
+        // 1.20.1 answers with the experience to drop, or -1 when the event was canceled.
+        return event < 0 ? -1 : 0;
     }
 
     /** Whether the player can harvest the block at {@code pos} (right tool, or no tool needed; mods' harvest check events decide too). */

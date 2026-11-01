@@ -437,11 +437,11 @@ public final class EventBridge1122 {
             // 1.21 renders a frame with RenderFrameEvent; 1.20.1 fires one RenderTickEvent per phase.
             bus.addListener((net.minecraftforge.event.TickEvent.RenderTickEvent e) -> {
                 if (e.phase != net.minecraftforge.event.TickEvent.Phase.START) return;
-                if (wants(TickEvent.RenderTickEvent.class)) post(new TickEvent.RenderTickEvent(TickEvent.Phase.START, e.partialTick));
+                if (wants(TickEvent.RenderTickEvent.class)) post(new TickEvent.RenderTickEvent(TickEvent.Phase.START, e.renderTickTime));
             });
             bus.addListener((net.minecraftforge.event.TickEvent.RenderTickEvent e) -> {
                 if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
-                if (wants(TickEvent.RenderTickEvent.class)) post(new TickEvent.RenderTickEvent(TickEvent.Phase.END, e.partialTick));
+                if (wants(TickEvent.RenderTickEvent.class)) post(new TickEvent.RenderTickEvent(TickEvent.Phase.END, e.renderTickTime));
             });
         }
     }
