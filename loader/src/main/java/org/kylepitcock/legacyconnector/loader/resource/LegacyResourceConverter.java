@@ -191,7 +191,11 @@ public final class LegacyResourceConverter {
 
     private static String soundRef(String ref, String namespace) {
         int colon = ref.indexOf(':');
-        return colon < 0 ? namespace + ":" + normalizePath(ref) : normalizeRef(ref);
+        String ns = colon < 0 ? namespace : ref.substring(0, colon);
+        String path = normalizePath(colon < 0 ? ref : ref.substring(colon + 1));
+        // 1.12 named the file from the assets/<ns>/ root; the modern engine resolves it below sounds/ already
+        if (path.startsWith("sounds/")) path = path.substring("sounds/".length());
+        return ns + ":" + path;
     }
 
     /** Model/blockstate JSON written for 1.7.10-1.12 may reference textures and parents with upper case. */

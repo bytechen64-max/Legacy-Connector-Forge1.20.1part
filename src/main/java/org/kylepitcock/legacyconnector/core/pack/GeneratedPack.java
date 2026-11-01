@@ -134,7 +134,9 @@ public final class GeneratedPack implements PackResources {
                 return new GeneratedPack(packId, type, recipes, org.kylepitcock.legacyconnector.core.LegacyConfig.perfLazyPackMetadata());
             }
         };
-        Pack pack = Pack.readMetaAndCreate(id, Component.literal(title), false, supplier, type, position, PackSource.BUILT_IN);
+        // required: the generated blockstates/models/language files have to win over the 1.12 files in mod_resources, and a pack
+        // added through AddPackFindersEvent is only selected when it cannot be disabled
+        Pack pack = Pack.readMetaAndCreate(id, Component.literal(title), true, supplier, type, position, PackSource.BUILT_IN);
         if (pack != null) event.addRepositorySource(consumer -> consumer.accept(pack));
     }
 

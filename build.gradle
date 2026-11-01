@@ -539,7 +539,13 @@ tasks.named('jar') {
                 'MixinConfigs': 'legacyconnector.mixins.json,legacyconnector.compat.mixins.json',
                 // FMLModContainer resolves a mod's class with gameLayer.findModule(ModFileInfo.moduleName()), and
                 // ModFileInfo.moduleName() is the first mods.toml modId: the module name has to be the mod id.
-                'Automatic-Module-Name': 'legacyconnector'
+                'Automatic-Module-Name': 'legacyconnector',
+                // The runtime is a named module, so the JVM ignores the launcher's --add-opens for it; legacy mods that reach
+                // into the JDK (sun.* tricks, reflection on internals) need these opened to this module, and the manifest is
+                // the only place a modular jar can ask for it.
+                'Add-Opens': 'java.base/java.lang java.base/java.lang.invoke java.base/java.lang.reflect java.base/java.util '
+                        + 'java.base/java.util.concurrent java.base/java.util.zip java.base/java.io java.base/java.nio '
+                        + 'java.base/java.nio.charset java.base/java.net java.base/java.text java.base/java.math'
         )
     }
 }

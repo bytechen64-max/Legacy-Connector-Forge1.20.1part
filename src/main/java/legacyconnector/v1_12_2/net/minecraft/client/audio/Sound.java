@@ -32,7 +32,10 @@ public class Sound implements ISoundEventAccessor<Sound> {
     }
 
     public ResourceLocation getSoundAsOggLocation() {
-        return new ResourceLocation(name.getNamespace(), "sounds/" + name.getPath() + ".ogg");
+                String path = name.getPath();
+        // a mod that named its file from the assets/<ns>/ root ("sounds/x") must not end up under sounds/sounds/
+        if (path.startsWith("sounds/")) path = path.substring("sounds/".length());
+        return new ResourceLocation(name.getNamespace(), "sounds/" + path + ".ogg");
     }
 
     public float getVolume() {
