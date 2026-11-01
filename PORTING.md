@@ -150,6 +150,11 @@ depend on `runServer`/`runClient`).
 - **Forge registers its own capability interfaces** (item handler, fluid handler, item fluid handler, energy) before the
   mods are asked; `RegisterCapabilitiesEvent.register` throws for them *and* logs an error first, so they are skipped
   rather than caught.
+- **A mod jar's module name must be its first mod id.** `FMLModContainer` loads the mod class with
+  `Class.forName(gameLayer.findModule(info.getOwningFile().moduleName()).orElseThrow(), className)`, and
+  `ModFileInfo.moduleName()` is the first `mods.toml` modId, while the game layer names a jar's module from its manifest.
+  `Automatic-Module-Name: legacyconnector.runtime` made that lookup throw `NoSuchElementException: No value present`; the
+  runtime jar says `legacyconnector` now, and a translated legacy jar is named after the first mod it contains.
 - **`IModLocator.scanFile` decides what FML reads from a mod file.** `ModFile.scanFile` delegates to the locator's
   `IModProvider.scanFile`, and Forge's `Scanner` reads every path it receives as a **class file** to collect `@Mod`,
   access transformers and coremods. An empty implementation therefore makes every file the locator produces scan as empty
