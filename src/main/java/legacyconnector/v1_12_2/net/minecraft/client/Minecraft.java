@@ -137,7 +137,8 @@ public class Minecraft implements legacyconnector.v1_12_2.net.minecraft.util.ITh
     }
 
     public float getRenderPartialTicks() {
-        return mc().getTimer().getGameTimeDeltaPartialTick(false);
+        // 1.20.5 replaced the float frame time with a DeltaTracker.
+        return mc().getFrameTime();
     }
 
     public static boolean isAmbientOcclusionEnabled() {

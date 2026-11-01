@@ -98,11 +98,11 @@ public class Timer {
     /** The game's delta tracker, kept apart so this class verifies on a dedicated server. */
     private static final class ClientAccess {
         static float partialTick() {
-            return net.minecraft.client.Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
+            return net.minecraft.client.Minecraft.getInstance().getFrameTime();
         }
 
         static float elapsed() {
-            return net.minecraft.client.Minecraft.getInstance().getTimer().getGameTimeDeltaTicks();
+            return net.minecraft.client.Minecraft.getInstance().getDeltaFrameTime();
         }
     }
 }

@@ -138,15 +138,15 @@ public class WorldInfo {
     }
 
     public int getSpawnX() {
-        return level != null ? level.getLevelData().getSpawnPos().getX() : spawnX;
+        return level != null ? level.getLevelData().getXSpawn() : spawnX;
     }
 
     public int getSpawnY() {
-        return level != null ? level.getLevelData().getSpawnPos().getY() : spawnY;
+        return level != null ? level.getLevelData().getYSpawn() : spawnY;
     }
 
     public int getSpawnZ() {
-        return level != null ? level.getLevelData().getSpawnPos().getZ() : spawnZ;
+        return level != null ? level.getLevelData().getZSpawn() : spawnZ;
     }
 
     public long getWorldTotalTime() {

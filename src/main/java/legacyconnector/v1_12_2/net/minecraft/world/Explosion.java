@@ -50,7 +50,9 @@ public class Explosion {
     }
 
     private Explosion(World world, Entity entity, net.minecraft.world.level.Explosion modern) {
-        this(world, entity, modern.center().x, modern.center().y, modern.center().z, modern.radius(), false, modern.interactsWithBlocks());
+        // 1.21 exposes the explosion as a record (center/radius); 1.20.1 keeps fields behind getters.
+        this(world, entity, modern.getPosition().x, modern.getPosition().y, modern.getPosition().z, modern.radius(), false,
+                modern.interactsWithBlocks());
         this.modern = modern;
         for (var p : modern.getToBlow()) affectedBlockPositions.add(BlockPos.mcc$of(p));
     }
