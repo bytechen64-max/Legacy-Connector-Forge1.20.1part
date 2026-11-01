@@ -38,8 +38,8 @@ public class ItemPotion extends legacyconnector.v1_7_10.net.minecraft.item.Item 
     /** Pass 0 is the liquid (the potion's colour), pass 1 the bottle (untinted). Modern potions are tinted by their contents. */
     public int getColorFromItemStack(ItemStack stack, int pass) {
         if (pass > 0) return 16777215;
-        var contents = stack == null ? null : ItemStack.mcc$toModern(stack).get(net.minecraft.core.component.DataComponents.POTION_CONTENTS);
-        if (contents != null) return contents.getColor() & 0xFFFFFF;
+        var contents = stack == null ? org.kylepitcock.legacyconnector.core.data.PotionData.EMPTY : org.kylepitcock.legacyconnector.core.data.PotionData.of(ItemStack.mcc$toModern(stack));
+        if (!contents.isEmpty()) return contents.color() & 0xFFFFFF;
         return getColorFromDamage(stack == null ? 0 : stack.getItemDamage());
     }
 
@@ -91,10 +91,10 @@ public class ItemPotion extends legacyconnector.v1_7_10.net.minecraft.item.Item 
             }
             return out;
         }
-        var contents = ItemStack.mcc$toModern(stack).get(net.minecraft.core.component.DataComponents.POTION_CONTENTS);
-        if (contents != null && contents.hasEffects()) {
+        var contents = org.kylepitcock.legacyconnector.core.data.PotionData.of(ItemStack.mcc$toModern(stack));
+        if (!contents.allEffects().isEmpty()) {
             java.util.List<legacyconnector.v1_7_10.net.minecraft.potion.PotionEffect> out = new java.util.ArrayList<>();
-            for (var instance : contents.getAllEffects()) out.add(legacyconnector.v1_7_10.net.minecraft.potion.PotionEffect.mcc$wrap(instance));
+            for (var instance : contents.allEffects()) out.add(legacyconnector.v1_7_10.net.minecraft.potion.PotionEffect.mcc$wrap(instance));
             return out;
         }
         return getEffects(stack.getItemDamage());

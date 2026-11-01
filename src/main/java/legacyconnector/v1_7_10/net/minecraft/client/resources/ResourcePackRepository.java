@@ -201,8 +201,7 @@ public class ResourcePackRepository {
                 try (InputStream in = pack.getInputStreamByName("pack.mcmeta")) {
                     var root = com.google.gson.JsonParser.parseString(new String(in.readAllBytes(), java.nio.charset.StandardCharsets.UTF_8)).getAsJsonObject();
                     var description = root.getAsJsonObject("pack").get("description");
-                    return description.isJsonPrimitive() ? description.getAsString() : net.minecraft.network.chat.Component.Serializer.fromJson(description,
-                            net.minecraft.core.RegistryAccess.EMPTY).getString();
+                    return description.isJsonPrimitive() ? description.getAsString() : net.minecraft.network.chat.Component.Serializer.fromJson(description).getString();
                 } catch (IOException | RuntimeException e) {
                     // no description
                 }

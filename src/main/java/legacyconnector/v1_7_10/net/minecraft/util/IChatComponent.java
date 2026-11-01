@@ -38,7 +38,7 @@ public interface IChatComponent extends Iterable<IChatComponent> {
         @Override
         public IChatComponent deserialize(com.google.gson.JsonElement json, java.lang.reflect.Type type, com.google.gson.JsonDeserializationContext context) {
             if (json == null || json.isJsonNull()) return null;
-            Component c = Component.Serializer.fromJson(json, net.minecraft.core.RegistryAccess.EMPTY);
+            Component c = Component.Serializer.fromJson(json);
             return mcc$fromModern(c == null ? Component.empty() : c);
         }
 
@@ -48,12 +48,12 @@ public interface IChatComponent extends Iterable<IChatComponent> {
         }
 
         public static IChatComponent jsonToComponent(String json) {
-            Component c = Component.Serializer.fromJson(json, net.minecraft.core.RegistryAccess.EMPTY);
+            Component c = Component.Serializer.fromJson(json);
             return mcc$fromModern(c == null ? Component.empty() : c);
         }
 
         public static String componentToJson(IChatComponent component) {
-            return Component.Serializer.toJson(component.mcc$toModern(), net.minecraft.core.RegistryAccess.EMPTY);
+            return Component.Serializer.toJson(component.mcc$toModern());
         }
     }
 }

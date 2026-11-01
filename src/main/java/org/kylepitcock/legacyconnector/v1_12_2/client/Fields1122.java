@@ -74,7 +74,7 @@ public final class Fields1122 {
             net.minecraft.core.HolderLookup.Provider lookup = mc.level != null ? mc.level.registryAccess()
                     : net.minecraft.core.RegistryAccess.fromRegistryOfRegistries(net.minecraft.core.registries.BuiltInRegistries.REGISTRY);
             return legacyconnector.v1_12_2.net.minecraft.util.text.ITextComponent.Serializer.jsonToComponent(
-                    net.minecraft.network.chat.Component.Serializer.toJson(component, lookup));
+                    net.minecraft.network.chat.Component.Serializer.toJson(component));
         } catch (RuntimeException e) {
             return new legacyconnector.v1_12_2.net.minecraft.util.text.TextComponentString(component.getString());
         }

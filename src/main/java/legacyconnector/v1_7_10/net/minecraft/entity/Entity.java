@@ -253,7 +253,7 @@ public abstract class Entity implements ICommandSender {
         if (modern.contains("CustomName", 8) && mcc$entity != null) {
             net.minecraft.nbt.CompoundTag plain = modern.copy();
             try {
-                var c = net.minecraft.network.chat.Component.Serializer.fromJson(modern.getString("CustomName"), mcc$entity.registryAccess());
+                var c = net.minecraft.network.chat.Component.Serializer.fromJson(modern.getString("CustomName"));
                 plain.putString("CustomName", c == null ? "" : c.getString());
             } catch (RuntimeException e) {
                 // already plain text
@@ -274,7 +274,7 @@ public abstract class Entity implements ICommandSender {
             if (s.isEmpty()) modern.remove("CustomName");
             else if (s.charAt(0) != '"' && s.charAt(0) != '{' && s.charAt(0) != '[') {
                 modern.putString("CustomName", net.minecraft.network.chat.Component.Serializer.toJson(
-                        net.minecraft.network.chat.Component.literal(s), mcc$entity != null ? mcc$entity.registryAccess() : net.minecraft.core.RegistryAccess.EMPTY));
+                        net.minecraft.network.chat.Component.literal(s)));
             }
         }
     }

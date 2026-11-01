@@ -152,7 +152,9 @@ public class ItemArmor extends legacyconnector.v1_7_10.net.minecraft.item.Item {
     public void removeColor(ItemStack stack) {
         if (material != ArmorMaterial.CLOTH || stack == null) return;
         if (mcc$vanilla != null) {
-            ItemStack.mcc$toModern(stack).remove(net.minecraft.core.component.DataComponents.DYED_COLOR);
+            // 1.20.1 keeps the dye in display.color (the DYED_COLOR component is 1.20.5).
+            var t = ItemStack.mcc$toModern(stack).getTag();
+            if (t != null && t.contains("display", 10)) t.getCompound("display").remove("color");
             return;
         }
         legacyconnector.v1_7_10.net.minecraft.nbt.NBTTagCompound tag = stack.getTagCompound();
@@ -165,8 +167,11 @@ public class ItemArmor extends legacyconnector.v1_7_10.net.minecraft.item.Item {
     public int getColor(ItemStack stack) {
         if (material != ArmorMaterial.CLOTH) return -1;
         if (mcc$vanilla != null) {
-            var dyed = ItemStack.mcc$toModern(stack).get(net.minecraft.core.component.DataComponents.DYED_COLOR);
-            return dyed != null ? dyed.rgb() & 0xFFFFFF : 10511680;
+            var t = ItemStack.mcc$toModern(stack).getTag();
+            if (t != null && t.contains("display", 10) && t.getCompound("display").contains("color", 3)) {
+                return t.getCompound("display").getInt("color") & 0xFFFFFF;
+            }
+            return 10511680;
         }
         legacyconnector.v1_7_10.net.minecraft.nbt.NBTTagCompound tag = stack.getTagCompound();
         if (tag != null && tag.hasKey("display", 10) && tag.getCompoundTag("display").hasKey("color", 3)) return tag.getCompoundTag("display").getInteger("color");
@@ -176,7 +181,8 @@ public class ItemArmor extends legacyconnector.v1_7_10.net.minecraft.item.Item {
     public void func_82813_b(ItemStack stack, int color) {
         if (mcc$vanilla != null) {
             // vanilla leather armour keeps its dye in the modern component (what the client tints it by)
-            ItemStack.mcc$toModern(stack).set(net.minecraft.core.component.DataComponents.DYED_COLOR, new net.minecraft.world.item.component.DyedItemColor(color, true));
+            var modern = ItemStack.mcc$toModern(stack);
+            modern.getOrCreateTagElement("display").putInt("color", color);
             return;
         }
         legacyconnector.v1_7_10.net.minecraft.nbt.NBTTagCompound tag = stack.getTagCompound();

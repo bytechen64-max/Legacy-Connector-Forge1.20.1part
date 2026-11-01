@@ -44,7 +44,7 @@ public class TileEntitySign extends TileEntity implements org.kylepitcock.legacy
         var text = mcc$sign.getFrontText();
         for (int i = 0; i < 4; i++) {
             try {
-                signText[i] = ITextComponent.Serializer.jsonToComponent(net.minecraft.network.chat.Component.Serializer.toJson(text.getMessage(i, false), lookup));
+                signText[i] = ITextComponent.Serializer.jsonToComponent(net.minecraft.network.chat.Component.Serializer.toJson(text.getMessage(i, false)));
             } catch (RuntimeException e) {
                 signText[i] = new TextComponentString(text.getMessage(i, false).getString());
             }

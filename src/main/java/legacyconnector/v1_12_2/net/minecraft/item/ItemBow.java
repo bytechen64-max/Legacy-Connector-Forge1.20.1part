@@ -57,8 +57,11 @@ public class ItemBow extends Item {
         if (world == null || entity == null || !(entity.mcc$entity instanceof net.minecraft.world.entity.LivingEntity l)) return;
         var modern = stack.mcc$backing() != null ? stack.mcc$backing() : org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.toModern(stack);
         var vanilla = new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.BOW);
-        var enchants = modern.get(net.minecraft.core.component.DataComponents.ENCHANTMENTS);
-        if (enchants != null) vanilla.set(net.minecraft.core.component.DataComponents.ENCHANTMENTS, enchants);
+        // 1.20.1 copies the enchantment list through the item tag (the ENCHANTMENTS component is 1.20.5).
+        var tag = modern.getTag();
+        if (tag != null && tag.contains("Enchantments", 9)) {
+            vanilla.getOrCreateTag().put("Enchantments", tag.getList("Enchantments", 10).copy());
+        }
         vanilla.setDamageValue(modern.getDamageValue());
         net.minecraft.world.item.Items.BOW.releaseUsing(vanilla, world.mcc$level(), l, timeLeft);
         if (vanilla.isEmpty()) modern.shrink(1);
