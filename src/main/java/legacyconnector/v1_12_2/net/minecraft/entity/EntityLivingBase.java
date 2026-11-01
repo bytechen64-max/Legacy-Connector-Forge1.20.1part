@@ -1206,14 +1206,15 @@ public abstract class EntityLivingBase extends Entity {
     public boolean isPotionActive(Potion potion) {
         var l = mcc$living();
         var holder = potion == null ? null : potion.mcc$modern();
-        return l != null && holder != null && l.hasEffect(holder);
+        // 1.20.1 looks effects up by the MobEffect itself; 1.20.5 moved these to Holder<MobEffect>.
+        return l != null && holder != null && l.hasEffect(holder.value());
     }
 
     public PotionEffect getActivePotionEffect(Potion potion) {
         var l = mcc$living();
         var holder = potion == null ? null : potion.mcc$modern();
         if (l == null || holder == null) return null;
-        var e = l.getEffect(holder);
+        var e = l.getEffect(holder.value());
         return e == null ? null : PotionEffect.mcc$fromModern(e);
     }
 
@@ -1226,7 +1227,7 @@ public abstract class EntityLivingBase extends Entity {
     public void removePotionEffect(Potion potion) {
         var l = mcc$living();
         var holder = potion == null ? null : potion.mcc$modern();
-        if (l != null && holder != null) l.removeEffect(holder);
+        if (l != null && holder != null) l.removeEffect(holder.value());
     }
 
     public java.util.Collection<PotionEffect> getActivePotionEffects() {

@@ -86,9 +86,14 @@ files in place, which forces a full recompile every time. A full type-check of t
 - **`LivingIncomingDamageEvent` (1.21) is `LivingHurtEvent` in 1.20.1**, which the 1.7.10 shim also defines; that file
   qualifies the modern one at its two listener sites.
 
+- **ForgeGradle does not apply a mod's access transformer to the compile classpath.** Forge applies it at runtime only, and rebuilding the mapped jar or deleting the AT step output does not
+  change that; the members the shim needs are reached through Mixin accessors (`mixin/access/EntityAccess`,
+  `mixin/access/ChunkMapAccess`) instead. Keep the `accesstransformer.cfg` for runtime, but do not rely on it to compile.
+  The mixin configs must stay UTF-8 **without** BOM: Mixin's JSON parser rejects a BOM.
+
 ## What is left
 
-238 compile errors at the last run (the count moves as javac gets further into the tree). Categories, highest value first:
+216 compile errors at the last run (the count moves as javac gets further into the tree). Categories, highest value first:
 
 1. **Item components** (~20). `DataComponents`/`CustomData`/`ItemEnchantments`/`PotionContents`/`ItemAttributeModifiers`
    are 1.20.5+; 1.20.1 has `stack.getTag()`/`getOrCreateTag()`, `EnchantmentHelper.getEnchantments`,
