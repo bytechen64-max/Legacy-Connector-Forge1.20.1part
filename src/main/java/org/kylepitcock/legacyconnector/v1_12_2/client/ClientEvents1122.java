@@ -92,7 +92,9 @@ public final class ClientEvents1122 {
         bus.addListener(ClientEvents1122::onScreenshot);
         bus.addListener(ClientEvents1122::onSoundSource);
         bus.addListener(ClientEvents1122::onStreamingSource);
-        bus.addListener((net.minecraftforge.client.event.ClientTickEvent.Post e) -> tickMusic());
+        bus.addListener((net.minecraftforge.event.TickEvent.ClientTickEvent e) -> {
+            if (e.phase == net.minecraftforge.event.TickEvent.Phase.END) tickMusic();
+        });
         bus.addListener((net.minecraftforge.client.event.SelectMusicEvent e) -> {
             if (replacedMusic() != null) e.setMusic(null);
         });

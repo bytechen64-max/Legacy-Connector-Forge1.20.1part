@@ -17,15 +17,15 @@ public enum PathNodeType {
     }
 
     /** The modern path type of the same meaning (cactus is the modern "other" damage). */
-    public net.minecraft.world.level.pathfinder.PathType mcc$modern() {
+    public net.minecraft.world.level.pathfinder.BlockPathTypes mcc$modern() {
         return switch (this) {
-            case DANGER_CACTUS -> net.minecraft.world.level.pathfinder.PathType.DANGER_OTHER;
-            case DAMAGE_CACTUS -> net.minecraft.world.level.pathfinder.PathType.DAMAGE_OTHER;
-            default -> net.minecraft.world.level.pathfinder.PathType.valueOf(name());
+            case DANGER_CACTUS -> net.minecraft.world.level.pathfinder.BlockPathTypes.DANGER_OTHER;
+            case DAMAGE_CACTUS -> net.minecraft.world.level.pathfinder.BlockPathTypes.DAMAGE_OTHER;
+            default -> net.minecraft.world.level.pathfinder.BlockPathTypes.valueOf(name());
         };
     }
 
-    public static PathNodeType mcc$of(net.minecraft.world.level.pathfinder.PathType type) {
+    public static PathNodeType mcc$of(net.minecraft.world.level.pathfinder.BlockPathTypes type) {
         try {
             return valueOf(type.name());
         } catch (IllegalArgumentException e) {

@@ -421,10 +421,12 @@ public final class EventBridge1122 {
 
     private static final class Client {
         static void register(IEventBus bus) {
-            bus.addListener((net.minecraftforge.client.event.ClientTickEvent.Pre e) -> {
+            bus.addListener((net.minecraftforge.event.TickEvent.ClientTickEvent e) -> {
+                if (e.phase != net.minecraftforge.event.TickEvent.Phase.START) return;
                 if (wants(TickEvent.ClientTickEvent.class)) post(new TickEvent.ClientTickEvent(TickEvent.Phase.START));
             });
-            bus.addListener((net.minecraftforge.client.event.ClientTickEvent.Post e) -> {
+            bus.addListener((net.minecraftforge.event.TickEvent.ClientTickEvent e) -> {
+                if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
                 if (wants(TickEvent.ClientTickEvent.class)) post(new TickEvent.ClientTickEvent(TickEvent.Phase.END));
             });
             bus.addListener((net.minecraftforge.client.event.RenderFrameEvent.Pre e) -> {

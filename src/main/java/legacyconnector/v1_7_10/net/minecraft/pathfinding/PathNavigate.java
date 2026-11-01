@@ -6,7 +6,7 @@ import legacyconnector.v1_7_10.net.minecraft.world.World;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.navigation.GroundPathNavigation;
 import net.minecraft.world.entity.ai.navigation.PathNavigation;
-import net.minecraft.world.level.pathfinder.PathType;
+import net.minecraft.world.level.pathfinder.BlockPathTypes;
 
 /** Legacy navigator: drives the modern navigation of the entity's host (ticked by the host itself). */
 public class PathNavigate {

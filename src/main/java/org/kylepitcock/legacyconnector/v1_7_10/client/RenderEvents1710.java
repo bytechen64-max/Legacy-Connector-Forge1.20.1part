@@ -27,7 +27,8 @@ public final class RenderEvents1710 {
         MinecraftForge.EVENT_BUS.addListener(RenderEvents1710::onStage);
         MinecraftForge.EVENT_BUS.addListener(RenderEvents1710::onHighlight);
         // legacy code reads the movement keys as plain fields of thePlayer.movementInput: mirror them before the client tick handlers run
-        MinecraftForge.EVENT_BUS.addListener(net.minecraftforge.eventbus.api.EventPriority.HIGHEST, (net.minecraftforge.client.event.ClientTickEvent.Pre e) -> {
+        MinecraftForge.EVENT_BUS.addListener(net.minecraftforge.eventbus.api.EventPriority.HIGHEST, (net.minecraftforge.event.TickEvent.ClientTickEvent e) -> {
+            if (e.phase != net.minecraftforge.event.TickEvent.Phase.START) return;
             var local = Minecraft.getInstance().player;
             if (local != null && EntityBridge.wrap(local) instanceof legacyconnector.v1_7_10.net.minecraft.client.entity.EntityPlayerSP sp) sp.mcc$syncInput();
         });

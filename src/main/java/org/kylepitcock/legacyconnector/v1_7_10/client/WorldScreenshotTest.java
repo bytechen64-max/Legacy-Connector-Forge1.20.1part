@@ -24,7 +24,7 @@ import net.minecraft.world.level.WorldDataConfiguration;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.level.levelgen.WorldOptions;
 import net.minecraft.world.level.levelgen.presets.WorldPresets;
-import net.minecraftforge.client.event.ClientTickEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
 import org.kylepitcock.legacyconnector.v1_7_10.adapter.LegacyBlockAdapter;
@@ -63,7 +63,9 @@ public final class WorldScreenshotTest {
             started = true;
             Minecraft.getInstance().tell(WorldScreenshotTest::begin);
         });
-        MinecraftForge.EVENT_BUS.addListener((ClientTickEvent.Post e) -> onTick());
+        MinecraftForge.EVENT_BUS.addListener((TickEvent.ClientTickEvent e) -> {
+            if (e.phase == TickEvent.Phase.END) onTick();
+        });
     }
 
     private static int intProp(String key, int def) {

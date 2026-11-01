@@ -5,7 +5,7 @@ import legacyconnector.v1_12_2.net.minecraft.client.particle.ParticleManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraftforge.client.event.ClientTickEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.common.MinecraftForge;
 import org.kylepitcock.legacyconnector.v1_7_10.client.RenderContext;
@@ -25,7 +25,8 @@ public final class LegacyParticles1122 {
         return legacyconnector.v1_12_2.net.minecraft.client.Minecraft.getMinecraft().effectRenderer;
     }
 
-    private static void onTick(ClientTickEvent.Post event) {
+    private static void onTick(TickEvent.ClientTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) {
             if (!effects().mcc$particles().isEmpty()) effects().clearEffects(null);

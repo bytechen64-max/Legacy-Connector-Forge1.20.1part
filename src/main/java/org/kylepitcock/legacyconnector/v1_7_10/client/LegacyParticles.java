@@ -3,7 +3,7 @@ package org.kylepitcock.legacyconnector.v1_7_10.client;
 import legacyconnector.v1_7_10.net.minecraft.client.particle.EffectRenderer;
 import legacyconnector.v1_7_10.net.minecraft.client.particle.EntityFX;
 import net.minecraft.client.Minecraft;
-import net.minecraftforge.client.event.ClientTickEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.common.MinecraftForge;
 
@@ -20,7 +20,8 @@ public final class LegacyParticles {
         return legacyconnector.v1_7_10.net.minecraft.client.Minecraft.getMinecraft().effectRenderer;
     }
 
-    private static void onTick(ClientTickEvent.Post event) {
+    private static void onTick(TickEvent.ClientTickEvent event) {
+        if (event.phase != TickEvent.Phase.END) return;
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) {
             effects().clearEffects(null);

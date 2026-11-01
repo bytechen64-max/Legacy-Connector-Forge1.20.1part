@@ -826,10 +826,12 @@ public final class EventBridge1710 {
             var legacy = livingRenderEvent(e.getEntity(), false, at);
             if (legacy != null) postInWorld(legacy, e.getPoseStack(), e.getMultiBufferSource(), e.getPackedLight(), at);
         });
-        gameBus.addListener((net.minecraftforge.client.event.ClientTickEvent.Pre e) -> {
+        gameBus.addListener((net.minecraftforge.event.TickEvent.ClientTickEvent e) -> {
+            if (e.phase != net.minecraftforge.event.TickEvent.Phase.START) return;
             if (wants(fml(), TickEvent.ClientTickEvent.class)) fml().post(new TickEvent.ClientTickEvent(TickEvent.Phase.START));
         });
-        gameBus.addListener((net.minecraftforge.client.event.ClientTickEvent.Post e) -> {
+        gameBus.addListener((net.minecraftforge.event.TickEvent.ClientTickEvent e) -> {
+            if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
             if (wants(fml(), TickEvent.ClientTickEvent.class)) fml().post(new TickEvent.ClientTickEvent(TickEvent.Phase.END));
         });
         gameBus.addListener((net.minecraftforge.event.entity.player.ItemTooltipEvent e) -> {
