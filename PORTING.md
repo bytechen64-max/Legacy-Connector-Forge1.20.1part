@@ -74,6 +74,20 @@ Port work landed since (each in its own commit):
 `-PskipShimWidener` also puts `compileJava` back on incremental compilation; without it the widener rewrites the class
 files in place, which forces a full recompile every time. A full type-check of the runtime mod takes ~4-5 minutes.
 
+Server runs (one at a time, never while compiling):
+
+```bash
+./gradlew runServerSubTest     # run-subtest, self test on, stops at tick 700 (run-subtest/eula.txt must say eula=true)
+./gradlew runServerTest        # run-servertest
+./gradlew runServer            # the plain run directory (run/)
+```
+
+ForgeGradle 6 fills the launch target, the module path and the JVM arguments (the `--add-opens` for the secure jar handler)
+into the built-in `client`/`server` runs only; a run config of its own starts with none of them. The test runs therefore
+reuse those two: `minecraft.runs.configureEach` copies the launcher setup, and the task name selects the working directory
+and the self-test properties (`runServerSubTest`, `runServerTest`, `runClientTest`, `screenshotTest` are thin tasks that
+depend on `runServer`/`runClient`).
+
 ## Known 1.20.1 limitations
 
 - **Legacy effect icons** are not drawn yet: NeoForge 1.21 registers them through `IClientMobEffectExtensions`, which 1.20.1 does
@@ -101,13 +115,32 @@ files in place, which forces a full recompile every time. A full type-check of t
   change that; the members the shim needs are reached through Mixin accessors (`mixin/access/EntityAccess`,
   `mixin/access/ChunkMapAccess`) instead. Keep the `accesstransformer.cfg` for runtime, but do not rely on it to compile.
   The mixin configs must stay UTF-8 **without** BOM: Mixin's JSON parser rejects a BOM.
+- **Forge 1.20.1 constructs a mod with a no-argument constructor** (the `(IEventBus, ModContainer)` form is 1.21); the two
+  are taken from `FMLJavaModLoadingContext`/`ModLoadingContext` instead.
+- **Mixin configs of a directory mod** (a development run) come from `src/main/resources/META-INF/MANIFEST.MF`: a folder
+  mod file has no jar manifest, so without that file none of the mixins apply (and the shim's casts fail at runtime).
+  Gradle's `jar` ignores `META-INF/MANIFEST.MF` from the resources, so the same file is harmless in the jar.
+- **A mixin interface with a concrete method is prepared as an interface mixin**, whose target must be an interface. The
+  accessor mixins under `mixin/access` therefore only declare the abstract `@Accessor`/`@Invoker` methods; the casts live
+  in `mixin/access/Accessors` (and `static` accessors for a class target do not work at all -- a private static field is
+  read reflectively).
+- **MixinExtras is not part of Forge 1.20.1**: `@WrapOperation`/`@Local` need the library, so the three mixins that used
+  them are plain `@Redirect`/`@Inject` now.
+- **Forge registers its own capability interfaces** (item handler, fluid handler, item fluid handler, energy) before the
+  mods are asked; `RegisterCapabilitiesEvent.register` throws for them.
 
 ## What is left
 
-123 compile errors at the last run (`./gradlew compileJava -PskipShimWidener`, 2026-11-01). The count moves as javac gets
-further into the tree, and every batch below adds a few newly-visible ones.
+**The compile is clean**: `./gradlew compileJava -PskipShimWidener` reports 0 errors (515 at the start of this pass,
+2026-11-01), and `./gradlew compileJava generateShimIndex` (with the shim widener) passes too and indexes 4421 legacy API
+classes.
 
-Landed since the first type-check of the whole tree (each cluster in its own commit):
+**The dedicated server runs**: `./gradlew runServerSubTest` boots a Forge 1.20.1 server with the runtime mod, reaches
+`Done (38.0s)! For help, type "help"`, runs the fixture self test and stops at tick 700 (`Test autostop after 700 ticks:
+saving and stopping`). That run has no legacy jars, so it proves the loader, the mixin set, the capability registration
+and the registries; the next step is the same run with real 1.7.10/1.12.2 jars.
+
+Landed in this pass (each cluster in its own commit):
 
 - **Brewing**: the four cluster entries that used to head this list are done. 1.20.1 has no `RegisterBrewingRecipesEvent`;
   the legacy recipes go straight into `BrewingRecipeRegistry` (an `IBrewingRecipe`, a container recipe for mod potion
@@ -126,24 +159,16 @@ Landed since the first type-check of the whole tree (each cluster in its own com
 - **Item components** (partly): the effect cures are `MobEffectInstance#getCurativeItems` (cure tags are 1.20.5+), the
   `MobEffects` constants are plain objects, and `DataComponents`/`CustomData` still need the NBT path (see below).
 
-Remaining clusters worth doing first:
+Still open:
 
-1. **`DataComponents`/`CustomData`** (`Stacks1122`, ~7 left): 1.20.1 has `stack.getTag()`/`getOrCreateTag()`; the shim's
-   `CompatComponents` helpers already wrap them (`get/set/clear`), so the call sites can use those.
-2. **Item component leftovers** (~15): `ItemEnchantments` (`EnchantmentHelper.getEnchantments`), `PotionContents`
-   (`net.minecraft.world.item.alchemy.PotionUtils`, mind the shim's *legacy* class of the same name), `MapId` (plain
-   `int`), `ItemAbilities` -> `ToolAction`/`Item#canPerformAction`, `PackType`/`PackSource`/`Pack.Position`,
-   `transmuteCopy`, `getItem(int)` vs horse inventory, `TooltipContext`.
-3. **Access widening** (`jumpFromGround`, `BucketItem.content`, `getChunkIfPresent`, `NbtAccounter.create`, ...): the
-   established answer is an `@Accessor`/`@Invoker` mixin under `mixin/access` (a `MinecraftProfileTextures`-era AT does
-   not reach the compile classpath).
-4. **GUI leftovers** (`ServerData.State`, `VideoSettingsScreen`, `WorldSelectionList.getY`, `GuiButton.BUTTON_TEXTURES`,
-   `WorldOpenFlows`, `GenericMessageScreen`, `disconnect(TitleScreen)`).
-5. **1.12.2 shim odds and ends**: `PlayerList#respawn`, `EnchantmentHelper.enchantItem`, `canBeLeashed`,
-   `ModelRenderer.Cube.compile`, `SoundHandler` lambda, `EnumConnectionState`, `PathNodeType` switch, `AABB.INFINITE`,
-   `NbtAccounter.create`.
-6. **Small semantic gaps** already noted above (block drops through `getDrops`, `ChunkWatchEvent.Watch` instead of
-   `Sent`, the inventory pick-up event timing, DragonAPI's item/XP update events).
-
-Once the compile is clean: package the loader as a JPMS module (above), wire `FMLModType`/manifest packaging for the
-bundle jar, and run `runServerSubTest` with real legacy jars.
+1. **Legacy content coverage**: put the 1.12.2 jars in `run-subtest/mods/1.12.2/` (1.7.10 in `mods-1710`), delete
+   `run-subtest/.legacyconnector/cache` after loader changes and run `runServerSubTest` again; the log then prints
+   `1.12.2 content registered`, the per-mod item/block counts, `1.12.2 blockstates: N translated` and the placement self
+   test, and the failing mods under `failed to load`. This is where the next real work is.
+2. **Client test**: `runClientTest` (mods in `run-clienttest/mods`) and `screenshotTest` have not been run since the port;
+   the client half of the mixin set (`MusicManagerLegacyMixin`, `access.RenderTypeAccess`, the overlay/HUD events) has only
+   been compiled so far.
+3. **Small semantic gaps** already listed above (block drops through `getDrops`, `ChunkWatchEvent.Watch` instead of `Sent`,
+   the inventory pick-up event timing, DragonAPI's item/XP update events, `IClientMobEffectExtensions` icons).
+4. **Packaging**: the loader as a JPMS module and `FMLModType`/manifest packaging for the bundle jar (`bundleJar`), then the
+   release steps of CLAUDE.md.
