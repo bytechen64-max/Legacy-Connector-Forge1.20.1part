@@ -16,7 +16,6 @@ import legacyconnector.v1_12_2.net.minecraft.util.math.Vec3d;
 import legacyconnector.v1_12_2.net.minecraft.util.text.ITextComponent;
 import legacyconnector.v1_12_2.net.minecraft.util.text.TextComponentString;
 import legacyconnector.v1_12_2.net.minecraft.world.World;
-import net.minecraftforge.common.ForgeHooks;
 import org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122;
 import org.kylepitcock.legacyconnector.v1_12_2.bridge.StatesBridge1122;
 

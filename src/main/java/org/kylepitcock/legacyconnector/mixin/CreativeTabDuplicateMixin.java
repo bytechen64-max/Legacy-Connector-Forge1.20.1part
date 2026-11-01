@@ -4,7 +4,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.item.ItemStack;
-import net.minecraftforge.common.util.InsertableLinkedOpenCustomHashSet;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +24,7 @@ public abstract class CreativeTabDuplicateMixin {
     private static final Set<String> LEGACYCONNECTOR$REPORTED = ConcurrentHashMap.newKeySet();
 
     @Inject(method = "assertNewEntryDoesNotAlreadyExists", at = @At("HEAD"), cancellable = true, require = 0)
-    private void legacyconnector$skipDuplicate(InsertableLinkedOpenCustomHashSet<ItemStack> entries, ItemStack stack, CallbackInfo ci) {
+    private void legacyconnector$skipDuplicate(java.util.Collection<ItemStack> entries, ItemStack stack, CallbackInfo ci) {
         if (!entries.contains(stack)) return;
         ci.cancel();
         String key = ((BuildCreativeModeTabContentsEvent) (Object) this).getTabKey().location() + " " + BuiltInRegistries.ITEM.getKey(stack.getItem());

@@ -1,5 +1,6 @@
 package org.kylepitcock.legacyconnector.v1_12_2.adapter;
 
+import net.minecraft.world.level.Level;
 import legacyconnector.v1_12_2.net.minecraft.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;

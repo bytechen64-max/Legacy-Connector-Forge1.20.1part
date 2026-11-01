@@ -1258,7 +1258,8 @@ public abstract class EntityLivingBase extends Entity {
         var l = mcc$living();
         if (l == null || l.level().isClientSide()) return;
         if (stack != null && stack.getItem() == legacyconnector.v1_12_2.net.minecraft.init.Items.MILK_BUCKET) {
-            l.removeEffectsCuredBy(net.minecraftforge.common.EffectCures.MILK);
+            // 1.20.1 has no cure system: milk is handled by MilkBucketItem calling removeAllEffects.
+        l.removeAllEffects();
         }
     }
 
@@ -1349,7 +1350,8 @@ public abstract class EntityLivingBase extends Entity {
         var l = mcc$living();
         if (l == null || stack == null || stack.isEmpty()) return;
         var modern = org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.toModern(stack);
-        var equippable = modern.getItem() instanceof net.minecraft.world.item.ArmorItem armor ? armor.getEquipSound().value() : net.minecraft.sounds.SoundEvents.ARMOR_EQUIP_GENERIC.value();
+        // 1.20.1 reports sound events directly (1.20.5 wrapped them in holders).
+        var equippable = modern.getItem() instanceof net.minecraft.world.item.ArmorItem armor ? armor.getEquipSound() : net.minecraft.sounds.SoundEvents.ARMOR_EQUIP_GENERIC;
         l.playSound(equippable, 1.0F, 1.0F);
     }
 

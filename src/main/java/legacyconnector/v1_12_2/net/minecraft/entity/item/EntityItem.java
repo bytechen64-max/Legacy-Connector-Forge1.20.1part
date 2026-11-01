@@ -203,10 +203,10 @@ public class EntityItem extends Entity {
 
     public String getOwner() {
         var i = mcc$item();
-        if (i != null && i.getTarget() != null) {
-            var level = i.level();
-            var p = level.getPlayerByUUID(i.getTarget());
-            return p == null ? i.getTarget().toString() : p.getGameProfile().getName();
+        // 1.20.1 keeps the thrower as an entity and only offers setTarget(UUID); 1.21 exposes the target UUID.
+        var owner = i == null ? null : i.getOwner();
+        if (owner != null) {
+            return owner instanceof net.minecraft.world.entity.player.Player p ? p.getGameProfile().getName() : owner.getUUID().toString();
         }
         return mcc$owner;
     }

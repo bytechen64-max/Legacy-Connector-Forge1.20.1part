@@ -1139,7 +1139,7 @@ public class World implements IBlockAccess {
                 return false;
             }
         }
-        if (modern.isAddedToLevel() || modern.level() != level && modern.level() != null && modern.isAlive() && level != null && modern.level().getEntity(modern.getId()) == modern) {
+        if (modern.isAddedToWorld() || modern.level() != level && modern.level() != null && modern.isAlive() && level != null && modern.level().getEntity(modern.getId()) == modern) {
             return false;
         }
         if (legacyconnector.v1_12_2.net.minecraft.entity.Entity.mcc$get$world(entity) == null) legacyconnector.v1_12_2.net.minecraft.entity.Entity.mcc$set$world(entity, this);

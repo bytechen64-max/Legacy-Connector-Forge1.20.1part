@@ -27,7 +27,7 @@ public final class LegacyFishingLoot extends LootModifier {
     public static final DeferredRegister<MapCodec<? extends IGlobalLootModifier>> REGISTER =
             DeferredRegister.create(ForgeRegistries.Keys.GLOBAL_LOOT_MODIFIER_SERIALIZERS, "legacyconnector");
     public static final MapCodec<LegacyFishingLoot> CODEC = RecordCodecBuilder.mapCodec(inst -> codecStart(inst).apply(inst, LegacyFishingLoot::new));
-    public static final DeferredHolder<MapCodec<? extends IGlobalLootModifier>, MapCodec<LegacyFishingLoot>> SERIALIZER =
+    public static final net.minecraftforge.registries.RegistryObject<MapCodec<LegacyFishingLoot>> SERIALIZER =
             REGISTER.register("legacy_fishing", () -> CODEC);
     /** The data files that switch the modifier on (served by the generated data pack). */
     public static final String MODIFIER_JSON = "{\"type\":\"legacyconnector:legacy_fishing\",\"conditions\":[]}";

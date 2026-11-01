@@ -77,8 +77,9 @@ public class ServerData {
 
     /** The game's entry for this one (name, address, icon, resource pack choice). */
     public net.minecraft.client.multiplayer.ServerData mcc$modern() {
+        // 1.20.1's constructor takes the LAN flag (1.20.5 passes a Type instead).
         var out = new net.minecraft.client.multiplayer.ServerData(serverName == null ? "" : serverName, serverIP == null ? "" : serverIP,
-                lanServer ? net.minecraft.client.multiplayer.ServerData.Type.LAN : net.minecraft.client.multiplayer.ServerData.Type.OTHER);
+                lanServer);
         out.setResourcePackStatus(switch (resourceMode == null ? ServerResourceMode.PROMPT : resourceMode) {
             case ENABLED -> net.minecraft.client.multiplayer.ServerData.ServerPackStatus.ENABLED;
             case DISABLED -> net.minecraft.client.multiplayer.ServerData.ServerPackStatus.DISABLED;
@@ -125,9 +126,8 @@ public class ServerData {
             case DISABLED -> ServerResourceMode.DISABLED;
             default -> ServerResourceMode.PROMPT;
         };
-        if (modern.state() == net.minecraft.client.multiplayer.ServerData.State.SUCCESSFUL
-                || modern.state() == net.minecraft.client.multiplayer.ServerData.State.INCOMPATIBLE
-                || modern.state() == net.minecraft.client.multiplayer.ServerData.State.UNREACHABLE) pinged = true;
+        // 1.20.1 tracks a finished ping with one flag (1.20.5 exposes a State enum with SUCCESSFUL/INCOMPATIBLE/UNREACHABLE).
+        if (modern.pinged) pinged = true;
     }
 
     public enum ServerResourceMode {

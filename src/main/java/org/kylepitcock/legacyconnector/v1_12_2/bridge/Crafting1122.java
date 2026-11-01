@@ -6,7 +6,6 @@ import legacyconnector.v1_12_2.net.minecraft.inventory.InventoryCrafting;
 import legacyconnector.v1_12_2.net.minecraft.item.ItemStack;
 import legacyconnector.v1_12_2.net.minecraft.util.NonNullList;
 import legacyconnector.v1_12_2.net.minecraft.world.World;
-import net.minecraft.core.NonNullList;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.TransientCraftingContainer;
