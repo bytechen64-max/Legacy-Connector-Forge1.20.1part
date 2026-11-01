@@ -313,8 +313,7 @@ public abstract class StructureComponent {
         worldIn.setBlockState(posIn, chestState != null ? chestState : org.kylepitcock.legacyconnector.v1_12_2.bridge.StatesBridge1122.toLegacy(state), 2);
         var be = access.getBlockEntity(p);
         if (be instanceof net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity container && resourceLocationIn != null) {
-            container.setLootTable(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE,
-                    net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(resourceLocationIn.getNamespace(), resourceLocationIn.getPath())), rand.nextLong());
+            container.setLootTable(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(resourceLocationIn.getNamespace(), resourceLocationIn.getPath()), rand.nextLong());
         }
         return true;
     }
@@ -331,8 +330,7 @@ public abstract class StructureComponent {
         access.setBlock(p, state, 2);
         var be = access.getBlockEntity(p);
         if (be instanceof net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity container && lootTableIn != null) {
-            container.setLootTable(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE,
-                    net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(lootTableIn.getNamespace(), lootTableIn.getPath())), rand.nextLong());
+            container.setLootTable(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(lootTableIn.getNamespace(), lootTableIn.getPath()), rand.nextLong());
         }
         return true;
     }

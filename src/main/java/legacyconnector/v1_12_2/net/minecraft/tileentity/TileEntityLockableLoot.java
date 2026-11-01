@@ -51,7 +51,7 @@ public abstract class TileEntityLockableLoot extends TileEntityLockable {
         if (lootTable == null || world == null) return;
         var level = world.mcc$level();
         if (!(level instanceof net.minecraft.server.level.ServerLevel server)) return;
-        var key = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE, lootTable.mcc$modern());
+        var key = lootTable.mcc$modern();
         var table = server.getServer().reloadableRegistries().getLootTable(key);
         long seed = lootTableSeed;
         lootTable = null;
@@ -82,7 +82,7 @@ public abstract class TileEntityLockableLoot extends TileEntityLockable {
     public void setLootTable(ResourceLocation tableIn, long seed) {
         // a view of a game container: the game rolls the table when the chest is opened (the view's own copy was never read)
         if (mcc$host instanceof net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity r) {
-            r.setLootTable(tableIn == null ? null : net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE, tableIn.mcc$modern()), seed);
+            r.setLootTable(tableIn == null ? null : tableIn.mcc$modern(), seed);
             this.lootTable = null;
             return;
         }

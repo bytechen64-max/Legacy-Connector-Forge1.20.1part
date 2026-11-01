@@ -162,7 +162,7 @@ public class Template {
             var be = world.mcc$access().getBlockEntity(new net.minecraft.core.BlockPos(at.getX(), at.getY(), at.getZ()));
             if (be instanceof net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity c) {
                 var id = net.minecraft.resources.ResourceLocation.tryParse(data.getString("LootTable"));
-                if (id != null) c.setLootTable(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE, id), data.getLong("LootTableSeed"));
+                if (id != null) c.setLootTable(id, data.getLong("LootTableSeed"));
             }
         }
     }

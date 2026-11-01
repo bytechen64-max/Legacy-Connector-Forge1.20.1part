@@ -67,8 +67,7 @@ public abstract class EntityMinecartContainer extends EntityMinecart implements 
         mcc$table = table;
         mcc$seed = seed;
         var c = mcc$container();
-        if (c != null) c.setLootTable(table == null ? null : net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE,
-                table.mcc$modern()), seed);
+        if (c != null) c.setLootTable(table == null ? null : table.mcc$modern(), seed);
     }
 
     public abstract int getSizeInventory();

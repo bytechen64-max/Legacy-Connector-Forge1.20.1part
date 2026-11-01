@@ -39,7 +39,7 @@ public class WeightedRandomChestContent extends WeightedRandom.Item {
                 legacyconnector.v1_7_10.net.minecraftforge.common.ChestGenHooks.mcc$categoryOf(items));
         if (table != null && inventory instanceof legacyconnector.v1_7_10.net.minecraft.tileentity.TileEntityChest chest
                 && chest.mcc$container() instanceof net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity r) {
-            r.setLootTable(net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE, table), random.nextLong());
+            r.setLootTable(table, random.nextLong());
             return;
         }
         for (int i = 0; i < rolls && items.length > 0; i++) {
