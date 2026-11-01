@@ -67,7 +67,7 @@ public final class FluidBridge {
                 ResourceLocation id = ResourceLocation.fromNamespaceAndPath(namespace, Ids.normalizePath(name).replace('/', '_'));
                 if (BuiltInRegistries.FLUID.containsKey(id)) id = ResourceLocation.fromNamespaceAndPath("legacyconnector", id.getNamespace() + "_" + id.getPath());
                 LegacyFluidType type = new LegacyFluidType(name, legacy);
-                LegacyRegistrar.register(net.minecraftforge.registries.ForgeRegistries.FLUID_TYPES, id, type);
+                LegacyRegistrar.register(net.minecraftforge.registries.ForgeRegistries.FLUID_TYPES.get(), id, type);
                 Fluid modern = new LegacyModernFluid(type);
                 LegacyRegistrar.register(BuiltInRegistries.FLUID, id, modern);
                 MODERN.put(name, modern);

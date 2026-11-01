@@ -79,7 +79,7 @@ public final class CommandBridge1122 {
     private static synchronized void ensureListener() {
         if (listening) return;
         listening = true;
-        net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener(net.minecraftforge.event.RegisterCommandsEvent.class, e -> {
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener((net.minecraftforge.event.RegisterCommandsEvent e) -> {
             OURS.clear();
             if (!(MinecraftServer.mcc$instance().getCommandManager() instanceof CommandHandler handler)) return;
             for (ICommand c : handler.mcc$commands()) register(e.getDispatcher(), c);

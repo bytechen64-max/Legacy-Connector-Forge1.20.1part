@@ -36,7 +36,9 @@ public final class LegacyRecipeSync {
     public static void register(IEventBus gameBus) {
         // LOWEST: after the legacy FMLServerStartedEvent handlers ran (the server-start events are all past then).
         gameBus.addListener(EventPriority.LOWEST, (ServerStartedEvent e) -> check(e.getServer(), true));
-        gameBus.addListener(ServerTickEvent.Post.class, e -> {
+        // 1.20.1 fires one server tick event with a phase (the Post class is 1.20.2+)
+        gameBus.addListener((net.minecraftforge.event.TickEvent.ServerTickEvent e) -> {
+            if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
             if (++ticks % CHECK_TICKS == 0) check(e.getServer(), false);
         });
     }

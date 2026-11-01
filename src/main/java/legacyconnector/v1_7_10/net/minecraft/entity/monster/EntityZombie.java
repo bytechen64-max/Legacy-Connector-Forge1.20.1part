@@ -88,7 +88,7 @@ public class EntityZombie extends EntityMob {
                 new net.minecraft.world.entity.monster.Zombie.ZombieGroupData(false, true), null);
         converted.setVillagerData(villager.getVillagerData());
         converted.setGossips(villager.getGossips().store(net.minecraft.nbt.NbtOps.INSTANCE));
-        converted.setTradeOffers(villager.getOffers().copy());
+        converted.setTradeOffers(new net.minecraft.world.item.trading.MerchantOffers(villager.getOffers()));
         converted.setVillagerXp(villager.getVillagerXp());
         net.minecraftforge.event.ForgeEventFactory.onLivingConvert(villager, converted);
         level.levelEvent(null, 1026, mcc$entity.blockPosition(), 0);

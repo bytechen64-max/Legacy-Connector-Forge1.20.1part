@@ -899,7 +899,7 @@ public final class ItemBridge {
     public static NBTTagList legacyEnchantments(net.minecraft.world.item.ItemStack stack) {
         NBTTagList list = new NBTTagList();
         // 1.20.1 keeps enchantments as a map of enchantment to level (the component is 1.20.5).
-        var enchants = stack.getEnchantments();
+        var enchants = net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantments(stack);
         for (var entry : enchants.entrySet()) {
             var key = net.minecraft.core.registries.BuiltInRegistries.ENCHANTMENT.getKey(entry.getKey());
             String path = key == null ? "" : key.getPath();

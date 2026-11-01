@@ -118,7 +118,7 @@ public class EntityItem extends Entity {
         this.mcc$thrower = name;
         var server = mcc$server();
         var player = name == null || server == null ? null : server.getPlayerList().getPlayerByName(name);
-        if (player != null) mcc$item().setThrower(player);
+        if (player != null) mcc$item().setThrower(player.getUUID());
     }
 
     /** The player the item is reserved for, by name (1.7.10 compared names; the modern item keeps the player's id). */
@@ -126,7 +126,7 @@ public class EntityItem extends Entity {
 
     public String getOwner() {
         if (mcc$owner != null) return mcc$owner;
-        java.util.UUID target = mcc$item().getTarget();
+        java.util.UUID target = mcc$item().getOwner();
         if (target == null) return null;
         var server = mcc$server();
         var player = server == null ? null : server.getPlayerList().getPlayer(target);

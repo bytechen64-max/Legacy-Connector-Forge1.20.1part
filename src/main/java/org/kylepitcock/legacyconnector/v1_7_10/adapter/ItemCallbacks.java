@@ -135,7 +135,7 @@ public final class ItemCallbacks {
     static String legacyDisplayName(net.minecraft.world.item.ItemStack stack) {
         var data = org.kylepitcock.legacyconnector.core.data.ItemData.customData(stack);
         if (data == null) return null;
-        var tag = data.getUnsafe();
+        var tag = data;
         if (!tag.contains("display", 10)) return null;
         var display = tag.getCompound("display");
         return display.contains("Name", 8) ? display.getString("Name") : null;

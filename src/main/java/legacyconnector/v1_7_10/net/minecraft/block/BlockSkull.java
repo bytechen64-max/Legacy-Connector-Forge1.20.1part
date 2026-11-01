@@ -137,7 +137,7 @@ public class BlockSkull extends BlockContainer {
         var level = VanillaOps.server(world);
         if (level == null || world.isRemote || y < 2) return;
         if (mcc$vanilla != null) {
-            net.minecraft.world.level.block.WitherSkullBlock.checkSpawn(level, VanillaOps.pos(x, y, z));
+            net.minecraft.world.level.block.WitherSkullBlock.checkSpawn(level, VanillaOps.pos(x, y, z), level.getBlockEntity(VanillaOps.pos(x, y, z)) instanceof net.minecraft.world.level.block.entity.SkullBlockEntity s ? s : null);
             return;
         }
         if (skull == null || skull.getSkullType() != 1 || level.getDifficulty() == net.minecraft.world.Difficulty.PEACEFUL) return;

@@ -152,7 +152,7 @@ public final class ModernScreens1122 {
             data.setString("LevelName", s.getLevelName());
             data.setLong("LastPlayed", s.getLastPlayed());
             data.setBoolean("hardcore", s.isHardcore());
-            data.setBoolean("allowCommands", s.hasCommands());
+            data.setBoolean("allowCommands", s.hasCheats());
             return new legacyconnector.v1_12_2.net.minecraft.world.storage.WorldSummary(new legacyconnector.v1_12_2.net.minecraft.world.storage.WorldInfo(data),
                     s.getLevelId(), s.getLevelName(), 0L, s.requiresManualConversion());
         }

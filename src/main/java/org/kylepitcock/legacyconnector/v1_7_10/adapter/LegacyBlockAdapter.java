@@ -241,7 +241,7 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
         if (familyBase != this) throw new IllegalStateException(this + " is itself a flattened member");
         PENDING.set(new MemberSpec(this, metas.clone(), key, metas.length > 1 ? new LegacyMetaProperty(metas) : null));
         try {
-            BlockBehaviour.Properties p = BlockBehaviour.Properties.ofFullCopy(this);
+            BlockBehaviour.Properties p = BlockBehaviour.Properties.copy(this);
             return this instanceof LegacyEntityBlockAdapter ? new LegacyEntityBlockAdapter(legacy, p) : new LegacyBlockAdapter(legacy, p);
         } finally {
             PENDING.remove();

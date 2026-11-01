@@ -150,7 +150,7 @@ public final class WorldScreenshotTest {
 
     private static Action waitForTerrain(int minTicks) {
         int[] t = {0};
-        return mc -> ++t[0] >= minTicks && mc.levelRenderer.hasRenderedAllSections();
+        return mc -> ++t[0] >= minTicks && mc.levelRenderer.hasRenderedAllChunks();
     }
 
     private static Action command(String c) {

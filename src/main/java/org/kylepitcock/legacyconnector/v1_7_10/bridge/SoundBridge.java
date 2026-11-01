@@ -32,7 +32,7 @@ public final class SoundBridge {
         SOUNDS.put("random.wood_click", SoundEvents.WOODEN_BUTTON_CLICK_ON);
         SOUNDS.put("random.orb", SoundEvents.EXPERIENCE_ORB_PICKUP);
         SOUNDS.put("random.levelup", SoundEvents.PLAYER_LEVELUP);
-        SOUNDS.put("random.explode", SoundEvents.GENERIC_EXPLODE.value());
+        SOUNDS.put("random.explode", SoundEvents.GENERIC_EXPLODE);
         SOUNDS.put("random.fizz", SoundEvents.FIRE_EXTINGUISH);
         SOUNDS.put("random.bow", SoundEvents.ARROW_SHOOT);
         SOUNDS.put("random.bowhit", SoundEvents.ARROW_HIT);
@@ -310,7 +310,7 @@ public final class SoundBridge {
 
     public static void play(Level level, Player except, double x, double y, double z, String name, float volume, float pitch) {
         if (name == null || name.isEmpty()) return;
-        level.playSound(except, x, y, z, Holder.direct(sound(name)), legacySource(name, SoundSource.BLOCKS), volume, pitch);
+        level.playSound(except, x, y, z, sound(name), legacySource(name, SoundSource.BLOCKS), volume, pitch);
     }
 
     public static void particle(LevelAccessor level, String name, double x, double y, double z, double vx, double vy, double vz) {
@@ -332,7 +332,7 @@ public final class SoundBridge {
             }
             var block = legacyconnector.v1_7_10.net.minecraft.block.Block.getBlockById(id);
             if (block == null) return null;
-            return new BlockParticleOption(name.startsWith("blockdust_") ? ParticleTypes.DUST_PILLAR : ParticleTypes.BLOCK, BlockBridge.toModern(block, meta));
+            return new BlockParticleOption(ParticleTypes.BLOCK, BlockBridge.toModern(block, meta));
         }
         return switch (name) {
             case "smoke" -> ParticleTypes.SMOKE;

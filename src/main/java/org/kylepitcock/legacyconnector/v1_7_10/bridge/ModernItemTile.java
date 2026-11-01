@@ -24,14 +24,18 @@ public final class ModernItemTile extends ModernCapabilityTile implements ISided
         return base(be) != null;
     }
 
+    /** 1.20.1 has no {@code Level#getCapability} at a position: ask the block entity. */
+    private static IItemHandler capability(BlockEntity be, net.minecraft.core.Direction side) {
+        return be.getCapability(ForgeCapabilities.ITEM_HANDLER, side).orElse(null);
+    }
+
     private static IItemHandler base(BlockEntity be) {
         Level level = be.getLevel();
         if (level == null || be.isRemoved()) return null;
-        var pos = be.getBlockPos();
-        IItemHandler h = level.getCapability(ForgeCapabilities.ITEM_HANDLER, pos, null);
+        IItemHandler h = capability(be, null);
         if (h != null) return h;
         for (Direction d : Direction.values()) {
-            h = level.getCapability(ForgeCapabilities.ITEM_HANDLER, pos, d);
+            h = capability(be, d);
             if (h != null) return h;
         }
         return null;
@@ -44,7 +48,7 @@ public final class ModernItemTile extends ModernCapabilityTile implements ISided
     private IItemHandler side(int side) {
         Level level = host.getLevel();
         if (level == null || host.isRemoved() || side < 0 || side > 5) return null;
-        return level.getCapability(ForgeCapabilities.ITEM_HANDLER, host.getBlockPos(), Direction.from3DDataValue(side));
+        return capability(host, Direction.from3DDataValue(side));
     }
 
     @Override

@@ -94,7 +94,9 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry {
         var modern = mcc$modern;
         field_148302_b.submit(() -> {
             try {
-                MCC_PINGER.pingServer(modern, () -> {}, () -> {});
+                                MCC_PINGER.pingServer(modern, () -> {
+                    field_148301_e.pingToServer = modern.ping;
+                });
             } catch (java.net.UnknownHostException e) {
                 field_148301_e.pingToServer = -1L;
                 field_148301_e.serverMOTD = EnumChatFormatting.DARK_RED + "Can't resolve hostname";

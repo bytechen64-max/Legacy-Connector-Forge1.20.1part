@@ -43,14 +43,14 @@ public final class LevelReleases {
     public static void register(IEventBus bus) {
         if (!LegacyConfig.perfReleaseUnloadedLevels()) return;
         enabled = true;
-        bus.addListener(EventPriority.LOWEST, net.minecraftforge.event.level.LevelEvent.Unload.class, e -> {
+        bus.addListener(EventPriority.LOWEST, (net.minecraftforge.event.level.LevelEvent.Unload e) -> {
             LevelAccessor level = e.getLevel();
             if (level == null) return;
             DEAD.add(level);
             if (level instanceof net.minecraft.server.level.ServerLevel s) DEAD.add(s.getDataStorage());
             for (var a : LEVEL_ACTIONS) run(a, level);
         });
-        bus.addListener(EventPriority.LOWEST, net.minecraftforge.event.server.ServerStoppedEvent.class, e -> {
+        bus.addListener(EventPriority.LOWEST, (net.minecraftforge.event.server.ServerStoppedEvent e) -> {
             var server = e.getServer();
             DEAD.add(server);
             for (var a : SERVER_ACTIONS) run(a, server);

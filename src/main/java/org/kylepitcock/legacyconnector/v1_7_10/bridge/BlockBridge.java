@@ -237,7 +237,7 @@ public final class BlockBridge {
         var sound = s.getSoundType();
         if (block instanceof net.minecraft.world.level.block.LeavesBlock) return Material.leaves;
         if (block instanceof net.minecraft.world.level.block.SpreadingSnowyDirtBlock) return Material.grass;
-        if (block instanceof net.minecraft.world.level.block.ColoredFallingBlock || path.endsWith("sand") && !path.contains("stone")) return Material.sand;
+        if (block instanceof net.minecraft.world.level.block.FallingBlock || path.endsWith("sand") && !path.contains("stone")) return Material.sand;
         if (sound == net.minecraft.world.level.block.SoundType.WOOL) return Material.cloth;
         if (path.equals("dirt") || path.equals("coarse_dirt") || path.equals("podzol") || path.equals("farmland") || path.equals("dirt_path")
                 || path.equals("rooted_dirt")) {

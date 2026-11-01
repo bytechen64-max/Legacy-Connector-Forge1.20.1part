@@ -31,9 +31,11 @@ public class TileEntityBeaconRenderer extends TileEntitySpecialRenderer {
         pose.pushPose();
         pose.translate(x, y, z);
         try {
+            // 1.20.1 takes the beam colour as three floats
+            float[] colors = {(rgb >> 16 & 255) / 255.0F, (rgb >> 8 & 255) / 255.0F, (rgb & 255) / 255.0F};
             net.minecraft.client.renderer.blockentity.BeaconRenderer.renderBeaconBeam(pose, buffers,
                     TextureLocations.modern(field_147523_b.getResourceDomain(), field_147523_b.getResourcePath()), partialTicks, 1.0F, time, 0,
-                    Math.max(1, (int) (256.0F * strength)), 0xFF000000 | rgb, 0.2F, 0.25F);
+                    Math.max(1, (int) (256.0F * strength)), colors, 0.2F, 0.25F);
         } finally {
             pose.popPose();
         }

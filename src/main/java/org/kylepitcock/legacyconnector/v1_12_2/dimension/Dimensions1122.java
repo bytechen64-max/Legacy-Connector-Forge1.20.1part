@@ -164,7 +164,7 @@ public final class Dimensions1122 {
                         for (var be : loaded.getBlockEntities().values()) {
                             if (!(be instanceof org.kylepitcock.legacyconnector.v1_12_2.adapter.Legacy1122BlockEntity) && !(be instanceof net.minecraft.world.level.block.entity.ChestBlockEntity)) continue;
                             tiles++;
-                            String nbt = be.saveWithoutMetadata(level.registryAccess()).toString();
+                            String nbt = be.saveWithoutMetadata().toString();
                             if (nbt.contains("LootTable") || nbt.contains("Items:[{") || nbt.contains("Items\":[{")) loot++;
                         }
                     }

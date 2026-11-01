@@ -99,7 +99,7 @@ final class InputEvents1122 {
     }
 
     private static void onScroll(net.minecraftforge.client.event.InputEvent.MouseScrollingEvent e) {
-        int wheel = (int) Math.round(e.getScrollDeltaY() * 120.0D);
+        int wheel = (int) Math.round(e.getScrollDelta() * 120.0D);
         if (wheel == 0) return;
         if (ScreenEvents1122.wants(MouseEvent.class)) {
             int[] p = pixel();

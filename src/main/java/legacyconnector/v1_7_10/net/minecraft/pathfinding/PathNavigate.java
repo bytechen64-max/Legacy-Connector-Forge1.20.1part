@@ -30,7 +30,7 @@ public class PathNavigate {
     public void setAvoidsWater(boolean avoid) {
         avoidsWater = avoid;
         Mob m = mob();
-        if (m != null) m.setPathfindingMalus(PathType.WATER, avoid ? -1.0F : 8.0F);
+        if (m != null) m.setPathfindingMalus(net.minecraft.world.level.pathfinder.BlockPathTypes.WATER, avoid ? -1.0F : 8.0F);
     }
 
     public boolean getAvoidsWater() {

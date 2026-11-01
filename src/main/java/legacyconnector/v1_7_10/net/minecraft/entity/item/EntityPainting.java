@@ -81,7 +81,7 @@ public class EntityPainting extends EntityHanging {
         var p = e.mcc$painting();
         if (p == null) return;
         var key = ResourceKey.create(Registries.PAINTING_VARIANT, e.mcc$local_art.mcc$id());
-        p.registryAccess().registryOrThrow(Registries.PAINTING_VARIANT).getHolder(key).ifPresent(holder -> {
+        p.level().registryAccess().registryOrThrow(Registries.PAINTING_VARIANT).getHolder(key).ifPresent(holder -> {
             p.setVariant(holder);
             // the box depends on the size of the picture
             org.kylepitcock.legacyconnector.v1_7_10.entity.ModernAccess.setHangingDirection(p, p.getDirection());

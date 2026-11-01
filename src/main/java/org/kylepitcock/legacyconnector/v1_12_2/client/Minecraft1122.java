@@ -32,7 +32,7 @@ public final class Minecraft1122 {
 
     public static legacyconnector.v1_12_2.net.minecraft.util.Session session() {
         var user = mc().getUser();
-        String id = user.getProfileId() == null ? "" : com.mojang.util.UndashedUuid.toString(user.getProfileId());
+        String id = user.getProfileId() == null ? "" : com.mojang.util.UUIDTypeAdapter.toStrippedString(user.getProfileId());
         return new legacyconnector.v1_12_2.net.minecraft.util.Session(user.getName(), id, user.getAccessToken(),
                 user.getType() == null ? "legacy" : user.getType().getName());
     }
@@ -87,7 +87,7 @@ public final class Minecraft1122 {
     public static void launchIntegratedServer(String folder) {
         var mc = mc();
         if (mc.getLevelSource().levelExists(folder)) {
-            mc.createWorldOpenFlows().loadLevel(mc.screen == null ? new net.minecraft.client.gui.screens.TitleScreen() : mc.screen, folder, () -> mc.setScreen(new net.minecraft.client.gui.screens.TitleScreen()));
+            mc.createWorldOpenFlows().loadLevel(mc.screen == null ? new net.minecraft.client.gui.screens.TitleScreen() : mc.screen, folder);
         } else {
             net.minecraft.client.gui.screens.worldselection.CreateWorldScreen.openFresh(mc, mc.screen);
         }

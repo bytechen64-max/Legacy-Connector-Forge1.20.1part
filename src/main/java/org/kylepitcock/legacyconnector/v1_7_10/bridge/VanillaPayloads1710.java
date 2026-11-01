@@ -16,7 +16,7 @@ public final class VanillaPayloads1710 {
         net.minecraft.server.level.ServerPlayer sp = player.mcc$serverPlayer();
         switch (channel) {
             case "MC|ItemName" -> {
-                String name = data == null || data.length == 0 ? "" : net.minecraft.util.StringUtil.filterText(new String(data, StandardCharsets.UTF_8));
+                String name = data == null || data.length == 0 ? "" : net.minecraft.util.StringUtil.stripColor(new String(data, StandardCharsets.UTF_8));
                 if (name.length() > 30) return;
                 if (EntityPlayer.mcc$get$openContainer(player) instanceof legacyconnector.v1_7_10.net.minecraft.inventory.ContainerRepair repair) {
                     repair.updateItemName(name);
@@ -45,7 +45,7 @@ public final class VanillaPayloads1710 {
         }
     }
 
-    private static java.util.Optional<net.minecraft.core.Holder<net.minecraft.world.effect.MobEffect>> effect(int legacyId) {
+    private static java.util.Optional<net.minecraft.world.effect.MobEffect> effect(int legacyId) {
         if (legacyId <= 0) return java.util.Optional.empty();
         var inst = new legacyconnector.v1_7_10.net.minecraft.potion.PotionEffect(legacyId, 1).mcc$modern();
         return inst == null ? java.util.Optional.empty() : java.util.Optional.of(inst.getEffect());

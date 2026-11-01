@@ -56,7 +56,7 @@ public final class FluidBridge1122 {
                     FluidType type = new FluidType(FluidType.Properties.create().descriptionId(legacy.getUnlocalizedName())
                             .density(legacy.getDensity()).temperature(legacy.getTemperature()).viscosity(legacy.getViscosity())
                             .lightLevel(legacy.getLuminosity()).canSwim(false).canDrown(false).supportsBoating(false));
-                    LegacyRegistrar.register(net.minecraftforge.registries.ForgeRegistries.FLUID_TYPES, id, type);
+                    LegacyRegistrar.register(net.minecraftforge.registries.ForgeRegistries.FLUID_TYPES.get(), id, type);
                     modern = new SourceFluid(type);
                     LegacyRegistrar.register(BuiltInRegistries.FLUID, id, modern);
                 } catch (RuntimeException | LinkageError ex) {

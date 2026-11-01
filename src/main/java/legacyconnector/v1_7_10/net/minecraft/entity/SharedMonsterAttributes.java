@@ -128,7 +128,7 @@ public class SharedMonsterAttributes {
         @Override
         public Collection<AttributeModifier> func_111130_a(int operation) {
             List<AttributeModifier> out = new ArrayList<>();
-            for (var m : modern.getModifiers()) if (m.getOperation().id() == operation) out.add(AttributeModifier.mcc$wrap(m));
+            for (var m : modern.getModifiers()) if (m.getOperation().toValue() == operation) out.add(AttributeModifier.mcc$wrap(m));
             return out;
         }
 
@@ -141,7 +141,7 @@ public class SharedMonsterAttributes {
 
         @Override
         public AttributeModifier getModifier(UUID id) {
-            var m = modern.getModifier(AttributeModifier.mcc$id(id));
+            var m = modern.getModifier(id);
             return m == null ? null : AttributeModifier.mcc$wrap(m);
         }
 

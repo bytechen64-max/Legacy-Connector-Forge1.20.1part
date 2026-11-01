@@ -31,6 +31,11 @@ import org.kylepitcock.legacyconnector.v1_7_10.bridge.RecipeBridge;
  * all arrived with 1.20.2.</p>
  */
 public final class LegacyCraftingRecipe implements CraftingRecipe {
+    /** 1.20.1 asks a recipe for its crafting-book category (the field is 1.20.2+). */
+    @Override
+    public net.minecraft.world.item.crafting.CraftingBookCategory category() {
+        return net.minecraft.world.item.crafting.CraftingBookCategory.MISC;
+    }
     public static final DeferredRegister<RecipeSerializer<?>> REGISTER = DeferredRegister.create(Registries.RECIPE_SERIALIZER, "legacyconnector");
     public static final RegistryObject<RecipeSerializer<LegacyCraftingRecipe>> SERIALIZER = REGISTER.register("legacy_recipe", Serializer::new);
     private static final AtomicInteger FAILURES = new AtomicInteger();

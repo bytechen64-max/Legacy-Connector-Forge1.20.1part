@@ -357,7 +357,8 @@ public abstract class EntityLiving extends EntityLivingBase {
 
     public boolean allowLeashing() {
         Mob m = mcc$mob();
-        return m != null && m.canBeLeashed();
+        // 1.20.1 asks with the player (null: no leashing player yet)
+        return m != null && m.canBeLeashed(null);
     }
 
     public boolean getLeashed() {

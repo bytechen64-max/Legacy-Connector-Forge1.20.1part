@@ -24,7 +24,7 @@ public class BlockJukebox extends BlockContainer {
     public void func_149925_e(World world, int x, int y, int z) {
         var level = VanillaOps.server(world);
         if (level != null && level.getBlockEntity(VanillaOps.pos(x, y, z)) instanceof net.minecraft.world.level.block.entity.JukeboxBlockEntity jukebox) {
-            jukebox.popOutTheItem();
+            jukebox.popOutRecord();
         }
     }
 
@@ -47,8 +47,11 @@ public class BlockJukebox extends BlockContainer {
     @Override
     public int getComparatorInputOverride(World world, int x, int y, int z, int side) {
         var level = VanillaOps.live(world);
-        if (level != null && level.getBlockEntity(VanillaOps.pos(x, y, z)) instanceof net.minecraft.world.level.block.entity.JukeboxBlockEntity jukebox) {
-            return jukebox.getComparatorOutput();
+        if (level != null) {
+            var state = level.getBlockState(VanillaOps.pos(x, y, z));
+            if (state.getBlock() instanceof net.minecraft.world.level.block.JukeboxBlock jukebox) {
+                return jukebox.getAnalogOutputSignal(state, level, VanillaOps.pos(x, y, z));
+            }
         }
         return 0;
     }
