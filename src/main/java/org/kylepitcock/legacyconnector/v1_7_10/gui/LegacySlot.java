@@ -48,7 +48,7 @@ public final class LegacySlot extends Slot {
         legacy.putStack(ItemStack.mcc$wrap(stack));
     }
 
-    @Override
+    // 1.20.1 has no setByPlayer hook (it arrived in 1.20.5).
     public void setByPlayer(net.minecraft.world.item.ItemStack stack, net.minecraft.world.item.ItemStack previous) {
         set(stack);
     }
