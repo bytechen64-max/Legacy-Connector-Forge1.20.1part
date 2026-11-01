@@ -3,8 +3,6 @@ package org.kylepitcock.legacyconnector.v1_12_2.bridge;
 import legacyconnector.v1_12_2.net.minecraft.item.Item;
 import legacyconnector.v1_12_2.net.minecraft.item.ItemStack;
 import legacyconnector.v1_12_2.net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.item.component.CustomData;
 import org.kylepitcock.legacyconnector.v1_12_2.adapter.Legacy1122BlockItem;
 import org.kylepitcock.legacyconnector.v1_12_2.adapter.Legacy1122Item;
 
@@ -22,12 +20,12 @@ public final class Stacks1122 {
             out.setDamageValue(stack.getMetadata());
         }
         // 1.12 kept a filled map's id in its metadata
-        if (modern == net.minecraft.world.item.Items.FILLED_MAP) out.set(DataComponents.MAP_ID, new net.minecraft.world.level.saveddata.maps.MapId(stack.getMetadata()));
+        if (modern == net.minecraft.world.item.Items.FILLED_MAP) org.kylepitcock.legacyconnector.core.data.ItemData.setMapId(out, stack.getMetadata());
         NBTTagCompound tag = stack.getTagCompound();
         if (tag != null) {
             var data = tag.mcc$modern().copy();
             if (isPotionItem(modern)) potionToModern(data, out);
-            if (!data.isEmpty()) out.set(DataComponents.CUSTOM_DATA, CustomData.of(data));
+            if (!data.isEmpty()) org.kylepitcock.legacyconnector.core.data.ItemData.setCustomData(out, data);
         }
         return out;
     }
@@ -191,11 +189,11 @@ public final class Stacks1122 {
             meta = variant != null ? (Integer) variant[1] : 0;
         }
         if (legacy.isDamageable() || stack.isDamageableItem()) meta = stack.getDamageValue();
-        var mapId = stack.get(DataComponents.MAP_ID);
-        if (mapId != null) meta = mapId.id();
+        int mapId = org.kylepitcock.legacyconnector.core.data.ItemData.mapId(stack);
+        if (mapId >= 0) meta = mapId;
         ItemStack out = new ItemStack(legacy, stack.getCount(), meta);
         CustomData data = stack.get(DataComponents.CUSTOM_DATA);
-        if (data != null) out.setTagCompound(new NBTTagCompound(data.copyTag()));
+        if (data != null) out.setTagCompound(new NBTTagCompound(data.copy()));
         var potion = stack.get(DataComponents.POTION_CONTENTS);
         if (potion != null && isPotionItem(stack.getItem())) potionFromModern(potion, out);
         return out;

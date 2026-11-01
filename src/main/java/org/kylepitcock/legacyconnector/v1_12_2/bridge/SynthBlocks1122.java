@@ -74,7 +74,7 @@ public final class SynthBlocks1122 {
             if (level == null || e.mcc$entity == null || tag == null || !tag.hasKey("EntityTag", 10)) return null;
             var player = args[1] instanceof legacyconnector.v1_12_2.net.minecraft.entity.player.EntityPlayer p ? p.mcc$player() : null;
             net.minecraft.world.entity.EntityType.updateCustomEntityTag(level, player, e.mcc$entity,
-                    net.minecraft.world.item.component.CustomData.of(tag.getCompoundTag("EntityTag").mcc$modern()));
+                    tag.getCompoundTag("EntityTag").mcc$modern());
             return null;
         });
         // ItemMonsterPlacer.spawnCreature(world, id, x, y, z): a mob of that id facing a random way, set up for its spawn and added

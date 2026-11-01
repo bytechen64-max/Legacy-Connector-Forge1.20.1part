@@ -72,7 +72,7 @@ public final class ItemStack {
     /** Binds this stack as a live view of a modern stack (see {@link #mcc$backing}). */
     public void mcc$bind(net.minecraft.world.item.ItemStack backing) {
         this.mcc$backing = backing;
-        this.mcc$seenData = backing.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+        this.mcc$seenData = org.kylepitcock.legacyconnector.core.data.ItemData.customData(backing);
         this.mcc$seenTag = stackTagCompound == null ? null : stackTagCompound.mcc$modern().copy();
     }
 
@@ -87,10 +87,10 @@ public final class ItemStack {
     private void mcc$refreshTag() {
         var b = mcc$backing;
         if (b == null) return;
-        var data = b.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+        var data = org.kylepitcock.legacyconnector.core.data.ItemData.customData(b);
         if (data != mcc$seenData) {
             mcc$seenData = data;
-            stackTagCompound = data == null ? null : new NBTTagCompound(data.copyTag());
+            stackTagCompound = data == null ? null : new NBTTagCompound(data.copy());
             mcc$seenTag = stackTagCompound == null ? null : stackTagCompound.mcc$modern().copy();
         }
         org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.touched(this);
@@ -103,9 +103,9 @@ public final class ItemStack {
         net.minecraft.nbt.CompoundTag now = stackTagCompound == null || stackTagCompound.isEmpty() ? null : stackTagCompound.mcc$modern();
         if (java.util.Objects.equals(now, mcc$seenTag == null || mcc$seenTag.isEmpty() ? null : mcc$seenTag)) return;
         mcc$seenTag = now == null ? null : now.copy();
-        if (stackTagCompound == null || stackTagCompound.isEmpty()) b.remove(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
-        else b.set(net.minecraft.core.component.DataComponents.CUSTOM_DATA, net.minecraft.world.item.component.CustomData.of(stackTagCompound.mcc$modern()));
-        mcc$seenData = b.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
+        if (stackTagCompound == null || stackTagCompound.isEmpty()) org.kylepitcock.legacyconnector.core.data.ItemData.removeCustomData(b);
+        else org.kylepitcock.legacyconnector.core.data.ItemData.setCustomData(b, stackTagCompound.mcc$modern());
+        mcc$seenData = org.kylepitcock.legacyconnector.core.data.ItemData.customData(b);
     }
 
     private void mcc$writeCount() {

@@ -8,7 +8,6 @@ import legacyconnector.v1_7_10.net.minecraft.world.World;
 import legacyconnector.v1_7_10.net.minecraft.world.WorldProvider;
 import legacyconnector.v1_7_10.net.minecraft.world.storage.MapData;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.saveddata.maps.MapId;
 import net.minecraft.world.level.saveddata.maps.MapItemSavedData;
 
 /**
@@ -75,7 +74,7 @@ public class ItemMap extends legacyconnector.v1_7_10.net.minecraft.item.ItemMapB
     public static MapData loadMapData(int id, World world) {
         Level level = world == null ? null : world.mcc$fullLevel();
         if (level != null) {
-            MapData view = mcc$view(id, level.getMapData(new MapId(id)));
+            MapData view = mcc$view(id, level.getMapData(net.minecraft.world.item.MapItem.makeKey(id)));
             if (view != null) return view;
         }
         return world == null ? null : (MapData) world.loadItemData(MapData.class, "map_" + id);
@@ -90,8 +89,8 @@ public class ItemMap extends legacyconnector.v1_7_10.net.minecraft.item.ItemMapB
         Level level = world.mcc$fullLevel();
         if (mcc$vanilla != null && level != null) {
             var modernStack = stack.mcc$modern();
-            MapId id = modernStack.get(net.minecraft.core.component.DataComponents.MAP_ID);
-            MapItemSavedData data = id == null ? null : level.getMapData(id);
+            Integer mapId = net.minecraft.world.item.MapItem.getMapId(modernStack);
+            MapItemSavedData data = mapId == null ? null : level.getMapData(net.minecraft.world.item.MapItem.makeKey(mapId));
             if (data == null && !world.isRemote && level instanceof net.minecraft.server.level.ServerLevel server) {
                 byte scale = 3;
                 int size = 128 * (1 << scale);
@@ -99,11 +98,11 @@ public class ItemMap extends legacyconnector.v1_7_10.net.minecraft.item.ItemMapB
                 int x = Math.round((float) spawn.getX() / size) * size;
                 int z = Math.round((float) spawn.getZ() / size) * size;
                 data = mcc$newModern(x, z, scale, server.dimension());
-                id = server.getFreeMapId();
-                server.setMapData(id, data);
-                modernStack.set(net.minecraft.core.component.DataComponents.MAP_ID, id);
+                mapId = server.getFreeMapId();
+                server.setMapData(net.minecraft.world.item.MapItem.makeKey(mapId), data);
+                org.kylepitcock.legacyconnector.core.data.ItemData.setMapId(modernStack, mapId);
             }
-            return id == null ? null : mcc$view(id.id(), data);
+            return mapId == null ? null : mcc$view(mapId, data);
         }
         String name = "map_" + stack.getItemDamage();
         MapData data = (MapData) world.loadItemData(MapData.class, name);
@@ -179,11 +178,11 @@ public class ItemMap extends legacyconnector.v1_7_10.net.minecraft.item.ItemMapB
         if (mcc$vanilla == null || stack == null || player == null || !(player.mcc$entity instanceof net.minecraft.world.entity.player.Player p)) return null;
         Level level = world == null ? null : world.mcc$fullLevel();
         if (level == null) return null;
-        MapId id = stack.mcc$modern().get(net.minecraft.core.component.DataComponents.MAP_ID);
-        MapItemSavedData data = id == null ? null : level.getMapData(id);
+        Integer mapId = net.minecraft.world.item.MapItem.getMapId(stack.mcc$modern());
+        MapItemSavedData data = mapId == null ? null : level.getMapData(net.minecraft.world.item.MapItem.makeKey(mapId));
         if (data == null) return null;
         data.tickCarriedBy(p, stack.mcc$modern());
-        net.minecraft.network.protocol.Packet<?> modern = data.getUpdatePacket(id, p);
+        net.minecraft.network.protocol.Packet<?> modern = data.getUpdatePacket(mapId, p);
         return modern == null ? null : new ModernPacket(modern);
     }
 

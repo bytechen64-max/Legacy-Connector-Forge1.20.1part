@@ -11,10 +11,8 @@ import legacyconnector.v1_7_10.net.minecraft.nbt.NBTTagCompound;
 import legacyconnector.v1_7_10.net.minecraft.nbt.NBTTagList;
 import legacyconnector.v1_7_10.net.minecraft.util.IIcon;
 import legacyconnector.v1_7_10.net.minecraft.world.World;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.item.component.CustomData;
 import org.kylepitcock.legacyconnector.v1_7_10.bridge.ItemBridge;
 
 /**
@@ -49,7 +47,7 @@ public final class ItemStack {
     /** Set for views of a modern stack someone else holds (a slot's); their modern stack is never replaced. */
     private boolean mcc$wrapped;
     private NBTTagCompound mcc$tagView;
-    private CustomData mcc$tagSource;
+    private CompoundTag mcc$tagSource;
 
     public ItemStack(Block block) {
         this(block, 1);
@@ -252,11 +250,11 @@ public final class ItemStack {
     public boolean hasTagCompound() {
         // As 1.7.10: a stack whose tag was assigned an (empty) compound has one. Code such as
         // "if (!stack.hasTagCompound()) stack.stackTagCompound = new NBTTagCompound();" relies on it.
-        return mcc$stack.get(DataComponents.CUSTOM_DATA) != null || (mcc$stack.isEmpty() && mcc$looseTag != null);
+        return org.kylepitcock.legacyconnector.core.data.ItemData.hasCustomData(mcc$stack) || (mcc$stack.isEmpty() && mcc$looseTag != null);
     }
 
     public NBTTagCompound getTagCompound() {
-        CustomData data = mcc$stack.get(DataComponents.CUSTOM_DATA);
+        CompoundTag data = org.kylepitcock.legacyconnector.core.data.ItemData.customData(mcc$stack);
         if (data == null) {
             if (mcc$stack.isEmpty() && mcc$looseTag != null) return mcc$looseTag;
             mcc$tagView = null;
@@ -264,7 +262,7 @@ public final class ItemStack {
             return null;
         }
         if (mcc$tagView == null || mcc$tagSource != data) {
-            NBTTagCompound view = new NBTTagCompound(data.copyTag());
+            NBTTagCompound view = new NBTTagCompound(data.copy());
             view.mcc$setChangeListener(() -> mcc$writeTag(view));
             mcc$tagView = view;
             mcc$tagSource = data;
@@ -274,7 +272,7 @@ public final class ItemStack {
 
     public void setTagCompound(NBTTagCompound tag) {
         if (tag == null) {
-            mcc$stack.remove(DataComponents.CUSTOM_DATA);
+            org.kylepitcock.legacyconnector.core.data.ItemData.removeCustomData(mcc$stack);
             mcc$tagView = null;
             mcc$tagSource = null;
             mcc$looseTag = null;
@@ -290,9 +288,8 @@ public final class ItemStack {
     }
 
     private void mcc$writeTag(NBTTagCompound tag) {
-        CustomData data = CustomData.of(tag.mcc$modern());
-        mcc$stack.set(DataComponents.CUSTOM_DATA, data);
-        mcc$tagSource = mcc$stack.get(DataComponents.CUSTOM_DATA);
+        org.kylepitcock.legacyconnector.core.data.ItemData.setCustomData(mcc$stack, tag.mcc$modern());
+        mcc$tagSource = org.kylepitcock.legacyconnector.core.data.ItemData.customData(mcc$stack);
     }
 
     public void setTagInfo(String key, NBTBase value) {
@@ -361,23 +358,23 @@ public final class ItemStack {
     }
 
     public String getDisplayName() {
-        if (mcc$stack.has(DataComponents.CUSTOM_NAME)) return mcc$stack.getHoverName().getString();
+        if (org.kylepitcock.legacyconnector.core.data.ItemData.hasCustomName(mcc$stack)) return mcc$stack.getHoverName().getString();
         String named = org.kylepitcock.legacyconnector.v1_7_10.adapter.ItemCallbacks.mcc$legacyDisplayName(mcc$stack);
         if (named != null) return named;
         return mcc$item == null ? "" : mcc$item.getItemStackDisplayName(this);
     }
 
     public ItemStack setStackDisplayName(String name) {
-        mcc$stack.set(DataComponents.CUSTOM_NAME, Component.literal(name));
+        org.kylepitcock.legacyconnector.core.data.ItemData.setCustomName(mcc$stack, Component.literal(name));
         return this;
     }
 
     public void func_135074_t() {
-        mcc$stack.remove(DataComponents.CUSTOM_NAME);
+        org.kylepitcock.legacyconnector.core.data.ItemData.clearCustomName(mcc$stack);
     }
 
     public boolean hasDisplayName() {
-        return mcc$stack.has(DataComponents.CUSTOM_NAME);
+        return org.kylepitcock.legacyconnector.core.data.ItemData.hasCustomName(mcc$stack);
     }
 
     public EnumRarity getRarity() {
@@ -404,12 +401,11 @@ public final class ItemStack {
     }
 
     public int getRepairCost() {
-        Integer cost = mcc$stack.get(DataComponents.REPAIR_COST);
-        return cost == null ? 0 : cost;
+        return org.kylepitcock.legacyconnector.core.data.ItemData.repairCost(mcc$stack);
     }
 
     public void setRepairCost(int cost) {
-        mcc$stack.set(DataComponents.REPAIR_COST, cost);
+        org.kylepitcock.legacyconnector.core.data.ItemData.setRepairCost(mcc$stack, cost);
     }
 
     // ------------------------------------------------------------------ behaviour delegation
@@ -490,10 +486,10 @@ public final class ItemStack {
     public static boolean areItemStackTagsEqual(ItemStack a, ItemStack b) {
         if (a == null && b == null) return true;
         if (a == null || b == null) return false;
-        CustomData x = a.mcc$stack.get(DataComponents.CUSTOM_DATA);
-        CustomData y = b.mcc$stack.get(DataComponents.CUSTOM_DATA);
-        CompoundTag tx = x == null ? null : x.copyTag();
-        CompoundTag ty = y == null ? null : y.copyTag();
+        CompoundTag tx = org.kylepitcock.legacyconnector.core.data.ItemData.customData(a.mcc$stack);
+        CompoundTag ty = org.kylepitcock.legacyconnector.core.data.ItemData.customData(b.mcc$stack);
+        tx = tx == null ? null : tx.copy();
+        ty = ty == null ? null : ty.copy();
         return tx == null ? ty == null || ty.isEmpty() : tx.equals(ty) || tx.isEmpty() && ty == null;
     }
 

@@ -669,7 +669,7 @@ public final class ItemBridge {
             var stack = new net.minecraft.world.item.ItemStack(modern, count);
             if (modern instanceof net.minecraft.world.item.MapItem) {
                 // a filled map's legacy damage is its map id
-                if (meta >= 0 && meta != Short.MAX_VALUE) stack.set(net.minecraft.core.component.DataComponents.MAP_ID, new net.minecraft.world.level.saveddata.maps.MapId(meta));
+                if (meta >= 0 && meta != Short.MAX_VALUE) org.kylepitcock.legacyconnector.core.data.ItemData.setMapId(stack, meta);
                 return stack;
             }
             if (meta == Short.MAX_VALUE) {
@@ -808,8 +808,8 @@ public final class ItemBridge {
         if (explicit != null) return explicit;
         if (item == null) return 0;
         if (stack.getItem() instanceof net.minecraft.world.item.MapItem) {
-            var id = stack.get(net.minecraft.core.component.DataComponents.MAP_ID);
-            return id == null ? 0 : id.id();
+            int id = org.kylepitcock.legacyconnector.core.data.ItemData.mapId(stack);
+            return Math.max(0, id);
         }
         if (stack.getItem() instanceof LegacyItemHolder h) {
             return item.isDamageable() ? stack.getDamageValue() : h.legacyMeta();
@@ -852,7 +852,7 @@ public final class ItemBridge {
 
     public static net.minecraft.world.item.ItemStack withLegacyDamage(Item item, net.minecraft.world.item.ItemStack stack, int damage) {
         if (stack.getItem() instanceof net.minecraft.world.item.MapItem && CompatComponents.legacyMeta(stack) == null) {
-            stack.set(net.minecraft.core.component.DataComponents.MAP_ID, new net.minecraft.world.level.saveddata.maps.MapId(Math.max(0, damage)));
+            org.kylepitcock.legacyconnector.core.data.ItemData.setMapId(stack, Math.max(0, damage));
             return stack;
         }
         if (stack.isDamageableItem()) {

@@ -31,7 +31,7 @@ public class MapItemRenderer {
         return instance;
     }
 
-    private record Detached(net.minecraft.world.level.saveddata.maps.MapId id, net.minecraft.world.level.saveddata.maps.MapItemSavedData data) {}
+    private record Detached(int id, net.minecraft.world.level.saveddata.maps.MapItemSavedData data) {}
 
     /** Marks the map's picture for upload (the game uploads it when drawn next). */
     public void updateMapTexture(MapData mapdataIn) {
@@ -57,12 +57,12 @@ public class MapItemRenderer {
         if (pose == null || buffers == null) return;
         try {
             var mc = net.minecraft.client.Minecraft.getInstance();
-            net.minecraft.world.level.saveddata.maps.MapId id = null;
+            Integer id = null;
             net.minecraft.world.level.saveddata.maps.MapItemSavedData data = null;
             int number = mcc$mapNumber(mapdataIn.mapName);
             if (number >= 0 && mc.level != null) {
-                id = new net.minecraft.world.level.saveddata.maps.MapId(number);
-                data = mc.level.getMapData(id);
+                id = number;
+                data = mc.level.getMapData(net.minecraft.world.item.MapItem.makeKey(number));
             }
             if (data == null) {
                 Detached d = detached(mapdataIn, true);
@@ -94,7 +94,7 @@ public class MapItemRenderer {
             var dim = legacy.dimension == -1 ? net.minecraft.world.level.Level.NETHER
                     : legacy.dimension == 1 ? net.minecraft.world.level.Level.END : net.minecraft.world.level.Level.OVERWORLD;
             var data = net.minecraft.world.level.saveddata.maps.MapItemSavedData.createForClient(legacy.scale, false, dim);
-            d = new Detached(new net.minecraft.world.level.saveddata.maps.MapId(nextPrivateId--), data);
+            d = new Detached(nextPrivateId--, data);
             DETACHED.put(legacy, d);
         }
         return d;

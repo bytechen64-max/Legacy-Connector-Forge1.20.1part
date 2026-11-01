@@ -106,7 +106,7 @@ public class SPacketMaps implements Packet<INetHandlerPlayClient> {
                     java.util.Optional.empty()));
         }
         var patch = columns > 0 ? new net.minecraft.world.level.saveddata.maps.MapItemSavedData.MapPatch(minX, minZ, columns, rows, mapDataBytes) : null;
-        return new net.minecraft.network.protocol.game.ClientboundMapItemDataPacket(new net.minecraft.world.level.saveddata.maps.MapId(mapId), mapScale, false,
+        return new net.minecraft.network.protocol.game.ClientboundMapItemDataPacket(mapId, mapScale, false,
                 decorations, patch);
     }
 }

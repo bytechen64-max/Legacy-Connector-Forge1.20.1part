@@ -57,8 +57,8 @@ public final class LegacyConnectorJeiPlugin implements IModPlugin {
                 Integer meta = CompatComponents.legacyMeta(stack);
                 if (meta != null) data.append('#').append(meta);
                 if (context == mezz.jei.api.ingredients.subtypes.UidContext.Ingredient) {
-                    var custom = stack.get(net.minecraft.core.component.DataComponents.CUSTOM_DATA);
-                    if (custom != null && !custom.isEmpty()) data.append(custom.copyTag());
+                    var custom = org.kylepitcock.legacyconnector.core.data.ItemData.customData(stack);
+                    if (custom != null && !custom.isEmpty()) data.append(custom);
                 }
                 return data.isEmpty() ? mezz.jei.api.ingredients.subtypes.IIngredientSubtypeInterpreter.NONE : data.toString();
             });

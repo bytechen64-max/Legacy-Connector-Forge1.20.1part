@@ -109,7 +109,7 @@ public class RenderItemFrame extends Render<EntityItemFrame> {
         var buffers = RenderContext.buffers();
         var mc = net.minecraft.client.Minecraft.getInstance();
         if (pose == null || buffers == null || mc.level == null) return;
-        var id = modern.get(net.minecraft.core.component.DataComponents.MAP_ID);
+        Integer id = net.minecraft.world.item.MapItem.getMapId(modern);
         var data = net.minecraft.world.item.MapItem.getSavedData(modern, mc.level);
         if (id == null || data == null) return;
         mc.gameRenderer.getMapRenderer().render(pose, buffers, id, data, true, RenderContext.vertexLight());

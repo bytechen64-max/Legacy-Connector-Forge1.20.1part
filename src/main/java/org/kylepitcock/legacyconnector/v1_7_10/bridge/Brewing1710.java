@@ -9,7 +9,6 @@ import legacyconnector.v1_7_10.net.minecraft.item.Item;
 import legacyconnector.v1_7_10.net.minecraft.potion.PotionEffect;
 import legacyconnector.v1_7_10.net.minecraft.potion.PotionHelper;
 import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
@@ -20,7 +19,6 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.alchemy.Potions;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraftforge.common.brewing.IBrewingRecipe;
 import net.minecraftforge.event.brewing.RegisterBrewingRecipesEvent;
 import org.kylepitcock.legacyconnector.core.pack.GeneratedTranslations;
@@ -98,8 +96,8 @@ public final class Brewing1710 {
     static int valueOf(ItemStack stack) {
         boolean splash = stack.is(Items.SPLASH_POTION);
         if (!splash && !stack.is(Items.POTION)) return -1;
-        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
-        if (data != null && data.contains(TAG)) return data.copyTag().getInt(TAG);
+        net.minecraft.nbt.CompoundTag data = org.kylepitcock.legacyconnector.core.data.ItemData.customData(stack);
+        if (data != null && data.contains(TAG)) return data.getInt(TAG);
         PotionContents contents = stack.get(DataComponents.POTION_CONTENTS);
         if (contents == null || contents.potion().isEmpty() || !contents.customEffects().isEmpty()) return -1;
         Integer value = VALUE.get(contents.potion().get());
@@ -158,7 +156,7 @@ public final class Brewing1710 {
         stack.set(DataComponents.POTION_CONTENTS, new PotionContents(Optional.empty(), Optional.of(0xFF000000 | PotionHelper.func_77915_a(value, false)), effects));
         CompoundTag tag = new CompoundTag();
         tag.putInt(TAG, value);
-        stack.set(DataComponents.CUSTOM_DATA, CustomData.of(tag));
+        org.kylepitcock.legacyconnector.core.data.ItemData.setCustomData(stack, tag);
         stack.set(DataComponents.ITEM_NAME, Component.translatable(splash ? "legacyconnector.splash_potion_of" : "legacyconnector.potion_of", name));
         return stack;
     }
@@ -192,7 +190,7 @@ public final class Brewing1710 {
         public ItemStack getOutput(ItemStack input, ItemStack ingredient) {
             if (ingredient.isEmpty()) return ItemStack.EMPTY;
             boolean modIngredient = !BuiltInRegistries.ITEM.getKey(ingredient.getItem()).getNamespace().equals("minecraft");
-            CustomData data = input.get(DataComponents.CUSTOM_DATA);
+            net.minecraft.nbt.CompoundTag data = org.kylepitcock.legacyconnector.core.data.ItemData.customData(input);
             boolean legacyPotion = data != null && data.contains(TAG);
             if (!modIngredient && !legacyPotion) return ItemStack.EMPTY; // vanilla on vanilla: the modern mixes
             int from = valueOf(input);
