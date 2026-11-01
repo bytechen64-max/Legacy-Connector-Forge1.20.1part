@@ -807,11 +807,11 @@ public final class Assets1122 implements GeneratedPack.Contributor {
     private static Res resolveMultipart(JsonObject original, ResourceLocation id, IBlockState state, String key, Map<String, Supplier<byte[]>> out) {
         TreeMap<String, String> props = propsOf(state);
         Res r = new Res();
+        List<JsonElement> every = new ArrayList<>();
         int n = 0;
         for (JsonElement e : original.getAsJsonArray("multipart")) {
             if (!e.isJsonObject()) continue;
             JsonObject part = e.getAsJsonObject();
-            if (part.has("when") && part.get("when").isJsonObject() && !whenMatches(part.getAsJsonObject("when"), props)) continue;
             JsonElement apply = part.get("apply");
             if (apply == null) continue;
             JsonElement resolved;
@@ -830,9 +830,22 @@ public final class Assets1122 implements GeneratedPack.Contributor {
                 r.fallback = "multipart model not found";
                 continue;
             }
+            every.add(resolved);
+            if (part.has("when") && part.get("when").isJsonObject() && !whenMatches(part.getAsJsonObject("when"), props)) continue;
             r.parts.add(resolved);
         }
-        if (r.parts.isEmpty() && r.fallback != null) r.parts.add(fallbackModel(id, null, key, out));
+        if (r.parts.isEmpty() && !every.isEmpty()) {
+            // no selector matched: the 1.12 properties (a wall's "north"/"up", a fence's "east") are not on the modern block, whose
+            // single "meta" property carries them. Draw every part rather than nothing (an empty multipart has no model at all).
+            // the first apply of a wall is its post, of a fence its post too: that part alone reads correctly, drawing every side
+            // would show a four-way cross for a lone block
+            r.parts.add(every.get(0));
+            r.fallback = "no multipart selector matches the modern state";
+        }
+        if (r.parts.isEmpty()) {
+            r.fallback = r.fallback != null ? r.fallback : "no multipart part";
+            r.parts.add(fallbackModel(id, null, key, out));
+        }
         return r;
     }
 
