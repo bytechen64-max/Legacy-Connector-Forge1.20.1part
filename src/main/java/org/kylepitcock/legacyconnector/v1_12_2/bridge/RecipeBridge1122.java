@@ -130,6 +130,14 @@ public final class RecipeBridge1122 {
         return (!RECIPES.isEmpty() || !SMELTING.isEmpty()) && state() != generatedState;
     }
 
+    /**
+     * The recipe pack was reloaded and picked the change up: take the state as generated again, or every later check reports the
+     * same change once more and the server reloads its data packs forever (a full reload every ten seconds: the intermittent freeze).
+     */
+    public static void markSynced() {
+        generatedState = state();
+    }
+
     /** Whether a data pack or KubeJS removed the modern smelting recipe made from this legacy input key. */
     private static boolean removedByDataPack(Object input) {
         var id = smeltingIds.get(input);

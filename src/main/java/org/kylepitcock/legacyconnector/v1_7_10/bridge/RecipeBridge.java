@@ -291,6 +291,11 @@ public final class RecipeBridge {
         return !RECIPES.isEmpty() && state() != generatedState;
     }
 
+    /** The recipe pack was reloaded and picked the change up: take the state as generated again (see LegacyRecipeSync). */
+    public static void markSynced() {
+        generatedState = state();
+    }
+
     /** What now stands for a legacy recipe a data pack or KubeJS changed: {@code recipe} is null when it was removed. */
     public record Replacement(net.minecraft.world.item.crafting.Recipe<?> recipe) {}
 

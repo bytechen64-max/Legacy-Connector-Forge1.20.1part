@@ -22,15 +22,22 @@ public final class LegacyRecipeSync {
     private static final long MIN_INTERVAL_MS = 10_000;
 
     private static final List<BooleanSupplier> SOURCES = new CopyOnWriteArrayList<>();
+    private static final List<Runnable> SYNCED = new CopyOnWriteArrayList<>();
+    /** Safety net: enough reloads have happened, so whatever keeps reporting a change cannot hold the server hostage. */
+    private static final int MAX_RELOADS_PER_WINDOW = 4;
+    private static final long WINDOW_MS = 300_000L;
+    private static final java.util.ArrayDeque<Long> RELOADS = new java.util.ArrayDeque<>();
     private static volatile boolean reloading;
     private static long lastReload;
     private static int ticks;
+    private static boolean LOGGED_CAP;
 
     private LegacyRecipeSync() {}
 
-    /** A test telling whether a legacy registry changed since the recipe pack last read it. */
-    public static void watch(BooleanSupplier changedSinceGenerate) {
+    /** A test telling whether a legacy registry changed since the recipe pack last read it, and the matching "take a new snapshot". */
+    public static void watch(BooleanSupplier changedSinceGenerate, Runnable markSynced) {
         SOURCES.add(changedSinceGenerate);
+        SYNCED.add(markSynced);
     }
 
     public static void register(IEventBus gameBus) {
@@ -54,12 +61,35 @@ public final class LegacyRecipeSync {
             }
         }
         if (!changed) return;
+        long now = System.currentTimeMillis();
+        synchronized (RELOADS) {
+            while (!RELOADS.isEmpty() && now - RELOADS.peekFirst() > WINDOW_MS) RELOADS.pollFirst();
+            if (RELOADS.size() >= MAX_RELOADS_PER_WINDOW) {
+                if (!LOGGED_CAP) {
+                    LOG.warn("Legacy recipes keep changing; not reloading the data packs again for now ({} reloads in {} s)", RELOADS.size(), WINDOW_MS / 1000);
+                    LOGGED_CAP = true;
+                }
+                return;
+            }
+            RELOADS.addLast(now);
+        }
         reloading = true;
-        lastReload = System.currentTimeMillis();
+        lastReload = now;
         LOG.info("Legacy recipes changed after the data packs loaded (scripts such as MineTweaker's); reloading data packs");
         server.reloadResources(server.getPackRepository().getSelectedIds()).whenComplete((v, err) -> {
             reloading = false;
-            if (err != null) LOG.warn("Reloading data packs for changed legacy recipes failed", err);
+            if (err != null) {
+                LOG.warn("Reloading data packs for changed legacy recipes failed", err);
+                return;
+            }
+            // the change is in the recipe manager now: take it as the new baseline, or the next check reports it again
+            for (Runnable sync : SYNCED) {
+                try {
+                    sync.run();
+                } catch (RuntimeException e) {
+                    LOG.debug("Marking legacy recipes synced failed: {}", e.toString());
+                }
+            }
         });
     }
 }

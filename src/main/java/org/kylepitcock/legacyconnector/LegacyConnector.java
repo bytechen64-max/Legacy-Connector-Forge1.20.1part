@@ -153,8 +153,10 @@ public final class LegacyConnector {
         GeneratedPack.addRecipeContributor((type, out) -> {
             if (type == net.minecraft.server.packs.PackType.SERVER_DATA) org.kylepitcock.legacyconnector.v1_12_2.bridge.RecipeBridge1122.generate(out);
         });
-        org.kylepitcock.legacyconnector.core.pack.LegacyRecipeSync.watch(org.kylepitcock.legacyconnector.v1_7_10.bridge.RecipeBridge::changedSinceGenerate);
-        org.kylepitcock.legacyconnector.core.pack.LegacyRecipeSync.watch(org.kylepitcock.legacyconnector.v1_12_2.bridge.RecipeBridge1122::changedSinceGenerate);
+        org.kylepitcock.legacyconnector.core.pack.LegacyRecipeSync.watch(org.kylepitcock.legacyconnector.v1_7_10.bridge.RecipeBridge::changedSinceGenerate,
+                org.kylepitcock.legacyconnector.v1_7_10.bridge.RecipeBridge::markSynced);
+        org.kylepitcock.legacyconnector.core.pack.LegacyRecipeSync.watch(org.kylepitcock.legacyconnector.v1_12_2.bridge.RecipeBridge1122::changedSinceGenerate,
+                org.kylepitcock.legacyconnector.v1_12_2.bridge.RecipeBridge1122::markSynced);
 
         IEventBus game = MinecraftForge.EVENT_BUS;
         org.kylepitcock.legacyconnector.core.LevelReleases.register(game);

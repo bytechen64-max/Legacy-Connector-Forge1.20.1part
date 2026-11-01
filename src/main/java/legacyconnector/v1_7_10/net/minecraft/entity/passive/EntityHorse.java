@@ -172,7 +172,7 @@ public class EntityHorse extends EntityAnimal {
     public int func_110241_cb() {
         var h = mcc$horse();
         if (h != null) {
-            var armor = org.kylepitcock.legacyconnector.mixin.access.Accessors.horseInventory(h).getItem(net.minecraft.world.entity.animal.horse.AbstractHorse.INV_SLOT_ARMOR).getItem();
+            var armor = org.kylepitcock.legacyconnector.core.access.Accessors.horseInventory(h).getItem(net.minecraft.world.entity.animal.horse.AbstractHorse.INV_SLOT_ARMOR).getItem();
             if (armor == net.minecraft.world.item.Items.IRON_HORSE_ARMOR) return 1;
             if (armor == net.minecraft.world.item.Items.GOLDEN_HORSE_ARMOR) return 2;
             if (armor == net.minecraft.world.item.Items.DIAMOND_HORSE_ARMOR) return 3;
@@ -191,7 +191,7 @@ public class EntityHorse extends EntityAnimal {
         var h = mcc$horse();
         if (h != null) {
             if (!mcc$world().isRemote && h instanceof AbstractChestedHorse c && c.hasChest()) {
-                var inv = org.kylepitcock.legacyconnector.mixin.access.Accessors.horseInventory(h);
+                var inv = org.kylepitcock.legacyconnector.core.access.Accessors.horseInventory(h);
                 // slot 0 is the saddle; the rest is the chest
                 for (int i = 1; i < inv.getContainerSize(); i++) {
                     var stack = inv.removeItemNoUpdate(i);

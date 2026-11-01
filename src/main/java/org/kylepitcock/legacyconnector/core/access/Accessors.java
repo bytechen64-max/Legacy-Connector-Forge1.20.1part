@@ -1,4 +1,10 @@
-package org.kylepitcock.legacyconnector.mixin.access;
+package org.kylepitcock.legacyconnector.core.access;
+
+import org.kylepitcock.legacyconnector.mixin.access.AbstractArrowAccess;
+import org.kylepitcock.legacyconnector.mixin.access.AbstractHorseAccess;
+import org.kylepitcock.legacyconnector.mixin.access.ExplosionAccess;
+import org.kylepitcock.legacyconnector.mixin.access.LivingEntityAccess;
+import org.kylepitcock.legacyconnector.mixin.access.RenderTypeAccess;
 
 import java.util.Map;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
@@ -13,7 +19,11 @@ import net.minecraft.world.SimpleContainer;
 import net.minecraft.client.renderer.RenderType;
 
 /**
- * Calls the accessor mixins of this package.
+ * Calls the accessor mixins.
+
+ * <p>This class must NOT live in the mixin package: Mixin refuses to load a class of a declared mixin package outside of a
+ * mixin transformation ("<code>... is in a defined mixin package ... and cannot be referenced directly</code>"), and every
+ * runtime caller of an accessor would crash the game the first time it rendered.
  *
  * <p>A mixin interface that declares a concrete (static) method is prepared as an interface mixin, which requires an interface
  * target, so the mixins here are abstract-only and these helpers hold the casts. One call site fewer than casting everywhere, and

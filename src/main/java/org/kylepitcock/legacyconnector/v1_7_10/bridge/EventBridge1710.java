@@ -861,7 +861,7 @@ public final class EventBridge1710 {
         var source = modern.getDirectSourceEntity();
         var center = modern.getPosition();
         return new legacyconnector.v1_7_10.net.minecraft.world.Explosion(world, source == null ? null : EntityBridge.wrap(source),
-                center.x, center.y, center.z, org.kylepitcock.legacyconnector.mixin.access.Accessors.explosionRadius(modern));
+                center.x, center.y, center.z, org.kylepitcock.legacyconnector.core.access.Accessors.explosionRadius(modern));
     }
 
     /** Legacy listeners see the blocks and entities the explosion hits; what they remove is spared. */
