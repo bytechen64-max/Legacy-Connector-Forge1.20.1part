@@ -30,9 +30,11 @@ public class LootTableManager {
     public LootTable getLootTableFromLocation(ResourceLocation location) {
         var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server == null || location == null) return LootTable.EMPTY_LOOT_TABLE;
-        var key = net.minecraft.resources.ResourceKey.create(net.minecraft.core.registries.Registries.LOOT_TABLE,
-                net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(location.getNamespace(), location.getPath()));
-        return LootTable.mcc$view(server.reloadableRegistries().getLootTable(key));
+        // 1.20.1 resolves loot tables through the server's LootDataManager (the LOOT_TABLE registry is 1.20.5).
+        var id = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(location.getNamespace(), location.getPath());
+        var data = new net.minecraft.world.level.storage.loot.LootDataId<>(
+                net.minecraft.world.level.storage.loot.LootDataType.TABLE, id);
+        return LootTable.mcc$view(server.getServerResources().managers().getLootData().getElement(data));
     }
 
     /** Loot tables reload with the server's data packs ({@code /reload}). */

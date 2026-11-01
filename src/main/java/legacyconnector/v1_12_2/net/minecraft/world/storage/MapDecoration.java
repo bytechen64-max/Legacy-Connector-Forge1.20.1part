@@ -98,18 +98,18 @@ public class MapDecoration {
         }
 
         /** The modern decoration type of this icon. */
-        public net.minecraft.core.Holder<net.minecraft.world.level.saveddata.maps.MapDecorationType> mcc$modern() {
+        public net.minecraft.world.level.saveddata.maps.MapDecoration.Type mcc$modern() {
             return switch (this) {
-                case PLAYER -> net.minecraft.world.level.saveddata.maps.MapDecorationTypes.PLAYER;
-                case FRAME -> net.minecraft.world.level.saveddata.maps.MapDecorationTypes.FRAME;
-                case RED_MARKER -> net.minecraft.world.level.saveddata.maps.MapDecorationTypes.RED_MARKER;
-                case BLUE_MARKER -> net.minecraft.world.level.saveddata.maps.MapDecorationTypes.BLUE_MARKER;
-                case TARGET_X -> net.minecraft.world.level.saveddata.maps.MapDecorationTypes.TARGET_X;
-                case TARGET_POINT -> net.minecraft.world.level.saveddata.maps.MapDecorationTypes.TARGET_POINT;
-                case PLAYER_OFF_MAP -> net.minecraft.world.level.saveddata.maps.MapDecorationTypes.PLAYER_OFF_MAP;
-                case PLAYER_OFF_LIMITS -> net.minecraft.world.level.saveddata.maps.MapDecorationTypes.PLAYER_OFF_LIMITS;
-                case MANSION -> net.minecraft.world.level.saveddata.maps.MapDecorationTypes.WOODLAND_MANSION;
-                case MONUMENT -> net.minecraft.world.level.saveddata.maps.MapDecorationTypes.OCEAN_MONUMENT;
+                case PLAYER -> net.minecraft.world.level.saveddata.maps.MapDecoration.Type.PLAYER;
+                case FRAME -> net.minecraft.world.level.saveddata.maps.MapDecoration.Type.FRAME;
+                case RED_MARKER -> net.minecraft.world.level.saveddata.maps.MapDecoration.Type.RED_MARKER;
+                case BLUE_MARKER -> net.minecraft.world.level.saveddata.maps.MapDecoration.Type.BLUE_MARKER;
+                case TARGET_X -> net.minecraft.world.level.saveddata.maps.MapDecoration.Type.TARGET_X;
+                case TARGET_POINT -> net.minecraft.world.level.saveddata.maps.MapDecoration.Type.TARGET_POINT;
+                case PLAYER_OFF_MAP -> net.minecraft.world.level.saveddata.maps.MapDecoration.Type.PLAYER_OFF_MAP;
+                case PLAYER_OFF_LIMITS -> net.minecraft.world.level.saveddata.maps.MapDecoration.Type.PLAYER_OFF_LIMITS;
+                case MANSION -> net.minecraft.world.level.saveddata.maps.MapDecoration.Type.WOODLAND_MANSION;
+                case MONUMENT -> net.minecraft.world.level.saveddata.maps.MapDecoration.Type.OCEAN_MONUMENT;
             };
         }
     }

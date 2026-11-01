@@ -195,10 +195,12 @@ public class RenderItem {
             if (color == -1) a = r = g = b = 1.0F;
             for (net.minecraft.core.Direction d : net.minecraft.core.Direction.values()) {
                 random.setSeed(42L);
-                for (var quad : modern.getQuads(null, d, random)) buffer.putBulkData(pose.last(), quad, r, g, b, a, RenderContext.vertexLight(), RenderContext.overlay());
+                for (var quad : modern.getQuads(null, d, random)) // 1.20.1's putBulkData has no alpha argument (the 1.20.6 overload does); the shim's tint is opaque.
+            buffer.putBulkData(pose.last(), quad, r, g, b, RenderContext.vertexLight(), RenderContext.overlay());
             }
             random.setSeed(42L);
-            for (var quad : modern.getQuads(null, null, random)) buffer.putBulkData(pose.last(), quad, r, g, b, a, RenderContext.vertexLight(), RenderContext.overlay());
+            for (var quad : modern.getQuads(null, null, random)) // 1.20.1's putBulkData has no alpha argument (the 1.20.6 overload does); the shim's tint is opaque.
+            buffer.putBulkData(pose.last(), quad, r, g, b, RenderContext.vertexLight(), RenderContext.overlay());
         } catch (RuntimeException e) {
             org.kylepitcock.legacyconnector.v1_12_2.client.RenderErrors1122.report("drawing an item model's quads", e);
         }

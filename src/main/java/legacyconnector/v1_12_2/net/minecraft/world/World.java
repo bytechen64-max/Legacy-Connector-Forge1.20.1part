@@ -702,7 +702,7 @@ public class World implements IBlockAccess {
                     var from = new net.minecraft.world.phys.Vec3(bb.minX + (bb.maxX - bb.minX) * fx + ox, bb.minY + (bb.maxY - bb.minY) * fy,
                             bb.minZ + (bb.maxZ - bb.minZ) * fz + oz);
                     var hit = acc().clip(new net.minecraft.world.level.ClipContext(from, to, net.minecraft.world.level.ClipContext.Block.COLLIDER,
-                            net.minecraft.world.level.ClipContext.Fluid.NONE, net.minecraft.world.phys.shapes.CollisionContext.empty()));
+                            net.minecraft.world.level.ClipContext.Fluid.NONE, (net.minecraft.world.entity.Entity) null));
                     if (hit.getType() == net.minecraft.world.phys.HitResult.Type.MISS) clear++;
                     total++;
                 }
@@ -1980,7 +1980,7 @@ public class World implements IBlockAccess {
         var context = new net.minecraft.world.level.ClipContext(start.mcc$modern(), end.mcc$modern(),
                 ignoreBlockWithoutBoundingBox ? net.minecraft.world.level.ClipContext.Block.COLLIDER : net.minecraft.world.level.ClipContext.Block.OUTLINE,
                 stopOnLiquid ? net.minecraft.world.level.ClipContext.Fluid.SOURCE_ONLY : net.minecraft.world.level.ClipContext.Fluid.NONE,
-                net.minecraft.world.phys.shapes.CollisionContext.empty());
+                (net.minecraft.world.entity.Entity) null);
         net.minecraft.world.phys.BlockHitResult hit;
         try {
             hit = acc().clip(context);

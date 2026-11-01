@@ -2,16 +2,10 @@ package legacyconnector.v1_7_10.net.minecraft.client.gui;
 
 import legacyconnector.v1_7_10.net.minecraft.client.Minecraft;
 import legacyconnector.v1_7_10.net.minecraft.util.ResourceLocation;
-import net.minecraft.client.gui.components.WidgetSprites;
 import org.kylepitcock.legacyconnector.v1_7_10.client.RenderContext;
 
 public class GuiButton extends Gui {
     protected static final ResourceLocation buttonTextures = new ResourceLocation("textures/gui/widgets.png");
-    private static final WidgetSprites SPRITES = new WidgetSprites(net.minecraft.resources.ResourceLocation.withDefaultNamespace("widget/button"),
-            net.minecraft.resources.ResourceLocation.withDefaultNamespace("widget/button_disabled"),
-            net.minecraft.resources.ResourceLocation.withDefaultNamespace("widget/button_highlighted"));
-
-    /** Public as FML's access transformer made them (its config entries resize their buttons). */
     public int width;
     public int height;
     public int xPosition;
@@ -39,7 +33,11 @@ public class GuiButton extends Gui {
     /** The button face for a hover state (0 disabled, 1 normal, 2 highlighted), nine-sliced to any size like the modern buttons. */
     public static void mcc$drawBackground(int hoverState, int x, int y, int width, int height) {
         var gui = RenderContext.gui();
-        if (gui != null) gui.blitSprite(SPRITES.get(hoverState != 0, hoverState == 2), x, y, width, height);
+        if (gui == null) return;
+        // 1.20.1 has no blitSprite: the face is 1.12's own two-half sprite from textures/gui/widgets.png (row per state).
+        int v = 46 + hoverState * 20;
+        gui.blit(BUTTON_TEXTURES.mcc$modern(), x, y, 0, v, width / 2, height);
+        gui.blit(BUTTON_TEXTURES.mcc$modern(), x + width / 2, y, 200 - width / 2, v, width / 2, height);
     }
 
     public int getHoverState(boolean hovered) {

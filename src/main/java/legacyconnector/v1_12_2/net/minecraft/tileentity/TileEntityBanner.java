@@ -39,7 +39,7 @@ public class TileEntityBanner extends TileEntity implements org.kylepitcock.lega
     public void mcc$refresh() {
         if (mcc$banner == null) return;
         baseColor = EnumDyeColor.byMetadata(mcc$banner.getBaseColor().getId());
-        patterns = mcc$patternsTag(mcc$banner.getPatterns());
+        patterns = mcc$patternsTag(mcc$banner);
         name = mcc$banner.getCustomName() == null ? null : mcc$banner.getCustomName().getString();
         patternList = null;
         colorList = null;
@@ -47,21 +47,17 @@ public class TileEntityBanner extends TileEntity implements org.kylepitcock.lega
         patternDataSet = true;
     }
 
-    /** Modern banner layers as a 1.12 {@code Patterns} list. */
-    private static NBTTagList mcc$patternsTag(net.minecraft.world.level.block.entity.BannerPatternLayers layers) {
+    /**
+     * A banner's layers as a 1.12 {@code Patterns} list.
+     *
+     * <p>1.20.1 has no banner pattern data component: the block entity and the item both carry the 1.20.1 pattern list in their
+     * NBT, in the same {@code {Pattern, Color}} shape 1.12 used, so the list is read straight from there.</p>
+     */
+    private static NBTTagList mcc$patternsTag(net.minecraft.world.level.block.entity.BannerBlockEntity banner) {
         NBTTagList list = new NBTTagList();
-        if (layers == null) return list;
-        for (var layer : layers.layers()) {
-            var key = layer.pattern().unwrapKey();
-            if (key.isEmpty()) continue;
-            BannerPattern pattern = null;
-            for (BannerPattern p : BannerPattern.values()) if (p.getFileName().equals(key.get().location().getPath())) pattern = p;
-            if (pattern == null) continue;
-            NBTTagCompound c = new NBTTagCompound();
-            c.setString("Pattern", pattern.getHashname());
-            c.setInteger("Color", EnumDyeColor.byMetadata(layer.color().getId()).getDyeDamage());
-            list.appendTag(c);
-        }
+        if (banner == null) return list;
+        var tag = banner.saveWithoutId(new net.minecraft.nbt.CompoundTag());
+        for (var entry : tag.getList("Patterns", 10)) list.appendTag(new NBTTagCompound((net.minecraft.nbt.CompoundTag) entry));
         return list;
     }
 
@@ -77,10 +73,6 @@ public class TileEntityBanner extends TileEntity implements org.kylepitcock.lega
     }
 
     private static NBTTagList mcc$patterns(ItemStack stack) {
-        var backing = stack.mcc$backing();
-        if (backing != null && backing.has(net.minecraft.core.component.DataComponents.BANNER_PATTERNS)) {
-            return mcc$patternsTag(backing.get(net.minecraft.core.component.DataComponents.BANNER_PATTERNS));
-        }
         NBTTagCompound nbt = stack.getSubCompound("BlockEntityTag");
         return nbt != null && nbt.hasKey("Patterns", 9) ? nbt.getTagList("Patterns", 10).copy() : null;
     }
