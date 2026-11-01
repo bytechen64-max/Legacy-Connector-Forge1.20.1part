@@ -15,7 +15,7 @@ public class GuiScreenAddServer extends GuiScreen {
 
     /** The game's screen doing the same job (not a 1.12 method). */
     public net.minecraft.client.gui.screens.Screen mcc$modern(net.minecraft.client.gui.screens.Screen parent) {
-        var data = serverData == null ? new net.minecraft.client.multiplayer.ServerData("", "", net.minecraft.client.multiplayer.ServerData.Type.OTHER)
+        var data = serverData == null ? new net.minecraft.client.multiplayer.ServerData("", "", false)
                 : serverData.mcc$modern();
         return new net.minecraft.client.gui.screens.EditServerScreen(parent, ok -> {
             if (ok && serverData != null) {

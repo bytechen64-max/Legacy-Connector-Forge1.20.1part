@@ -22,7 +22,7 @@ public class GuiScreenAddServer extends GuiScreen {
     /** The modern screen doing this one's job, hosted under {@code modernParent}. */
     public net.minecraft.client.gui.screens.Screen mcc$modern(net.minecraft.client.gui.screens.Screen modernParent) {
         var modern = new net.minecraft.client.multiplayer.ServerData(serverData.serverName == null ? "" : serverData.serverName,
-                serverData.serverIP == null ? "" : serverData.serverIP, net.minecraft.client.multiplayer.ServerData.Type.OTHER);
+                serverData.serverIP == null ? "" : serverData.serverIP, false);
         return new net.minecraft.client.gui.screens.EditServerScreen(modernParent, ok -> {
             if (ok) {
                 serverData.serverName = modern.name;

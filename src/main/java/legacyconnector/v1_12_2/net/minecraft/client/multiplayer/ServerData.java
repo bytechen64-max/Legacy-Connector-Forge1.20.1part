@@ -130,6 +130,17 @@ public class ServerData {
         if (modern.pinged) pinged = true;
     }
 
+    /** Whether the server answered with this game version (1.20.5 keeps it in a State enum). */
+    private boolean compatible = true;
+
+    public boolean mcc$compatible() {
+        return compatible;
+    }
+
+    public void mcc$setCompatible(boolean compatible) {
+        this.compatible = compatible;
+    }
+
     public enum ServerResourceMode {
         ENABLED("enabled"),
         DISABLED("disabled"),

@@ -90,7 +90,7 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry {
     private void mcc$ping() {
         String name = field_148301_e.serverName == null ? "" : field_148301_e.serverName;
         String ip = field_148301_e.serverIP == null ? "" : field_148301_e.serverIP;
-        mcc$modern = new net.minecraft.client.multiplayer.ServerData(name, ip, net.minecraft.client.multiplayer.ServerData.Type.OTHER);
+        mcc$modern = new net.minecraft.client.multiplayer.ServerData(name, ip, false);
         var modern = mcc$modern;
         field_148302_b.submit(() -> {
             try {

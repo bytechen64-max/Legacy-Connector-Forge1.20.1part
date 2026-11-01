@@ -128,7 +128,7 @@ public class FMLClientHandler {
         if (serverEntry == null || serverEntry.serverIP == null) return;
         var mc = net.minecraft.client.Minecraft.getInstance();
         var modern = new net.minecraft.client.multiplayer.ServerData(serverEntry.serverName == null ? serverEntry.serverIP : serverEntry.serverName,
-                serverEntry.serverIP, net.minecraft.client.multiplayer.ServerData.Type.OTHER);
+                serverEntry.serverIP, false);
         net.minecraft.client.gui.screens.Screen parent = mc.screen != null ? mc.screen : new net.minecraft.client.gui.screens.TitleScreen();
         net.minecraft.client.gui.screens.ConnectScreen.startConnecting(parent, mc,
                 net.minecraft.client.multiplayer.resolver.ServerAddress.parseString(serverEntry.serverIP), modern, false, null);

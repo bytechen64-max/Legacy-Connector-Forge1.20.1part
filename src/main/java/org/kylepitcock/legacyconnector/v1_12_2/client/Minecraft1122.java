@@ -151,8 +151,7 @@ public final class Minecraft1122 {
             legacyconnector.v1_12_2.net.minecraft.client.multiplayer.ServerData server) {
         var mc = mc();
         net.minecraft.client.gui.screens.Screen back = parent == null ? new net.minecraft.client.gui.screens.TitleScreen() : ClientGui1122.host(parent);
-        var data = server != null ? server.mcc$modern() : new net.minecraft.client.multiplayer.ServerData(host, host,
-                net.minecraft.client.multiplayer.ServerData.Type.OTHER);
+        var data = server != null ? server.mcc$modern() : new net.minecraft.client.multiplayer.ServerData(host, host, false);
         mc.execute(() -> net.minecraft.client.gui.screens.ConnectScreen.startConnecting(back, mc,
                 net.minecraft.client.multiplayer.resolver.ServerAddress.parseString(host), data, false, null));
     }
