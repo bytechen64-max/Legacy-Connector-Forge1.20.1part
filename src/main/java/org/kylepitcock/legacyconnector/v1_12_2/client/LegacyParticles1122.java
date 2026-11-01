@@ -155,7 +155,8 @@ public final class LegacyParticles1122 {
             case 12 -> ParticleTypes.LARGE_SMOKE;
             case 13 -> ParticleTypes.EFFECT;
             case 14 -> ParticleTypes.INSTANT_EFFECT;
-            case 15, 16 -> net.minecraft.core.particles.ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT, (float) vx, (float) vy, (float) vz);
+            // 1.20.1 has no colored entity-effect particle (ColorParticleOption is 1.20.5+): red dust in the same colour
+            case 15, 16 -> new net.minecraft.core.particles.DustParticleOptions(new org.joml.Vector3f((float) vx, (float) vy, (float) vz), 1.0F);
             case 17 -> ParticleTypes.WITCH;
             case 18 -> ParticleTypes.DRIPPING_WATER;
             case 19 -> ParticleTypes.DRIPPING_LAVA;

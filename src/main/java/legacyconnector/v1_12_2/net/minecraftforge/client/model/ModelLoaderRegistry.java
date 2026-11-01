@@ -185,7 +185,7 @@ public class ModelLoaderRegistry {
                 }
                 return org.kylepitcock.legacyconnector.v1_12_2.client.Models1122.legacyModel(mrl);
             }
-            var key = net.minecraft.client.resources.model.ModelResourceLocation.standalone(location.mcc$modern());
+            var key = new net.minecraft.client.resources.model.ModelResourceLocation(location.mcc$modern(), "");
             var baking = org.kylepitcock.legacyconnector.v1_12_2.client.CustomModels1122.baking();
             var modern = baking != null ? baking.get(key) : null;
             if (modern == null) modern = net.minecraft.client.Minecraft.getInstance().getModelManager().getModel(key);

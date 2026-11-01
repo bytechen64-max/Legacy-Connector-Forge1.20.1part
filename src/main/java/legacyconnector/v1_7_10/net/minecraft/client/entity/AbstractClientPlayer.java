@@ -131,10 +131,13 @@ public abstract class AbstractClientPlayer extends EntityPlayer implements SkinM
 
         private void mcc$fetch() {
             try {
-                var profile = net.minecraft.world.level.block.entity.SkullBlockEntity.fetchGameProfile(name)
-                        .get(30, java.util.concurrent.TimeUnit.SECONDS).orElse(null);
+                // 1.20.1 resolves a name asynchronously through SkullBlockEntity.updateGameprofile; the consumer runs on the game thread
+                java.util.concurrent.CompletableFuture<com.mojang.authlib.GameProfile> lookup = new java.util.concurrent.CompletableFuture<>();
+                net.minecraft.world.level.block.entity.SkullBlockEntity.updateGameprofile(new com.mojang.authlib.GameProfile(null, name), lookup::complete);
+                var profile = lookup.get(30, java.util.concurrent.TimeUnit.SECONDS);
                 if (profile == null) return;
-                var skin = net.minecraft.client.Minecraft.getInstance().getMinecraftSessionService().getTextures(profile).skin();
+                var skin = net.minecraft.client.Minecraft.getInstance().getMinecraftSessionService()
+                        .getTextures(profile, false).get(com.mojang.authlib.minecraft.MinecraftProfileTexture.Type.SKIN);
                 if (skin == null) return;
                 java.net.HttpURLConnection connection = (java.net.HttpURLConnection) java.net.URI.create(skin.getUrl()).toURL()
                         .openConnection(net.minecraft.client.Minecraft.getInstance().getProxy());

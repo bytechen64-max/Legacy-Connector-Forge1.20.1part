@@ -85,7 +85,7 @@ public final class ClientSelfTest {
                 var stack = new net.minecraft.world.item.ItemStack(modern);
                 try {
                     stack.getHoverName();
-                    stack.getTooltipLines(net.minecraft.world.item.Item.TooltipContext.EMPTY, null, net.minecraft.world.item.TooltipFlag.ADVANCED);
+                    stack.getTooltipLines((net.minecraft.world.entity.player.Player) null, net.minecraft.world.item.TooltipFlag.ADVANCED);
                 } catch (RuntimeException | LinkageError ex) {
                     Throwable root = ex;
                     while (root.getCause() != null && root.getCause() != root) root = root.getCause();

@@ -110,15 +110,15 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry {
         if (mcc$modern == null) return;
         MCC_PINGER.tick();
         var modern = mcc$modern;
-        var state = modern.state();
-        if (state == net.minecraft.client.multiplayer.ServerData.State.SUCCESSFUL || state == net.minecraft.client.multiplayer.ServerData.State.INCOMPATIBLE) {
+        // 1.20.1's ServerData has no state enum (that is 1.20.2+): pinged says the pinger got an answer
+        if (modern.pinged) {
             field_148301_e.pingToServer = modern.ping;
             field_148301_e.serverMOTD = mcc$legacyText(modern.motd);
             field_148301_e.populationInfo = mcc$legacyText(modern.status);
             field_148301_e.gameVersion = modern.version == null ? "" : modern.version.getString();
             // 1.7.10's protocol is 5: a modern server answering in its own protocol reads as compatible here when it is the game's own
             field_148301_e.field_82821_f = modern.protocol == net.minecraft.SharedConstants.getCurrentVersion().getProtocolVersion() ? 5 : modern.protocol;
-        } else if (state == net.minecraft.client.multiplayer.ServerData.State.UNREACHABLE) {
+        } else {
             field_148301_e.pingToServer = -1L;
             if (modern.motd != null && field_148301_e.serverMOTD != null && field_148301_e.serverMOTD.isEmpty()) field_148301_e.serverMOTD = mcc$legacyText(modern.motd);
         }

@@ -148,19 +148,24 @@ public class LegacyBlockEntityRenderer implements BlockEntityRenderer<LegacyBloc
      * The frustum cull box: the tile entity's {@code getRenderBoundingBox()}, as 1.7.10's RenderGlobal tested it (renderers that
      * draw beyond their block declare a bigger or the infinite box; the block's own cube cut them off whenever it left the view).
      */
-    // 1.20.1 has no getRenderBoundingBox on BlockEntityRenderer (the shim keeps it for its own callers).
+    /** 1.20.1 dropped {@code AABB.INFINITE} (it is 1.20.5+): the same "never cull me" box. */
+    private static final net.minecraft.world.phys.AABB INFINITE = new net.minecraft.world.phys.AABB(-1.0E7, -1.0E7, -1.0E7, 1.0E7, 1.0E7, 1.0E7);
+
+    // 1.20.1 has no getRenderBoundingBox on BlockEntityRenderer (the shim keeps it for its own callers): the block and its neighbours.
     public net.minecraft.world.phys.AABB getRenderBoundingBox(LegacyBlockEntity be) {
         TileEntity te = be.legacy();
         Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
-        if (te == null || !placed(be, camera)) return BlockEntityRenderer.super.getRenderBoundingBox(be);
+        var p = be.getBlockPos();
+        var around = new net.minecraft.world.phys.AABB(p.getX() - 1, p.getY() - 1, p.getZ() - 1, p.getX() + 2, p.getY() + 2, p.getZ() + 2);
+        if (te == null || !placed(be, camera)) return around;
         try {
             var box = te.getRenderBoundingBox();
-            if (box == null) return BlockEntityRenderer.super.getRenderBoundingBox(be);
+            if (box == null) return around;
             if (Double.isInfinite(box.minX) || Double.isInfinite(box.minY) || Double.isInfinite(box.minZ) || Double.isInfinite(box.maxX)
-                    || Double.isInfinite(box.maxY) || Double.isInfinite(box.maxZ)) return net.minecraft.world.phys.AABB.INFINITE;
+                    || Double.isInfinite(box.maxY) || Double.isInfinite(box.maxZ)) return INFINITE;
             return new net.minecraft.world.phys.AABB(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ);
         } catch (RuntimeException | LinkageError e) {
-            return BlockEntityRenderer.super.getRenderBoundingBox(be);
+            return around;
         }
     }
 }

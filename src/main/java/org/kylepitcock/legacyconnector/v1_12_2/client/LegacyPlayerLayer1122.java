@@ -61,7 +61,7 @@ public class LegacyPlayerLayer1122 extends RenderLayer<AbstractClientPlayer, Pla
     /** Whether the player wears an armour piece of a legacy mod (vanilla pieces are drawn by the modern renderer). */
     private static boolean hasLegacyArmor(AbstractClientPlayer player) {
         for (net.minecraft.world.entity.EquipmentSlot slot : net.minecraft.world.entity.EquipmentSlot.values()) {
-            if (slot.getType() != net.minecraft.world.entity.EquipmentSlot.Type.HUMANOID_ARMOR) continue;
+            if (slot.getType() != net.minecraft.world.entity.EquipmentSlot.Type.ARMOR) continue;
             var stack = player.getItemBySlot(slot);
             if (!stack.isEmpty() && !(stack.getItem() instanceof net.minecraft.world.item.ArmorItem)) return true;
         }

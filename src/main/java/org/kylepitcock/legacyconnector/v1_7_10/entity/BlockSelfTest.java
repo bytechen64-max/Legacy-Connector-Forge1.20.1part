@@ -290,7 +290,7 @@ public final class BlockSelfTest {
         try {
             modern.getName(stack);
             stage = "tooltip";
-            stack.getTooltipLines(net.minecraft.world.item.Item.TooltipContext.of(level), player, net.minecraft.world.item.TooltipFlag.ADVANCED);
+            stack.getTooltipLines(player, net.minecraft.world.item.TooltipFlag.ADVANCED);
             stage = "use";
             player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, stack.copy());
             modern.use(level, player, net.minecraft.world.InteractionHand.MAIN_HAND);

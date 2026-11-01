@@ -135,8 +135,10 @@ public enum EnumParticleTypes {
             case SMOKE_LARGE -> ParticleTypes.LARGE_SMOKE;
             case SPELL -> ParticleTypes.EFFECT;
             case SPELL_INSTANT -> ParticleTypes.INSTANT_EFFECT;
-            case SPELL_MOB, SPELL_MOB_AMBIENT -> net.minecraft.core.particles.ColorParticleOption.create(ParticleTypes.ENTITY_EFFECT,
-                    (this == SPELL_MOB_AMBIENT ? 0x26 : 0xFF) << 24 | (int) (unit(speedX) * 255) << 16 | (int) (unit(speedY) * 255) << 8 | (int) (unit(speedZ) * 255));
+            // 1.20.1 has no colored entity-effect particle (ColorParticleOption is 1.20.5+): red dust in the same colour
+            case SPELL_MOB, SPELL_MOB_AMBIENT -> new net.minecraft.core.particles.DustParticleOptions(
+                    new org.joml.Vector3f((float) unit(speedX), (float) unit(speedY), (float) unit(speedZ)),
+                    this == SPELL_MOB_AMBIENT ? 0.5F : 1.0F);
             case SPELL_WITCH -> ParticleTypes.WITCH;
             case DRIP_WATER -> ParticleTypes.DRIPPING_WATER;
             case DRIP_LAVA -> ParticleTypes.DRIPPING_LAVA;

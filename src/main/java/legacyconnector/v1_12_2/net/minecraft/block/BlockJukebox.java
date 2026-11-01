@@ -47,7 +47,7 @@ public class BlockJukebox extends BlockContainer {
         if (level != null) {
             var be = level.getBlockEntity(org.kylepitcock.legacyconnector.v1_12_2.bridge.Inventories1122.pos(pos));
             if (be instanceof net.minecraft.world.level.block.entity.JukeboxBlockEntity jukebox) {
-                jukebox.setTheItem(org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.toModern(recordStack.copy()));
+                jukebox.setItem(0, org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.toModern(recordStack.copy()));
                 return;
             }
         }

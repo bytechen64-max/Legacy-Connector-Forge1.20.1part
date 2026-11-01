@@ -31,8 +31,8 @@ public class TileEntityFlowerPot extends TileEntity {
         this.mcc$level = level;
         this.mcc$pos = pos.immutable();
         if (level.getBlockState(pos).getBlock() instanceof net.minecraft.world.level.block.FlowerPotBlock pot
-                && pot.getPotted() != net.minecraft.world.level.block.Blocks.AIR) {
-            var plant = pot.getPotted().defaultBlockState();
+                && pot.getContent() != net.minecraft.world.level.block.Blocks.AIR) {
+            var plant = pot.getContent().defaultBlockState();
             var block = org.kylepitcock.legacyconnector.v1_7_10.bridge.BlockBridge.legacyBlock(plant);
             this.flowerPotItem = block == null ? null : Item.getItemFromBlock(block);
             this.flowerPotData = org.kylepitcock.legacyconnector.v1_7_10.bridge.BlockBridge.legacyMeta(plant);

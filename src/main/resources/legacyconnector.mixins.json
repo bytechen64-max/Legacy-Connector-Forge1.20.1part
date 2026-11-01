@@ -9,6 +9,7 @@
     "access.AreaEffectCloudAccess",
     "access.ChunkMapAccess",
     "access.EntityAccess",
+    "access.AbstractHorseAccess",
     "EntityGravityMixin",
     "PlayerStepSoundMixin",
     "FoodDataHealRateMixin",

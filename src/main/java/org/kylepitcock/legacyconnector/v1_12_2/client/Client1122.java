@@ -64,7 +64,7 @@ public final class Client1122 {
         modBus.addListener((net.minecraftforge.client.event.ModelEvent.RegisterAdditional e) -> {
             if (!present()) return;
             for (var location : legacyconnector.v1_12_2.net.minecraftforge.client.model.ModelLoaderRegistry.mcc$requested()) {
-                e.register(net.minecraft.client.resources.model.ModelResourceLocation.standalone(location.mcc$modern()));
+                e.register(new net.minecraft.client.resources.model.ModelResourceLocation(location.mcc$modern(), ""));
             }
         });
         // screens, particles, key bindings, resource reloads

@@ -326,9 +326,9 @@ public final class RecipeBridge {
         try {
             var ops = server.registryAccess().createSerializationContext(JsonOps.INSTANCE);
             var codec = net.minecraft.world.item.crafting.Recipe.CODEC;
-            JsonElement now = codec.encodeStart(ops, holder.get().value()).getOrThrow();
+            JsonElement now = codec.encodeStart(ops, holder.get()).getOrThrow();
             JsonElement translated = codec.encodeStart(ops, codec.parse(ops, generated).getOrThrow()).getOrThrow();
-            return now.equals(translated) ? UNCHANGED : new Replacement(holder.get().value());
+            return now.equals(translated) ? UNCHANGED : new Replacement(holder.get());
         } catch (RuntimeException e) {
             return UNCHANGED; // cannot tell: the legacy object keeps working as registered
         }

@@ -131,9 +131,10 @@ public class TileEntitySkull extends TileEntity implements ITickable, org.kylepi
         if (input == null || input.getName() == null || input.getName().isEmpty()) return input;
         if (input.getProperties().containsKey("textures")) return input;
         try {
-            var future = net.minecraft.world.level.block.entity.SkullBlockEntity.fetchGameProfile(input.getName());
-            var result = future.getNow(java.util.Optional.empty());
-            return result.isPresent() ? result.get() : input;
+            // 1.20.1 has no async name lookup; the client's player list is the cache that may know the name
+            var connection = net.minecraft.client.Minecraft.getInstance().getConnection();
+            var info = connection == null ? null : connection.getPlayerInfo(input.getName());
+            return info != null ? info.getProfile() : input;
         } catch (RuntimeException e) {
             return input;
         }

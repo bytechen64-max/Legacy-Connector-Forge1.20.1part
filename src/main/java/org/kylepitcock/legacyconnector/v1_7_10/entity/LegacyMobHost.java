@@ -205,18 +205,9 @@ public class LegacyMobHost extends PathfinderMob implements LegacyLivingHost, IE
 
     @Override
     public void mcc$superActuallyHurt(DamageSource source, float amount) {
-        // legacy code calls damageEntity directly (Thaumcraft's taintacles wither away): NeoForge's actuallyHurt reads
-        // the damage container that only hurt() pushes
-        if (!damageContainers.isEmpty()) {
-            super.actuallyHurt(source, amount);
-            return;
-        }
-        damageContainers.push(new net.minecraftforge.common.damagesource.DamageContainer(source, amount));
-        try {
-            super.actuallyHurt(source, amount);
-        } finally {
-            damageContainers.pop();
-        }
+        // legacy code calls damageEntity directly (Thaumcraft's taintacles wither away); 1.20.1's actuallyHurt takes the
+        // amount directly, the damage container stack is 1.20.5+
+        super.actuallyHurt(source, amount);
     }
 
     @Override

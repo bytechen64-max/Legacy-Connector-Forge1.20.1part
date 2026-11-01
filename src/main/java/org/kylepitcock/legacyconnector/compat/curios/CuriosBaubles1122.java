@@ -168,7 +168,7 @@ public final class CuriosBaubles1122 {
 
         private Optional<ICurioStacksHandler> curios(int slot) {
             if (slot < 0 || slot >= INV_ID.length || player == null || !(player.mcc$entity instanceof LivingEntity living)) return Optional.empty();
-            return CuriosApi.getCuriosInventory(living).flatMap(h -> h.getStacksHandler(INV_ID[slot]))
+            return CuriosApi.getCuriosInventory(living).resolve().flatMap(h -> h.getStacksHandler(INV_ID[slot]))
                     .filter(h -> INV_INDEX[slot] < h.getSlots());
         }
 

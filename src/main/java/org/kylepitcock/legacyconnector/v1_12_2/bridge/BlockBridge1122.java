@@ -101,8 +101,8 @@ public final class BlockBridge1122 {
             net.minecraft.world.level.BlockGetter level, net.minecraft.core.BlockPos pos, net.minecraft.world.entity.EntityType<?> type) {
         try {
             var placement = net.minecraft.world.entity.SpawnPlacements.getPlacementType(type);
-            String legacy = placement == net.minecraft.world.entity.SpawnPlacementTypes.IN_WATER ? "IN_WATER"
-                    : placement == net.minecraft.world.entity.SpawnPlacementTypes.NO_RESTRICTIONS ? "IN_AIR" : "ON_GROUND";
+            String legacy = placement == net.minecraft.world.entity.SpawnPlacements.Type.IN_WATER ? "IN_WATER"
+                    : placement == net.minecraft.world.entity.SpawnPlacements.Type.NO_RESTRICTIONS ? "IN_AIR" : "ON_GROUND";
             Object legacyType = null;
             Object[] constants = hook.getParameterTypes()[3].getEnumConstants();
             if (constants != null) for (Object c : constants) if (((Enum<?>) c).name().equals(legacy)) legacyType = c;

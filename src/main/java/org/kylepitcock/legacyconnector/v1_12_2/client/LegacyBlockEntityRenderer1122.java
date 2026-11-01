@@ -72,6 +72,9 @@ public final class LegacyBlockEntityRenderer1122 implements BlockEntityRenderer<
      * The frustum cull box: the block and its neighbours (renderers draw a little outside their block) together with the tile
      * entity's own {@code getRenderBoundingBox()}, which vanilla 1.12.2 culled with (infinite for beacons and big multiblock renderers).
      */
+    /** 1.20.1 dropped {@code AABB.INFINITE} (it is 1.20.5+): the same "never cull me" box. */
+    private static final AABB INFINITE = new AABB(-1.0E7, -1.0E7, -1.0E7, 1.0E7, 1.0E7, 1.0E7);
+
     // 1.20.1 has no getRenderBoundingBox on BlockEntityRenderer (the shim keeps it for its own callers).
     public AABB getRenderBoundingBox(Legacy1122BlockEntity be) {
         var p = be.getBlockPos();
@@ -82,7 +85,7 @@ public final class LegacyBlockEntityRenderer1122 implements BlockEntityRenderer<
             var box = te.getRenderBoundingBox();
             if (box == null) return around;
             if (Double.isInfinite(box.minX) || Double.isInfinite(box.minY) || Double.isInfinite(box.minZ) || Double.isInfinite(box.maxX)
-                    || Double.isInfinite(box.maxY) || Double.isInfinite(box.maxZ)) return AABB.INFINITE;
+                    || Double.isInfinite(box.maxY) || Double.isInfinite(box.maxZ)) return INFINITE;
             return around.minmax(new AABB(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ));
         } catch (RuntimeException | LinkageError e) {
             return around;

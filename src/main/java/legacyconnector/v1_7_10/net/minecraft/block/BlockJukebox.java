@@ -35,7 +35,7 @@ public class BlockJukebox extends BlockContainer {
         if (level == null) return;
         if (level.getBlockEntity(VanillaOps.pos(x, y, z)) instanceof net.minecraft.world.level.block.entity.JukeboxBlockEntity jukebox) {
             var copy = record.mcc$modern().copyWithCount(1);
-            jukebox.setTheItem(copy);
+            jukebox.setItem(0, copy);
         }
     }
 

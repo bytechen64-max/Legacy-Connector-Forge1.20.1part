@@ -47,7 +47,7 @@ public final class SharedItemModels {
         Map<String, BakedModel> byContent = new HashMap<>();
         int shared = 0;
         for (var e : FILES.entrySet()) {
-            ModelResourceLocation location = ModelResourceLocation.inventory(e.getKey());
+            ModelResourceLocation location = new ModelResourceLocation(e.getKey(), "inventory");
             BakedModel model = models.get(location);
             if (model == null || !plain(model)) continue;
             BakedModel first = byContent.putIfAbsent(e.getValue(), model);

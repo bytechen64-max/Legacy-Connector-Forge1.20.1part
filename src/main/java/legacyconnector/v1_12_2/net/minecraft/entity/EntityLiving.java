@@ -575,7 +575,7 @@ public abstract class EntityLiving extends EntityLivingBase {
         float f = difficulty.getClampedAdditionalDifficulty();
         for (var slot : net.minecraft.world.entity.EquipmentSlot.values()) {
             var stack = m.getItemBySlot(slot);
-            if (!stack.isEmpty() && rand.nextFloat() < (slot.getType() == net.minecraft.world.entity.EquipmentSlot.Type.HUMANOID_ARMOR ? 0.5F : 0.25F) * f) {
+            if (!stack.isEmpty() && rand.nextFloat() < (slot.getType() == net.minecraft.world.entity.EquipmentSlot.Type.ARMOR ? 0.5F : 0.25F) * f) {
                 var enchanted = net.minecraft.world.item.enchantment.EnchantmentHelper.enchantItem(m.getRandom(), stack, (int) (5.0F + f * rand.nextInt(18)),
                         sl.registryAccess(), java.util.Optional.empty());
                 m.setItemSlot(slot, enchanted);

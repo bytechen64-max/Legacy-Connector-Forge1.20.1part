@@ -169,7 +169,7 @@ public final class Models1122 {
                 var mrl = legacyconnector.v1_12_2.net.minecraftforge.client.model.ModelLoader.mcc$model(item, meta);
                 String key = mrl != null ? mrl.toString() : item.getRegistryName() == null ? null : item.getRegistryName() + "#inventory";
                 if (key == null) continue;
-                var target = net.minecraft.client.resources.model.ModelResourceLocation.inventory(BuiltInRegistries.ITEM.getKey(modern));
+                var target = new net.minecraft.client.resources.model.ModelResourceLocation(BuiltInRegistries.ITEM.getKey(modern), "inventory");
                 List<net.minecraft.client.resources.model.ModelResourceLocation> list = map.computeIfAbsent(key, k -> new ArrayList<>());
                 if (!list.contains(target)) list.add(target);
             }
