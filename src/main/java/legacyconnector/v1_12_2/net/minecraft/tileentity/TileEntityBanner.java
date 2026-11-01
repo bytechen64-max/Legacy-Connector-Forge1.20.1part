@@ -174,12 +174,7 @@ public class TileEntityBanner extends TileEntity implements org.kylepitcock.lega
 
     /** Removes the last pattern of a banner item (a cauldron washing it). */
     public static void removeBannerData(ItemStack stack) {
-        var backing = stack.mcc$backing();
-        if (backing != null && backing.has(net.minecraft.core.component.DataComponents.BANNER_PATTERNS)) {
-            var layers = backing.get(net.minecraft.core.component.DataComponents.BANNER_PATTERNS);
-            if (layers != null && !layers.layers().isEmpty()) backing.set(net.minecraft.core.component.DataComponents.BANNER_PATTERNS, layers.removeLast());
-            return;
-        }
+        // 1.20.1 keeps the patterns in the item's BlockEntityTag (there is no banner pattern component).
         NBTTagCompound nbt = stack.getSubCompound("BlockEntityTag");
         if (nbt == null || !nbt.hasKey("Patterns", 9)) return;
         NBTTagList list = nbt.getTagList("Patterns", 10);

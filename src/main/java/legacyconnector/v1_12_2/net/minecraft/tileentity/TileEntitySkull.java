@@ -117,7 +117,8 @@ public class TileEntitySkull extends TileEntity implements ITickable, org.kylepi
         this.skullType = 3;
         this.playerProfile = playerProfile;
         updatePlayerProfile();
-        if (mcc$skull != null && playerProfile != null) mcc$skull.setOwner(new net.minecraft.world.item.component.ResolvableProfile(playerProfile));
+        // 1.20.1 hands the GameProfile over directly (ResolvableProfile is 1.20.5).
+        if (mcc$skull != null && playerProfile != null) mcc$skull.setOwner(playerProfile);
     }
 
     private void updatePlayerProfile() {

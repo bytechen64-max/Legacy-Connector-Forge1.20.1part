@@ -241,9 +241,10 @@ public class ForgeEventFactory {
         var event = new net.minecraftforge.event.entity.living.MobSpawnEvent.PositionCheck(mob, accessor,
                 spawner ? net.minecraft.world.entity.MobSpawnType.SPAWNER : net.minecraft.world.entity.MobSpawnType.NATURAL, null);
         net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
+        // 1.21's Result has SUCCEED/FAIL; 1.20.1 has all three states.
         return switch (event.getResult()) {
-            case SUCCEED -> legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW;
-            case FAIL -> legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.DENY;
+            case ALLOW -> legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW;
+            case DENY -> legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.DENY;
             default -> legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.DEFAULT;
         };
     }

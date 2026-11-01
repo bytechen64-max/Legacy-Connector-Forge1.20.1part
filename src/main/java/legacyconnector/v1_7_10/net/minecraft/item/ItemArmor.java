@@ -17,7 +17,7 @@ public class ItemArmor extends legacyconnector.v1_7_10.net.minecraft.item.Item {
         if (info.modern() instanceof net.minecraft.world.item.ArmorItem a) {
             type = switch (a.getType()) {
                 case HELMET -> 0;
-                case CHESTPLATE, BODY -> 1;
+                case CHESTPLATE -> 1;
                 case LEGGINGS -> 2;
                 case BOOTS -> 3;
             };

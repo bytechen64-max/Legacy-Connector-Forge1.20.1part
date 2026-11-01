@@ -932,11 +932,14 @@ public class World implements IBlockAccess {
     }
 
     public boolean isBlockIndirectlyGettingPowered(int x, int y, int z) {
-        return lvl() instanceof SignalGetter s && s.hasNeighborSignal(pos(x, y, z));
+        // LevelAccessor already is a SignalGetter on 1.20.1, so the pattern is redundant.
+        LevelAccessor l = lvl();
+        return l != null && l.hasNeighborSignal(pos(x, y, z));
     }
 
     public int getStrongestIndirectPower(int x, int y, int z) {
-        return lvl() instanceof SignalGetter s ? s.getBestNeighborSignal(pos(x, y, z)) : 0;
+        LevelAccessor l = lvl();
+        return l == null ? 0 : l.getBestNeighborSignal(pos(x, y, z));
     }
 
     public boolean getIndirectPowerOutput(int x, int y, int z, int side) {
@@ -944,11 +947,13 @@ public class World implements IBlockAccess {
     }
 
     public int getIndirectPowerLevelTo(int x, int y, int z, int side) {
-        return lvl() instanceof SignalGetter s ? s.getSignal(pos(x, y, z), Direction.from3DDataValue(side)) : 0;
+        LevelAccessor l = lvl();
+        return l == null ? 0 : l.getSignal(pos(x, y, z), Direction.from3DDataValue(side));
     }
 
     public int getBlockPowerInput(int x, int y, int z) {
-        return lvl() instanceof SignalGetter s ? s.getDirectSignalTo(pos(x, y, z)) : 0;
+        LevelAccessor l = lvl();
+        return l == null ? 0 : l.getDirectSignalTo(pos(x, y, z));
     }
 
     @Override

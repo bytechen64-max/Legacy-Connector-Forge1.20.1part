@@ -78,7 +78,7 @@ public class TileEntitySkullRenderer extends TileEntitySpecialRenderer<legacycon
             SkullBlock.Type type = type(skullType);
             SkullModelBase model = models.get(type);
             if (model == null) return;
-            var renderType = SkullBlockRenderer.getRenderType(type, profile == null ? null : new net.minecraft.world.item.component.ResolvableProfile(profile));
+            var renderType = SkullBlockRenderer.getRenderType(type, profile);
             net.minecraft.core.Direction direction = facing == null || facing == EnumFacing.UP || facing == EnumFacing.DOWN ? null : facing.mcc$modern();
             pose.pushPose();
             try {
