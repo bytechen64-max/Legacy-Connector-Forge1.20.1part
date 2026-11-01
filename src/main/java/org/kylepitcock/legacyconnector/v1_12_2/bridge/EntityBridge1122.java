@@ -369,7 +369,7 @@ public final class EntityBridge1122 {
 
         @Override
         protected legacyconnector.v1_12_2.net.minecraft.item.ItemStack getArrowStack() {
-            return Stacks1122.fromModern(((net.minecraft.world.entity.projectile.AbstractArrow) mcc$entity).getPickupItemStackOrigin());
+            return Stacks1122.fromModern(((net.minecraft.world.entity.projectile.AbstractArrow) mcc$entity).getPickupItem());
         }
     }
 

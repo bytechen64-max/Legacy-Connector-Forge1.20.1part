@@ -116,7 +116,7 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData {
     @Override
     public String[] getAvailablePlayerDat() {
         var storage = mcc$playerStorage();
-        File dir = storage == null ? new File(worldDirectory, "playerdata") : storage.getPlayerDir();
+        File dir = storage == null ? new File(worldDirectory, "playerdata") : storage.getPlayerDataFolder();
         String[] files = dir.list((d, n) -> n.endsWith(".dat"));
         if (files == null) return new String[0];
         for (int i = 0; i < files.length; i++) files[i] = files[i].substring(0, files[i].length() - 4);

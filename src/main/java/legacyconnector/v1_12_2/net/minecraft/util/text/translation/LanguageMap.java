@@ -27,7 +27,7 @@ public class LanguageMap {
                 String[] kv = com.google.common.collect.Iterables.toArray(EQUAL_SIGN_SPLITTER.split(line), String.class);
                 if (kv != null && kv.length == 2) table.put(kv[0], NUMERIC_VARIABLE_PATTERN.matcher(kv[1]).replaceAll("%$1s"));
             }
-        } catch (RuntimeException e) {
+        } catch (RuntimeException | java.io.IOException e) {
             // an unreadable file adds nothing
         }
         return table;

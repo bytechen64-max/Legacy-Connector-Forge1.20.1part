@@ -42,6 +42,19 @@ public final class VanillaFlattening {
     private static Map<BlockState, Integer> reverseStates;
     private static Map<Block, Integer> reverseBlocks;
     private static Map<String, Integer> blockIds;
+
+    /** The old block name to numeric id table of the data fixer, which 1.20.1 keeps private. */
+    @SuppressWarnings("unchecked")
+    private static Object2IntMap<String> idByOldName() {
+        try {
+            var field = net.minecraft.util.datafix.fixes.BlockStateData.class.getDeclaredField("ID_BY_OLD_NAME");
+            field.setAccessible(true);
+            return (Object2IntMap<String>) field.get(null);
+        } catch (ReflectiveOperationException | ClassCastException e) {
+            LOG.warn("The data fixer's old block names are not readable: legacy blocks keep their registry names only");
+            return it.unimi.dsi.fastutil.objects.Object2IntMaps.emptyMap();
+        }
+    }
     private static String[] blockNames;
     private static Map<BlockState, Integer> nearest;
     private static final Map<Integer, Item> ITEMS = new HashMap<>();
@@ -67,7 +80,7 @@ public final class VanillaFlattening {
         }
         blockIds = new HashMap<>();
         blockNames = new String[256];
-        for (Object2IntMap.Entry<String> e : BlockStateData.ID_BY_OLD_NAME.object2IntEntrySet()) {
+        for (Object2IntMap.Entry<String> e : idByOldName().object2IntEntrySet()) {
             blockIds.put(e.getKey(), e.getIntValue() >> 4);
             int id = e.getIntValue() >> 4;
             if (id >= 0 && id < 256 && (blockNames[id] == null || e.getKey().compareTo(blockNames[id]) < 0)) blockNames[id] = e.getKey();

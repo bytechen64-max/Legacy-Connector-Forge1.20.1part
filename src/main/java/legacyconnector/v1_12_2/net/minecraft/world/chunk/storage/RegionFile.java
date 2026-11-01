@@ -14,8 +14,8 @@ public class RegionFile {
     public RegionFile(File fileNameIn) {
         this.fileName = fileNameIn;
         try {
-            var info = new net.minecraft.world.level.chunk.storage.RegionStorageInfo("legacy", net.minecraft.world.level.Level.OVERWORLD, "chunk");
-            this.mcc$modern = new net.minecraft.world.level.chunk.storage.RegionFile(info, fileNameIn.toPath(), fileNameIn.getParentFile().toPath(), false);
+            // 1.20.1 takes the folder and the file (the RegionStorageInfo record is 1.20.2+)
+            this.mcc$modern = new net.minecraft.world.level.chunk.storage.RegionFile(fileNameIn.toPath(), fileNameIn.getParentFile().toPath(), false);
         } catch (java.io.IOException | RuntimeException e) {
             this.mcc$modern = null;
         }

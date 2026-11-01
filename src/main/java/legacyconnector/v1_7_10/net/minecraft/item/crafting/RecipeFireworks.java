@@ -11,9 +11,13 @@ import legacyconnector.v1_7_10.net.minecraft.world.World;
  */
 public class RecipeFireworks implements IRecipe {
     private static final net.minecraft.world.item.crafting.CraftingRecipe[] MODERN = {
-            new net.minecraft.world.item.crafting.FireworkRocketRecipe(net.minecraft.world.item.crafting.CraftingBookCategory.MISC),
-            new net.minecraft.world.item.crafting.FireworkStarRecipe(net.minecraft.world.item.crafting.CraftingBookCategory.MISC),
-            new net.minecraft.world.item.crafting.FireworkStarFadeRecipe(net.minecraft.world.item.crafting.CraftingBookCategory.MISC)};
+            // 1.20.1 constructs the vanilla firework recipes with their own id
+            new net.minecraft.world.item.crafting.FireworkRocketRecipe(new net.minecraft.resources.ResourceLocation("minecraft", "firework_rocket"),
+                    net.minecraft.world.item.crafting.CraftingBookCategory.MISC),
+            new net.minecraft.world.item.crafting.FireworkStarRecipe(new net.minecraft.resources.ResourceLocation("minecraft", "firework_star"),
+                    net.minecraft.world.item.crafting.CraftingBookCategory.MISC),
+            new net.minecraft.world.item.crafting.FireworkStarFadeRecipe(new net.minecraft.resources.ResourceLocation("minecraft", "firework_star_fade"),
+                    net.minecraft.world.item.crafting.CraftingBookCategory.MISC)};
 
     /** The result of the last grid that matched. */
     private ItemStack field_92102_a;
@@ -27,7 +31,7 @@ public class RecipeFireworks implements IRecipe {
         for (var recipe : MODERN) {
             try {
                 if (!recipe.matches(input, level)) continue;
-                var result = recipe.assemble(input, mcc$registries(level));
+                var result = recipe.assemble(input, level.registryAccess());
                 if (result.isEmpty()) continue;
                 field_92102_a = ItemStack.mcc$wrap(result);
                 return true;

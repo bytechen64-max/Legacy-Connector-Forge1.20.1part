@@ -512,7 +512,7 @@ public abstract class EntityPlayer extends EntityLivingBase {
             var spot = net.minecraft.world.level.block.BedBlock.findStandUpPosition(net.minecraft.world.entity.EntityType.PLAYER, level, pos,
                     state.getValue(net.minecraft.world.level.block.BedBlock.FACING), 0.0F);
             if (spot.isEmpty()) return null;
-            var v = spot.get().position();
+            var v = spot.get();
             return new ChunkCoordinates((int) Math.floor(v.x), (int) Math.floor(v.y), (int) Math.floor(v.z));
         }
         var above = level.getBlockState(pos.above());

@@ -18,10 +18,9 @@ public class RandomChanceWithLooting implements LootCondition {
         int looting = 0;
         var killer = context.getKiller();
         if (killer != null && killer.mcc$entity instanceof net.minecraft.world.entity.LivingEntity living) {
-            var level = living.level();
-            var enchantment = level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT)
-                    .getHolder(net.minecraft.world.item.enchantment.Enchantments.MOB_LOOTING);
-            if (enchantment.isPresent()) looting = net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantmentLevel(enchantment.get(), living);
+            // 1.20.1 hands the enchantment itself to the helper (the holder lookup is 1.20.5+)
+            looting = net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantmentLevel(
+                    net.minecraft.world.item.enchantment.Enchantments.MOB_LOOTING, living);
         }
         return rand.nextFloat() < chance + looting * lootingMultiplier;
     }

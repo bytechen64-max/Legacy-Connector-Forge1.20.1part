@@ -30,7 +30,7 @@ public class SPacketPlayerListItem implements Packet<INetHandlerPlayClient> {
             var sp = p == null ? null : p.mcc$serverPlayer();
             if (sp == null) continue;
             mcc$players.add(sp);
-            players.add(new AddPlayerData(sp.getGameProfile(), sp.connection == null ? 0 : sp.connection.getLatency(), GameType.mcc$of(sp.gameMode.getGameModeForPlayer()),
+            players.add(new AddPlayerData(sp.getGameProfile(), sp.latency, GameType.mcc$of(sp.gameMode.getGameModeForPlayer()),
                     sp.getTabListDisplayName() == null ? null : new legacyconnector.v1_12_2.net.minecraft.util.text.TextComponentString(sp.getTabListDisplayName().getString())));
         }
     }

@@ -38,8 +38,20 @@ public class EntityTracker {
     public static Set<EntityPlayerMP> mcc$trackingPlayers(Entity entity) {
         Set<EntityPlayerMP> out = new LinkedHashSet<>();
         if (entity == null || entity.mcc$entity == null || !(entity.mcc$entity.level() instanceof ServerLevel level)) return out;
-        for (ServerPlayer p : level.getChunkSource().chunkMap.getPlayersWatching(entity.mcc$entity)) {
-            if (EntityBridge.wrap(p) instanceof EntityPlayerMP mp) out.add(mp);
+        // 1.20.1 keeps the connections an entity is sent to in the chunk map's tracked entity (a package-private class, so the
+        // field is read reflectively)
+        var tracked = ((org.kylepitcock.legacyconnector.mixin.access.ChunkMapAccess) level.getChunkSource().chunkMap)
+                .legacyconnector$entityMap().get(entity.mcc$entity.getId());
+        if (tracked == null) return out;
+        try {
+            var field = tracked.getClass().getDeclaredField("seenBy");
+            field.setAccessible(true);
+            for (Object connection : (java.util.Set<?>) field.get(tracked)) {
+                ServerPlayer p = ((net.minecraft.server.network.ServerPlayerConnection) connection).getPlayer();
+                if (EntityBridge.wrap(p) instanceof EntityPlayerMP mp) out.add(mp);
+            }
+        } catch (ReflectiveOperationException | ClassCastException e) {
+            return out;
         }
         return out;
     }

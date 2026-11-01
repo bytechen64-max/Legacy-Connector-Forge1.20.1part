@@ -55,7 +55,7 @@ public class GuiNewChat extends Gui {
         gui.pose().pushPose();
         // 1.7.10 drew from the top of the chat box at the origin the HUD set up (bottom left, 48 pixels up); modern draws at the screen bottom
         gui.pose().translate(0.0F, -(gui.guiHeight() - 48.0F), 0.0F);
-        mc.gui.getChat().render(gui, updateCounter, mouseX, mouseY, getChatOpen());
+        mc.gui.getChat().render(gui, updateCounter, mouseX, mouseY);
         gui.pose().popPose();
     }
 

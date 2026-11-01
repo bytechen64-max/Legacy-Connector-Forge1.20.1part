@@ -254,8 +254,7 @@ public class ServerConfigurationManager {
         var server = mcc$server.mcc$modern();
         var online = profile.getId() == null ? null : server.getPlayerList().getPlayer(profile.getId());
         if (online != null) return (EntityPlayerMP) EntityBridge.wrap(online);
-        var player = new net.minecraft.server.level.ServerPlayer(server, server.overworld(), profile,
-                net.minecraft.server.level.ClientInformation.createDefault());
+        var player = new net.minecraft.server.level.ServerPlayer(server, server.overworld(), profile);
         return (EntityPlayerMP) EntityBridge.wrap(player);
     }
 
@@ -320,7 +319,7 @@ public class ServerConfigurationManager {
             }
             var objective = scoreboard.getObjective(key);
             if (objective == null) return false;
-            var entry = scoreboard.getPlayerScores(player).get(objective);
+            var entry = scoreboard.getPlayerScores(player.getScoreboardName()).get(objective);
             int score = entry == null ? 0 : entry.getScore();
             int value = ((Number) e.getValue()).intValue();
             if (score < value && min) return false;

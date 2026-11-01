@@ -68,9 +68,10 @@ public class FurnaceRecipes {
         if (modern.isEmpty()) return null;
         net.minecraft.world.item.ItemStack result = MCC$MODERN.computeIfAbsent(modern.getItem(), item -> {
             try {
-                var in = new net.minecraft.world.item.crafting.SingleRecipeInput(new net.minecraft.world.item.ItemStack(item));
+                // 1.20.1 asks a smelting recipe with a container (SingleRecipeInput is 1.20.5+)
+                var in = new net.minecraft.world.SimpleContainer(new net.minecraft.world.item.ItemStack(item));
                 return manager.getRecipeFor(net.minecraft.world.item.crafting.RecipeType.SMELTING, in, level)
-                        .map(h -> h.value().getResultItem(level.registryAccess()).copy()).orElse(net.minecraft.world.item.ItemStack.EMPTY);
+                        .map(h -> h.getResultItem(level.registryAccess()).copy()).orElse(net.minecraft.world.item.ItemStack.EMPTY);
             } catch (RuntimeException e) {
                 return net.minecraft.world.item.ItemStack.EMPTY;
             }

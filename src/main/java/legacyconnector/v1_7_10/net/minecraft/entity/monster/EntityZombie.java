@@ -88,7 +88,10 @@ public class EntityZombie extends EntityMob {
                 new net.minecraft.world.entity.monster.Zombie.ZombieGroupData(false, true), null);
         converted.setVillagerData(villager.getVillagerData());
         converted.setGossips(villager.getGossips().store(net.minecraft.nbt.NbtOps.INSTANCE));
-        converted.setTradeOffers(new net.minecraft.world.item.trading.MerchantOffers(villager.getOffers()));
+                // 1.20.1 keeps the offers of a zombie villager as their NBT
+        var offers = new net.minecraft.world.item.trading.MerchantOffers();
+        offers.addAll(villager.getOffers());
+        converted.setTradeOffers(offers.createTag());
         converted.setVillagerXp(villager.getVillagerXp());
         net.minecraftforge.event.ForgeEventFactory.onLivingConvert(villager, converted);
         level.levelEvent(null, 1026, mcc$entity.blockPosition(), 0);

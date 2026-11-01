@@ -53,7 +53,10 @@ public final class ItemCapabilities {
         public <R> LazyOptional<R> getCapability(Capability<R> capability, net.minecraft.core.Direction side) {
             if (capability == null || !capability.getName().equals(capabilityName)) return LazyOptional.empty();
             T value = factory.apply(stack, null);
-            return value == null ? LazyOptional.empty() : LazyOptional.of(() -> value);
+                        if (value == null) return LazyOptional.empty();
+            @SuppressWarnings("unchecked")
+            R cast = (R) value;
+            return LazyOptional.of(() -> cast);
         }
     }
 }

@@ -30,7 +30,7 @@ public class ItemInWorldManager {
     }
 
     public double getBlockReachDistance() {
-        return mcc$player != null ? mcc$player.blockInteractionRange() : 5.0D;
+        return mcc$player != null ? mcc$player.getAttributeValue(net.minecraftforge.common.ForgeMod.BLOCK_REACH.get()) : 5.0D;
     }
 
     public void setBlockReachDistance(double distance) {

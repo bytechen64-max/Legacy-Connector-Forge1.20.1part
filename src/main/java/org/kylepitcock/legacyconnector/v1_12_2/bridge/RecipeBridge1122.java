@@ -194,7 +194,7 @@ public final class RecipeBridge1122 {
         if (modern.isEmpty()) throw new IllegalArgumentException("empty result");
         if (modern.getCount() > modern.getMaxStackSize()) modern.setCount(modern.getMaxStackSize());
         var ops = RegistryOps.create(JsonOps.INSTANCE, RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY));
-        return net.minecraft.world.item.ItemStack.CODEC.encodeStart(ops, modern).getOrThrow();
+        return net.minecraft.world.item.ItemStack.CODEC.encodeStart(ops, modern).getOrThrow(false, msg -> { throw new IllegalStateException(msg); });
     }
 
     /** Ingredient JSON, or null for an empty or inexpressible ingredient. */

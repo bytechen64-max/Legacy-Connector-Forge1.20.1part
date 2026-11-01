@@ -38,9 +38,9 @@ public class ItemMinecart extends Item {
         if (!world.isRemote && minecartType >= 0 && minecartType < net.minecraft.world.entity.vehicle.AbstractMinecart.Type.values().length) {
             var level = org.kylepitcock.legacyconnector.v1_7_10.bridge.VanillaOps.server(world);
             if (level != null) {
+                // 1.20.1's createMinecart takes the level, the position and the cart type
                 var cart = net.minecraft.world.entity.vehicle.AbstractMinecart.createMinecart(level, x + 0.5D, y + 0.0625D, z + 0.5D,
-                        net.minecraft.world.entity.vehicle.AbstractMinecart.Type.values()[minecartType], stack.mcc$modern(),
-                        player != null && player.mcc$entity instanceof net.minecraft.world.entity.player.Player p ? p : null);
+                        net.minecraft.world.entity.vehicle.AbstractMinecart.Type.values()[minecartType]);
                 level.addFreshEntity(cart);
             }
         }

@@ -671,7 +671,7 @@ public class Item {
         var modern = ItemStack.mcc$toModern(stack);
         if (modern.isEmpty()) return null;
         try {
-            return modern.getCapability(net.minecraftforge.common.capabilities.ForgeCapabilities.ENERGY);
+            return modern.getCapability(net.minecraftforge.common.capabilities.ForgeCapabilities.ENERGY).orElse(null);
         } catch (RuntimeException e) {
             return null;
         }

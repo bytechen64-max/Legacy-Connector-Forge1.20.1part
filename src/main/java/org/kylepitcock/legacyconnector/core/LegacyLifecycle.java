@@ -50,9 +50,9 @@ public final class LegacyLifecycle {
     }
 
     public static void onRegister(RegisterEvent event) {
-        ResourceLocation last = null;
-        for (ResourceLocation rl : GameData.getRegistrationOrder()) last = rl;
-        if (ran || !event.getRegistryKey().location().equals(last)) return;
+        // 1.20.1 has no GameData registration order: the item registry is the last of the content registries, and every registry
+        // stays unfrozen for the whole RegisterEvent phase, so triggering there runs the legacy loading once, inside the window.
+        if (ran || !event.getRegistryKey().equals(net.minecraft.core.registries.Registries.ITEM)) return;
         ran = true;
         registrationOpen = true;
         try {

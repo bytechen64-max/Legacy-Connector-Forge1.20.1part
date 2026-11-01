@@ -123,11 +123,12 @@ public class ForgeHooks {
                 : net.minecraft.world.level.GameType.byId(gameType.getID());
         mcc$pendingBreak.set(event);
         try {
-            var modern = net.minecraftforge.common.ForgeHooks.fireBlockBreak(level, type, sp, pos, level.getBlockState(pos));
+            // 1.20.1 answers -1 when the break was cancelled (the event-object form is 1.20.5+)
+            boolean canceled = net.minecraftforge.common.ForgeHooks.onBlockBreakEvent(level, type, sp, pos) == -1;
             if (mcc$pendingBreak.get() == event) {
                 // no legacy listener took it: report the modern outcome
-                if (modern.isCanceled()) event.setCanceled(true);
-            } else if (modern.isCanceled() && !event.isCanceled()) {
+                if (canceled) event.setCanceled(true);
+            } else if (canceled && !event.isCanceled()) {
                 event.setCanceled(true);
             }
         } finally {

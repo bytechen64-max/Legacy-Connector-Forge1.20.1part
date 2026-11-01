@@ -65,7 +65,9 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData {
             File dir = mcc$playerDir();
             CompoundTag tag = modern.saveWithoutId(new CompoundTag());
             Path tmp = Files.createTempFile(dir.toPath(), modern.getStringUUID() + "-", ".dat");
-            net.minecraft.nbt.NbtIo.writeCompressed(tag, tmp);
+            try (var out = Files.newOutputStream(tmp)) {
+                net.minecraft.nbt.NbtIo.writeCompressed(tag, out);
+            }
             net.minecraft.Util.safeReplaceFile(dir.toPath().resolve(modern.getStringUUID() + ".dat"), tmp,
                     dir.toPath().resolve(modern.getStringUUID() + ".dat_old"));
             net.minecraftforge.event.ForgeEventFactory.firePlayerSavingEvent(modern, dir, modern.getStringUUID());

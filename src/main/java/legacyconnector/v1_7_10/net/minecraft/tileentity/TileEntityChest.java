@@ -43,7 +43,8 @@ public class TileEntityChest extends TileEntity implements IInventory {
         if (mcc$inv == null) return;
         // Reading a chest with a pending loot table fills it and calls setChanged, which fetches the chunk and blocks the
         // server thread when the chunk is still being generated or loaded: keep the old snapshot until the chunk is ready.
-        if (mcc$inv instanceof net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity r && r.getLootTable() != null) {
+        if (mcc$inv instanceof net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity r
+                && ((org.kylepitcock.legacyconnector.mixin.access.RandomizableContainerAccess) r).legacyconnector$lootTable() != null) {
             var level = r.getLevel();
             if (level == null || MCC_CHUNK_LOADING.get()) return;
             if (!level.isClientSide && level.getChunkSource().getChunkNow(r.getBlockPos().getX() >> 4, r.getBlockPos().getZ() >> 4) == null) return;

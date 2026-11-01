@@ -324,11 +324,15 @@ public final class RecipeBridge {
         JsonObject generated = jsonOf.get(id);
         if (generated == null) return UNCHANGED;
         try {
-            var ops = server.registryAccess().createSerializationContext(JsonOps.INSTANCE);
-            var codec = net.minecraft.world.item.crafting.Recipe.CODEC;
-            JsonElement now = codec.encodeStart(ops, holder.get()).getOrThrow();
-            JsonElement translated = codec.encodeStart(ops, codec.parse(ops, generated).getOrThrow()).getOrThrow();
-            return now.equals(translated) ? UNCHANGED : new Replacement(holder.get());
+            // 1.20.1 has no Recipe codec: compare the recipes through their serializer (the network form is canonical)
+            var recipe = holder.get();
+            @SuppressWarnings("rawtypes")
+            net.minecraft.world.item.crafting.RecipeSerializer serializer = recipe.getSerializer();
+            var now = new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.buffer());
+            serializer.toNetwork(now, recipe);
+            var translated = new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.buffer());
+            serializer.toNetwork(translated, serializer.fromJson(id, generated));
+            return java.util.Arrays.equals(now.array(), translated.array()) ? UNCHANGED : new Replacement(recipe);
         } catch (RuntimeException e) {
             return UNCHANGED; // cannot tell: the legacy object keeps working as registered
         }
@@ -482,7 +486,7 @@ public final class RecipeBridge {
         // 1.7.10 allowed a recipe to make several of an item that does not stack; the modern recipe loader rejects the whole recipe then.
         if (modern.getCount() > modern.getMaxStackSize()) modern.setCount(modern.getMaxStackSize());
         var ops = RegistryOps.create(JsonOps.INSTANCE, RegistryAccess.fromRegistryOfRegistries(BuiltInRegistries.REGISTRY));
-        return net.minecraft.world.item.ItemStack.CODEC.encodeStart(ops, modern).getOrThrow();
+        return net.minecraft.world.item.ItemStack.CODEC.encodeStart(ops, modern).getOrThrow(false, msg -> { throw new IllegalStateException(msg); });
     }
 
     /** One item tag per ore dictionary name used by legacy registrations or recipes. */

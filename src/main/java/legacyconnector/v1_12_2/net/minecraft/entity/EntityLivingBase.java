@@ -612,7 +612,7 @@ public abstract class EntityLivingBase extends Entity {
     protected void jump() {
         var h = mcc$livingHost();
         if (h != null) h.mcc$superJump();
-        else if (mcc$entity instanceof LivingEntity l) l.jumpFromGround();
+        else if (mcc$entity instanceof LivingEntity l) org.kylepitcock.legacyconnector.mixin.access.LivingEntityAccess.jumpFromGround(l);
     }
 
     public final void mcc$jump() {

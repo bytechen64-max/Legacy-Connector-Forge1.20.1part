@@ -126,8 +126,10 @@ public class EntityItem extends Entity {
 
     public String getOwner() {
         if (mcc$owner != null) return mcc$owner;
-        java.util.UUID target = mcc$item().getOwner();
-        if (target == null) return null;
+        // 1.20.1 keeps the owner entity (1.21 keeps its id)
+        var owner = mcc$item().getOwner();
+        if (owner == null) return null;
+        java.util.UUID target = owner.getUUID();
         var server = mcc$server();
         var player = server == null ? null : server.getPlayerList().getPlayer(target);
         return player != null ? player.getGameProfile().getName() : net.minecraftforge.common.UsernameCache.getLastKnownUsername(target);

@@ -19,4 +19,8 @@ public interface ChunkMapAccess {
 
     @Invoker("getChunks")
     Iterable<ChunkHolder> legacyconnector$chunks();
+
+    /** The tracked entities of the chunk map, by entity id: who the server sends an entity to. */
+    @org.spongepowered.asm.mixin.gen.Accessor("entityMap")
+    it.unimi.dsi.fastutil.ints.Int2ObjectMap<Object> legacyconnector$entityMap();
 }

@@ -34,8 +34,8 @@ public class MapStorage {
     public WorldSavedData loadData(Class<?> type, String name) {
         WorldSavedData cached = loadedDataMap.get(name);
         if (cached != null || storage == null) return cached;
-        Adapter adapter = storage.get(new SavedData.Factory<>(() -> new Adapter(create(type, name)),
-                (tag, registries) -> Adapter.load(create(type, name), tag), null), file(name));
+        // 1.20.1 takes the load function and the file name (the SavedData.Factory record is 1.20.2+)
+        Adapter adapter = storage.get(tag -> Adapter.load(create(type, name), tag), file(name));
         if (adapter == null || adapter.legacy == null) return null;
         loadedDataMap.put(name, adapter.legacy);
         return adapter.legacy;

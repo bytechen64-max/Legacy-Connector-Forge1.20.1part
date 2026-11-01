@@ -90,6 +90,6 @@ public class S18PacketEntityTeleport extends Packet {
         buf.writeByte(field_149453_f);
         buf.writeByte(field_149455_e);
         buf.writeBoolean(e != null && e.onGround());
-        player.connection.send(net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket.STREAM_CODEC.decode(buf));
+        player.connection.send(new net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket(buf));
     }
 }

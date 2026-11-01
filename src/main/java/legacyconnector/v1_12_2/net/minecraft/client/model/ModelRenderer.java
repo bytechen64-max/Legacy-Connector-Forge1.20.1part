@@ -137,7 +137,14 @@ public class ModelRenderer {
         var buffer = RenderContext.modelBuffer();
         int light = RenderContext.vertexLight(), overlay = RenderContext.overlay(), color = RenderContext.argb();
         for (ModelBox box : cubeList) {
-            if (box.mcc$cube != null) box.mcc$cube.compile(pose.last(), buffer, light, overlay, color);
+            if (box.mcc$cube != null) {
+                // 1.20.1's Cube#compile takes the light and overlay plus a float colour
+                float a = ((color >>> 24) & 255) / 255.0F;
+                float r = ((color >> 16) & 255) / 255.0F;
+                float g = ((color >> 8) & 255) / 255.0F;
+                float b = (color & 255) / 255.0F;
+                box.mcc$cube.compile(pose.last(), buffer, light, overlay, r, g, b, a);
+            }
         }
         if (rescale) pose.popPose();
     }

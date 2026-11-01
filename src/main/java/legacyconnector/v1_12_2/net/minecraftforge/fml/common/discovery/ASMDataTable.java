@@ -69,8 +69,8 @@ public class ASMDataTable {
     }
 
     private static Object convertValue(Object v) {
-        if (v instanceof net.minecraftforge.fml.loading.modscan.ModAnnotation.EnumHolder h) {
-            return new legacyconnector.v1_12_2.net.minecraftforge.fml.common.discovery.asm.ModAnnotation.EnumHolder(h.desc(), h.value());
+        if (v instanceof net.minecraftforge.fml.loading.moddiscovery.ModAnnotation.EnumHolder h) {
+            return new legacyconnector.v1_12_2.net.minecraftforge.fml.common.discovery.asm.ModAnnotation.EnumHolder(h.getDesc(), h.getValue());
         }
         if (v instanceof java.util.List<?> list) {
             java.util.List<Object> out = new java.util.ArrayList<>();
