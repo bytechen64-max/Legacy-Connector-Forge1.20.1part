@@ -75,7 +75,6 @@ public class BlockFluidRenderer {
             written++;
         }
 
-        @Override
         public com.mojang.blaze3d.vertex.VertexConsumer addVertex(float xIn, float yIn, float zIn) {
             flush();
             pending = true;
@@ -85,7 +84,6 @@ public class BlockFluidRenderer {
             return this;
         }
 
-        @Override
         public com.mojang.blaze3d.vertex.VertexConsumer setColor(int red, int green, int blue, int alpha) {
             r = red;
             g = green;
@@ -94,25 +92,21 @@ public class BlockFluidRenderer {
             return this;
         }
 
-        @Override
         public com.mojang.blaze3d.vertex.VertexConsumer setUv(float uIn, float vIn) {
             u = uIn;
             v = vIn;
             return this;
         }
 
-        @Override
         public com.mojang.blaze3d.vertex.VertexConsumer setUv1(int uIn, int vIn) {
             return this;
         }
 
-        @Override
         public com.mojang.blaze3d.vertex.VertexConsumer setUv2(int uIn, int vIn) {
             light = vIn << 16 | uIn & 65535;
             return this;
         }
 
-        @Override
         public com.mojang.blaze3d.vertex.VertexConsumer setNormal(float x, float y, float z) {
             nx = x;
             ny = y;

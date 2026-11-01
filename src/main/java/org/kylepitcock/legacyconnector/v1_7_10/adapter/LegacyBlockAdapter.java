@@ -954,7 +954,7 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
     }
 
     @Override
-    public net.minecraft.world.item.ItemStack getCloneItemStack(BlockState state, net.minecraft.world.phys.HitResult target, LevelReader level, BlockPos pos,
+    public net.minecraft.world.item.ItemStack getCloneItemStack(BlockState state, net.minecraft.world.phys.HitResult target, BlockGetter level, BlockPos pos,
             Player player) {
         if (pickBlock && level instanceof LevelAccessor acc && target instanceof net.minecraft.world.phys.BlockHitResult hit) {
             try {
@@ -992,7 +992,7 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
     }
 
     @Override
-    public net.minecraft.world.item.ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
+    public net.minecraft.world.item.ItemStack getCloneItemStack(BlockGetter level, BlockPos pos, BlockState state) {
         if (level instanceof LevelAccessor acc) {
             World w = world(acc);
             var item = legacy.getItem(w, pos.getX(), pos.getY(), pos.getZ());

@@ -95,8 +95,8 @@ public class Legacy1122Item extends net.minecraft.world.item.Item {
     }
 
     @Override
-    public int getUseDuration(ItemStack stack, net.minecraft.world.entity.LivingEntity entity) {
-        int modern = super.getUseDuration(stack, entity);
+    public int getUseDuration(ItemStack stack) {
+        int modern = super.getUseDuration(stack);
         return cb().useDuration ? cb().useDuration(stack, modern) : modern;
     }
 

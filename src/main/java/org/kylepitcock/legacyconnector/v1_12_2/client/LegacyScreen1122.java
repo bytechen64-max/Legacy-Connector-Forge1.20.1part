@@ -50,7 +50,7 @@ public class LegacyScreen1122 extends Screen {
     }
 
     @Override
-    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void renderBackground(GuiGraphics graphics) {
         // legacy drawScreen draws its own background (drawDefaultBackground)
     }
 
@@ -74,7 +74,7 @@ public class LegacyScreen1122 extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double x, double y, double scrollX, double scrollY) {
+    public boolean mouseScrolled(double x, double y, double scrollY) {
         guard(() -> legacy.mcc$mouseScrolled((int) x, (int) y, scrollY));
         return true;
     }

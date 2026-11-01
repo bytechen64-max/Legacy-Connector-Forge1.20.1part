@@ -101,10 +101,10 @@ public class LegacyContainerScreen1122 extends AbstractContainerScreen<LegacyMen
     }
 
     @Override
-    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    public void renderBackground(GuiGraphics graphics) {
         // legacy drawScreen draws its own darkening (drawDefaultBackground); only the container background layer is drawn here
-        if (legacy == null) super.renderBackground(graphics, mouseX, mouseY, partialTick);
-        else renderBg(graphics, partialTick, mouseX, mouseY);
+        if (legacy == null) super.renderBackground(graphics);
+        else renderBg(graphics, 0.0F, 0, 0);
     }
 
     @Override
@@ -156,9 +156,9 @@ public class LegacyContainerScreen1122 extends AbstractContainerScreen<LegacyMen
     }
 
     @Override
-    public boolean mouseScrolled(double x, double y, double scrollX, double scrollY) {
+    public boolean mouseScrolled(double x, double y, double scrollY) {
         if (legacy != null) guard(() -> legacy.mcc$mouseScrolled((int) x, (int) y, scrollY));
-        return super.mouseScrolled(x, y, scrollX, scrollY);
+        return super.mouseScrolled(x, y, scrollY);
     }
 
     /** Screens with their own key handling see every key (their base keyTyped closes on Escape or the inventory key, as 1.12's did). */

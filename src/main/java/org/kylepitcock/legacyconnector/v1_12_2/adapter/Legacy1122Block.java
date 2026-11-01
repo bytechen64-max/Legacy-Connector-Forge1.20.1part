@@ -450,7 +450,7 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
 
     /** IGrowable blocks (crops, saplings): bone meal asks and grows them through the legacy code. */
     @Override
-    public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state) {
+    public boolean isValidBonemealTarget(LevelReader level, BlockPos pos, BlockState state, boolean isClient) {
         if (!(legacy instanceof legacyconnector.v1_12_2.net.minecraft.block.IGrowable g) || !(level instanceof Level l)) return false;
         try {
             return g.canGrow(world(l), pos(pos), state(state), l.isClientSide);
@@ -700,7 +700,7 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
     }
 
     @Override
-    public net.minecraft.world.item.ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
+    public net.minecraft.world.item.ItemStack getCloneItemStack(net.minecraft.world.level.BlockGetter level, BlockPos pos, BlockState state) {
         if (pickBlock && level instanceof Level l) {
             try {
                 var hit = new legacyconnector.v1_12_2.net.minecraft.util.math.RayTraceResult(
