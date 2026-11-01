@@ -98,7 +98,7 @@ public abstract class NodeProcessor {
         try {
                         // 1.20.1 reads the raw block path type through the static helper (PathfindingContext is 1.20.2+)
             var pos = new net.minecraft.core.BlockPos.MutableBlockPos(x, y, z);
-            return PathNodeType.mcc$of(net.minecraft.world.level.pathfinder.BlockPathTypes.getBlockPathTypeStatic(view, pos));
+            return PathNodeType.mcc$of(net.minecraft.world.level.pathfinder.WalkNodeEvaluator.getBlockPathTypeStatic(view, pos));
         } catch (RuntimeException e) {
             return null;
         }

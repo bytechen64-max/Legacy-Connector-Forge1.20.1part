@@ -46,6 +46,6 @@ public class SPacketResourcePackSend implements Packet<INetHandlerPlayClient> {
     public net.minecraft.network.protocol.Packet<?> mcc$modern() {
         if (url == null) return null;
         var id = java.util.UUID.nameUUIDFromBytes(url.getBytes(java.nio.charset.StandardCharsets.UTF_8));
-        return new net.minecraft.network.protocol.common.ClientboundResourcePackPushPacket(id, url, hash == null ? "" : hash, false, java.util.Optional.empty());
+        return new net.minecraft.network.protocol.game.ClientboundResourcePackPacket(url, hash == null ? "" : hash, false, null);
     }
 }

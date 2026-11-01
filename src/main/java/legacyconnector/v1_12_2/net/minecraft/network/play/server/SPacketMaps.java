@@ -103,7 +103,7 @@ public class SPacketMaps implements Packet<INetHandlerPlayClient> {
         java.util.List<net.minecraft.world.level.saveddata.maps.MapDecoration> decorations = new java.util.ArrayList<>();
         for (MapDecoration d : icons) {
             decorations.add(new net.minecraft.world.level.saveddata.maps.MapDecoration(d.getType().mcc$modern(), d.getX(), d.getY(), d.getRotation(),
-                    java.util.Optional.empty()));
+                    null));
         }
         var patch = columns > 0 ? new net.minecraft.world.level.saveddata.maps.MapItemSavedData.MapPatch(minX, minZ, columns, rows, mapDataBytes) : null;
         return new net.minecraft.network.protocol.game.ClientboundMapItemDataPacket(mapId, mapScale, false,

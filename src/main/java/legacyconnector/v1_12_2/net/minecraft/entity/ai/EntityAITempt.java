@@ -42,8 +42,11 @@ public class EntityAITempt extends GoalTask1122 {
     }
 
     public EntityAITempt(legacyconnector.v1_12_2.net.minecraft.entity.EntityCreature creature, double speed, boolean scaredByPlayerMovement, java.util.Set<legacyconnector.v1_12_2.net.minecraft.item.Item> items) {
-        super(creature, 3, pathfinder(m -> new net.minecraft.world.entity.ai.goal.TemptGoal(m, speed, s -> items.contains(
-                org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.fromModern(s).getItem()), scaredByPlayerMovement)));
+        // 1.20.1's TemptGoal takes an Ingredient (the predicate form is 1.20.5+)
+        super(creature, 3, pathfinder(m -> new net.minecraft.world.entity.ai.goal.TemptGoal(m, speed, net.minecraft.world.item.crafting.Ingredient.of(
+                items.stream().map(item -> new net.minecraft.world.item.ItemStack(
+                        org.kylepitcock.legacyconnector.v1_12_2.bridge.ItemBridge1122.modern(item, 0)))
+                        .filter(s -> !s.isEmpty()).toArray(net.minecraft.world.item.ItemStack[]::new)), scaredByPlayerMovement)));
         this.temptItem = items;
     }
 

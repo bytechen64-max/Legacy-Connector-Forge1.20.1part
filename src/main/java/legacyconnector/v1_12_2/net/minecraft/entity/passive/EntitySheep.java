@@ -132,10 +132,9 @@ public class EntitySheep extends EntityAnimal {
     public static float[] getDyeRgb(legacyconnector.v1_12_2.net.minecraft.item.EnumDyeColor color) {
         var modern = net.minecraft.world.item.DyeColor.byId(color.getMetadata());
         if (modern == net.minecraft.world.item.DyeColor.WHITE) return new float[] {0.9019608F, 0.9019608F, 0.9019608F};
-        int rgb = modern.getTextureDiffuseColor();
-        float[] out = {(rgb >> 16 & 255) / 255.0F, (rgb >> 8 & 255) / 255.0F, (rgb & 255) / 255.0F};
-        for (int i = 0; i < 3; ++i) out[i] *= 0.75F;
-        return out;
+        // 1.20.1 keeps the diffuse colour as three floats
+        float[] c = modern.getTextureDiffuseColors();
+        return new float[] {c[0] * 0.75F, c[1] * 0.75F, c[2] * 0.75F};
     }
 
     /** A natural fleece colour (verbatim 1.12 odds: mostly white, some greys and black, rarely brown or pink). */

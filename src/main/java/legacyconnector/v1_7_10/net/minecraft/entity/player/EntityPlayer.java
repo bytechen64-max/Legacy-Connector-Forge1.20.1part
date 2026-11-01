@@ -508,7 +508,9 @@ public abstract class EntityPlayer extends EntityLivingBase {
         var pos = new BlockPos(coordinates.posX, coordinates.posY, coordinates.posZ);
         var state = level.getBlockState(pos);
         if (state.isBed(level, pos, null)) {
-            var spot = state.getRespawnPosition(net.minecraft.world.entity.EntityType.PLAYER, level, pos, 0.0F);
+            // 1.20.1 asks the bed for its stand-up position
+            var spot = net.minecraft.world.level.block.BedBlock.findStandUpPosition(net.minecraft.world.entity.EntityType.PLAYER, level, pos,
+                    state.getValue(net.minecraft.world.level.block.BedBlock.FACING), 0.0F);
             if (spot.isEmpty()) return null;
             var v = spot.get().position();
             return new ChunkCoordinates((int) Math.floor(v.x), (int) Math.floor(v.y), (int) Math.floor(v.z));

@@ -218,7 +218,9 @@ public class EntityWolf extends EntityTameable {
     @Override
     public boolean isBreedingItem(legacyconnector.v1_12_2.net.minecraft.item.ItemStack stack) {
         if (!mcc$hosted()) return super.isBreedingItem(stack);
-        return org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.toModern(stack).is(net.minecraft.tags.ItemTags.WOLF_FOOD);
+        // 1.20.1 asks the wolf itself (the WOLF_FOOD tag is 1.20.5+)
+        var modern = org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.toModern(stack);
+        return mcc$entity instanceof net.minecraft.world.entity.animal.Wolf w && w.isFood(modern);
     }
 
     @Override

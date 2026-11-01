@@ -104,7 +104,7 @@ files in place, which forces a full recompile every time. A full type-check of t
 
 ## What is left
 
-217 compile errors at the last run (`./gradlew compileJava -PskipShimWidener`, 2026-11-01). The count moves as javac gets
+123 compile errors at the last run (`./gradlew compileJava -PskipShimWidener`, 2026-11-01). The count moves as javac gets
 further into the tree, and every batch below adds a few newly-visible ones.
 
 Landed since the first type-check of the whole tree (each cluster in its own commit):

@@ -46,7 +46,7 @@ public class SPacketMultiBlockChange implements Packet<INetHandlerPlayClient> {
     @Override
     public net.minecraft.network.protocol.Packet<?> mcc$modern() {
         if (changedBlocks == null || changedBlocks.length == 0) return null;
-        java.util.List<net.minecraft.network.protocol.Packet<? super net.minecraft.network.protocol.game.ClientGamePacketListener>> updates = new java.util.ArrayList<>();
+        java.util.List<net.minecraft.network.protocol.Packet<net.minecraft.network.protocol.game.ClientGamePacketListener>> updates = new java.util.ArrayList<>();
         for (BlockUpdateData d : changedBlocks) {
             if (d.state == null) continue;
             BlockPos p = d.getPos();

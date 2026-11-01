@@ -199,7 +199,7 @@ public class ForgeHooks {
         if (level == null || p == null || pos == null) return true;
         var mp = pos(pos);
         var state = level.getBlockState(mp);
-        return net.minecraftforge.event.ForgeEventFactory.doPlayerHarvestCheck(p, state, level, mp);
+        return net.minecraftforge.event.ForgeEventFactory.doPlayerHarvestCheck(p, state, state.canHarvestBlock(level, mp, p));
     }
 
     /** Whether the stack is a tool that breaks the block at {@code pos} faster (its tool type matches). */
@@ -350,10 +350,13 @@ public class ForgeHooks {
                     || vanillaCritical && r == legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.DEFAULT;
             return crit ? event : null;
         }
-        // the modern event reaches 1.12 handlers through the event bridge
-        var modern = net.minecraftforge.common.ForgeHooks.fireCriticalHit(p, target.mcc$modern(), vanillaCritical, damageModifier);
-        if (!modern.isCriticalHit()) return null;
-        event.setDamageModifier(modern.getDamageMultiplier());
+        // 1.20.1 has no fireCriticalHit: the event is posted here and its result decides (the bridge sees it too)
+        var modern = new net.minecraftforge.event.entity.player.CriticalHitEvent(p, target.mcc$modern(), damageModifier, vanillaCritical);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(modern);
+        boolean crit = modern.getResult() == net.minecraftforge.eventbus.api.Event.Result.ALLOW
+                || vanillaCritical && modern.getResult() == net.minecraftforge.eventbus.api.Event.Result.DEFAULT;
+        if (!crit) return null;
+        event.setDamageModifier(modern.getDamageModifier());
         if (!vanillaCritical) event.setResult(legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW);
         return event;
     }

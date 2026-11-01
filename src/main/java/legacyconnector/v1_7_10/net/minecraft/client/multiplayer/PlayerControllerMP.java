@@ -51,7 +51,7 @@ public class PlayerControllerMP {
 
     public float getBlockReachDistance() {
         var player = net.minecraft.client.Minecraft.getInstance().player;
-        return player == null ? 4.5F : (float) player.blockInteractionRange();
+        return player == null ? 4.5F : (float) player.getAttributeValue(net.minecraftforge.common.ForgeMod.BLOCK_REACH.get());
     }
 
     /** Never true in 1.7.10 (the flag of a debug mode that did not ship). */

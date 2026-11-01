@@ -17,7 +17,7 @@ public class EntityFireworkRocket extends legacyconnector.v1_12_2.net.minecraft.
             var modern = org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.toModern(stack);
             var tag = new net.minecraft.nbt.CompoundTag();
             m.saveWithoutId(tag);
-            if (!modern.isEmpty()) tag.put("FireworksItem", modern.save(m.registryAccess()));
+            if (!modern.isEmpty()) tag.put("FireworksItem", modern.save(m.level().registryAccess()));
             // 1.20.1 keeps the firework in the item tag (the FIREWORKS component is 1.20.5).
             var fireworkTag = modern.getTagElement("Fireworks");
             int flight = 1 + (fireworkTag == null ? 0 : fireworkTag.getByte("Flight"));

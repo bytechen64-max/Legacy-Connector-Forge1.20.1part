@@ -97,7 +97,7 @@ public class BlockWrapper implements IFluidHandler {
             if (doDrain) {
                 var state = level.getBlockState(pos);
                 if (state.getBlock() instanceof net.minecraft.world.level.block.BucketPickup pickup) {
-                    if (pickup.pickupBlock(null, level, pos, state).isEmpty()) return null;
+                    if (pickup.pickupBlock(level, pos, state).isEmpty()) return null;
                 } else {
                     level.setBlock(pos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 11);
                 }

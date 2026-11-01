@@ -86,7 +86,7 @@ public class ItemMap extends ItemMapBase {
         if (level == null) return;
         var m = modern(stack);
         // 1.20.1's onCraftedPostProcess is what scales a map up (1.21 marks the stack with MapPostProcessing.SCALE first).
-        m.getItem().onCraftedPostProcess(m, level);
+        m.getItem().onCraftedBy(m, level, m.getOwner());
         Integer id = net.minecraft.world.item.MapItem.getMapId(m);
         if (id != null) stack.setItemDamage(id);
     }

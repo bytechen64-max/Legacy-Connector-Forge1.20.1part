@@ -88,7 +88,7 @@ public class EntityTippedArrow extends EntityArrow {
     @Override
     protected ItemStack getArrowStack() {
         var a = mcc$modernArrow();
-        if (a != null) return Stacks1122.fromModern(a.getPickupItemStackOrigin());
+        if (a != null) return Stacks1122.fromModern(a.getPickupItem());
         if (customPotionEffects.isEmpty()) return new ItemStack(legacyconnector.v1_12_2.net.minecraft.init.Items.ARROW);
         var modern = new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.TIPPED_ARROW);
         java.util.List<net.minecraft.world.effect.MobEffectInstance> effects = new java.util.ArrayList<>();
