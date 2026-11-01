@@ -40,6 +40,12 @@ public class LegacyBlockItemAdapter extends BlockItem implements LegacyItemHolde
         this.customName = LegacyBlockAdapter.overrides(legacy, "getItemStackDisplayName", legacyconnector.v1_7_10.net.minecraft.item.ItemStack.class);
     }
 
+    /** 1.20.1's replacement for the client-extension registration event: called by Forge from the constructor, client only. */
+    @Override
+    public void initializeClient(java.util.function.Consumer<net.minecraftforge.client.extensions.common.IClientItemExtensions> consumer) {
+        org.kylepitcock.legacyconnector.v1_7_10.client.LegacyItemExtensions.install(this, consumer);
+    }
+
     /**
      * As after the 1.13 flattening, the block of a subtype item is the block whose default state is that subtype: modern code that
      * places {@code getBlock().defaultBlockState()} (display stands, framed and copycat blocks) gets the subtype, not metadata 0.

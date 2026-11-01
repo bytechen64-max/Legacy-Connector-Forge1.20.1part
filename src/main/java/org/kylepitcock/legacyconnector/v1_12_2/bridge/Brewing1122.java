@@ -8,7 +8,6 @@ import legacyconnector.v1_12_2.net.minecraftforge.common.brewing.BrewingRecipe;
 import legacyconnector.v1_12_2.net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import legacyconnector.v1_12_2.net.minecraftforge.common.brewing.IBrewingRecipe;
 import legacyconnector.v1_12_2.net.minecraftforge.common.brewing.VanillaBrewingRecipe;
-import net.minecraftforge.event.brewing.RegisterBrewingRecipesEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,20 +25,26 @@ public final class Brewing1122 {
     public static synchronized void ensureListener() {
         if (listening) return;
         listening = true;
-        net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener(RegisterBrewingRecipesEvent.class, Brewing1122::register);
+        register();
     }
 
-    private static void register(RegisterBrewingRecipesEvent event) {
-        var builder = event.getBuilder();
+    /**
+     * Forge 1.20.1 has no "register the brewing recipes" event: {@code BrewingRecipeRegistry} is a static list that the patched
+     * brewing stand consults instead of the vanilla table, so every legacy mix and recipe is added to it directly. A mix between
+     * two potions known to the modern game would read better as a plain mix, but 1.20.1 has no public API for those
+     * ({@code PotionBrewing}'s mix tables are private), so all of them are matched through the legacy objects.
+     */
+    private static void register() {
         int mixes = 0, recipes = 0;
         // containers mods added to PotionHelper.POTION_ITEMS (the vanilla bottles are the modern defaults)
+        java.util.Set<net.minecraft.world.item.Item> containers = new java.util.HashSet<>();
         for (var ingredient : java.util.List.copyOf(PotionHelper.POTION_ITEMS)) {
             try {
                 for (ItemStack s : ingredient.getMatchingStacks()) {
                     var item = Stacks1122.toModern(s).getItem();
                     if (item != net.minecraft.world.item.Items.AIR && item != net.minecraft.world.item.Items.POTION && item != net.minecraft.world.item.Items.SPLASH_POTION
-                            && item != net.minecraft.world.item.Items.LINGERING_POTION) {
-                        builder.addContainer(item);
+                            && item != net.minecraft.world.item.Items.LINGERING_POTION && containers.add(item)) {
+                        net.minecraftforge.common.brewing.BrewingRecipeRegistry.addRecipe(new ContainerRecipe(item));
                     }
                 }
             } catch (RuntimeException | LinkageError e) {
@@ -48,18 +53,8 @@ public final class Brewing1122 {
         }
         for (PotionHelper.MixPredicate<PotionType> mix : PotionHelper.mcc$mixes()) {
             try {
-                var from = mix.mcc$input() == null ? null : mix.mcc$input().mcc$modern();
-                var to = mix.mcc$output() == null ? null : mix.mcc$output().mcc$modern();
-                ItemStack[] reagents = mix.reagent.getMatchingStacks();
-                if (from != null && to != null && reagents.length > 0) {
-                    java.util.Set<net.minecraft.world.item.Item> done = new java.util.HashSet<>();
-                    for (ItemStack r : reagents) {
-                        var item = Stacks1122.toModern(r).getItem();
-                        if (item != net.minecraft.world.item.Items.AIR && done.add(item)) builder.addMix(from, item, to);
-                    }
-                } else {
-                    builder.addRecipe(new LegacyMix(mix));
-                }
+                if (mix.reagent == null) continue;
+                net.minecraftforge.common.brewing.BrewingRecipeRegistry.addRecipe(new LegacyMix(mix));
                 mixes++;
             } catch (RuntimeException | LinkageError e) {
                 LOG.warn("Cannot add a legacy potion mix: {}", e.toString());
@@ -68,19 +63,7 @@ public final class Brewing1122 {
         for (IBrewingRecipe recipe : BrewingRecipeRegistry.getRecipes()) {
             if (recipe instanceof VanillaBrewingRecipe) continue;
             try {
-                if (recipe instanceof BrewingRecipe simple && simple.getInput().getMetadata() != 32767 && simple.getIngredient().getMetadata() != 32767) {
-                    // stack to stack: a plain modern recipe (recipe viewers show it); potion inputs match on their components
-                    var input = Stacks1122.toModern(simple.getInput());
-                    var ingredient = Stacks1122.toModern(simple.getIngredient());
-                    var output = Stacks1122.toModern(simple.getOutput());
-                    if (!input.isEmpty() && !ingredient.isEmpty() && !output.isEmpty()) {
-                        builder.addRecipe(net.minecraftforge.common.crafting.DataComponentIngredient.of(false, input),
-                                net.minecraftforge.common.crafting.DataComponentIngredient.of(false, ingredient), output);
-                        recipes++;
-                        continue;
-                    }
-                }
-                builder.addRecipe(new LegacyRecipe(recipe));
+                net.minecraftforge.common.brewing.BrewingRecipeRegistry.addRecipe(new LegacyRecipe(recipe));
                 recipes++;
             } catch (RuntimeException | LinkageError e) {
                 LOG.warn("Cannot add a legacy brewing recipe {}: {}", recipe.getClass().getName(), e.toString());
@@ -89,11 +72,30 @@ public final class Brewing1122 {
         if (mixes + recipes > 0) LOG.info("Added {} legacy potion mixes and {} legacy brewing recipes to the brewing stand", mixes, recipes);
     }
 
+    /** A legacy potion container: the modern stand accepts it in a potion slot, the mixes do the rest. */
+    private record ContainerRecipe(net.minecraft.world.item.Item item) implements net.minecraftforge.common.brewing.IBrewingRecipe {
+        @Override
+        public boolean isInput(net.minecraft.world.item.ItemStack input) {
+            return !input.isEmpty() && input.getItem() == item;
+        }
+
+        @Override
+        public boolean isIngredient(net.minecraft.world.item.ItemStack ingredient) {
+            return false;
+        }
+
+        @Override
+        public net.minecraft.world.item.ItemStack getOutput(net.minecraft.world.item.ItemStack input, net.minecraft.world.item.ItemStack ingredient) {
+            return net.minecraft.world.item.ItemStack.EMPTY;
+        }
+    }
+
     /** A potion mix involving a type with no modern potion: matched on the legacy stacks. */
     private record LegacyMix(PotionHelper.MixPredicate<PotionType> mix) implements net.minecraftforge.common.brewing.IBrewingRecipe {
         @Override
         public boolean isInput(net.minecraft.world.item.ItemStack input) {
-            return !input.isEmpty() && PotionUtils.getPotionFromItem(Stacks1122.fromModern(input)) == mix.mcc$input();
+            PotionType from = mix.mcc$input();
+            return from != null && !input.isEmpty() && PotionUtils.getPotionFromItem(Stacks1122.fromModern(input)) == from;
         }
 
         @Override
@@ -103,8 +105,9 @@ public final class Brewing1122 {
 
         @Override
         public net.minecraft.world.item.ItemStack getOutput(net.minecraft.world.item.ItemStack input, net.minecraft.world.item.ItemStack ingredient) {
-            if (!isInput(input) || !isIngredient(ingredient)) return net.minecraft.world.item.ItemStack.EMPTY;
-            return Stacks1122.toModern(PotionUtils.addPotionToItemStack(Stacks1122.fromModern(input).copy(), mix.mcc$output()));
+            PotionType to = mix.mcc$output();
+            if (to == null || !isInput(input) || !isIngredient(ingredient)) return net.minecraft.world.item.ItemStack.EMPTY;
+            return Stacks1122.toModern(PotionUtils.addPotionToItemStack(Stacks1122.fromModern(input).copy(), to));
         }
     }
 

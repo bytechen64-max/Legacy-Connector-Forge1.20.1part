@@ -19,8 +19,8 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.alchemy.Potion;
 import org.kylepitcock.legacyconnector.core.data.PotionData;
 import net.minecraft.world.item.alchemy.Potions;
+import net.minecraftforge.common.brewing.BrewingRecipeRegistry;
 import net.minecraftforge.common.brewing.IBrewingRecipe;
-import net.minecraftforge.event.brewing.RegisterBrewingRecipesEvent;
 import org.kylepitcock.legacyconnector.core.pack.GeneratedTranslations;
 import org.slf4j.LoggerFactory;
 
@@ -83,13 +83,16 @@ public final class Brewing1710 {
         put(8270, Potions.LONG_INVISIBILITY);
     }
 
-    /** Installed once 1.7.10 mods are loaded (the event fires on every server start and data reload). */
+    /**
+     * Installed once 1.7.10 mods are loaded. 1.20.1 has no "register the brewing recipes" event: Forge's brewing registry is a static
+     * list the patched brewing stand consults instead of the vanilla table, so the recipe is added straight to it.
+     */
     public static synchronized void ensureListener() {
         if (listening) return;
         listening = true;
         GeneratedTranslations.put("en_us", "legacyconnector.potion_of", "Potion of %s");
         GeneratedTranslations.put("en_us", "legacyconnector.splash_potion_of", "Splash Potion of %s");
-        net.minecraftforge.common.MinecraftForge.EVENT_BUS.addListener(RegisterBrewingRecipesEvent.class, e -> e.getBuilder().addRecipe(new LegacyBrewing()));
+        BrewingRecipeRegistry.addRecipe(new LegacyBrewing());
     }
 
     /** The 1.7.10 value of a modern potion stack, or -1. */

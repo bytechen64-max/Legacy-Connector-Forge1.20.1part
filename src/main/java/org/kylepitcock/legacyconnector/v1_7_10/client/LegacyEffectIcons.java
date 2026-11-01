@@ -8,7 +8,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraftforge.client.extensions.common.IClientMobEffectExtensions;
-import net.minecraftforge.client.extensions.common.RegisterClientExtensionsEvent;
 import org.kylepitcock.legacyconnector.v1_7_10.bridge.PotionBridge;
 
 /**
@@ -23,10 +22,12 @@ public final class LegacyEffectIcons {
 
     private LegacyEffectIcons() {}
 
-    public static void register(RegisterClientExtensionsEvent event) {
-        var effects = PotionBridge.legacyEffects();
-        if (effects.isEmpty()) return;
-        event.registerMobEffect(new IClientMobEffectExtensions() {
+    /**
+     * 1.20.1 has no client-extension registration event: an effect hands its extensions out of {@code MobEffect#initializeClient},
+     * which Forge calls from the effect's constructor on a physical client. {@code LegacyMobEffect} forwards it here.
+     */
+    public static void install(java.util.function.Consumer<IClientMobEffectExtensions> consumer) {
+        consumer.accept(new IClientMobEffectExtensions() {
             @Override
             public boolean renderInventoryIcon(MobEffectInstance instance, EffectRenderingInventoryScreen<?> screen, GuiGraphics graphics, int x, int y,
                     int blitOffset) {
@@ -40,7 +41,7 @@ public final class LegacyEffectIcons {
                 draw(instance, graphics, x + 3, y + 3, alpha);
                 return true;
             }
-        }, effects.toArray(new MobEffect[0]));
+        });
     }
 
     private static void draw(MobEffectInstance instance, GuiGraphics graphics, int x, int y, float alpha) {

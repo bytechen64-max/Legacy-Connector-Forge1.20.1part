@@ -2,7 +2,6 @@ package legacyconnector.v1_12_2.net.minecraft.client.resources;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
-import com.mojang.authlib.minecraft.MinecraftProfileTextures;
 import java.util.HashMap;
 import java.util.Map;
 import legacyconnector.v1_12_2.net.minecraft.util.ResourceLocation;
@@ -80,15 +79,16 @@ public class SkinManager {
         if (profile == null) return out;
         try {
             var service = mc().getMinecraftSessionService();
-            MinecraftProfileTextures textures = service.getTextures(profile);
-            if ((textures == null || textures.skin() == null && textures.cape() == null) && fetch && profile.getId() != null) {
-                var result = service.fetchProfile(profile.getId(), requireSecure);
-                if (result != null) textures = service.getTextures(result.profile());
+            // authlib 4 (1.20.1): the textures of a profile are one map, there is no MinecraftProfileTextures record yet
+            Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = service.getTextures(profile, requireSecure);
+            if ((textures == null || textures.isEmpty()) && fetch && profile.getId() != null) {
+                GameProfile filled = service.fillProfileProperties(profile, requireSecure);
+                if (filled != null) textures = service.getTextures(filled, requireSecure);
             }
             if (textures != null) {
-                if (textures.skin() != null) out.put(MinecraftProfileTexture.Type.SKIN, textures.skin());
-                if (textures.cape() != null) out.put(MinecraftProfileTexture.Type.CAPE, textures.cape());
-                if (textures.elytra() != null) out.put(MinecraftProfileTexture.Type.ELYTRA, textures.elytra());
+                for (var entry : textures.entrySet()) {
+                    if (entry.getKey() != null && entry.getValue() != null) out.put(entry.getKey(), entry.getValue());
+                }
             }
         } catch (RuntimeException e) {
             // insecure or unavailable textures: none

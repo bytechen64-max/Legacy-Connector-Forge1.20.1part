@@ -92,7 +92,7 @@ public class TileEntitySkullRenderer extends TileEntitySpecialRenderer {
     private static net.minecraft.resources.ResourceLocation mcc$skin(GameProfile profile) {
         if (profile != null) {
             try {
-                return net.minecraft.client.Minecraft.getInstance().getSkinManager().getInsecureSkin(profile).texture();
+                return net.minecraft.client.Minecraft.getInstance().getSkinManager().getInsecureSkinLocation(profile);
             } catch (RuntimeException e) {
                 // fall back to the default skin
             }

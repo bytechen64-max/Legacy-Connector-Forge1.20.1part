@@ -6,8 +6,6 @@ import legacyconnector.v1_7_10.net.minecraft.item.ItemBlock;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.client.event.EntityRenderersEvent;
-import net.minecraftforge.client.extensions.common.IClientItemExtensions;
-import net.minecraftforge.client.extensions.common.RegisterClientExtensionsEvent;
 import org.kylepitcock.legacyconnector.v1_7_10.bridge.ItemBridge;
 import org.kylepitcock.legacyconnector.v1_7_10.bridge.TileEntityBridge;
 
@@ -60,7 +58,6 @@ public final class Client1710 {
             AtlasUV.invalidate();
             org.kylepitcock.legacyconnector.v1_7_10.Assets1710.postStitched();
         });
-        modBus.addListener(Client1710::onRegisterExtensions);
         modBus.addListener(Client1710::onRegisterItemColors);
         modBus.addListener(Client1710::onRegisterBlockColors);
         modBus.addListener(Client1710::onModifyBaking);
@@ -78,8 +75,9 @@ public final class Client1710 {
                 LegacyArmorLayer.hideFromHeadLayer(player);
             }
         }
-        for (var type : event.getEntityTypes()) {
-            var renderer = event.getRenderer((net.minecraft.world.entity.EntityType) type);
+        // 1.20.1's AddLayers hands out a renderer per entity type but does not list the types (the 1.21 event does)
+        for (var type : net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE) {
+            var renderer = event.getEntityRenderer((net.minecraft.world.entity.EntityType) type);
             if (renderer instanceof net.minecraft.client.renderer.entity.HumanoidMobRenderer humanoid) {
                 humanoid.addLayer(new LegacyArmorLayer(humanoid));
                 LegacyArmorLayer.hideFromHeadLayer(humanoid);
@@ -173,44 +171,6 @@ public final class Client1710 {
                     return 0xFFFFFFFF;
                 }
             }, item.mcc$variants.values().toArray(new net.minecraft.world.item.Item[0]));
-        }
-    }
-
-    private static void onRegisterExtensions(RegisterClientExtensionsEvent event) {
-        LegacyEffectIcons.register(event);
-        IClientItemExtensions chest = new IClientItemExtensions() {
-            private BlockEntityWithoutLevelRenderer renderer;
-
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                if (renderer == null) renderer = new LegacyChestItemRenderer();
-                return renderer;
-            }
-        };
-        IClientItemExtensions custom = new IClientItemExtensions() {
-            private BlockEntityWithoutLevelRenderer renderer;
-
-            @Override
-            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
-                if (renderer == null) renderer = new LegacyItemRenderer();
-                return renderer;
-            }
-        };
-        for (Item item : ItemBridge.modItems()) {
-            var variants = item.mcc$variants.values().toArray(new net.minecraft.world.item.Item[0]);
-            try {
-                if (item instanceof ItemBlock ib && isChestStyle(ib.mcc$block())) {
-                    event.registerItem(chest, variants);
-                } else {
-                    // Only used where the generated model is builtin/entity: items with a Forge IItemRenderer, which mods
-                    // may register after this event (the renderer is looked up per stack).
-                    event.registerItem(custom, variants);
-                }
-            } catch (RuntimeException | LinkageError e) {
-                // A mod whose classes failed to initialise must not take the whole game down at start-up.
-                org.slf4j.LoggerFactory.getLogger("LegacyConnector/Client").debug("Skipping client extensions of {}: {}", item, e.toString());
-                continue;
-            }
         }
     }
 

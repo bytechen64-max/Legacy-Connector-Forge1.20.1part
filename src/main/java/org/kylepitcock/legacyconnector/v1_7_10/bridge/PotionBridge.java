@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 /** Legacy numeric potion ids <-> modern mob effects. Mod potions become modern effects driven by the legacy class. */
 public final class PotionBridge {
     private static final Logger LOG = LoggerFactory.getLogger("LegacyConnector/Potions");
-    private static final java.util.List<Holder<MobEffect>> BY_ID = java.util.Arrays.asList(
+    private static final java.util.List<MobEffect> BY_ID = java.util.Arrays.asList(
             null, MobEffects.MOVEMENT_SPEED, MobEffects.MOVEMENT_SLOWDOWN, MobEffects.DIG_SPEED, MobEffects.DIG_SLOWDOWN, MobEffects.DAMAGE_BOOST,
             MobEffects.HEAL, MobEffects.HARM, MobEffects.JUMP, MobEffects.CONFUSION, MobEffects.REGENERATION, MobEffects.DAMAGE_RESISTANCE,
             MobEffects.FIRE_RESISTANCE, MobEffects.WATER_BREATHING, MobEffects.INVISIBILITY, MobEffects.BLINDNESS, MobEffects.NIGHT_VISION,
@@ -47,14 +47,19 @@ public final class PotionBridge {
     }
 
     public static Holder<MobEffect> effect(int id) {
-        if (isVanilla(id)) return BY_ID.get(id);
+        if (isVanilla(id)) return holder(BY_ID.get(id));
         Holder<MobEffect> h = CUSTOM.get(id);
         if (h == null) throw new IllegalArgumentException("Unknown legacy potion id " + id);
         return h;
     }
 
     public static Holder<MobEffect> effectOrNull(int id) {
-        return isVanilla(id) ? BY_ID.get(id) : CUSTOM.get(id);
+        return isVanilla(id) ? holder(BY_ID.get(id)) : CUSTOM.get(id);
+    }
+
+    /** 1.20.1 declares its effects as plain {@code MobEffect}s (the {@code Holder} constants came in 1.20.5); the rest of this class speaks {@code Holder}. */
+    private static Holder<MobEffect> holder(MobEffect effect) {
+        return BuiltInRegistries.MOB_EFFECT.wrapAsHolder(effect);
     }
 
     /** The modern effects of mod potions (the client draws their icons, see LegacyEffectIcons). */
@@ -73,14 +78,14 @@ public final class PotionBridge {
     public static Holder<MobEffect> vanillaWithIcon(int iconIndex) {
         for (int i = 1; i < BY_ID.size(); i++) {
             Potion p = Potion.potionTypes[i];
-            if (p != null && p.getStatusIconIndex() == iconIndex) return BY_ID.get(i);
+            if (p != null && p.getStatusIconIndex() == iconIndex) return holder(BY_ID.get(i));
         }
         return null;
     }
 
     /** Legacy id of a modern effect, or -1. */
     public static int idOf(Holder<MobEffect> effect) {
-        for (int i = 1; i < BY_ID.size(); i++) if (BY_ID.get(i).equals(effect)) return i;
+        for (int i = 1; i < BY_ID.size(); i++) if (BY_ID.get(i) != null && BY_ID.get(i) == effect.value()) return i;
         for (var e : CUSTOM.entrySet()) if (e.getValue().equals(effect)) return e.getKey();
         return -1;
     }
@@ -108,7 +113,7 @@ public final class PotionBridge {
         };
         ResourceLocation key = ResourceLocation.fromNamespaceAndPath("legacyconnector", "potion_" + potion.id + "_" + modifier.getID());
         try {
-            effect.value().addAttributeModifier(target, key, modifier.getAmount(), op);
+            effect.value().addAttributeModifier(target, key.toString(), modifier.getAmount(), op);
         } catch (RuntimeException e) {
             LOG.debug("Could not add attribute modifier of legacy potion {}", potion, e);
         }
@@ -121,6 +126,15 @@ public final class PotionBridge {
         LegacyMobEffect(Potion potion) {
             super(potion.isBadEffect() ? MobEffectCategory.HARMFUL : MobEffectCategory.BENEFICIAL, potion.getLiquidColor());
             this.potion = potion;
+        }
+
+        /**
+         * The legacy status icon. Forge calls this from the effect's constructor on a physical client (1.20.1's replacement for
+         * the client-extension registration event), so the icon renderer only has to look the potion up when it draws.
+         */
+        @Override
+        public void initializeClient(java.util.function.Consumer<net.minecraftforge.client.extensions.common.IClientMobEffectExtensions> consumer) {
+            org.kylepitcock.legacyconnector.v1_7_10.client.LegacyEffectIcons.install(consumer);
         }
 
         /** The 1.7.10 name key ({@code potion.<name>}, from the mod's lang), set after the potion was constructed. */
@@ -146,7 +160,6 @@ public final class PotionBridge {
             } catch (RuntimeException e) {
                 LOG.debug("Legacy potion {} failed", potion, e);
             }
-            return true;
         }
 
         @Override

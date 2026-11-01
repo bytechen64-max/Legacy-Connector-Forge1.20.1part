@@ -2,7 +2,6 @@ package legacyconnector.v1_7_10.net.minecraft.client.resources;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
-import com.mojang.authlib.minecraft.MinecraftProfileTextures;
 import com.mojang.authlib.minecraft.MinecraftSessionService;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -120,14 +119,17 @@ public class SkinManager {
         Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> out = new HashMap<>();
         if (profile == null || sessionService == null) return out;
         try {
-            MinecraftProfileTextures textures = sessionService.getTextures(profile);
-            if ((textures == null || textures.skin() == null && textures.cape() == null) && fetch && profile.getId() != null) {
-                var result = sessionService.fetchProfile(profile.getId(), requireSecure);
-                if (result != null) textures = sessionService.getTextures(result.profile());
+            // authlib 4 (1.20.1): the textures of a profile are one map, there is no MinecraftProfileTextures record yet
+            Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = sessionService.getTextures(profile, requireSecure);
+            if ((textures == null || textures.isEmpty()) && fetch && profile.getId() != null) {
+                GameProfile filled = sessionService.fillProfileProperties(profile, requireSecure);
+                if (filled != null) textures = sessionService.getTextures(filled, requireSecure);
             }
             if (textures != null) {
-                if (textures.skin() != null) out.put(MinecraftProfileTexture.Type.SKIN, textures.skin());
-                if (textures.cape() != null) out.put(MinecraftProfileTexture.Type.CAPE, textures.cape());
+                MinecraftProfileTexture skin = textures.get(MinecraftProfileTexture.Type.SKIN);
+                MinecraftProfileTexture cape = textures.get(MinecraftProfileTexture.Type.CAPE);
+                if (skin != null) out.put(MinecraftProfileTexture.Type.SKIN, skin);
+                if (cape != null) out.put(MinecraftProfileTexture.Type.CAPE, cape);
             }
         } catch (RuntimeException e) {
             // insecure or unavailable textures: none

@@ -24,6 +24,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraftforge.client.gui.overlay.NamedGuiOverlay;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.common.MinecraftForge;
 import org.kylepitcock.legacyconnector.v1_12_2.bridge.EntityBridge1122;
@@ -41,7 +42,7 @@ import org.kylepitcock.legacyconnector.v1_7_10.client.RenderContext;
 public final class ClientEvents1122 {
     private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger("LegacyConnector/ClientEvents");
     private static final Map<String, Integer> FAILURES = new java.util.concurrent.ConcurrentHashMap<>();
-    private static final Map<ResourceLocation, ElementType> LAYERS = Map.ofEntries(
+    private static final Map<NamedGuiOverlay, ElementType> LAYERS = Map.ofEntries(
             Map.entry(VanillaGuiOverlay.CROSSHAIR, ElementType.CROSSHAIRS),
             Map.entry(VanillaGuiOverlay.HOTBAR, ElementType.HOTBAR),
             Map.entry(VanillaGuiOverlay.PLAYER_HEALTH, ElementType.HEALTH),
@@ -97,9 +98,6 @@ public final class ClientEvents1122 {
         bus.addListener(ClientEvents1122::onStreamingSource);
         bus.addListener((net.minecraftforge.event.TickEvent.ClientTickEvent e) -> {
             if (e.phase == net.minecraftforge.event.TickEvent.Phase.END) tickMusic();
-        });
-        bus.addListener((net.minecraftforge.client.event.SelectMusicEvent e) -> {
-            if (replacedMusic() != null) e.setMusic(null);
         });
     }
 
@@ -221,7 +219,7 @@ public final class ClientEvents1122 {
     }
 
     private static void onLayerPre(net.minecraftforge.client.event.RenderGuiOverlayEvent.Pre e) {
-        ElementType type = LAYERS.get(e.getOverlay().id());
+        ElementType type = LAYERS.get(e.getOverlay());
         if (type == null) return;
         if (e.getOverlay().id().equals(VanillaGuiOverlay.SCOREBOARD) && !GuiIngameForge.renderObjective) {
             e.setCanceled(true);
@@ -241,7 +239,7 @@ public final class ClientEvents1122 {
     }
 
     private static void onLayerPost(net.minecraftforge.client.event.RenderGuiOverlayEvent.Post e) {
-        ElementType type = LAYERS.get(e.getOverlay().id());
+        ElementType type = LAYERS.get(e.getOverlay());
         if (type == null || !wantsHud() || !drawnForMode(type)) return;
         RenderContext.beginGui(e.getGuiGraphics());
         try {
@@ -684,6 +682,15 @@ public final class ClientEvents1122 {
 
     private static legacyconnector.v1_12_2.net.minecraft.client.audio.MusicTicker replacedMusic() {
         return musicFailed || !Client1122.present() ? null : legacyMc().mcc$replacedMusicTicker();
+    }
+
+    /** Whether a 1.12.2 mod's music ticker has taken over the background music (the modern one then stays silent). */
+    public static boolean ownsMusic() {
+        try {
+            return replacedMusic() != null;
+        } catch (RuntimeException | LinkageError e) {
+            return false;
+        }
     }
 
     /** A mod's own music ticker (installed by reflection) is updated every tick and owns the music meanwhile. */

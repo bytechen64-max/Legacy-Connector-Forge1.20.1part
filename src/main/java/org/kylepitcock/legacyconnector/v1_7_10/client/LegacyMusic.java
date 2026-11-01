@@ -2,13 +2,13 @@ package org.kylepitcock.legacyconnector.v1_7_10.client;
 
 import legacyconnector.v1_7_10.net.minecraft.client.audio.MusicTicker;
 import net.minecraftforge.event.TickEvent;
-import net.minecraftforge.client.event.SelectMusicEvent;
 import net.minecraftforge.common.MinecraftForge;
 import org.slf4j.LoggerFactory;
 
 /**
  * Ticks a mod's own {@code Minecraft.mcMusicTicker} (Galacticraft and GalaxySpace replace it to play space music). While
- * one is installed it owns the background music, so the modern music manager is told to play nothing.
+ * one is installed it owns the background music, so the modern music manager is told to play nothing
+ * ({@code mixin.MusicManagerLegacyMixin}).
  */
 public final class LegacyMusic {
     private static boolean failed;
@@ -17,12 +17,20 @@ public final class LegacyMusic {
 
     public static void register() {
         MinecraftForge.EVENT_BUS.addListener(LegacyMusic::onTick);
-        MinecraftForge.EVENT_BUS.addListener(LegacyMusic::onSelectMusic);
     }
 
     private static MusicTicker replaced() {
         MusicTicker ticker = legacyconnector.v1_7_10.net.minecraft.client.Minecraft.getMinecraft().mcMusicTicker;
         return ticker == null || ticker.getClass() == MusicTicker.class || failed ? null : ticker;
+    }
+
+    /** Whether a 1.7.10 mod's music ticker has taken over the background music (the modern one then stays silent). */
+    public static boolean ownsMusic() {
+        try {
+            return replaced() != null;
+        } catch (RuntimeException | LinkageError e) {
+            return false;
+        }
     }
 
     private static void onTick(TickEvent.ClientTickEvent event) {
@@ -36,9 +44,5 @@ public final class LegacyMusic {
             LoggerFactory.getLogger("LegacyConnector/Sound").warn("The legacy music ticker {} failed; vanilla music plays again: {}",
                     ticker.getClass().getName(), e.toString());
         }
-    }
-
-    private static void onSelectMusic(SelectMusicEvent event) {
-        if (replaced() != null) event.setMusic(null);
     }
 }

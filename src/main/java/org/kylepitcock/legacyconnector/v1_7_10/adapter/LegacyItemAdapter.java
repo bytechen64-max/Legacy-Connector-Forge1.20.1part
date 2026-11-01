@@ -32,6 +32,12 @@ public class LegacyItemAdapter extends net.minecraft.world.item.Item implements 
         this.customName = LegacyBlockAdapter.overrides(legacy, "getItemStackDisplayName", legacyconnector.v1_7_10.net.minecraft.item.ItemStack.class);
     }
 
+    /** 1.20.1's replacement for the client-extension registration event: called by Forge from the constructor, client only. */
+    @Override
+    public void initializeClient(java.util.function.Consumer<net.minecraftforge.client.extensions.common.IClientItemExtensions> consumer) {
+        org.kylepitcock.legacyconnector.v1_7_10.client.LegacyItemExtensions.install(this, consumer);
+    }
+
     @Override
     public InteractionResult useOn(UseOnContext context) {
         return ItemCallbacks.useOn(legacy, context, false);
@@ -81,7 +87,7 @@ public class LegacyItemAdapter extends net.minecraft.world.item.Item implements 
                         if (!(o instanceof java.util.Map.Entry<?, ?> entry)) continue;
                         if (!(entry.getKey() instanceof legacyconnector.v1_7_10.net.minecraft.entity.ai.attributes.IAttribute a)) continue;
                         if (!(entry.getValue() instanceof legacyconnector.v1_7_10.net.minecraft.entity.ai.attributes.AttributeModifier m)) continue;
-                        var attribute = a.mcc$modern();
+                        var attribute = legacyconnector.v1_7_10.net.minecraft.entity.SharedMonsterAttributes.mcc$modern(a);
                         if (attribute == null) continue;
                         out.put(attribute, m.mcc$modern());
                     }
