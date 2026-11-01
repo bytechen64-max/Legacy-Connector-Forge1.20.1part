@@ -8,6 +8,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.LinkedHashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -90,7 +93,52 @@ public final class LegacyResourceConverter {
         if (sawTextures) {
             output.putIfAbsent("assets/minecraft/atlases/blocks.json", BLOCK_ATLAS.getBytes(StandardCharsets.UTF_8));
         }
+        resolveModelParents();
         return output;
+    }
+
+    /**
+     * 1.12 named a model's parent relative to its own kind's folder ("parent": "cube_all" in models/block/x.json is
+     * models/block/cube_all.json; a mod model may mean its own or vanilla's), while 1.13 and later name the full path. The whole jar
+     * is known by now, so every parent without a namespace is resolved against the files the mod actually ships.
+     */
+    private void resolveModelParents() {
+        Pattern modelPath = Pattern.compile("assets/([^/]+)/models/(block|item)/(.+)\\.json");
+        for (var e : List.copyOf(output.entrySet())) {
+            Matcher m = modelPath.matcher(e.getKey());
+            if (!m.matches()) continue;
+            String namespace = m.group(1);
+            String kind = m.group(2);
+            try {
+                JsonObject root = JsonParser.parseString(new String(e.getValue(), StandardCharsets.UTF_8)).getAsJsonObject();
+                JsonElement parent = root.get("parent");
+                if (parent == null || !parent.isJsonPrimitive()) continue;
+                String ref = parent.getAsString();
+                if (ref.indexOf(':') >= 0 || ref.isEmpty()) continue;
+                String path = normalizePath(ref);
+                String resolved;
+                if (path.startsWith("block/") || path.startsWith("item/") || path.startsWith("builtin/")) {
+                    // already the full path below models/ ("item/generated", "block/cube_all"): only the namespace is missing
+                    resolved = (output.containsKey("assets/" + namespace + "/models/" + path + ".json") ? namespace : "minecraft")
+                            + ":" + path;
+                } else {
+                    String own = "assets/" + namespace + "/models/" + kind + "/" + path + ".json";
+                    if (output.containsKey(own)) {
+                        resolved = namespace + ":" + kind + "/" + path;
+                    } else if (kind.equals("item") && output.containsKey("assets/" + namespace + "/models/block/" + path + ".json")) {
+                        // a 1.12 item model parented to a block model of the mod
+                        resolved = namespace + ":block/" + path;
+                    } else {
+                        resolved = "minecraft:" + kind + "/" + path;
+                    }
+                }
+                if (resolved.equals(ref)) continue;
+                root.addProperty("parent", resolved);
+                output.put(e.getKey(), GSON.toJson(root).getBytes(StandardCharsets.UTF_8));
+            } catch (RuntimeException ignored) {
+                // malformed JSON is left for the vanilla loader to report
+            }
+        }
     }
 
     /**
