@@ -10,8 +10,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraftforge.client.extensions.common.IClientMobEffectExtensions;
-import net.minecraftforge.client.extensions.common.RegisterClientExtensionsEvent;
 import org.kylepitcock.legacyconnector.v1_12_2.entity.Effects1122;
 import org.kylepitcock.legacyconnector.v1_7_10.client.RenderContext;
 
@@ -37,37 +35,11 @@ public final class EffectIcons1122 {
 
     private EffectIcons1122() {}
 
-    public static void register(RegisterClientExtensionsEvent event) {
-        var effects = Effects1122.all();
-        if (effects.isEmpty()) return;
-        event.registerMobEffect(new IClientMobEffectExtensions() {
-            @Override
-            public boolean isVisibleInInventory(MobEffectInstance instance) {
-                Potion potion = Effects1122.legacy(instance.getEffect());
-                return potion == null || safe(() -> potion.shouldRender(PotionEffect.mcc$fromModern(instance)), true);
-            }
-
-            @Override
-            public boolean isVisibleInGui(MobEffectInstance instance) {
-                Potion potion = Effects1122.legacy(instance.getEffect());
-                return potion == null || safe(() -> potion.shouldRenderHUD(PotionEffect.mcc$fromModern(instance)), true);
-            }
-
-            @Override
-            public boolean renderInventoryIcon(MobEffectInstance instance, EffectRenderingInventoryScreen<?> screen, GuiGraphics graphics, int x, int y,
-                    int blitOffset) {
-                // x is the panel's left edge + 7 (the icon column); 1.12 passed the panel's corner and drew the icon at +6, +7
-                draw(instance, graphics, x - 1, y + 7, 1.0F, false, x - 7, y, blitOffset);
-                return true; // the icon only: names and durations are drawn separately
-            }
-
-            @Override
-            public boolean renderGuiIcon(MobEffectInstance instance, net.minecraft.client.gui.Gui gui, GuiGraphics graphics, int x, int y, float z,
-                    float alpha) {
-                draw(instance, graphics, x + 3, y + 3, alpha, true, x, y, z);
-                return true;
-            }
-        }, effects.toArray(new MobEffect[0]));
+    /**
+     * 1.20.1 has no {@code IClientMobEffectExtensions} (NeoForge's per-effect client extensions are 1.21), so there is no hook to
+     * register here; {@link #draw} stays available for the client mixin that draws legacy effect icons (see PORTING.md).
+     */
+    public static void register() {
     }
 
     private static boolean safe(java.util.function.BooleanSupplier test, boolean fallback) {

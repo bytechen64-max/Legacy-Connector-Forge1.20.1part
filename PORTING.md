@@ -74,6 +74,15 @@ Port work landed since (each in its own commit):
 `-PskipShimWidener` also puts `compileJava` back on incremental compilation; without it the widener rewrites the class
 files in place, which forces a full recompile every time. A full type-check of the runtime mod takes ~4-5 minutes.
 
+## Known 1.20.1 limitations
+
+- **Legacy effect icons** are not drawn yet: NeoForge 1.21 registers them through `IClientMobEffectExtensions`, which 1.20.1 does
+  not have. `EffectIcons1122.draw` keeps the legacy drawing logic for the client mixin that will call it from
+  `EffectRenderingInventoryScreen`; until then a mod potion shows the modern atlas icon.
+- **Item client extensions** (`IClientItemExtensions`, custom `BlockEntityWithoutLevelRenderer`s) move from NeoForge's
+  `RegisterClientExtensionsEvent` to `Item#initializeClient`, which the legacy item adapters have to override.
+- **Play-phase disconnect** has no packet before 1.20.2; the legacy packet yields null and the server closes the connection.
+
 ## Gotchas found the hard way
 
 - **ForgeGradle blocks at configuration time** on its "server connection" probe (`EnvironmentChecks.testServerConnection`)
@@ -93,7 +102,7 @@ files in place, which forces a full recompile every time. A full type-check of t
 
 ## What is left
 
-598 compile errors at the last run (the count moves as javac gets further into the tree). Categories, highest value first:
+596 compile errors at the last run (the count moves as javac gets further into the tree). Categories, highest value first:
 
 1. **Item components** (~20). `DataComponents`/`CustomData`/`ItemEnchantments`/`PotionContents`/`ItemAttributeModifiers`
    are 1.20.5+; 1.20.1 has `stack.getTag()`/`getOrCreateTag()`, `EnchantmentHelper.getEnchantments`,
