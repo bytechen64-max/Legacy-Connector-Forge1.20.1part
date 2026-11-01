@@ -201,14 +201,21 @@ Landed in this pass (each cluster in its own commit):
 - **Item components** (partly): the effect cures are `MobEffectInstance#getCurativeItems` (cure tags are 1.20.5+), the
   `MobEffects` constants are plain objects, and `DataComponents`/`CustomData` still need the NBT path (see below).
 
-**Next blocker (found with a real legacy jar, SRParasites 1.12.2):** the legacy lifecycle runs inside one `RegisterEvent`, so the
-registries that fired before it are already locked and the legacy mod cannot add to them. Forge 1.20.1 locks each registry right
-after its own `RegisterEvent` (`NamespacedWrapper.locked`; `Registry.register` then throws "Can not register to a locked
-registry"), which NeoForge 1.21 does not do. Running the loading at `minecraft:item` left `block` and `mob_effect` locked, so
-SRP's `RegistryEvent.Register<Block>` handler failed and its own `init` then reported `Missing block: srparasites:parasiterubble`.
-The fix is a deferred registration: `LegacyRegistrar` keeps what a legacy mod registers until the `RegisterEvent` of that registry
-fires (registering it there with `event.register`), and the shim's lookups (`ForgeRegistries`, `Item.getByNameOrId`,
-`Block.getBlockFromName`, ...) answer from that pending set so a mod can still find its own content during its load.
+**Registration is deferred per registry** (done): Forge 1.20.1 locks a registry right after its own `RegisterEvent`
+(`NamespacedWrapper.locked`), unlike NeoForge 1.21, so `LegacyRegistrar` queues what a legacy mod registers and writes it while that
+registry's event is dispatched (`LegacyLifecycle.onRegister` flushes every event; the legacy loading runs at the first one). The
+item/block bridges keep the instance the registry ends up with -- a queued or duplicate id answers with the existing entry -- and
+a block item takes its id from the block bridge, never from a registry lookup (an unregistered block answers with the default key
+`minecraft:air`, which registered 260 block items as air).
+
+Next spots, in the order a real 1.12.2 mod hits them:
+
+1. **Client classes on the server**: SRP's common code reaches `WorldClient`/`Minecraft` through the shims and Forge's
+   `RuntimeDistCleaner` throws `Attempted to load class net/minecraft/client/... for invalid dist DEDICATED_SERVER`, which
+   aborts whatever callback it was in (tooltips, `onBlockActivated`, ...). Those shims need a side guard that fails soft on the
+   server instead of loading a client class.
+2. **Numeric ids**: Forge logs `Object did not get ID it asked for` for every legacy entry whose requested id differs from the
+   modern registration order (244 lines for SRP). Harmless, but it should be silenced once the ids are not used.
 
 Still open:
 
