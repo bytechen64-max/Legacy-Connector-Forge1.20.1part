@@ -113,10 +113,10 @@ public class GuiRepair extends GuiContainer implements ICrafting {
         gui.blit(org.kylepitcock.legacyconnector.v1_7_10.client.TextureLocations.modern(anvilResource.getResourceDomain(), anvilResource.getResourcePath()),
                 left, top, 0, 0, xSize, ySize);
         boolean hasInput = anvil.getSlot(0).getHasStack();
-        gui.blitSprite(net.minecraft.resources.ResourceLocation.withDefaultNamespace(hasInput ? "container/anvil/text_field" : "container/anvil/text_field_disabled"),
+        org.kylepitcock.legacyconnector.v1_7_10.client.LegacyGuiSprites.blit(gui, net.minecraft.resources.ResourceLocation.withDefaultNamespace(hasInput ? "container/anvil/text_field" : "container/anvil/text_field_disabled"),
                 left + 59, top + 20, 110, 16);
         if ((hasInput || anvil.getSlot(1).getHasStack()) && !anvil.getSlot(2).getHasStack()) {
-            gui.blitSprite(net.minecraft.resources.ResourceLocation.withDefaultNamespace("container/anvil/error"), left + 99, top + 45, 28, 21);
+            org.kylepitcock.legacyconnector.v1_7_10.client.LegacyGuiSprites.blit(gui, net.minecraft.resources.ResourceLocation.withDefaultNamespace("container/anvil/error"), left + 99, top + 45, 28, 21);
         }
     }
 

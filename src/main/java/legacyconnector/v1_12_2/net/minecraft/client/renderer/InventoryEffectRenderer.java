@@ -47,7 +47,7 @@ public abstract class InventoryEffectRenderer extends GuiContainer {
         int step = effects.size() > 5 ? 132 / (effects.size() - 1) : 33;
         int y = guiTop;
         for (var effect : effects) {
-            gui.blitSprite(net.minecraft.resources.ResourceLocation.withDefaultNamespace("container/inventory/effect_background_large"), x, y, 120, 32);
+            org.kylepitcock.legacyconnector.v1_7_10.client.LegacyGuiSprites.blit(gui, net.minecraft.resources.ResourceLocation.withDefaultNamespace("container/inventory/effect_background_large"), x, y, 120, 32);
             gui.blit(x + 6, y + 7, 0, 18, 18, mc.getMobEffectTextures().get(effect.getEffect()));
             var name = effect.getEffect().getDisplayName().copy();
             if (effect.getAmplifier() >= 1 && effect.getAmplifier() <= 9) {

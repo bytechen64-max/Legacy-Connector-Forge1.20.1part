@@ -79,7 +79,7 @@ public class ServerListEntryNormal implements GuiListExtended.IGuiListEntry {
             int bars = ms < 150L ? 5 : ms < 300L ? 4 : ms < 600L ? 3 : ms < 1000L ? 2 : 1;
             ping = "server_list/ping_" + bars;
         }
-        gui.blitSprite(net.minecraft.resources.ResourceLocation.withDefaultNamespace(ping), x + listWidth - 15, y, 10, 8);
+        org.kylepitcock.legacyconnector.v1_7_10.client.LegacyGuiSprites.blit(gui, net.minecraft.resources.ResourceLocation.withDefaultNamespace(ping), x + listWidth - 15, y, 10, 8);
         mcc$updateIcon();
         net.minecraft.resources.ResourceLocation icon = mcc$icon != null && mcc$iconBytes != null ? mcc$icon.textureLocation() : MCC_UNKNOWN_ICON;
         com.mojang.blaze3d.systems.RenderSystem.enableBlend();

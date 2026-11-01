@@ -30,7 +30,7 @@ public class SystemToast implements IToast {
         var gui = RenderContext.gui();
         if (gui != null) {
             var font = net.minecraft.client.Minecraft.getInstance().font;
-            gui.blitSprite(BACKGROUND, 0, 0, 160, 32);
+            org.kylepitcock.legacyconnector.v1_7_10.client.LegacyGuiSprites.blit(gui, BACKGROUND, 0, 0, 160, 32);
             if (subtitle == null) {
                 gui.drawString(font, title, 18, 12, -256, false);
             } else {

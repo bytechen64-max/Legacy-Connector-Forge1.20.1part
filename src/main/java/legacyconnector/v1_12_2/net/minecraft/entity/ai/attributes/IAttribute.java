@@ -13,12 +13,12 @@ public interface IAttribute {
     IAttribute getParent();
 
     /** The modern attribute of the same meaning (vanilla attributes by their 1.12 names), or null for mod attributes. */
-    default net.minecraft.core.Holder<net.minecraft.world.entity.ai.attributes.Attribute> mcc$modern() {
+    default net.minecraft.world.entity.ai.attributes.Attribute mcc$modern() {
         return mcc$modernByName(getName());
     }
 
     /** The modern attribute for a 1.12 attribute name (the keys of items' attribute modifier maps), or null. */
-    static net.minecraft.core.Holder<net.minecraft.world.entity.ai.attributes.Attribute> mcc$modernByName(String name) {
+    static net.minecraft.world.entity.ai.attributes.Attribute mcc$modernByName(String name) {
         if (name == null) return null;
         String modern = switch (name) {
             case "generic.maxHealth" -> "generic.max_health";
@@ -39,7 +39,8 @@ public interface IAttribute {
         };
         if (modern == null) return null;
         var id = modern.indexOf(':') >= 0 ? net.minecraft.resources.ResourceLocation.parse(modern) : net.minecraft.resources.ResourceLocation.withDefaultNamespace(modern);
-        return org.kylepitcock.legacyconnector.core.RegistryUtil.holder(net.minecraft.core.registries.BuiltInRegistries.ATTRIBUTE, id).map(h -> (net.minecraft.core.Holder<net.minecraft.world.entity.ai.attributes.Attribute>) h).orElse(null);
+        // 1.20.1 keeps the attribute itself in the registry (1.20.5 wraps it in a holder).
+        return net.minecraft.core.registries.BuiltInRegistries.ATTRIBUTE.get(id);
     }
 
     /** The vanilla attribute constants (SharedMonsterAttributes.MAX_HEALTH, ...) for the synthesized classes declaring them, by "owner.field". */

@@ -85,7 +85,7 @@ public class SharedMonsterAttributes {
         return null;
     }
 
-    public static Holder<Attribute> mcc$modern(IAttribute attribute) {
+    public static Attribute mcc$modern(IAttribute attribute) {
         String name = attribute.getAttributeUnlocalizedName();
         if (name == null) return null;
         return switch (name) {
@@ -103,9 +103,9 @@ public class SharedMonsterAttributes {
     /** Legacy view of the modern instance of a vanilla attribute, or null. */
     public static IAttributeInstance mcc$instance(LivingEntity entity, IAttribute attribute) {
         if (entity == null) return null;
-        Holder<Attribute> holder = mcc$modern(attribute);
-        if (holder == null) return null;
-        AttributeInstance instance = entity.getAttribute(holder);
+        Attribute modern = mcc$modern(attribute);
+        if (modern == null) return null;
+        AttributeInstance instance = entity.getAttribute(modern);
         return instance == null ? null : new ModernInstance(attribute, instance);
     }
 

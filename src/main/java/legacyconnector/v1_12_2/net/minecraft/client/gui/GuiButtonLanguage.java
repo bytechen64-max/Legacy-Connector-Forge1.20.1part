@@ -17,6 +17,6 @@ public class GuiButtonLanguage extends GuiButton {
         hovered = mouseX >= x && mouseY >= y && mouseX < x + width && mouseY < y + height;
         mcc$drawBackground(getHoverState(hovered), x, y, width, height);
         var gui = RenderContext.gui();
-        if (gui != null) gui.blitSprite(ICON, x + (width - 15) / 2, y + (height - 15) / 2, 15, 15);
+        if (gui != null) org.kylepitcock.legacyconnector.v1_7_10.client.LegacyGuiSprites.blit(gui, ICON, x + (width - 15) / 2, y + (height - 15) / 2, 15, 15);
     }
 }

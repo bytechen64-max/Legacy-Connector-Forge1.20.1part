@@ -274,7 +274,7 @@ public class GuiAchievements extends GuiScreen implements IProgressMeter {
                 String frame = "advancements/" + (a.getSpecial() ? "challenge" : "task") + "_frame_" + (done ? "obtained" : "unobtained");
                 gui.setColor(shade, shade, shade, 1.0F);
                 com.mojang.blaze3d.systems.RenderSystem.enableBlend();
-                gui.blitSprite(net.minecraft.resources.ResourceLocation.withDefaultNamespace(frame), x - 2, y - 2, 26, 26);
+                org.kylepitcock.legacyconnector.v1_7_10.client.LegacyGuiSprites.blit(gui, net.minecraft.resources.ResourceLocation.withDefaultNamespace(frame), x - 2, y - 2, 26, 26);
                 gui.setColor(1.0F, 1.0F, 1.0F, 1.0F);
                 if (a.theItemStack != null) {
                     gui.renderItem(a.theItemStack.mcc$modern(), x + 3, y + 3);

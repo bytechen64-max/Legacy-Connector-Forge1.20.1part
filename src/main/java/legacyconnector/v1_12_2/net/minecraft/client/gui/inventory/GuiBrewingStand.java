@@ -57,13 +57,13 @@ public class GuiBrewingStand extends GuiContainer {
         if (gui == null || tileBrewingStand == null) return;
         int fuel = tileBrewingStand.getField(1);
         int l = Math.max(0, Math.min(18, (18 * fuel + 20 - 1) / 20));
-        if (l > 0) gui.blitSprite(net.minecraft.resources.ResourceLocation.withDefaultNamespace("container/brewing_stand/fuel_length"), 18, 4, 0, 0, i + 60, j + 44, l, 4);
+        if (l > 0) org.kylepitcock.legacyconnector.v1_7_10.client.LegacyGuiSprites.blit(gui, net.minecraft.resources.ResourceLocation.withDefaultNamespace("container/brewing_stand/fuel_length"), 18, 4, 0, 0, i + 60, j + 44, l, 4);
         int brewTime = tileBrewingStand.getField(0);
         if (brewTime > 0) {
             int j1 = (int) (28.0F * (1.0F - (float) brewTime / 400.0F));
-            if (j1 > 0) gui.blitSprite(net.minecraft.resources.ResourceLocation.withDefaultNamespace("container/brewing_stand/brew_progress"), 9, 28, 0, 0, i + 97, j + 16, 9, j1);
+            if (j1 > 0) org.kylepitcock.legacyconnector.v1_7_10.client.LegacyGuiSprites.blit(gui, net.minecraft.resources.ResourceLocation.withDefaultNamespace("container/brewing_stand/brew_progress"), 9, 28, 0, 0, i + 97, j + 16, 9, j1);
             j1 = BUBBLELENGTHS[brewTime / 2 % 7];
-            if (j1 > 0) gui.blitSprite(net.minecraft.resources.ResourceLocation.withDefaultNamespace("container/brewing_stand/bubbles"), 12, 29, 0, 29 - j1, i + 63, j + 14 + 29 - j1, 12, j1);
+            if (j1 > 0) org.kylepitcock.legacyconnector.v1_7_10.client.LegacyGuiSprites.blit(gui, net.minecraft.resources.ResourceLocation.withDefaultNamespace("container/brewing_stand/bubbles"), 12, 29, 0, 29 - j1, i + 63, j + 14 + 29 - j1, 12, j1);
         }
     }
 }

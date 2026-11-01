@@ -54,7 +54,7 @@ public enum AdvancementTabType {
         if (gui == null) return;
         String part = index == 0 ? first : index == max - 1 ? last : middle;
         var sprite = net.minecraft.resources.ResourceLocation.withDefaultNamespace("advancements/tab_" + side + "_" + part + (selected ? "_selected" : ""));
-        gui.blitSprite(sprite, x + getX(index), y + getY(index), width, height);
+        org.kylepitcock.legacyconnector.v1_7_10.client.LegacyGuiSprites.blit(gui, sprite, x + getX(index), y + getY(index), width, height);
     }
 
     public void drawIcon(int offsetX, int offsetY, int index, RenderItem renderItemIn, ItemStack stack) {
