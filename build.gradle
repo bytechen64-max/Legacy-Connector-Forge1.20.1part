@@ -472,7 +472,9 @@ tasks.named('jar') {
     manifest {
         attributes(
                 'MixinConfigs': 'legacyconnector.mixins.json,legacyconnector.compat.mixins.json',
-                'Automatic-Module-Name': 'legacyconnector.runtime'
+                // FMLModContainer resolves a mod's class with gameLayer.findModule(ModFileInfo.moduleName()), and
+                // ModFileInfo.moduleName() is the first mods.toml modId: the module name has to be the mod id.
+                'Automatic-Module-Name': 'legacyconnector'
         )
     }
 }

@@ -487,6 +487,10 @@ public final class LegacyJarTransformer {
         attrs.putValue("LegacyConnector-Legacy-Version", jar.version.id());
         attrs.putValue("LegacyConnector-Source", jar.fileName());
         if (!jar.hasMods()) attrs.putValue("FMLModType", "GAMELIBRARY");
+        // FMLModContainer resolves a mod's class with gameLayer.findModule(ModFileInfo.moduleName()), and
+        // ModFileInfo.moduleName() is the first mods.toml modId: the module of a translated jar has to be named after the
+        // first mod it contains (the legacy jar's own module name was dropped above).
+        if (jar.hasMods()) attrs.putValue("Automatic-Module-Name", jar.mods.get(0).fmlId());
         return out;
     }
 
