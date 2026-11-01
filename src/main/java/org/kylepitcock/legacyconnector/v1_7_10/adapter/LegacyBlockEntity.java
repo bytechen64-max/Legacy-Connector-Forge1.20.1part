@@ -282,8 +282,8 @@ public class LegacyBlockEntity extends BlockEntity implements org.kylepitcock.le
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    protected void loadAdditional(CompoundTag tag) {
+        super.loadAdditional(tag);
         if (tag.contains("legacy")) {
             CompoundTag data = atThisPosition(tag.getCompound("legacy"));
             if (legacy != null) {
@@ -327,8 +327,8 @@ public class LegacyBlockEntity extends BlockEntity implements org.kylepitcock.le
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         TileEntity te = legacy();
         if (te != null) {
             NBTTagCompound out = new NBTTagCompound();
@@ -367,22 +367,22 @@ public class LegacyBlockEntity extends BlockEntity implements org.kylepitcock.le
     @Override
     public Packet<ClientGamePacketListener> getUpdatePacket() {
         CompoundTag tag = descriptionTag();
-        return tag == null ? null : ClientboundBlockEntityDataPacket.create(this, (be, reg) -> tag);
+        return tag == null ? null : ClientboundBlockEntityDataPacket.create(this, be -> tag);
     }
 
     @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+    public CompoundTag getUpdateTag() {
         CompoundTag tag = descriptionTag();
         return tag == null ? new CompoundTag() : tag;
     }
 
     @Override
-    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt, HolderLookup.Provider registries) {
+    public void onDataPacket(Connection net, ClientboundBlockEntityDataPacket pkt) {
         deliver(pkt.getTag());
     }
 
     @Override
-    public void handleUpdateTag(CompoundTag tag, HolderLookup.Provider registries) {
+    public void handleUpdateTag(CompoundTag tag) {
         if (!tag.isEmpty()) deliver(tag);
     }
 

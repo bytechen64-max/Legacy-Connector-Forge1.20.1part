@@ -38,7 +38,7 @@ public class MobHost1122 extends PathfinderMob implements LivingHost1122, IEntit
     private float height = -1.0F;
     private int failedTicks;
     private final HookState1122 hooks = new HookState1122();
-    private ServerLevel dropLevel;
+    private int dropLooting;
     private DamageSource dropSource;
     private boolean dropRecentlyHit;
 
@@ -193,36 +193,30 @@ public class MobHost1122 extends PathfinderMob implements LivingHost1122, IEntit
     }
 
     @Override
-    protected void dropCustomDeathLoot(ServerLevel level, DamageSource source, boolean recentlyHit) {
+    protected void dropCustomDeathLoot(DamageSource source, int looting, boolean recentlyHit) {
+        // 1.20.1 hands the looting level in (1.21 passed the level and recomputed it from the killer's enchantments).
         EntityLivingBase l = living();
         if (l == null) {
-            super.dropCustomDeathLoot(level, source, recentlyHit);
+            super.dropCustomDeathLoot(source, looting, recentlyHit);
             return;
         }
-        dropLevel = level;
+        dropLooting = looting;
         dropSource = source;
         dropRecentlyHit = recentlyHit;
         try {
-            int looting = 0;
-            if (source.getEntity() instanceof LivingEntity killer) {
-                var enchantments = level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
-                looting = net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantmentLevel(
-                        enchantments.getOrThrow(net.minecraft.world.item.enchantment.Enchantments.LOOTING), killer);
-            }
             var legacySource = legacySource(source);
-            looting = ForgeEvents1122.lootingLevel(l, legacySource, looting);
-            l.mcc$dropLoot(recentlyHit, looting, legacySource);
+            int level = ForgeEvents1122.lootingLevel(l, legacySource, looting);
+            l.mcc$dropLoot(recentlyHit, level, legacySource);
         } catch (RuntimeException | LinkageError e) {
             Hosts1122.failed(legacy.getClass(), "dropping its loot", e);
         } finally {
-            dropLevel = null;
             dropSource = null;
         }
     }
 
     @Override
     public void mcc$superDropEquipment() {
-        if (dropLevel != null) super.dropCustomDeathLoot(dropLevel, dropSource, dropRecentlyHit);
+        if (dropSource != null) super.dropCustomDeathLoot(dropSource, dropLooting, dropRecentlyHit);
     }
 
     @Override
@@ -239,9 +233,9 @@ public class MobHost1122 extends PathfinderMob implements LivingHost1122, IEntit
     }
 
     @Override
-    protected int getBaseExperienceReward() {
+    protected int getExperienceReward() {
         EntityLivingBase l = living();
-        return l != null ? l.mcc$experience() : super.getBaseExperienceReward();
+        return l != null ? l.mcc$experience() : super.getExperienceReward();
     }
 
     @Override
@@ -390,9 +384,9 @@ public class MobHost1122 extends PathfinderMob implements LivingHost1122, IEntit
     }
 
     @Override
-    public void lerpTo(double x, double y, double z, float yaw, float pitch, int steps) {
+    public void lerpTo(double x, double y, double z, float yaw, float pitch, int steps, boolean teleport) {
         if (legacy != null && HookState1122.customLerp(legacy)) legacy.setPositionAndRotationDirect(x, y, z, yaw, pitch, steps, false);
-        else super.lerpTo(x, y, z, yaw, pitch, steps);
+        else super.lerpTo(x, y, z, yaw, pitch, steps, teleport);
     }
 
     @Override
@@ -601,10 +595,11 @@ public class MobHost1122 extends PathfinderMob implements LivingHost1122, IEntit
     /** A mod's {@code onInitialSpawn} runs as the modern spawn finalization; its {@code super} call reaches the modern one. */
     @Override
     public net.minecraft.world.entity.SpawnGroupData finalizeSpawn(net.minecraft.world.level.ServerLevelAccessor level, net.minecraft.world.DifficultyInstance difficulty,
-            net.minecraft.world.entity.MobSpawnType type, net.minecraft.world.entity.SpawnGroupData data) {
+            net.minecraft.world.entity.MobSpawnType type, net.minecraft.world.entity.SpawnGroupData data,
+            net.minecraft.nbt.CompoundTag tag) {
         if (!(legacy instanceof EntityLiving l) || !Hosts1122.overrides(legacy.getClass(), "onInitialSpawn",
                 legacyconnector.v1_12_2.net.minecraft.world.DifficultyInstance.class, legacyconnector.v1_12_2.net.minecraft.entity.IEntityLivingData.class)) {
-            return super.finalizeSpawn(level, difficulty, type, data);
+            return super.finalizeSpawn(level, difficulty, type, data, tag);
         }
         spawnLevel = level;
         spawnType = type;
@@ -720,8 +715,8 @@ public class MobHost1122 extends PathfinderMob implements LivingHost1122, IEntit
     }
 
     @Override
-    protected EntityDimensions getDefaultDimensions(Pose pose) {
-        return width > 0 ? EntityDimensions.scalable(width, height) : super.getDefaultDimensions(pose);
+    protected EntityDimensions getDimensions(Pose pose) {
+        return width > 0 ? EntityDimensions.scalable(width, height) : super.getDimensions(pose);
     }
 
     // ------------------------------------------------------------------ saving and spawn data

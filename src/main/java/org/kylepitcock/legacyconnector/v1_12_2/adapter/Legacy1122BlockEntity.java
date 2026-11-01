@@ -183,8 +183,8 @@ public class Legacy1122BlockEntity extends net.minecraft.world.level.block.entit
     }
 
     @Override
-    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.saveAdditional(tag, registries);
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
         TileEntity te = legacy;
         if (te != null) {
             try {
@@ -199,7 +199,7 @@ public class Legacy1122BlockEntity extends net.minecraft.world.level.block.entit
 
     /** What the client is told about this tile entity: the legacy update tag (its own idea of what the client needs). */
     @Override
-    public CompoundTag getUpdateTag(HolderLookup.Provider registries) {
+    public CompoundTag getUpdateTag() {
         CompoundTag tag = new CompoundTag();
         TileEntity te = legacy();
         if (te != null) {
@@ -226,7 +226,7 @@ public class Legacy1122BlockEntity extends net.minecraft.world.level.block.entit
                     CompoundTag tag = new CompoundTag();
                     tag.putInt("mcc$type", packet.getTileEntityType());
                     if (packet.getNbtCompound() != null) tag.put("mcc$packet", packet.getNbtCompound().mcc$modern().copy());
-                    return net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket.create(this, (be, reg) -> tag);
+                    return net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket.create(this, be -> tag);
                 }
             } catch (RuntimeException | LinkageError e) {
                 LOG.warn("Legacy tile entity {} failed to build its update packet: {}", te.getClass().getName(), e.toString());
@@ -242,7 +242,7 @@ public class Legacy1122BlockEntity extends net.minecraft.world.level.block.entit
             HolderLookup.Provider registries) {
         CompoundTag tag = pkt.getTag();
         if (!tag.contains("mcc$type")) {
-            super.onDataPacket(net, pkt, registries);
+            super.onDataPacket(net, pkt);
             return;
         }
         TileEntity te = legacy();
@@ -259,8 +259,8 @@ public class Legacy1122BlockEntity extends net.minecraft.world.level.block.entit
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
-        super.loadAdditional(tag, registries);
+    protected void loadAdditional(CompoundTag tag) {
+        super.loadAdditional(tag);
         if (tag.contains("legacy")) {
             pending = tag.getCompound("legacy");
             // Saved at another position (Create contraptions and Sable/Create Aeronautics sub-levels load a moved block's tag into a new
