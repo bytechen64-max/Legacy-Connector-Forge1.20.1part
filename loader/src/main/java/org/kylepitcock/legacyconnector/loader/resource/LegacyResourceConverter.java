@@ -59,6 +59,16 @@ public final class LegacyResourceConverter {
         String modern = normalizePath(path);
         if (modern.contains("/textures/")) sawTextures = true;
 
+        if (modern.matches("assets/[^/]+/blockstates/.+\\.json")) {
+            // A legacy blockstate is only an input for the runtime's translation. Left where a pack serves it, one 1.12 file the
+            // modern model loader cannot parse (a Forge multipart condition on a property the modern block does not have) aborts the
+            // whole blockstate stack of that block, and the block draws as the missing model. The pack filter that should hide these
+            // files does not apply to a mod's own pack, so the file moves to a folder no pack serves; the runtime reads it from there.
+            data = lowercaseResourceRefs(data);
+            output.putIfAbsent(modern.replace("/blockstates/", "/legacyconnector_blockstates/"), data);
+            return true;
+        }
+
         if (modern.endsWith(".lang")) {
             // assets/<ns>/lang/en_us.lang -> merged into assets/<ns>/lang/en_us.json
             String jsonPath = modern.substring(0, modern.length() - ".lang".length()) + ".json";

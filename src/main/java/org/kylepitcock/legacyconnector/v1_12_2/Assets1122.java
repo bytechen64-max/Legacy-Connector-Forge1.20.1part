@@ -1062,6 +1062,9 @@ public final class Assets1122 implements GeneratedPack.Contributor {
     }
 
     private static JsonObject readOriginal(ResourceLocation id) {
+        // the loader moves legacy blockstates out of the pack's asset folder (a 1.12 file left there aborts the modern model stack)
+        JsonObject moved = readJson("assets/" + id.getNamespace() + "/legacyconnector_blockstates/" + id.getPath() + ".json");
+        if (moved != null) return moved;
         return readJson("assets/" + id.getNamespace() + "/blockstates/" + id.getPath() + ".json");
     }
 

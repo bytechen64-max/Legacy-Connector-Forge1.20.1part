@@ -18,7 +18,17 @@ public class GuiNewChat extends Gui {
         return net.minecraft.client.Minecraft.getInstance().gui.getChat();
     }
 
+    /** Chat line ids are per message: without a bound this map kept a signature for every message of the session. */
+    private static final int MAX_SIGNATURES = 256;
+
     private static net.minecraft.network.chat.MessageSignature signature(int id) {
+        if (SIGNATURES.size() > MAX_SIGNATURES) {
+            var it = SIGNATURES.keySet().iterator();
+            for (int drop = SIGNATURES.size() - MAX_SIGNATURES; drop > 0 && it.hasNext(); drop--) {
+                it.next();
+                it.remove();
+            }
+        }
         return SIGNATURES.computeIfAbsent(id, i -> {
             byte[] bytes = new byte[256];
             java.nio.ByteBuffer.wrap(bytes).putLong(0x4C4547414359L).putInt(i); // "LEGACY" + the id: never a real signature
@@ -41,7 +51,7 @@ public class GuiNewChat extends Gui {
     }
 
     public void deleteChatLine(int id) {
-        var sig = SIGNATURES.get(id);
+        var sig = SIGNATURES.remove(id);
         if (sig != null) chat().deleteMessage(sig);
     }
 
