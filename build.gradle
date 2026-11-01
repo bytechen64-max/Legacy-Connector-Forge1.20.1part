@@ -41,9 +41,10 @@ def shimIndexFile = layout.buildDirectory.file('generated/shimIndex/legacyconnec
 
 minecraft {
     mappings channel: project.mapping_channel, version: project.mapping_version
-    // The shim mirrors the FML access transformers 1.7.10/1.12.2 mods were compiled against: the same file is shipped in
-    // the jar (applied by Forge at runtime) and applied to the development mappings here so shim code compiles.
-    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+    // The shim mirrors the FML access transformers 1.7.10/1.12.2 mods were compiled against. The source file is written
+    // with official names: ForgeGradle applies it to the development mappings (compile and run), while the jar gets the
+    // SRG-remapped copy from remapAccessTransformer -- Forge's runtime never translates AT member names itself.
+    accessTransformer = file('config/accesstransformer.cfg')
 
     // ForgeGradle fills the launch target, the module path and the JVM arguments (--add-opens for the secure jar handler) into
     // the built-in client/server runs only; a run config of its own starts without them. The test runs therefore reuse those two:
@@ -199,12 +200,108 @@ dependencies {
     // static tile entity tickers) need it at compile time; at runtime the MixinExtras mod must be installed (or the jar bundled).
     compileOnly "io.github.llamalad7:mixinextras-common:${mixin_extras_version}"
 
+    // Mixin's annotation processor: generates the refmap for the mixin configs. 1.20.1 Forge runs Minecraft with SRG
+    // member names (m_/f_) while the sources use official names; without the refmap every @Accessor/@Shadow/injection
+    // target is looked up by its official name and the launch dies in "No candidates were found matching ...".
+    annotationProcessor "org.spongepowered:mixin:${mixin_version}:processor"
+
     // Unit tests of the pure logic of the addon API (api.internal.AddonOrder).
     testImplementation platform('org.junit:junit-bom:5.10.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 tasks.withType(Test).configureEach { useJUnitPlatform() }
+
+// ---------------------------------------------------------------------------------------------------------
+// Production names. Forge 1.20.1 runs Minecraft with SRG member names (f_12345_ / m_12345_), while the sources are
+// written with the official names ForgeGradle maps them to in development. Two generated files translate the mod:
+//   * legacyconnector.refmap.json -- the Mixin annotation processor rewrites every member a mixin names (@Accessor,
+//     @Shadow, @Inject/@Redirect targets) from official to SRG; the mixin configs load it in production.
+//   * META-INF/accesstransformer.cfg in the jar -- remapAccessTransformer does the same for the access transformer.
+//     Forge applies ATs by SRG name at runtime and never remaps them itself (see PORTING.md).
+// ---------------------------------------------------------------------------------------------------------
+def mixinRefmapFile = layout.buildDirectory.file('generated/mixin/legacyconnector.refmap.json')
+def srgMappingsFile = layout.buildDirectory.file('createMcpToSrg/output.tsrg')
+
+tasks.named('compileJava', JavaCompile) {
+    dependsOn 'createMcpToSrg'
+    options.compilerArgs += [
+            '-AoutRefMapFile=' + mixinRefmapFile.get().asFile.absolutePath,
+            // FG3 mapping provider: build/createMcpToSrg/output.tsrg maps official -> SRG (tsrg2).
+            '-AmappingTypes=tsrg',
+            '-AreobfTsrgFile=' + srgMappingsFile.get().asFile.absolutePath,
+            '-AdefaultObfuscationEnv=searge'
+    ]
+}
+
+// Rewrites the official-named access transformer into the SRG names Forge's runtime matches against.
+def remapAccessTransformer = tasks.register('remapAccessTransformer') {
+    group = 'build'
+    description = 'Remaps config/accesstransformer.cfg to SRG member names for the distributable jar.'
+    def source = file('config/accesstransformer.cfg')
+    def output = layout.buildDirectory.file('generated/at/accesstransformer.cfg')
+    inputs.file(source)
+    inputs.file(srgMappingsFile)
+    outputs.file(output)
+    dependsOn 'createMcpToSrg'
+    doLast {
+        Map<String, Map<String, String>> fields = [:]
+        Map<String, Map<String, String>> methods = [:]
+        String owner = null
+        srgMappingsFile.get().asFile.eachLine('UTF-8') { String raw ->
+            if (raw.startsWith('#') || raw.startsWith('tsrg2')) return
+            if (!raw.startsWith('\t')) {
+                owner = raw.split('\\s+')[0]
+                fields[owner] = [:]
+                methods[owner] = [:]
+                return
+            }
+            if (raw.startsWith('\t\t')) return // "static" markers and parameter maps
+            String[] parts = raw.substring(1).trim().split('\\s+')
+            if (parts.length == 2) {
+                fields[owner][parts[0]] = parts[1]
+            } else if (parts.length == 3) {
+                methods[owner][parts[0] + parts[1]] = parts[2]
+            }
+        }
+        def result = new StringBuilder()
+        source.eachLine('UTF-8') { String line ->
+            def stripped = line.trim()
+            if (stripped.isEmpty() || stripped.startsWith('#')) {
+                result.append(line).append('\n')
+                return
+            }
+            def body = line
+            def comment = ''
+            int hash = line.indexOf('#')
+            if (hash >= 0) {
+                body = line.substring(0, hash)
+                comment = line.substring(hash)
+            }
+            String[] parts = body.trim().split('\\s+')
+            if (parts.length >= 3) {
+                String cls = parts[1].replace('.', '/')
+                String member = parts[2]
+                int paren = member.indexOf('(')
+                String mapped = paren >= 0
+                        ? methods[cls]?.get(member)
+                        : fields[cls]?.get(member)
+                if (mapped != null) {
+                    // Methods and constructors keep their descriptor: only the name is remapped.
+                    parts[2] = paren >= 0 ? mapped + member.substring(paren) : mapped
+                    result.append(parts.join(' '))
+                    if (comment) result.append(' ').append(comment.trim())
+                    result.append('\n')
+                    return
+                }
+                logger.warn("remapAccessTransformer: {} has no SRG mapping for {} (left as is)", cls, member)
+            }
+            result.append(line).append('\n')
+        }
+        output.get().asFile.parentFile.mkdirs()
+        output.get().asFile.setText(result.toString(), 'UTF-8')
+    }
+}
 
 // The addon API alone (classes + sources), the compile-time dependency of addons: build/dist/legacyconnector-api-<version>.jar.
 // Not a mod: at runtime the API is part of the Legacy Connector jar.
@@ -355,6 +452,12 @@ tasks.matching { it.name.startsWith('run') || (it.name.startsWith('prepare') && 
 // legacy mod as built for an old Minecraft. A distinct classifier keeps it from being mistaken for the distributable.
 tasks.named('jar') {
     archiveClassifier = 'runtime-only'
+    // The mixin refmap the annotation processor produced (SRG names, see the section above).
+    from(mixinRefmapFile)
+    // The SRG-remapped access transformer; the official-named source stays out of the jar (it is for the dev environment).
+    from(remapAccessTransformer) {
+        into 'META-INF'
+    }
     // Forge 1.20.1 reads the mixin configs a mod ships from its manifest (ForgeGradle has no mods.toml [[mixins]] section).
     manifest {
         attributes(
@@ -373,7 +476,10 @@ tasks.register('bundleJar', Jar) {
     destinationDirectory = layout.buildDirectory.dir('dist')
     def loaderJar = project(':loader').tasks.named('jar')
     def runtimeJar = tasks.named('jar')
-    dependsOn loaderJar, runtimeJar, syncLegacyLibs
+    // reobfJar rewrites the runtime jar's member names to SRG in place (RenameJarInPlace); the bundle must embed the
+    // result, not the named jar `jar` just produced -- otherwise the embedded mod cannot link against the game.
+    def reobfJar = tasks.named('reobfJar')
+    dependsOn loaderJar, runtimeJar, reobfJar, syncLegacyLibs
     from(layout.buildDirectory.dir('legacy-libs')) {
         into 'META-INF/legacyconnector/libs'
     }

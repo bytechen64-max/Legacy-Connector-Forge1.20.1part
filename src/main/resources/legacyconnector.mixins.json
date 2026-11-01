@@ -3,6 +3,7 @@
   "minVersion": "0.8",
   "package": "org.kylepitcock.legacyconnector.mixin",
   "compatibilityLevel": "JAVA_17",
+  "refmap": "legacyconnector.refmap.json",
   "mixins": [
     "access.FireBlockAccess",
     "access.ExplosionAccess",

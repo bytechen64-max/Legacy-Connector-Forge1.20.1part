@@ -60,7 +60,8 @@ Port work landed since (each in its own commit):
    and display slots by number (`Scoreboard.DISPLAY_SLOT_*`, no `DisplaySlot`); the legacy numbered slots including
    `sidebar.team.<colour>` are rebuilt from those constants.
 6. **Entity portal state**: 1.20.1 keeps `isInsidePortal`/`portalTime`/`portalEntrancePos` where 1.20.5 has a
-   `PortalProcessor`; the three fields are opened with AT entries.
+   `PortalProcessor`; the three fields are opened with AT entries and read through `mixin/access/EntityAccess` (the
+   mixin refmap maps the accessor names to SRG in production).
 7. **Client tick events**: `ClientTickEvent.Pre/.Post` -> one `TickEvent.ClientTickEvent` plus a phase guard (9 sites).
 
 ## Build / check loop
@@ -117,10 +118,20 @@ depend on `runServer`/`runClient`).
 - **`LivingIncomingDamageEvent` (1.21) is `LivingHurtEvent` in 1.20.1**, which the 1.7.10 shim also defines; that file
   qualifies the modern one at its two listener sites.
 
-- **ForgeGradle does not apply a mod's access transformer to the compile classpath.** Forge applies it at runtime only, and rebuilding the mapped jar or deleting the AT step output does not
-  change that; the members the shim needs are reached through Mixin accessors (`mixin/access/EntityAccess`,
-  `mixin/access/ChunkMapAccess`) instead. Keep the `accesstransformer.cfg` for runtime, but do not rely on it to compile.
+- **Production names are SRG for members, official for classes.** 1.20.1's runtime has official class names but
+  `f_12345_`/`m_12345_` fields and methods, while the sources are written with official names. Anything that names a
+  member at *runtime* must be translated: the Mixin annotation processor feeds `legacyconnector.refmap.json` (from
+  `build/createMcpToSrg/output.tsrg`) into both mixin configs, and the jar's `META-INF/accesstransformer.cfg` is the SRG
+  copy `remapAccessTransformer` writes from `config/accesstransformer.cfg`. Launching without the refmap dies early with
+  `InvalidAccessorException: No candidates were found matching isInsidePortal:Z`. Direct reflection by official name is
+  still SRG-blind (the 1.12.2 shim has many `getDeclaredField("...")` sites) and needs the same treatment.
+- **Access transformers are applied to the development game jar**, so code may name AT-widened members directly; the AT
+  source stays in official names for that. Forge's runtime applies the shipped AT by SRG name and never remaps it, so the
+  jar must get `remapAccessTransformer`'s output, not the source file.
   The mixin configs must stay UTF-8 **without** BOM: Mixin's JSON parser rejects a BOM.
+- **`bundleJar` must embed the reobfuscated runtime jar.** `reobfJar` rewrites `build/libs/*-runtime-only.jar` in place;
+  without an explicit `dependsOn reobfJar` the bundle can be built from the named jar, and the embedded mod then cannot
+  link against the game (`NoSuchMethodError`/`NoSuchFieldError`).
 - **Forge 1.20.1 constructs a mod with a no-argument constructor** (the `(IEventBus, ModContainer)` form is 1.21); the two
   are taken from `FMLJavaModLoadingContext`/`ModLoadingContext` instead.
 - **Mixin configs of a directory mod** (a development run) come from `src/main/resources/META-INF/MANIFEST.MF`: a folder
