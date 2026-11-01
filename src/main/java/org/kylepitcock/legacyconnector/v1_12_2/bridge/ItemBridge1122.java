@@ -63,13 +63,14 @@ public final class ItemBridge1122 {
         ResourceLocation base = BlockBridge1122.modernId(item.getRegistryName());
         if (item instanceof ItemBlock ib && ib.getBlock() != null && BlockBridge1122.modern(ib.getBlock()) != null) {
             var block = BlockBridge1122.modern(ib.getBlock());
-            ResourceLocation blockId = BuiltInRegistries.BLOCK.getKey(block);
+            ResourceLocation blockId = BlockBridge1122.idOf(block);
+            if (blockId == null) blockId = base;
             var modern = new Legacy1122BlockItem(item, block, properties(item));
-            LegacyRegistrar.register(BuiltInRegistries.ITEM, blockId, modern);
-            item.mcc$modern = modern;
+            net.minecraft.world.item.Item registered = LegacyRegistrar.register(BuiltInRegistries.ITEM, blockId, modern);
+            item.mcc$modern = registered;
             BLOCK_ITEMS.put(ib.getBlock(), item);
             Map<Integer, net.minecraft.world.item.Item> v = new LinkedHashMap<>();
-            v.put(0, modern);
+            v.put(0, registered);
             VARIANTS.put(item, v);
             MOD_ITEMS.add(item);
             Dispensers1122.onItemRegistered(item);
@@ -79,8 +80,8 @@ public final class ItemBridge1122 {
         for (int meta : metas(item)) {
             var modern = new Legacy1122Item(item, meta, properties(item));
             ResourceLocation id = meta == 0 ? base : ResourceLocation.fromNamespaceAndPath(base.getNamespace(), base.getPath() + "_" + meta);
-            LegacyRegistrar.register(BuiltInRegistries.ITEM, id, modern);
-            variants.put(meta, modern);
+            net.minecraft.world.item.Item registered = LegacyRegistrar.register(BuiltInRegistries.ITEM, id, modern);
+            variants.put(meta, registered);
         }
         item.mcc$modern = variants.values().iterator().next();
         VARIANTS.put(item, variants);

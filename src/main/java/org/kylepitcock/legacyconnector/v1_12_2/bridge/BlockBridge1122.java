@@ -15,6 +15,8 @@ import org.kylepitcock.legacyconnector.v1_12_2.adapter.Legacy1122Block;
 /** Turns 1.12.2 blocks registered through {@code RegistryEvent.Register<Block>} into modern blocks. */
 public final class BlockBridge1122 {
     private static final Map<Block, net.minecraft.world.level.block.Block> MODERN = new IdentityHashMap<>();
+    /** The id each modern block was registered with (a block that waits for its flush is not in the registry yet). */
+    private static final Map<net.minecraft.world.level.block.Block, ResourceLocation> IDS = new IdentityHashMap<>();
 
     private BlockBridge1122() {}
 
@@ -58,10 +60,24 @@ public final class BlockBridge1122 {
         } else {
             modern = new Legacy1122Block(block, p);
         }
-        LegacyRegistrar.register(BuiltInRegistries.BLOCK, id, modern);
-        block.mcc$modern = modern;
+        // the registry answers with the existing entry when the id is taken; the shim must point at the registered instance,
+        // never at an object no registry holds (ItemStack and the world look the delegate up by identity)
+        net.minecraft.world.level.block.Block registered = LegacyRegistrar.register(BuiltInRegistries.BLOCK, id, modern);
+        block.mcc$modern = registered;
         synchronized (MODERN) {
-            MODERN.put(block, modern);
+            MODERN.put(block, registered);
+            IDS.put(registered, id);
+        }
+    }
+
+    /**
+     * The id a modern block was registered with. The registry cannot be asked while the registrations are queued (Forge 1.20.1
+     * locks a registry right after its event, so a block can wait for its flush), and an unregistered block answers with the
+     * default key {@code minecraft:air}: the block items need the real id.
+     */
+    public static ResourceLocation idOf(net.minecraft.world.level.block.Block block) {
+        synchronized (MODERN) {
+            return IDS.get(block);
         }
     }
 

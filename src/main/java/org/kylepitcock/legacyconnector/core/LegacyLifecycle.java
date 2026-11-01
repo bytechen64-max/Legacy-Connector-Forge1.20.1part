@@ -49,19 +49,22 @@ public final class LegacyLifecycle {
         return false;
     }
 
+    /**
+     * Forge 1.20.1 locks each registry right after its own {@code RegisterEvent}, so the legacy loading runs at the first event
+     * and its registrations are queued per registry ({@link org.kylepitcock.legacyconnector.core.registry.LegacyRegistrar}); every
+     * event then writes the queue of the registry it is dispatching, the one moment that registry is writable.
+     */
     public static void onRegister(RegisterEvent event) {
-        // 1.20.1 has no GameData registration order: the item registry is the last of the content registries, and every registry
-        // stays unfrozen for the whole RegisterEvent phase, so triggering there runs the legacy loading once, inside the window.
-        if (ran || !event.getRegistryKey().equals(net.minecraft.core.registries.Registries.ITEM)) return;
-        ran = true;
-        registrationOpen = true;
-        try {
-            runLoading();
-        } finally {
-            registrationOpen = false;
-            int orphans = org.kylepitcock.legacyconnector.core.registry.LegacyRegistrar.discardOrphans();
-            if (orphans > 0) LOG.warn("Discarded {} legacy registry object(s) that were created but never registered (failed or duplicate registrations)", orphans);
+        if (!ran) {
+            ran = true;
+            registrationOpen = true;
+            try {
+                runLoading();
+            } finally {
+                registrationOpen = false;
+            }
         }
+        org.kylepitcock.legacyconnector.core.registry.LegacyRegistrar.flush(event.getRegistryKey());
     }
 
     private static void runLoading() {
@@ -95,6 +98,11 @@ public final class LegacyLifecycle {
 
     public static void onCommonSetup(FMLCommonSetupEvent event) {
         event.enqueueWork(() -> {
+            // every registry event has been dispatched by now: what is still queued has no registry to go to, and the objects a
+            // mod created but never registered keep an intrusive holder a frozen registry refuses
+            org.kylepitcock.legacyconnector.core.registry.LegacyRegistrar.discardPending();
+            int orphans = org.kylepitcock.legacyconnector.core.registry.LegacyRegistrar.discardOrphans();
+            if (orphans > 0) LOG.warn("Discarded {} legacy registry object(s) that were created but never registered (failed or duplicate registrations)", orphans);
             phase(LegacyMods.ordered(), "loadComplete", m -> LegacyMods.platform(m.version).loadComplete(m));
             if (!LegacyMods.isEmpty()) org.kylepitcock.legacyconnector.api.internal.AddonHost.enter(org.kylepitcock.legacyconnector.api.LegacyPhase.LOAD_COMPLETE);
         });
