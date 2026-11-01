@@ -210,10 +210,10 @@ a block item takes its id from the block bridge, never from a registry lookup (a
 
 Next spots, in the order a real 1.12.2 mod hits them:
 
-1. **Client classes on the server**: SRP's common code reaches `WorldClient`/`Minecraft` through the shims and Forge's
-   `RuntimeDistCleaner` throws `Attempted to load class net/minecraft/client/... for invalid dist DEDICATED_SERVER`, which
-   aborts whatever callback it was in (tooltips, `onBlockActivated`, ...). Those shims need a side guard that fails soft on the
-   server instead of loading a client class.
+1. **Client classes on the server** (mostly done): the `Minecraft` shim's `player`/`world` getters and the tooltip probe answer
+   null / are skipped on a dedicated server instead of loading a client-only class. What is left is a mod's *common* code calling
+   a client API on the server (SRP's block use spawns a particle -> `Minecraft.getRenderViewEntity`); 1.12 failed there too, and
+   the call is skipped with a log line, so only the noise is left to quiet down.
 2. **Numeric ids**: Forge logs `Object did not get ID it asked for` for every legacy entry whose requested id differs from the
    modern registration order (244 lines for SRP). Harmless, but it should be silenced once the ids are not used.
 
