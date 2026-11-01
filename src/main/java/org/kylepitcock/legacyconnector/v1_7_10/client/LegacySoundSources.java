@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 import javax.sound.sampled.AudioFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.sounds.ChannelAccess;
-import net.minecraft.client.sounds.JOrbisAudioStream;
+import com.mojang.blaze3d.audio.OggAudioStream;
 import net.minecraft.client.sounds.SoundEngine;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.phys.Vec3;
@@ -103,7 +103,7 @@ public final class LegacySoundSources {
                 LOG.warn("Only OGG files can be played; {} is skipped", identifier);
                 return null;
             }
-            try (InputStream in = url.openStream(); JOrbisAudioStream stream = new JOrbisAudioStream(in)) {
+            try (InputStream in = url.openStream(); OggAudioStream stream = new OggAudioStream(in)) {
                 decoded = new Decoded(stream.readAll(), stream.getFormat());
                 DECODED.put(key, decoded);
             } catch (Exception e) {

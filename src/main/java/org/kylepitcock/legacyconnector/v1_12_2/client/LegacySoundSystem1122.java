@@ -10,7 +10,7 @@ import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.client.resources.sounds.Sound;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.client.sounds.AudioStream;
-import net.minecraft.client.sounds.JOrbisAudioStream;
+import com.mojang.blaze3d.audio.OggAudioStream;
 import net.minecraft.client.sounds.LoopingAudioStream;
 import net.minecraft.client.sounds.SoundBufferLibrary;
 import net.minecraft.client.sounds.WeighedSoundEvents;
@@ -94,7 +94,7 @@ public final class LegacySoundSystem1122 {
             return CompletableFuture.supplyAsync(() -> {
                 try {
                     InputStream in = src.url.openStream();
-                    return looping ? new LoopingAudioStream(JOrbisAudioStream::new, in) : new JOrbisAudioStream(in);
+                    return looping ? new LoopingAudioStream(OggAudioStream::new, in) : new OggAudioStream(in);
                 } catch (Exception e) {
                     LOGGER.warn("A legacy sound source could not be played from {}: {}", src.url, e.toString());
                     throw new java.util.concurrent.CompletionException(e);

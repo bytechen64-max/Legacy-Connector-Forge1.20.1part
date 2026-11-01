@@ -160,7 +160,8 @@ public class PacketBuffer extends ByteBuf {
             writeByte(0);
         } else {
             try {
-                net.minecraft.nbt.NbtIo.writeAnyTag(tag.mcc$modern(), new ByteBufOutputStream(this));
+                // 1.20.2 renamed writeUnnamedTag/readUnnamedTag to writeAnyTag/readAnyTag.
+                net.minecraft.nbt.NbtIo.writeUnnamedTag(tag.mcc$modern(), new ByteBufOutputStream(this));
             } catch (IOException e) {
                 throw new io.netty.handler.codec.EncoderException(e);
             }
@@ -173,7 +174,7 @@ public class PacketBuffer extends ByteBuf {
         if (readByte() == 0) return null;
         readerIndex(start);
         try {
-            var tag = net.minecraft.nbt.NbtIo.readAnyTag(new ByteBufInputStream(this), net.minecraft.nbt.NbtAccounter.create(2097152L));
+            var tag = net.minecraft.nbt.NbtIo.read(new ByteBufInputStream(this), new net.minecraft.nbt.NbtAccounter(2097152L));
             return tag instanceof net.minecraft.nbt.CompoundTag c ? new NBTTagCompound(c) : new NBTTagCompound();
         } catch (RuntimeException e) {
             throw new IOException(e);
