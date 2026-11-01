@@ -232,7 +232,7 @@ public class EntityItem extends Entity {
         var i = mcc$item();
         var id = thrower == null ? null : mcc$uuidOf(i, thrower);
         var player = i == null || id == null ? null : i.level().getPlayerByUUID(id);
-        if (player != null) i.setThrower(player);
+        if (player != null) i.setThrower(player.getUUID());
     }
 
     private static java.util.UUID mcc$uuidOf(ItemEntity i, String name) {

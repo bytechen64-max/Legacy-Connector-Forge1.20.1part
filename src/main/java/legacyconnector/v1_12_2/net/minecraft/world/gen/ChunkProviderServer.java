@@ -102,7 +102,7 @@ public class ChunkProviderServer implements IChunkProvider {
     public Collection<Chunk> getLoadedChunks() {
         List<Chunk> out = new java.util.ArrayList<>();
         if (access() instanceof net.minecraft.server.level.ServerLevel sl) {
-            for (var holder : sl.getChunkSource().chunkMap.getChunks()) {
+            for (var holder : ((org.kylepitcock.legacyconnector.mixin.access.ChunkMapAccess) sl.getChunkSource().chunkMap).legacyconnector$chunks()) {
                 var chunk = holder.getTickingChunk();
                 if (chunk != null) out.add(Chunk.mcc$of(mcc$world, chunk));
             }

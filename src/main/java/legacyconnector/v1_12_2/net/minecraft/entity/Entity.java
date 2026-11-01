@@ -590,13 +590,10 @@ public abstract class Entity implements legacyconnector.v1_12_2.net.minecraft.co
         return m != null ? m.maxUpStep() : e.mcc$local_stepHeight;
     }
 
-    /** The modern step height is an attribute of living entities: a mod's value becomes its base. */
+    /** 1.20.1 keeps the step height on the entity itself (1.20.5 made it an attribute). */
     public static void mcc$set$stepHeight(Entity e, float v) {
         e.mcc$local_stepHeight = v;
-        if (e.mcc$entity instanceof net.minecraft.world.entity.LivingEntity l) {
-            var a = l.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.STEP_HEIGHT);
-            if (a != null) a.setBaseValue(v);
-        }
+        if (e.mcc$entity != null) e.mcc$entity.setMaxUpStep(v);
     }
 
     public static boolean mcc$get$collidedHorizontally(Entity e) {
@@ -1205,7 +1202,7 @@ public abstract class Entity implements legacyconnector.v1_12_2.net.minecraft.co
         if (host != null) {
             host.mcc$superLerpTo(x, y, z, yaw, pitch, increments);
         } else if (mcc$entity != null) {
-            mcc$entity.lerpTo(x, y, z, yaw, pitch, increments);
+            mcc$entity.lerpTo(x, y, z, yaw, pitch, increments, false);
         } else {
             setPosition(x, y, z);
             setRotation(yaw, pitch);
@@ -1502,7 +1499,7 @@ public abstract class Entity implements legacyconnector.v1_12_2.net.minecraft.co
     }
 
     public void setFire(int seconds) {
-        if (mcc$entity != null) mcc$entity.igniteForSeconds(seconds);
+        if (mcc$entity != null) mcc$entity.setSecondsOnFire(seconds);
     }
 
     public void extinguish() {
@@ -1680,7 +1677,7 @@ public abstract class Entity implements legacyconnector.v1_12_2.net.minecraft.co
     }
 
     public boolean isNonBoss() {
-        return mcc$entity == null || mcc$entity.canUsePortal(false);
+        return mcc$entity == null || mcc$entity.canChangeDimensions();
     }
 
     public boolean doesEntityNotTriggerPressurePlate() {

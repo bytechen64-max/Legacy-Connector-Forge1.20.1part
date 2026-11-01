@@ -75,7 +75,7 @@ public class NetHandlerPlayServer implements legacyconnector.v1_12_2.net.minecra
     public NetworkManager getNetworkManager() {
         if (mcc$manager != null) return mcc$manager;
         var m = modern();
-        return m == null ? null : NetworkManager.mcc$of(m.getConnection());
+        return m == null ? null : NetworkManager.mcc$of(m.connection);
     }
 
     /** Sends a vanilla packet a mod built, as the modern packet it describes. */

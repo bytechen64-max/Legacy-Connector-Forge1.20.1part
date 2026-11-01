@@ -58,7 +58,8 @@ public class PlayerChunkMap {
     }
 
     public boolean contains(int chunkX, int chunkZ) {
-        return level != null && level.getChunkSource().chunkMap.getVisibleChunkIfPresent(net.minecraft.world.level.ChunkPos.asLong(chunkX, chunkZ)) != null;
+        return level != null && ((org.kylepitcock.legacyconnector.mixin.access.ChunkMapAccess) level.getChunkSource().chunkMap)
+                .legacyconnector$visibleChunk(net.minecraft.world.level.ChunkPos.asLong(chunkX, chunkZ)) != null;
     }
 
     /** The chunk's watcher entry, or null when the chunk is not loaded for players. */

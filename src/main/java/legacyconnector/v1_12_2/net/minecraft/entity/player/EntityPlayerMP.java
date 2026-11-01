@@ -66,7 +66,8 @@ public class EntityPlayerMP extends EntityPlayer implements legacyconnector.v1_1
 
     public static int mcc$get$ping(EntityPlayerMP p) {
         var player = p.mcc$serverPlayer();
-        return player == null || player.connection == null ? 0 : player.connection.latency();
+        // 1.20.1 keeps the ping on the player itself.
+        return player == null ? 0 : player.latency;
     }
 
     /** Operators of the needed level may use a command (single player's host and cheats-enabled worlds included). */
@@ -194,7 +195,7 @@ public class EntityPlayerMP extends EntityPlayer implements legacyconnector.v1_1
 
     public static String mcc$get$language(EntityPlayerMP p) {
         var sp = p.mcc$serverPlayer();
-        return sp == null ? "en_us" : sp.clientInformation().language();
+        return sp == null ? "en_us" : sp.getLanguage();
     }
 
     public static void mcc$set$language(EntityPlayerMP p, String v) {

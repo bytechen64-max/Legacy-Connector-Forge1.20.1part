@@ -96,8 +96,8 @@ public class LootContext {
                 var modern = damageSource.mcc$modern(level);
                 b.withOptionalParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.DAMAGE_SOURCE, modern);
                 if (modern != null) {
-                    b.withOptionalParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.ATTACKING_ENTITY, modern.getEntity());
-                    b.withOptionalParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.DIRECT_ATTACKING_ENTITY, modern.getDirectEntity());
+                    b.withOptionalParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.KILLER_ENTITY, modern.getEntity());
+                    b.withOptionalParameter(net.minecraft.world.level.storage.loot.parameters.LootContextParams.DIRECT_KILLER_ENTITY, modern.getDirectEntity());
                 }
             } catch (RuntimeException | LinkageError e) {
                 // the source stays out of the modern context
