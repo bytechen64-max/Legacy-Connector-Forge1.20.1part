@@ -402,8 +402,8 @@ public abstract class EntityLivingBase extends Entity {
 
     public EnumCreatureAttribute getCreatureAttribute() {
         if (mcc$entity instanceof LivingEntity l && !mcc$hosted()) {
-            if (l.getType().is(net.minecraft.tags.EntityTypeTags.UNDEAD)) return EnumCreatureAttribute.UNDEAD;
-            if (l.getType().is(net.minecraft.tags.EntityTypeTags.ARTHROPOD)) return EnumCreatureAttribute.ARTHROPOD;
+            if (l.getMobType() == net.minecraft.world.entity.MobType.UNDEAD) return EnumCreatureAttribute.UNDEAD;
+            if (l.getMobType() == net.minecraft.world.entity.MobType.ARTHROPOD) return EnumCreatureAttribute.ARTHROPOD;
         }
         return EnumCreatureAttribute.UNDEFINED;
     }

@@ -372,10 +372,12 @@ public class ForgeHooks {
             mcc$bus().post(event);
             return event;
         }
-        var modern = net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock(p,
+        // 1.20.1's EventBus.post returns whether the event ended up canceled (1.21 returns the event).
+        var modern = new net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock(p,
                 pos(pos), face == null ? net.minecraft.core.Direction.UP : face.mcc$modern(),
-                net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock.Action.START));
-        if (modern.isCanceled()) {
+                net.minecraftforge.event.entity.player.PlayerInteractEvent.LeftClickBlock.Action.START);
+        boolean canceled = net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(modern);
+        if (canceled) {
             event.setCanceled(true);
         } else {
             event.setUseBlock(mcc$result(modern.getUseBlock()));

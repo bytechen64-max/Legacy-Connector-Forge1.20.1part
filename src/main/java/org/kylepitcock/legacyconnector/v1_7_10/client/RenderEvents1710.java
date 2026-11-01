@@ -65,7 +65,7 @@ public final class RenderEvents1710 {
         RenderContext.beginWorld(pose, buffers, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
         try {
             legacyconnector.v1_7_10.net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new RenderWorldLastEvent(legacyconnector.v1_7_10.net.minecraft.client.Minecraft.getMinecraft().renderGlobal,
-                    e.getPartialTick().getGameTimeDeltaPartialTick(false)));
+                    e.getPartialTick()));
         } catch (RuntimeException | LinkageError ex) {
             org.slf4j.LoggerFactory.getLogger("LegacyConnector/Render").warn("A RenderWorldLastEvent handler failed: {}", ex.toString());
         } finally {

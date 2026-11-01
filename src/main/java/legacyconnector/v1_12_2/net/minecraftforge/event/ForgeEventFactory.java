@@ -306,8 +306,8 @@ public class ForgeEventFactory {
             return legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.DEFAULT;
         }
         // 1.21's MobDespawnEvent is 1.20.1's MobSpawnEvent.AllowDespawn.
-        var event = net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(
-                new net.minecraftforge.event.entity.living.MobSpawnEvent.AllowDespawn(mob, level));
+        var event = new net.minecraftforge.event.entity.living.MobSpawnEvent.AllowDespawn(mob, level);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
         return switch (event.getResult()) {
             case ALLOW -> legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW;
             case DENY -> legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.DENY;

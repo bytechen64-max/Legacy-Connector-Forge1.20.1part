@@ -160,10 +160,10 @@ public final class Vanilla1122 {
             // vanilla armor as ItemArmor with its 1.12 material (EpicFight reads the damage reduction of each piece)
             var mat = armor.getMaterial();
             legacyconnector.v1_12_2.net.minecraft.item.ItemArmor.ArmorMaterial m =
-                    mat.is(net.minecraft.world.item.ArmorMaterials.LEATHER) ? legacyconnector.v1_12_2.net.minecraft.item.ItemArmor.ArmorMaterial.LEATHER
-                    : mat.is(net.minecraft.world.item.ArmorMaterials.CHAIN) ? legacyconnector.v1_12_2.net.minecraft.item.ItemArmor.ArmorMaterial.CHAIN
-                    : mat.is(net.minecraft.world.item.ArmorMaterials.IRON) ? legacyconnector.v1_12_2.net.minecraft.item.ItemArmor.ArmorMaterial.IRON
-                    : mat.is(net.minecraft.world.item.ArmorMaterials.GOLD) ? legacyconnector.v1_12_2.net.minecraft.item.ItemArmor.ArmorMaterial.GOLD
+                    mat == net.minecraft.world.item.ArmorMaterials.LEATHER ? legacyconnector.v1_12_2.net.minecraft.item.ItemArmor.ArmorMaterial.LEATHER
+                    : mat == net.minecraft.world.item.ArmorMaterials.CHAIN ? legacyconnector.v1_12_2.net.minecraft.item.ItemArmor.ArmorMaterial.CHAIN
+                    : mat == net.minecraft.world.item.ArmorMaterials.IRON ? legacyconnector.v1_12_2.net.minecraft.item.ItemArmor.ArmorMaterial.IRON
+                    : mat == net.minecraft.world.item.ArmorMaterials.GOLD ? legacyconnector.v1_12_2.net.minecraft.item.ItemArmor.ArmorMaterial.GOLD
                     : legacyconnector.v1_12_2.net.minecraft.item.ItemArmor.ArmorMaterial.DIAMOND; // diamond, netherite, turtle
             var slot = switch (armor.getType()) {
                 case HELMET -> legacyconnector.v1_12_2.net.minecraft.inventory.EntityEquipmentSlot.HEAD;
