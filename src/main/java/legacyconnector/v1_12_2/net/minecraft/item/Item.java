@@ -620,7 +620,8 @@ public class Item extends IForgeRegistryEntry.Impl<Item> {
         var level = worldIn == null ? null : worldIn.mcc$level();
         if (player == null || level == null) return null;
         var eye = player.getEyePosition();
-        var end = eye.add(player.getViewVector(1.0F).scale(player.blockInteractionRange()));
+        // 1.20.1 has no blockInteractionRange(): Forge's reach attribute carries the same distance.
+        var end = eye.add(player.getViewVector(1.0F).scale(player.getAttributeValue(net.minecraftforge.common.ForgeMod.BLOCK_REACH.get())));
         var hit = level.clip(new net.minecraft.world.level.ClipContext(eye, end, net.minecraft.world.level.ClipContext.Block.OUTLINE,
                 useLiquids ? net.minecraft.world.level.ClipContext.Fluid.SOURCE_ONLY : net.minecraft.world.level.ClipContext.Fluid.NONE, player));
         if (hit.getType() == net.minecraft.world.phys.HitResult.Type.MISS) return null;

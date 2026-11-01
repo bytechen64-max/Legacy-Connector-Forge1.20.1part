@@ -261,8 +261,8 @@ public abstract class EntityPlayer extends EntityLivingBase {
         if (isAllowEdit()) return true;
         if (stack == null || stack.isEmpty()) return false;
         var modern = Stacks1122.toModern(stack);
-        return modern.canPlaceOnBlockInAdventureMode(new net.minecraft.world.level.block.state.pattern.BlockInWorld(mcc$player().level(),
-                pos.offset(facing.getOpposite()).mcc$modern(), false));
+        // 1.20.1 asks the same question as mayUseItemAt (canPlaceOnBlockInAdventureMode is 1.20.5+).
+        return mcc$player().mayUseItemAt(pos.offset(facing.getOpposite()).mcc$modern(), facing.mcc$modern(), modern);
     }
 
     public boolean canUseCommandBlock() {

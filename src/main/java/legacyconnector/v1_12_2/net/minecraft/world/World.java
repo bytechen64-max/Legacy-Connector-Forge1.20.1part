@@ -324,7 +324,8 @@ public class World implements IBlockAccess {
         if (!(acc() instanceof ServerLevel sl) || sl.getServer().isSameThread()) return null;
         var holder = ((org.kylepitcock.legacyconnector.mixin.access.ChunkMapAccess) sl.getChunkSource().chunkMap)
                 .legacyconnector$visibleChunk(net.minecraft.world.level.ChunkPos.asLong(p.getX() >> 4, p.getZ() >> 4));
-        var chunk = holder == null ? null : holder.getChunkIfPresent(net.minecraft.world.level.chunk.ChunkStatus.FULL);
+        // 1.20.1 hands out the whole chunk when it is there (no status argument).
+        var chunk = holder == null ? null : holder.getFullChunk();
         return chunk == null ? net.minecraft.world.level.block.Blocks.AIR.defaultBlockState() : chunk.getBlockState(p);
     }
 

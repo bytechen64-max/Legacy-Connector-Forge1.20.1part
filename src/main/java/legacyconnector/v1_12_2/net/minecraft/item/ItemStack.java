@@ -386,7 +386,8 @@ public final class ItemStack {
             net.minecraft.world.entity.EquipmentSlot slot = l.getMainHandItem() == b ? net.minecraft.world.entity.EquipmentSlot.MAINHAND
                     : l.getOffhandItem() == b ? net.minecraft.world.entity.EquipmentSlot.OFFHAND : null;
             if (slot != null) {
-                b.hurtAndBreak(amount, l, slot);
+                // 1.20.1 damages through a callback that breaks the item in that slot (the EquipmentSlot overload is 1.21).
+                b.hurtAndBreak(amount, l, e -> e.broadcastBreakEvent(slot));
                 return;
             }
         }

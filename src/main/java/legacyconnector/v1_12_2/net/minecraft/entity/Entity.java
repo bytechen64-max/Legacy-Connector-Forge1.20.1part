@@ -2244,7 +2244,11 @@ public abstract class Entity implements legacyconnector.v1_12_2.net.minecraft.co
         if (!(attacker.mcc$entity.level() instanceof net.minecraft.server.level.ServerLevel sl)) return;
         var source = attacker.mcc$entity instanceof net.minecraft.world.entity.player.Player p ? sl.damageSources().playerAttack(p)
                 : sl.damageSources().mobAttack((net.minecraft.world.entity.LivingEntity) attacker.mcc$entity);
-        net.minecraft.world.item.enchantment.EnchantmentHelper.doPostAttackEffects(sl, target.mcc$entity, source);
+        // 1.20.1 splits the 1.21 hook in two: hurt effects on the target, damage effects on the attacker's weapon.
+        if (target.mcc$entity instanceof net.minecraft.world.entity.LivingEntity victim) {
+            net.minecraft.world.item.enchantment.EnchantmentHelper.doPostHurtEffects(victim, attacker.mcc$entity);
+            net.minecraft.world.item.enchantment.EnchantmentHelper.doPostDamageEffects(victim, attacker.mcc$entity);
+        }
     }
 
     /** Gives the killer score for a kill (the modern scoreboard criteria). */
@@ -2281,7 +2285,7 @@ public abstract class Entity implements legacyconnector.v1_12_2.net.minecraft.co
         var below = net.minecraft.core.BlockPos.containing(m.getX(), m.getY() - 0.2D, m.getZ());
         var state = m.level().getBlockState(below);
         if (state.getRenderShape() == net.minecraft.world.level.block.RenderShape.INVISIBLE) return;
-        var random = m.getRandom();
+        var random = m.level().getRandom();
         float w = m.getBbWidth();
         m.level().addParticle(new net.minecraft.core.particles.BlockParticleOption(net.minecraft.core.particles.ParticleTypes.BLOCK, state).setPos(below),
                 m.getX() + (random.nextDouble() - 0.5D) * w, m.getBoundingBox().minY + 0.1D, m.getZ() + (random.nextDouble() - 0.5D) * w,

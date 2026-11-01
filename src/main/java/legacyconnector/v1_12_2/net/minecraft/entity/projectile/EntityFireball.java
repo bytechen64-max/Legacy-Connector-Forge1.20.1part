@@ -79,9 +79,9 @@ public abstract class EntityFireball extends Entity {
         var m = mcc$modernFireball();
         if (m != null) {
             // 1.20.1 stores the acceleration as a vector (xPower/yPower/zPower); 1.20.5 as one power along the motion.
-            var d = m.getDeltaMovement();
-            if (d.lengthSqr() > 1.0E-7D) {
-                var u = d.normalize().scale(0.1D);
+            var dir = m.getDeltaMovement();
+            if (dir.lengthSqr() > 1.0E-7D) {
+                var u = dir.normalize().scale(0.1D);
                 m.xPower = u.x;
                 m.yPower = u.y;
                 m.zPower = u.z;
