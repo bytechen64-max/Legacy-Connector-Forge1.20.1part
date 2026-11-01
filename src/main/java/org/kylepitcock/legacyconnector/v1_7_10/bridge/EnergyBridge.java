@@ -20,13 +20,11 @@ public final class EnergyBridge {
     private EnergyBridge() {}
 
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
-        var type = TileEntityBridge.type();
-        if (type != null) {
-            event.registerBlockEntity(ForgeCapabilities.ENERGY, type, (be, side) -> forTile(be.legacy(), side));
-        }
+        // tile energy is a CapabilityRules built-in (RF_ENERGY); items attach their capability to the stack
         for (Item item : ItemBridge.modItems()) {
             if (!(item instanceof IEnergyContainerItem container)) continue;
-            event.registerItem(ForgeCapabilities.ENERGY, (stack, ctx) -> new ItemStorage(container, stack),
+            org.kylepitcock.legacyconnector.api.internal.ItemCapabilities.attach(net.minecraftforge.energy.IEnergyStorage.class,
+                    (stack, ctx) -> new ItemStorage(container, stack),
                     item.mcc$variants.values().toArray(new net.minecraft.world.item.Item[0]));
         }
     }

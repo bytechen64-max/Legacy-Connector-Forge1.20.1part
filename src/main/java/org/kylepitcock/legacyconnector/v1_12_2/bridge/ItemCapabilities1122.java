@@ -29,9 +29,12 @@ public final class ItemCapabilities1122 {
             if (!declaresCapabilities(item.getClass())) continue;
             var variants = ItemBridge1122.variants(item).values().toArray(new net.minecraft.world.item.Item[0]);
             if (variants.length == 0) continue;
-            event.registerItem(ForgeCapabilities.FLUID_HANDLER_ITEM, (stack, ctx) -> has(stack, CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) ? FluidBridge1122.forStack(stack) : null, variants);
-            event.registerItem(ForgeCapabilities.ENERGY, (stack, ctx) -> has(stack, CapabilityEnergy.ENERGY) ? new Energy(stack) : null, variants);
-            event.registerItem(Capabilities.ItemHandler.ITEM, (stack, ctx) -> has(stack, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) ? new Items(stack) : null, variants);
+            org.kylepitcock.legacyconnector.api.internal.ItemCapabilities.attach(net.minecraftforge.fluids.capability.IFluidHandlerItem.class,
+                    (stack, ctx) -> has(stack, CapabilityFluidHandler.FLUID_HANDLER_CAPABILITY) ? FluidBridge1122.forStack(stack) : null, variants);
+            org.kylepitcock.legacyconnector.api.internal.ItemCapabilities.attach(net.minecraftforge.energy.IEnergyStorage.class,
+                    (stack, ctx) -> has(stack, CapabilityEnergy.ENERGY) ? new Energy(stack) : null, variants);
+            org.kylepitcock.legacyconnector.api.internal.ItemCapabilities.attach(net.minecraftforge.items.IItemHandler.class,
+                    (stack, ctx) -> has(stack, CapabilityItemHandler.ITEM_HANDLER_CAPABILITY) ? new Items(stack) : null, variants);
             count++;
         }
         LOG.info("{} 1.12.2 item(s) attach capabilities", count);

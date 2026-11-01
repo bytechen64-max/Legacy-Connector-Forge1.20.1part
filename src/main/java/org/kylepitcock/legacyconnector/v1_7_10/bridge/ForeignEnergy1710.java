@@ -54,7 +54,8 @@ public final class ForeignEnergy1710 {
             if (electric == null) continue;
             ElectricItem api = ElectricItem.of(item, electric);
             if (api == null) continue;
-            event.registerItem(net.minecraftforge.common.capabilities.ForgeForgeCapabilities.ENERGY, (stack, ctx) -> new ItemStorage(api, stack),
+            org.kylepitcock.legacyconnector.api.internal.ItemCapabilities.attach(net.minecraftforge.energy.IEnergyStorage.class,
+                    (stack, ctx) -> new ItemStorage(api, stack),
                     item.mcc$variants.values().toArray(new net.minecraft.world.item.Item[0]));
         }
     }

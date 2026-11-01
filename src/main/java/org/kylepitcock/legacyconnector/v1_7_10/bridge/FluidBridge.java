@@ -111,13 +111,11 @@ public final class FluidBridge {
     // ------------------------------------------------------------------ capabilities
 
     public static void registerCapabilities(RegisterCapabilitiesEvent event) {
-        var type = TileEntityBridge.type();
-        if (type != null) {
-            event.registerBlockEntity(ForgeCapabilities.FLUID_HANDLER, type, (be, side) -> forTile(be.legacy(), side));
-        }
+        // tile fluids are a CapabilityRules built-in (FLUIDS_1710); items attach their capability to the stack
         for (legacyconnector.v1_7_10.net.minecraft.item.Item item : ItemBridge.modItems()) {
             if (!(item instanceof IFluidContainerItem container)) continue;
-            event.registerItem(ForgeCapabilities.FLUID_HANDLER_ITEM, (stack, ctx) -> new ItemHandler(container, stack),
+            org.kylepitcock.legacyconnector.api.internal.ItemCapabilities.attach(net.minecraftforge.fluids.capability.IFluidHandlerItem.class,
+                    (stack, ctx) -> new ItemHandler(container, stack),
                     item.mcc$variants.values().toArray(new net.minecraft.world.item.Item[0]));
         }
     }

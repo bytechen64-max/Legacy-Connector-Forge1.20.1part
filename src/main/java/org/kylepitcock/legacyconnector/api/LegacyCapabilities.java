@@ -2,7 +2,6 @@ package org.kylepitcock.legacyconnector.api;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.capabilities.BlockCapability;
 import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.items.IItemHandler;
@@ -18,16 +17,17 @@ import org.kylepitcock.legacyconnector.api.internal.BuiltinAdapters;
  * adapter</em>. Rules of addons are asked before Legacy Connector's own built-in adapters; an adapter that returns {@code null}
  * lets the next rule (and finally the built-ins) answer.
  *
- * <p>NeoForge caches capability lookups ({@code BlockCapabilityCache}) until {@code Level.invalidateCapabilities(pos)}. Adapters
- * should therefore return a handle that stays valid while the tile entity lives (read the legacy tile on every call instead of
- * snapshotting its state).
+ * <p>Forge 1.20.1 has no {@code BlockCapability}: a capability is named by its interface class ({@code IItemHandler.class},
+ * {@code IFluidHandler.class}, {@code IEnergyStorage.class}, or an addon's own), and the provider is attached to the host block
+ * entity when it is created. Adapters should return a handle that stays valid while the tile entity lives (read the legacy tile
+ * on every call instead of snapshotting its state).
  *
  * <h2>Built-in adapters</h2>
  * Legacy Connector already registers these on every legacy tile of the matching kind, so addons do not need to:
  * <ul>
- *   <li>1.7.10 {@code IInventory}/{@code ISidedInventory} as {@code ForgeCapabilities.ITEM_HANDLER};</li>
- *   <li>1.7.10 Forge {@code IFluidHandler} as {@code ForgeCapabilities.FLUID_HANDLER};</li>
- *   <li>1.7.10 CoFH {@code IEnergyReceiver}/{@code IEnergyProvider} as {@code ForgeCapabilities.ENERGY} (1 RF = 1 FE);</li>
+ *   <li>1.7.10 {@code IInventory}/{@code ISidedInventory} as {@code IItemHandler};</li>
+ *   <li>1.7.10 Forge {@code IFluidHandler} as {@code IFluidHandler};</li>
+ *   <li>1.7.10 CoFH {@code IEnergyReceiver}/{@code IEnergyProvider} as {@code IEnergyStorage} (1 RF = 1 FE);</li>
  *   <li>1.12.2 tiles answering {@code CapabilityItemHandler.ITEM_HANDLER_CAPABILITY} / {@code CapabilityEnergy.ENERGY} as
  *       the item handler / fluid handler / energy capabilities.</li>
  * </ul>
@@ -52,10 +52,10 @@ public interface LegacyCapabilities {
      * Provides {@code capability} for legacy tiles that are instances of the class {@code tileClassName} (a class, superclass or
      * interface) of the legacy mod {@code modId}. The class is resolved lazily; if the mod or class is missing the rule never matches.
      */
-    <T> void forTile(String modId, String tileClassName, BlockCapability<T, @Nullable Direction> capability, TileAdapter<T> adapter);
+    <T> void forTile(String modId, String tileClassName, Class<T> capability, TileAdapter<T> adapter);
 
     /** Provides {@code capability} for every legacy tile entity for which the adapter returns non-null (it must check the tile itself). */
-    <T> void forAnyTile(BlockCapability<T, @Nullable Direction> capability, TileAdapter<T> adapter);
+    <T> void forAnyTile(Class<T> capability, TileAdapter<T> adapter);
 
     /** 1.7.10 {@code IInventory}/{@code ISidedInventory} tiles as an item handler. */
     TileAdapter<IItemHandler> INVENTORY_ITEMS = BuiltinAdapters::inventory1710;

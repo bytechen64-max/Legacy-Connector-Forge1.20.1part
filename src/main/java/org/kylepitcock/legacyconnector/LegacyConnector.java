@@ -219,9 +219,6 @@ public final class LegacyConnector {
         org.kylepitcock.legacyconnector.v1_7_10.bridge.ForeignEnergy1710.registerItems(event);
         org.kylepitcock.legacyconnector.v1_7_10.bridge.FluidBridge.registerCapabilities(event);
         org.kylepitcock.legacyconnector.v1_12_2.bridge.ItemCapabilities1122.register(event);
-        var type = org.kylepitcock.legacyconnector.v1_7_10.bridge.TileEntityBridge.type();
-        if (type == null) return;
-        event.registerBlockEntity(net.minecraftforge.common.capabilities.ForgeForgeCapabilities.ITEM_HANDLER, type, (be, side) ->
-                org.kylepitcock.legacyconnector.api.internal.BuiltinAdapters.inventory1710(be.legacy(), side, be));
+        // the legacy tiles' item handlers are one of the rules CapabilityRules attaches (see INVENTORY_ITEMS)
     }
 }
