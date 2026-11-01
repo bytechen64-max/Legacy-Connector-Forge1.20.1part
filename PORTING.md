@@ -201,6 +201,15 @@ Landed in this pass (each cluster in its own commit):
 - **Item components** (partly): the effect cures are `MobEffectInstance#getCurativeItems` (cure tags are 1.20.5+), the
   `MobEffects` constants are plain objects, and `DataComponents`/`CustomData` still need the NBT path (see below).
 
+**Next blocker (found with a real legacy jar, SRParasites 1.12.2):** the legacy lifecycle runs inside one `RegisterEvent`, so the
+registries that fired before it are already locked and the legacy mod cannot add to them. Forge 1.20.1 locks each registry right
+after its own `RegisterEvent` (`NamespacedWrapper.locked`; `Registry.register` then throws "Can not register to a locked
+registry"), which NeoForge 1.21 does not do. Running the loading at `minecraft:item` left `block` and `mob_effect` locked, so
+SRP's `RegistryEvent.Register<Block>` handler failed and its own `init` then reported `Missing block: srparasites:parasiterubble`.
+The fix is a deferred registration: `LegacyRegistrar` keeps what a legacy mod registers until the `RegisterEvent` of that registry
+fires (registering it there with `event.register`), and the shim's lookups (`ForgeRegistries`, `Item.getByNameOrId`,
+`Block.getBlockFromName`, ...) answer from that pending set so a mod can still find its own content during its load.
+
 Still open:
 
 1. **Legacy content coverage**: put the 1.12.2 jars in `run-subtest/mods/1.12.2/` (1.7.10 in `mods-1710`), delete
