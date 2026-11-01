@@ -291,7 +291,7 @@ public final class RemoteControl {
     private void moveMouse(Minecraft mc, double guiX, double guiY) throws ReflectiveOperationException {
         double scale = mc.getWindow().getGuiScale();
         double px = guiX * scale, py = guiY * scale;
-        var m = net.minecraft.client.MouseHandler.class.getDeclaredMethod("onMove", long.class, double.class, double.class);
+        var m = org.kylepitcock.legacyconnector.core.Mirror.method(net.minecraft.client.MouseHandler.class, new Class<?>[]{long.class, double.class, double.class}, "onMove", "m_91561_");
         m.setAccessible(true);
         m.invoke(mc.mouseHandler, mc.getWindow().getWindow(), px, py);
     }

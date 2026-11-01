@@ -100,7 +100,7 @@ public final class LegacyEnums {
     private static void resetEnumCaches(Class<?> enumType) {
         for (String name : new String[] {"enumConstants", "enumConstantDirectory"}) {
             try {
-                Field f = Class.class.getDeclaredField(name);
+                Field f = org.kylepitcock.legacyconnector.core.Mirror.field(Class.class, name);
                 ReflectionCompat.set(f, enumType, null);
             } catch (ReflectiveOperationException | RuntimeException ignored) {
                 // best effort; values() itself reads $VALUES

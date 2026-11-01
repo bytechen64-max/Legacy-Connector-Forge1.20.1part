@@ -10,7 +10,7 @@ import sun.misc.Unsafe;
 /**
  * Restores the classic "make a final field writable" reflection hack.
  *
- * <p>Java 8 mods did {@code Field m = Field.class.getDeclaredField("modifiers"); m.setInt(f, f.getModifiers() & ~FINAL);
+ * <p>Java 8 mods did {@code Field m = org.kylepitcock.legacyconnector.core.Mirror.field(Field.class, "modifiers"); m.setInt(f, f.getModifiers() & ~FINAL);
  * f.set(null, value)}. Since Java 12 {@code modifiers} is hidden, and since Java 18 static finals cannot be
  * written reflectively at all. The transformer redirects those calls here; writes to final fields that the JVM
  * refuses fall back to {@link Unsafe}.</p>
@@ -18,7 +18,7 @@ import sun.misc.Unsafe;
 @SuppressWarnings({"deprecation", "removal"})
 public final class ReflectionCompat {
     private static final Unsafe UNSAFE;
-    /** Stand-in returned for {@code Field.class.getDeclaredField("modifiers")}. */
+    /** Stand-in returned for {@code org.kylepitcock.legacyconnector.core.Mirror.field(Field.class, "modifiers")}. */
     @SuppressWarnings("unused")
     private static int modifiers;
     private static final Field MODIFIERS_PLACEHOLDER;
@@ -26,10 +26,10 @@ public final class ReflectionCompat {
 
     static {
         try {
-            Field f = Unsafe.class.getDeclaredField("theUnsafe");
+            Field f = org.kylepitcock.legacyconnector.core.Mirror.field(Unsafe.class, "theUnsafe");
             f.setAccessible(true);
             UNSAFE = (Unsafe) f.get(null);
-            MODIFIERS_PLACEHOLDER = ReflectionCompat.class.getDeclaredField("modifiers");
+            MODIFIERS_PLACEHOLDER = org.kylepitcock.legacyconnector.core.Mirror.field(ReflectionCompat.class, "modifiers");
         } catch (ReflectiveOperationException e) {
             throw new ExceptionInInitializerError(e);
         }
@@ -255,7 +255,7 @@ public final class ReflectionCompat {
             // on a JVM with no such protection, so force the override flag. Fields also have the get/set fallbacks.
             if (flag) {
                 try {
-                    UNSAFE.putBoolean(object, UNSAFE.objectFieldOffset(OverrideProbe.class.getDeclaredField("override")), true);
+                    UNSAFE.putBoolean(object, UNSAFE.objectFieldOffset(org.kylepitcock.legacyconnector.core.Mirror.field(OverrideProbe.class, "override")), true);
                 } catch (ReflectiveOperationException | RuntimeException ignored) {
                     // stays inaccessible
                 }

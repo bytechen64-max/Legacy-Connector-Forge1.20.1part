@@ -33,7 +33,7 @@ public final class LegacyHorizon {
     private static void markFlat(ClientLevel level) {
         if (failed) return;
         try {
-            Field dataField = ClientLevel.class.getDeclaredField("clientLevelData");
+            Field dataField = org.kylepitcock.legacyconnector.core.Mirror.field(ClientLevel.class, "clientLevelData");
             dataField.setAccessible(true);
             Object data = dataField.get(level);
             Field flat = data.getClass().getDeclaredField("isFlat");

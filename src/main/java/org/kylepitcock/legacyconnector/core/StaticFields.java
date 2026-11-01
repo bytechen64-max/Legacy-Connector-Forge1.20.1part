@@ -13,7 +13,7 @@ public final class StaticFields {
             f.set(null, value);
             return;
         }
-        Field theUnsafe = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
+        Field theUnsafe = org.kylepitcock.legacyconnector.core.Mirror.field(sun.misc.Unsafe.class, "theUnsafe");
         theUnsafe.setAccessible(true);
         sun.misc.Unsafe unsafe = (sun.misc.Unsafe) theUnsafe.get(null);
         unsafe.ensureClassInitialized(f.getDeclaringClass());

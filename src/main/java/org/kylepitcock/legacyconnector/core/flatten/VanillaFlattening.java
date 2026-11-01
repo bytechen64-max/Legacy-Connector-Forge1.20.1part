@@ -47,7 +47,7 @@ public final class VanillaFlattening {
     @SuppressWarnings("unchecked")
     private static Object2IntMap<String> idByOldName() {
         try {
-            var field = net.minecraft.util.datafix.fixes.BlockStateData.class.getDeclaredField("ID_BY_OLD_NAME");
+            var field = org.kylepitcock.legacyconnector.core.Mirror.field(net.minecraft.util.datafix.fixes.BlockStateData.class, "ID_BY_OLD_NAME", "f_14937_");
             field.setAccessible(true);
             return (Object2IntMap<String>) field.get(null);
         } catch (ReflectiveOperationException | ClassCastException e) {

@@ -181,7 +181,7 @@ public final class VillagerBridge {
     /** A villager without a world: trade handlers only read its profession and random. */
     private static EntityVillager placeholder() {
         try {
-            var f = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
+            var f = org.kylepitcock.legacyconnector.core.Mirror.field(sun.misc.Unsafe.class, "theUnsafe");
             f.setAccessible(true);
             return (EntityVillager) ((sun.misc.Unsafe) f.get(null)).allocateInstance(EntityBridge.VillagerView.class);
         } catch (ReflectiveOperationException | RuntimeException e) {

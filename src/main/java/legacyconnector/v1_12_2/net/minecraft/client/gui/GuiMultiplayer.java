@@ -34,7 +34,7 @@ public class GuiMultiplayer extends GuiScreen {
     private static net.minecraft.client.multiplayer.ServerData mcc$selectedModern() {
         if (!(net.minecraft.client.Minecraft.getInstance().screen instanceof net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen screen)) return null;
         try {
-            var f = net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen.class.getDeclaredField("serverSelectionList");
+            var f = org.kylepitcock.legacyconnector.core.Mirror.field(net.minecraft.client.gui.screens.multiplayer.JoinMultiplayerScreen.class, "serverSelectionList", "f_99673_");
             f.setAccessible(true);
             var list = (net.minecraft.client.gui.screens.multiplayer.ServerSelectionList) f.get(screen);
             return list.getSelected() instanceof net.minecraft.client.gui.screens.multiplayer.ServerSelectionList.OnlineServerEntry e ? e.getServerData() : null;

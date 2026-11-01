@@ -36,7 +36,7 @@ public final class VanillaBlockRenderers {
         for (Class<?> c = block.getClass(); c != null && c != Block.class; c = c.getSuperclass()) {
             if (c.getName().startsWith("legacyconnector.")) continue;
             try {
-                c.getDeclaredMethod("getIcon", IBlockAccess.class, int.class, int.class, int.class, int.class);
+                org.kylepitcock.legacyconnector.core.Mirror.method(c, "getIcon", IBlockAccess.class, int.class, int.class, int.class, int.class);
                 return true;
             } catch (NoSuchMethodException ignored) {
             } catch (LinkageError e) {

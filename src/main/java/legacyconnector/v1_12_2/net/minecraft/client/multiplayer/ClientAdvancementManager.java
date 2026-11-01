@@ -26,7 +26,7 @@ public class ClientAdvancementManager {
         var modern = modern();
         if (modern == null) return out;
         try {
-            var f = net.minecraft.client.multiplayer.ClientAdvancements.class.getDeclaredField("progress");
+            var f = org.kylepitcock.legacyconnector.core.Mirror.field(net.minecraft.client.multiplayer.ClientAdvancements.class, "progress", "f_104390_");
             f.setAccessible(true);
             // 1.20.1 keys the client's progress by the advancement itself (1.20.2+ uses AdvancementHolder).
             var map = (Map<net.minecraft.advancements.Advancement, net.minecraft.advancements.AdvancementProgress>) f.get(modern);

@@ -83,7 +83,7 @@ public class EntityFireworkRocket extends legacyconnector.v1_12_2.net.minecraft.
         var m = mcc$self();
         if (m == null) return false;
         try {
-            var method = net.minecraft.world.entity.projectile.FireworkRocketEntity.class.getDeclaredMethod("isAttachedToEntity");
+            var method = org.kylepitcock.legacyconnector.core.Mirror.method(net.minecraft.world.entity.projectile.FireworkRocketEntity.class, new Class<?>[0], "isAttachedToEntity", "m_37088_");
             method.setAccessible(true);
             return (Boolean) method.invoke(m);
         } catch (ReflectiveOperationException | RuntimeException e) {

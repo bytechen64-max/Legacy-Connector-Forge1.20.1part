@@ -24,23 +24,23 @@ public final class Hands1122 {
         reflected = true;
         Class<?> c = ItemInHandRenderer.class;
         try {
-            renderPlayerArm = c.getDeclaredMethod("renderPlayerArm", com.mojang.blaze3d.vertex.PoseStack.class, net.minecraft.client.renderer.MultiBufferSource.class,
+            renderPlayerArm = org.kylepitcock.legacyconnector.core.Mirror.method(c, "renderPlayerArm", com.mojang.blaze3d.vertex.PoseStack.class, net.minecraft.client.renderer.MultiBufferSource.class,
                     int.class, float.class, float.class, HumanoidArm.class);
             renderPlayerArm.setAccessible(true);
         } catch (ReflectiveOperationException | RuntimeException e) {
             renderPlayerArm = null;
         }
         try {
-            renderMapHand = c.getDeclaredMethod("renderMapHand", com.mojang.blaze3d.vertex.PoseStack.class, net.minecraft.client.renderer.MultiBufferSource.class,
+            renderMapHand = org.kylepitcock.legacyconnector.core.Mirror.method(c, "renderMapHand", com.mojang.blaze3d.vertex.PoseStack.class, net.minecraft.client.renderer.MultiBufferSource.class,
                     int.class, HumanoidArm.class);
             renderMapHand.setAccessible(true);
         } catch (ReflectiveOperationException | RuntimeException e) {
             renderMapHand = null;
         }
         try {
-            mainHandItem = c.getDeclaredField("mainHandItem");
+            mainHandItem = org.kylepitcock.legacyconnector.core.Mirror.field(c, "mainHandItem");
             mainHandItem.setAccessible(true);
-            offHandItem = c.getDeclaredField("offHandItem");
+            offHandItem = org.kylepitcock.legacyconnector.core.Mirror.field(c, "offHandItem");
             offHandItem.setAccessible(true);
         } catch (ReflectiveOperationException | RuntimeException e) {
             mainHandItem = offHandItem = null;

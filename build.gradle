@@ -244,6 +244,71 @@ tasks.matching { it.name == 'reobfJar' }.configureEach {
     extraMappings.from(mixinShadowMappingsFile)
 }
 
+// Reflection on Minecraft's own members has to work in both runs: the development game has the official names a mod is compiled
+// against, an installed one the SRG names. core/Mirror reads this table, which is the ForgeGradle mapping filtered to the member
+// names that appear in our own classes (so it stays small).
+def mirrorTable = layout.buildDirectory.file('generated/mirror/legacyconnector/mirror.tsrg')
+tasks.register('generateMirrorTable') {
+    group = 'build'
+    description = 'Writes the official -> SRG member names core/Mirror needs in an installed game.'
+    def output = mirrorTable
+    inputs.file(srgMappingsFile)
+    inputs.files(sourceSets.main.output.classesDirs)
+    outputs.file(output)
+    dependsOn 'createMcpToSrg'
+    dependsOn 'compileJava'
+    doLast {
+        // every identifier-shaped run of bytes in our classes: the member names a reflection site can use
+        Set<String> names = new HashSet<>()
+        sourceSets.main.output.classesDirs.each { dir ->
+            if (!dir.exists()) return
+            dir.eachFileRecurse { file ->
+                if (!file.name.endsWith('.class')) return
+                byte[] bytes = file.bytes
+                StringBuilder run = new StringBuilder()
+                for (int i = 0; i < bytes.length; i++) {
+                    int b = bytes[i] & 0xFF
+                    if ((b >= (int) 'a' && b <= (int) 'z') || (b >= (int) 'A' && b <= (int) 'Z')
+                            || (b >= (int) '0' && b <= (int) '9') || b == (int) '_' || b == (int) '$') {
+                        run.append((char) b)
+                    } else {
+                        if (run.length() >= 3) names.add(run.toString())
+                        run.setLength(0)
+                    }
+                }
+                if (run.length() >= 3) names.add(run.toString())
+            }
+        }
+        File out = output.get().asFile
+        out.parentFile.mkdirs()
+        String owner = null
+        out.withWriter('UTF-8') { writer ->
+            srgMappingsFile.get().asFile.eachLine('UTF-8') { String raw ->
+                if (raw.startsWith('#') || raw.startsWith('tsrg2') || raw.isEmpty()) return
+                if (!raw.startsWith('\t')) {
+                    owner = raw.split('\\s+')[0]
+                    return
+                }
+                if (raw.startsWith('\t\t') || owner == null) return
+                if (!owner.startsWith('net/minecraft/') && !owner.startsWith('net/minecraftforge/')) return
+                String[] parts = raw.substring(1).trim().split('\\s+')
+                if (parts.length == 2) {
+                    if (parts[0].startsWith('<') || !names.contains(parts[0])) return
+                    writer.write("F ${owner} ${parts[0]} ${parts[1]}\n")
+                } else if (parts.length == 3) {
+                    if (parts[0].startsWith('<') || parts[0].startsWith('lambda$') || !names.contains(parts[0])) return
+                    writer.write("M ${owner} ${parts[0]} ${parts[2]}\n")
+                }
+            }
+        }
+        logger.info("Mirror table: {} ({} bytes)", out, out.length())
+    }
+}
+sourceSets.main.resources.srcDir(layout.buildDirectory.dir('generated/mirror'))
+tasks.named('processResources', ProcessResources) {
+    dependsOn 'generateMirrorTable'
+}
+
 // Rewrites the official-named access transformer into the SRG names Forge's runtime matches against.
 def remapAccessTransformer = tasks.register('remapAccessTransformer') {
     group = 'build'

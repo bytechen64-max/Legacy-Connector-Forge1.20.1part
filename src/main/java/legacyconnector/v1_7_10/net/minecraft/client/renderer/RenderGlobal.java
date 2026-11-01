@@ -135,7 +135,7 @@ public class RenderGlobal {
             if (renderer == null || failed) return null;
             try {
                 if (field == null) {
-                    field = net.minecraft.client.renderer.LevelRenderer.class.getDeclaredField("destroyingBlocks");
+                    field = org.kylepitcock.legacyconnector.core.Mirror.field(net.minecraft.client.renderer.LevelRenderer.class, "destroyingBlocks", "f_109408_");
                     field.setAccessible(true);
                 }
                 return (it.unimi.dsi.fastutil.ints.Int2ObjectMap<net.minecraft.server.level.BlockDestructionProgress>) field.get(renderer);

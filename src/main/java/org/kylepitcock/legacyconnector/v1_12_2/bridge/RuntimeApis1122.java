@@ -76,7 +76,7 @@ public final class RuntimeApis1122 {
     static Object blank(Class<?> type) {
         if (type == null || type.isInterface() || java.lang.reflect.Modifier.isAbstract(type.getModifiers())) return null;
         try {
-            java.lang.reflect.Field f = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
+            java.lang.reflect.Field f = org.kylepitcock.legacyconnector.core.Mirror.field(sun.misc.Unsafe.class, "theUnsafe");
             f.setAccessible(true);
             return ((sun.misc.Unsafe) f.get(null)).allocateInstance(type);
         } catch (ReflectiveOperationException | RuntimeException e) {

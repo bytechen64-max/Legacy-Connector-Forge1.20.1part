@@ -169,7 +169,7 @@ public class LegacyBlockEntity extends BlockEntity implements org.kylepitcock.le
         return UPDATES.computeIfAbsent(type, c -> {
             for (Class<?> k = c; k != null && !k.getName().startsWith("legacyconnector."); k = k.getSuperclass()) {
                 try {
-                    k.getDeclaredMethod("updateEntity");
+                    org.kylepitcock.legacyconnector.core.Mirror.method(k, "updateEntity");
                     return true;
                 } catch (NoSuchMethodException ignored) {
                     // keep looking up the hierarchy

@@ -53,11 +53,11 @@ public final class LegacySoundSources {
         if (reflectionFailed) return null;
         try {
             if (engineField == null) {
-                engineField = net.minecraft.client.sounds.SoundManager.class.getDeclaredField("soundEngine");
+                engineField = org.kylepitcock.legacyconnector.core.Mirror.field(net.minecraft.client.sounds.SoundManager.class, "soundEngine", "f_120349_");
                 engineField.setAccessible(true);
-                accessField = SoundEngine.class.getDeclaredField("channelAccess");
+                accessField = org.kylepitcock.legacyconnector.core.Mirror.field(SoundEngine.class, "channelAccess", "f_120224_");
                 accessField.setAccessible(true);
-                loadedField = SoundEngine.class.getDeclaredField("loaded");
+                loadedField = org.kylepitcock.legacyconnector.core.Mirror.field(SoundEngine.class, "loaded", "f_120219_");
                 loadedField.setAccessible(true);
             }
             if (lastEngine != null) return lastEngine;

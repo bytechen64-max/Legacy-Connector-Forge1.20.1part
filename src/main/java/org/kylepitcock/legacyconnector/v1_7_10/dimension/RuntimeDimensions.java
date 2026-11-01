@@ -119,7 +119,7 @@ public final class RuntimeDimensions {
     }
 
     private static Object field(MinecraftServer server, String name) throws ReflectiveOperationException {
-        var f = MinecraftServer.class.getDeclaredField(name);
+        var f = org.kylepitcock.legacyconnector.core.Mirror.field(MinecraftServer.class, name);
         f.setAccessible(true);
         return f.get(server);
     }

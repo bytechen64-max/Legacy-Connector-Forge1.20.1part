@@ -47,7 +47,7 @@ public class GenLayerBiome extends GenLayer {
     private static Object field(Object o, String name) {
         for (Class<?> c = o.getClass(); c != null; c = c.getSuperclass()) {
             try {
-                var f = c.getDeclaredField(name);
+                var f = org.kylepitcock.legacyconnector.core.Mirror.field(c, name);
                 f.setAccessible(true);
                 return f.get(o);
             } catch (NoSuchFieldException e) {

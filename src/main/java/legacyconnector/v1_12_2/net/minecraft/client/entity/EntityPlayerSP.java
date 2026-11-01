@@ -146,7 +146,7 @@ public class EntityPlayerSP extends AbstractClientPlayer {
     private static java.lang.reflect.Field localField(String name) {
         return LOCAL_FIELDS.computeIfAbsent(name, n -> {
             try {
-                var f = net.minecraft.client.player.LocalPlayer.class.getDeclaredField(n);
+                var f = org.kylepitcock.legacyconnector.core.Mirror.field(net.minecraft.client.player.LocalPlayer.class, n);
                 f.setAccessible(true);
                 return f;
             } catch (ReflectiveOperationException | RuntimeException e) {

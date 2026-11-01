@@ -44,7 +44,7 @@ public class EntityTracker {
                 .legacyconnector$entityMap().get(entity.mcc$entity.getId());
         if (tracked == null) return out;
         try {
-            var field = tracked.getClass().getDeclaredField("seenBy");
+            var field = org.kylepitcock.legacyconnector.core.Mirror.field(tracked.getClass(), "seenBy");
             field.setAccessible(true);
             for (Object connection : (java.util.Set<?>) field.get(tracked)) {
                 ServerPlayer p = ((net.minecraft.server.network.ServerPlayerConnection) connection).getPlayer();

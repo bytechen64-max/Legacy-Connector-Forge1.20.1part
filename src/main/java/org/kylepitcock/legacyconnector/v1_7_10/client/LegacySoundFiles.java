@@ -189,7 +189,7 @@ public final class LegacySoundFiles {
             if (soundCacheField == null) {
                 Field found = null;
                 try {
-                    found = SoundManager.class.getDeclaredField("soundCache");
+                    found = org.kylepitcock.legacyconnector.core.Mirror.field(SoundManager.class, "soundCache");
                 } catch (NoSuchFieldException e) {
                     for (Field f : SoundManager.class.getDeclaredFields()) {
                         if (Map.class.isAssignableFrom(f.getType()) && f.getGenericType().getTypeName().contains(Resource.class.getName())) found = f;

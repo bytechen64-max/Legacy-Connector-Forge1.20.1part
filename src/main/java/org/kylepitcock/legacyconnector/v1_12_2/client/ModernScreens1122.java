@@ -439,7 +439,7 @@ public final class ModernScreens1122 {
     private static net.minecraft.world.item.CreativeModeTab selectedTab() {
         try {
             if (selectedTabField == null) {
-                var f = CreativeModeInventoryScreen.class.getDeclaredField("selectedTab");
+                var f = org.kylepitcock.legacyconnector.core.Mirror.field(CreativeModeInventoryScreen.class, "selectedTab");
                 f.setAccessible(true);
                 selectedTabField = f;
             }

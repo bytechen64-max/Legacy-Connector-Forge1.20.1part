@@ -888,7 +888,7 @@ public final class EventBridge1710 {
         protected Boolean computeValue(Class<?> type) {
             for (Class<?> c = type; c != null && !c.getName().startsWith("legacyconnector."); c = c.getSuperclass()) {
                 try {
-                    c.getDeclaredMethod("updateWeather");
+                    org.kylepitcock.legacyconnector.core.Mirror.method(c, "updateWeather");
                     return true;
                 } catch (NoSuchMethodException | LinkageError ignored) {
                 }

@@ -2064,7 +2064,7 @@ public class World implements IBlockAccess {
         List<NextTickListEntry> out = new ArrayList<>();
         long now = s.getGameTime();
         try {
-            var field = net.minecraft.world.ticks.LevelTicks.class.getDeclaredField("allContainers");
+            var field = org.kylepitcock.legacyconnector.core.Mirror.field(net.minecraft.world.ticks.LevelTicks.class, "allContainers", "f_193202_");
             field.setAccessible(true);
             @SuppressWarnings("unchecked")
             var containers = (it.unimi.dsi.fastutil.longs.Long2ObjectMap<net.minecraft.world.ticks.LevelChunkTicks<net.minecraft.world.level.block.Block>>) field.get(s.getBlockTicks());

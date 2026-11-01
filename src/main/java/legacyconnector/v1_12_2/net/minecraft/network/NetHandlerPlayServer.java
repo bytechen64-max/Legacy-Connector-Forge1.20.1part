@@ -30,7 +30,7 @@ public class NetHandlerPlayServer implements legacyconnector.v1_12_2.net.minecra
 
     private static java.lang.reflect.Field aboveGroundField() throws ReflectiveOperationException {
         if (aboveGround == null) {
-            java.lang.reflect.Field f = net.minecraft.server.network.ServerGamePacketListenerImpl.class.getDeclaredField("aboveGroundTickCount");
+            java.lang.reflect.Field f = org.kylepitcock.legacyconnector.core.Mirror.field(net.minecraft.server.network.ServerGamePacketListenerImpl.class, "aboveGroundTickCount", "f_9737_");
             f.setAccessible(true);
             aboveGround = f;
         }

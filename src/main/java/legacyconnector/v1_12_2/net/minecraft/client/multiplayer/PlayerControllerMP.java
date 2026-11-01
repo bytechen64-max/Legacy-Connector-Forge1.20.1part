@@ -32,7 +32,7 @@ public class PlayerControllerMP {
         var m = mode();
         if (m == null) return fallback;
         try {
-            var f = net.minecraft.client.multiplayer.MultiPlayerGameMode.class.getDeclaredField(name);
+            var f = org.kylepitcock.legacyconnector.core.Mirror.field(net.minecraft.client.multiplayer.MultiPlayerGameMode.class, name);
             f.setAccessible(true);
             @SuppressWarnings("unchecked")
             T v = (T) f.get(m);

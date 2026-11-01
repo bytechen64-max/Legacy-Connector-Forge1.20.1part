@@ -44,7 +44,7 @@ public enum CapabilityManager {
 
     /** Forge wrote the capability into the mods' public static final fields; so do we. */
     private static void setFinalStatic(Field f, Object value) throws ReflectiveOperationException {
-        Field theUnsafe = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
+        Field theUnsafe = org.kylepitcock.legacyconnector.core.Mirror.field(sun.misc.Unsafe.class, "theUnsafe");
         theUnsafe.setAccessible(true);
         sun.misc.Unsafe unsafe = (sun.misc.Unsafe) theUnsafe.get(null);
         unsafe.ensureClassInitialized(f.getDeclaringClass());

@@ -91,7 +91,7 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData {
         var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         if (server == null) return null;
         try {
-            var f = net.minecraft.server.MinecraftServer.class.getDeclaredField("playerDataStorage");
+            var f = org.kylepitcock.legacyconnector.core.Mirror.field(net.minecraft.server.MinecraftServer.class, "playerDataStorage", "f_129745_");
             f.setAccessible(true);
             return (net.minecraft.world.level.storage.PlayerDataStorage) f.get(server);
         } catch (ReflectiveOperationException | RuntimeException e) {

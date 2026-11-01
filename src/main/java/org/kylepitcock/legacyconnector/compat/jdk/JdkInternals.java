@@ -26,10 +26,10 @@ public final class JdkInternals {
         if (done) return;
         done = true;
         try {
-            Field f = Unsafe.class.getDeclaredField("theUnsafe");
+            Field f = org.kylepitcock.legacyconnector.core.Mirror.field(Unsafe.class, "theUnsafe");
             f.setAccessible(true);
             Unsafe unsafe = (Unsafe) f.get(null);
-            Field implField = MethodHandles.Lookup.class.getDeclaredField("IMPL_LOOKUP");
+            Field implField = org.kylepitcock.legacyconnector.core.Mirror.field(MethodHandles.Lookup.class, "IMPL_LOOKUP");
             MethodHandles.Lookup impl = (MethodHandles.Lookup) unsafe.getObject(unsafe.staticFieldBase(implField), unsafe.staticFieldOffset(implField));
             MethodHandle addExports = impl.findVirtual(Module.class, "implAddExports", MethodType.methodType(void.class, String.class));
             int count = 0;

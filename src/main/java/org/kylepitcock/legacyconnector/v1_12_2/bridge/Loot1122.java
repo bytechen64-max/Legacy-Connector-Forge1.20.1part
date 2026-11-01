@@ -78,7 +78,7 @@ public final class Loot1122 {
 
     private static int fieldInt(LootEntry entry, String name, int fallback) {
         try {
-            var f = LootEntry.class.getDeclaredField(name);
+            var f = org.kylepitcock.legacyconnector.core.Mirror.field(LootEntry.class, name);
             f.setAccessible(true);
             return f.getInt(entry);
         } catch (ReflectiveOperationException | RuntimeException e) {
@@ -88,7 +88,7 @@ public final class Loot1122 {
 
     private static LootCondition[] conditionsOf(LootEntry entry) {
         try {
-            var f = LootEntry.class.getDeclaredField("conditions");
+            var f = org.kylepitcock.legacyconnector.core.Mirror.field(LootEntry.class, "conditions");
             f.setAccessible(true);
             LootCondition[] c = (LootCondition[]) f.get(entry);
             return c == null ? new LootCondition[0] : c;
@@ -131,19 +131,19 @@ public final class Loot1122 {
 
     @SuppressWarnings("unchecked")
     private static List<LootPoolEntryContainer> entries(net.minecraft.world.level.storage.loot.LootPool pool) throws ReflectiveOperationException {
-        var f = net.minecraft.world.level.storage.loot.LootPool.class.getDeclaredField("entries");
+        var f = org.kylepitcock.legacyconnector.core.Mirror.field(net.minecraft.world.level.storage.loot.LootPool.class, "entries", "f_79023_");
         f.setAccessible(true);
         return (List<LootPoolEntryContainer>) f.get(pool);
     }
 
     private static void setEntries(net.minecraft.world.level.storage.loot.LootPool pool, List<LootPoolEntryContainer> entries) throws ReflectiveOperationException {
-        var f = net.minecraft.world.level.storage.loot.LootPool.class.getDeclaredField("entries");
+        var f = org.kylepitcock.legacyconnector.core.Mirror.field(net.minecraft.world.level.storage.loot.LootPool.class, "entries", "f_79023_");
         f.setAccessible(true);
         try {
             f.set(pool, entries);
         } catch (IllegalAccessException e) {
             // final field: through Unsafe
-            var u = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
+            var u = org.kylepitcock.legacyconnector.core.Mirror.field(sun.misc.Unsafe.class, "theUnsafe");
             u.setAccessible(true);
             var unsafe = (sun.misc.Unsafe) u.get(null);
             unsafe.putObject(pool, unsafe.objectFieldOffset(f), entries);

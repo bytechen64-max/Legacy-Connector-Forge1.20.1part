@@ -54,7 +54,7 @@ public final class PlacementSelfTest1122 {
         try {
             var ctx = new net.minecraft.world.item.context.BlockPlaceContext(level, player, InteractionHand.MAIN_HAND, stack, hit);
             if (!ctx.canPlace()) return ": the position is not replaceable";
-            var m = net.minecraft.world.item.BlockItem.class.getDeclaredMethod("getPlacementState", net.minecraft.world.item.context.BlockPlaceContext.class);
+            var m = org.kylepitcock.legacyconnector.core.Mirror.method(net.minecraft.world.item.BlockItem.class, new Class<?>[]{net.minecraft.world.item.context.BlockPlaceContext.class}, "getPlacementState", "m_5965_");
             m.setAccessible(true);
             var state = (net.minecraft.world.level.block.state.BlockState) m.invoke(item, ctx);
             if (state == null) {

@@ -49,7 +49,7 @@ public class TileEntityFurnace extends TileEntityLockable implements ITickable, 
         this.mcc$furnace = furnace;
         this.furnaceItemStacks = new org.kylepitcock.legacyconnector.v1_12_2.bridge.ModernStackList1122(furnace);
         try {
-            var f = net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity.class.getDeclaredField("dataAccess");
+            var f = org.kylepitcock.legacyconnector.core.Mirror.field(net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity.class, "dataAccess", "f_58311_");
             f.setAccessible(true);
             mcc$data = (net.minecraft.world.inventory.ContainerData) f.get(furnace);
         } catch (ReflectiveOperationException | RuntimeException e) {

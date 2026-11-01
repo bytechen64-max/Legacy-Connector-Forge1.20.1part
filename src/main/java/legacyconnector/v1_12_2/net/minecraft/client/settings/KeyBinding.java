@@ -264,7 +264,7 @@ public class KeyBinding implements Comparable<KeyBinding> {
     private static Map<String, Integer> mcc$categoryOrder() {
         if (net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) {
             try {
-                var f = net.minecraft.client.KeyMapping.class.getDeclaredField("CATEGORY_SORT_ORDER");
+                var f = org.kylepitcock.legacyconnector.core.Mirror.field(net.minecraft.client.KeyMapping.class, "CATEGORY_SORT_ORDER", "f_90812_");
                 f.setAccessible(true);
                 return (Map<String, Integer>) f.get(null);
             } catch (ReflectiveOperationException | RuntimeException e) {
@@ -282,7 +282,7 @@ public class KeyBinding implements Comparable<KeyBinding> {
 
     private static synchronized java.lang.reflect.Field mcc$clickCount() throws ReflectiveOperationException {
         if (clickCount == null) {
-            clickCount = net.minecraft.client.KeyMapping.class.getDeclaredField("clickCount");
+            clickCount = org.kylepitcock.legacyconnector.core.Mirror.field(net.minecraft.client.KeyMapping.class, "clickCount", "f_90818_");
             clickCount.setAccessible(true);
         }
         return clickCount;

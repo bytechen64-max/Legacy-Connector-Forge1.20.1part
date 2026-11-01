@@ -72,7 +72,7 @@ public final class VanillaBlocks1122 {
     @SuppressWarnings("unchecked")
     private static void reverse(net.minecraft.world.level.block.Block modern, Block b) {
         try {
-            var f = Vanilla1122.class.getDeclaredField("BLOCK_REVERSE");
+            var f = org.kylepitcock.legacyconnector.core.Mirror.field(Vanilla1122.class, "BLOCK_REVERSE");
             f.setAccessible(true);
             synchronized (Vanilla1122.class) {
                 var map = (Map<net.minecraft.world.level.block.Block, Block>) f.get(null);
@@ -87,7 +87,7 @@ public final class VanillaBlocks1122 {
     @SuppressWarnings("unchecked")
     private static void reverseItem(net.minecraft.world.item.Item modern, Item i) {
         try {
-            var f = Vanilla1122.class.getDeclaredField("ITEM_REVERSE");
+            var f = org.kylepitcock.legacyconnector.core.Mirror.field(Vanilla1122.class, "ITEM_REVERSE");
             f.setAccessible(true);
             synchronized (Vanilla1122.class) {
                 var map = (Map<net.minecraft.world.item.Item, Item>) f.get(null);

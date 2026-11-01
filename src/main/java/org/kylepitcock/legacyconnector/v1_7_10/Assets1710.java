@@ -555,7 +555,7 @@ public final class Assets1710 implements GeneratedPack.Contributor {
         for (Class<?> c = item.getClass(); c != null && c != Item.class; c = c.getSuperclass()) {
             if (c.getName().startsWith("legacyconnector.")) continue; // shim classes forward to the damage-based icons
             try {
-                c.getDeclaredMethod("getIcon", legacyconnector.v1_7_10.net.minecraft.item.ItemStack.class, int.class);
+                org.kylepitcock.legacyconnector.core.Mirror.method(c, "getIcon", legacyconnector.v1_7_10.net.minecraft.item.ItemStack.class, int.class);
                 return true;
             } catch (NoSuchMethodException ignored) {
             } catch (LinkageError e) {

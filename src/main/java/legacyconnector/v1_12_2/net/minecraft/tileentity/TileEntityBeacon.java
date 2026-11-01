@@ -27,7 +27,7 @@ public class TileEntityBeacon extends TileEntity implements org.kylepitcock.lega
     public void mcc$refresh() {
         if (mcc$beacon == null) return;
         try {
-            var f = net.minecraft.world.level.block.entity.BeaconBlockEntity.class.getDeclaredField("levels");
+            var f = org.kylepitcock.legacyconnector.core.Mirror.field(net.minecraft.world.level.block.entity.BeaconBlockEntity.class, "levels", "f_58650_");
             f.setAccessible(true);
             levels = f.getInt(mcc$beacon);
         } catch (ReflectiveOperationException | RuntimeException e) {

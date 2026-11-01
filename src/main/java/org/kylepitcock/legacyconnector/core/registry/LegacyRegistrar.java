@@ -46,7 +46,7 @@ public final class LegacyRegistrar {
         for (Registry<?> registry : net.minecraft.core.registries.BuiltInRegistries.REGISTRY) {
             if (!(registry instanceof MappedRegistry<?> mapped)) continue;
             try {
-                java.lang.reflect.Field f = MappedRegistry.class.getDeclaredField("unregisteredIntrusiveHolders");
+                java.lang.reflect.Field f = org.kylepitcock.legacyconnector.core.Mirror.field(MappedRegistry.class, "unregisteredIntrusiveHolders");
                 f.setAccessible(true);
                 java.util.Map<?, ?> orphans = (java.util.Map<?, ?>) f.get(mapped);
                 if (orphans == null) continue;
@@ -73,7 +73,7 @@ public final class LegacyRegistrar {
     private static boolean isFrozen(MappedRegistry<?> registry) {
                 try {
             // the access transformer widens the field only at runtime, so it is read reflectively at compile time too
-            java.lang.reflect.Field f = MappedRegistry.class.getDeclaredField("frozen");
+            java.lang.reflect.Field f = org.kylepitcock.legacyconnector.core.Mirror.field(MappedRegistry.class, "frozen");
             f.setAccessible(true);
             return f.getBoolean(registry);
         } catch (ReflectiveOperationException e) {

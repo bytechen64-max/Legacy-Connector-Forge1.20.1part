@@ -46,7 +46,7 @@ public final class Accessors {
     @SuppressWarnings("unchecked")
     public static Map<Item, DispenseItemBehavior> dispenserRegistry() {
         try {
-            var field = DispenserBlock.class.getDeclaredField("DISPENSER_REGISTRY");
+            var field = org.kylepitcock.legacyconnector.core.Mirror.field(DispenserBlock.class, "DISPENSER_REGISTRY");
             field.setAccessible(true);
             return (Map<Item, DispenseItemBehavior>) field.get(null);
         } catch (ReflectiveOperationException | ClassCastException e) {

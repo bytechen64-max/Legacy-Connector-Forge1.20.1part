@@ -16,7 +16,7 @@ public class Locale {
         var language = net.minecraft.locale.Language.getInstance();
         for (Class<?> c = language.getClass(); c != null && c != Object.class; c = c.getSuperclass()) {
             try {
-                var f = c.getDeclaredField("storage");
+                var f = org.kylepitcock.legacyconnector.core.Mirror.field(c, "storage");
                 f.setAccessible(true);
                 Object map = f.get(language);
                 if (map instanceof Map<?, ?> m) {

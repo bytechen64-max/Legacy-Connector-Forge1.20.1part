@@ -66,7 +66,7 @@ public class ShaderGroup {
     @SuppressWarnings("unchecked")
     private void mcc$loadPasses() {
         try {
-            var f = PostChain.class.getDeclaredField("passes");
+            var f = org.kylepitcock.legacyconnector.core.Mirror.field(PostChain.class, "passes");
             f.setAccessible(true);
             for (PostPass pass : (List<PostPass>) f.get(mcc$chain)) listShaders.add(new Shader(pass));
         } catch (ReflectiveOperationException | RuntimeException e) {

@@ -165,12 +165,12 @@ public class BlockModelRenderer {
                 Class<?> c = Class.forName("net.minecraft.client.renderer.block.ModelBlockRenderer$AmbientOcclusionFace");
                 mcc$aoCtor = c.getDeclaredConstructor();
                 mcc$aoCtor.setAccessible(true);
-                mcc$calculate = c.getDeclaredMethod("calculate", net.minecraft.world.level.BlockAndTintGetter.class, net.minecraft.world.level.block.state.BlockState.class,
+                mcc$calculate = org.kylepitcock.legacyconnector.core.Mirror.method(c, "calculate", net.minecraft.world.level.BlockAndTintGetter.class, net.minecraft.world.level.block.state.BlockState.class,
                         net.minecraft.core.BlockPos.class, net.minecraft.core.Direction.class, float[].class, java.util.BitSet.class, boolean.class);
                 mcc$calculate.setAccessible(true);
-                mcc$brightness = c.getDeclaredField("brightness");
+                mcc$brightness = org.kylepitcock.legacyconnector.core.Mirror.field(c, "brightness");
                 mcc$brightness.setAccessible(true);
-                mcc$lightmap = c.getDeclaredField("lightmap");
+                mcc$lightmap = org.kylepitcock.legacyconnector.core.Mirror.field(c, "lightmap");
                 mcc$lightmap.setAccessible(true);
             } catch (ReflectiveOperationException | RuntimeException e) {
                 mcc$aoCtor = null;

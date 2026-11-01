@@ -463,13 +463,13 @@ public final class Vanilla1122 {
             // not declared: made below
         }
         try {
-            Field f = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
+            Field f = org.kylepitcock.legacyconnector.core.Mirror.field(sun.misc.Unsafe.class, "theUnsafe");
             f.setAccessible(true);
             sun.misc.Unsafe unsafe = (sun.misc.Unsafe) f.get(null);
             Object constant = unsafe.allocateInstance(type);
             if (Enum.class.isAssignableFrom(type)) {
-                unsafe.putObject(constant, unsafe.objectFieldOffset(Enum.class.getDeclaredField("name")), name);
-                unsafe.putInt(constant, unsafe.objectFieldOffset(Enum.class.getDeclaredField("ordinal")), constants.size());
+                unsafe.putObject(constant, unsafe.objectFieldOffset(org.kylepitcock.legacyconnector.core.Mirror.field(Enum.class, "name")), name);
+                unsafe.putInt(constant, unsafe.objectFieldOffset(org.kylepitcock.legacyconnector.core.Mirror.field(Enum.class, "ordinal")), constants.size());
             }
             constants.put(name, constant);
             return constant;
@@ -587,7 +587,7 @@ public final class Vanilla1122 {
             }
         }
         try {
-            Field f = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
+            Field f = org.kylepitcock.legacyconnector.core.Mirror.field(sun.misc.Unsafe.class, "theUnsafe");
             f.setAccessible(true);
             Object o = ((sun.misc.Unsafe) f.get(null)).allocateInstance(type);
             if (o instanceof legacyconnector.v1_12_2.net.minecraftforge.registries.IForgeRegistryEntry.Impl<?> impl) impl.mcc$initDelegate();

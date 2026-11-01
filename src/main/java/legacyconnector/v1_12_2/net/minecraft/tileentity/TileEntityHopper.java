@@ -40,7 +40,7 @@ public class TileEntityHopper extends TileEntityLockableLoot implements IHopper,
     private static java.lang.reflect.Field cooldown() {
         if (cooldownField == null) {
             try {
-                var f = net.minecraft.world.level.block.entity.HopperBlockEntity.class.getDeclaredField("cooldownTime");
+                var f = org.kylepitcock.legacyconnector.core.Mirror.field(net.minecraft.world.level.block.entity.HopperBlockEntity.class, "cooldownTime", "f_59302_");
                 f.setAccessible(true);
                 cooldownField = f;
             } catch (ReflectiveOperationException | RuntimeException e) {

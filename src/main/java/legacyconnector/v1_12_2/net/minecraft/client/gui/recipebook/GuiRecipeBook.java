@@ -49,10 +49,10 @@ public class GuiRecipeBook extends Gui implements IRecipeUpdateListener {
         if (mcc$book == null) return;
         try {
             var cls = RecipeBookComponent.class;
-            var fx = cls.getDeclaredField("xOffset");
-            var fw = cls.getDeclaredField("width");
-            var fh = cls.getDeclaredField("height");
-            var ft = cls.getDeclaredField("tabButtons");
+            var fx = org.kylepitcock.legacyconnector.core.Mirror.field(cls, "xOffset");
+            var fw = org.kylepitcock.legacyconnector.core.Mirror.field(cls, "width");
+            var fh = org.kylepitcock.legacyconnector.core.Mirror.field(cls, "height");
+            var ft = org.kylepitcock.legacyconnector.core.Mirror.field(cls, "tabButtons");
             fx.setAccessible(true);
             fw.setAccessible(true);
             fh.setAccessible(true);

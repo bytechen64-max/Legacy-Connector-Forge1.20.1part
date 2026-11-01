@@ -135,7 +135,7 @@ final class IsbrhQuads {
         try {
             var atlas = net.minecraft.client.Minecraft.getInstance().getModelManager().getAtlas(net.minecraft.client.renderer.texture.TextureAtlas.LOCATION_BLOCKS);
             String found = null, onEdge = null;
-            java.lang.reflect.Field f = net.minecraft.client.renderer.texture.TextureAtlas.class.getDeclaredField("texturesByName");
+            java.lang.reflect.Field f = org.kylepitcock.legacyconnector.core.Mirror.field(net.minecraft.client.renderer.texture.TextureAtlas.class, "texturesByName", "f_118264_");
             f.setAccessible(true);
             @SuppressWarnings("unchecked")
             java.util.Map<net.minecraft.resources.ResourceLocation, TextureAtlasSprite> sprites = (java.util.Map<net.minecraft.resources.ResourceLocation, TextureAtlasSprite>) f.get(atlas);

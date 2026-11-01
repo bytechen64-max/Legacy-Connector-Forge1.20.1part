@@ -72,7 +72,7 @@ public class DragonFightManager {
 
     private static java.lang.reflect.Field mcc$field(String name) {
         try {
-            var f = net.minecraft.world.level.dimension.end.EndDragonFight.class.getDeclaredField(name);
+            var f = org.kylepitcock.legacyconnector.core.Mirror.field(net.minecraft.world.level.dimension.end.EndDragonFight.class, name);
             f.setAccessible(true);
             return f;
         } catch (ReflectiveOperationException | RuntimeException e) {
@@ -186,7 +186,7 @@ public class DragonFightManager {
     public void spawnNewGateway() {
         if (mcc$modern == null) return;
         try {
-            var m = net.minecraft.world.level.dimension.end.EndDragonFight.class.getDeclaredMethod("spawnNewGateway");
+            var m = org.kylepitcock.legacyconnector.core.Mirror.method(net.minecraft.world.level.dimension.end.EndDragonFight.class, new Class<?>[0], "spawnNewGateway", "m_64109_");
             m.setAccessible(true);
             m.invoke(mcc$modern);
         } catch (ReflectiveOperationException | RuntimeException e) {

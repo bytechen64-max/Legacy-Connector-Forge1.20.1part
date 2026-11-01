@@ -87,7 +87,7 @@ public final class Synth {
             ClassLoader loader = Thread.currentThread().getContextClassLoader();
             Class<?> c = Class.forName(className, false, loader != null ? loader : Synth.class.getClassLoader());
             if (c.isInterface() || java.lang.reflect.Modifier.isAbstract(c.getModifiers())) return null;
-            java.lang.reflect.Field f = sun.misc.Unsafe.class.getDeclaredField("theUnsafe");
+            java.lang.reflect.Field f = org.kylepitcock.legacyconnector.core.Mirror.field(sun.misc.Unsafe.class, "theUnsafe");
             f.setAccessible(true);
             Object o = ((sun.misc.Unsafe) f.get(null)).allocateInstance(c);
             if (o instanceof legacyconnector.v1_12_2.net.minecraftforge.registries.IForgeRegistryEntry.Impl<?> impl) impl.mcc$initDelegate();

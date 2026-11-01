@@ -281,7 +281,7 @@ public final class WorldScreenshotTest {
                         for (var stack : tab.getDisplayItems()) if (BuiltInRegistries.ITEM.getKey(stack.getItem()).getNamespace().equals(modWanted)) { mine = true; break; }
                         if (!mine || tab.getType() == net.minecraft.world.item.CreativeModeTab.Type.SEARCH) continue;
                         try {
-                            var m = net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen.class.getDeclaredMethod("selectTab", net.minecraft.world.item.CreativeModeTab.class);
+                            var m = org.kylepitcock.legacyconnector.core.Mirror.method(net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen.class, new Class<?>[]{net.minecraft.world.item.CreativeModeTab.class}, "selectTab", "m_98560_");
                             m.setAccessible(true);
                             m.invoke(screen, tab);
                             LOG.info("Creative tab shown: {}", tab.getDisplayName().getString());

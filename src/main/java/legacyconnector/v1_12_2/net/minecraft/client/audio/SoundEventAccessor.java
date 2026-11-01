@@ -70,7 +70,7 @@ public class SoundEventAccessor implements ISoundEventAccessor<Sound> {
         java.util.List<ISoundEventAccessor<Sound>> out = new java.util.ArrayList<>();
         try {
             if (mcc$list == null) {
-                var f = net.minecraft.client.sounds.WeighedSoundEvents.class.getDeclaredField("list");
+                var f = org.kylepitcock.legacyconnector.core.Mirror.field(net.minecraft.client.sounds.WeighedSoundEvents.class, "list", "f_120441_");
                 f.setAccessible(true);
                 mcc$list = f;
             }

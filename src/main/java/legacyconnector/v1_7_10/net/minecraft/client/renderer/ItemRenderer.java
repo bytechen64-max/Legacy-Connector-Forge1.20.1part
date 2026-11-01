@@ -59,15 +59,15 @@ public class ItemRenderer {
         mcc$reflected = true;
         try {
             Class<?> c = net.minecraft.client.renderer.ItemInHandRenderer.class;
-            mcc$renderArm = c.getDeclaredMethod("renderArmWithItem", net.minecraft.client.player.AbstractClientPlayer.class, float.class, float.class,
+            mcc$renderArm = org.kylepitcock.legacyconnector.core.Mirror.method(c, "renderArmWithItem", net.minecraft.client.player.AbstractClientPlayer.class, float.class, float.class,
                     net.minecraft.world.InteractionHand.class, float.class, net.minecraft.world.item.ItemStack.class, float.class,
                     com.mojang.blaze3d.vertex.PoseStack.class, net.minecraft.client.renderer.MultiBufferSource.class, int.class);
             mcc$renderArm.setAccessible(true);
-            mcc$mainItem = c.getDeclaredField("mainHandItem");
+            mcc$mainItem = org.kylepitcock.legacyconnector.core.Mirror.field(c, "mainHandItem");
             mcc$mainItem.setAccessible(true);
-            mcc$height = c.getDeclaredField("mainHandHeight");
+            mcc$height = org.kylepitcock.legacyconnector.core.Mirror.field(c, "mainHandHeight");
             mcc$height.setAccessible(true);
-            mcc$oHeight = c.getDeclaredField("oMainHandHeight");
+            mcc$oHeight = org.kylepitcock.legacyconnector.core.Mirror.field(c, "oMainHandHeight");
             mcc$oHeight.setAccessible(true);
         } catch (ReflectiveOperationException | RuntimeException e) {
             mcc$renderArm = null;

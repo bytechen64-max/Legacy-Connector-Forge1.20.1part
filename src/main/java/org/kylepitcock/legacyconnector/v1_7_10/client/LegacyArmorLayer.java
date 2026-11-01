@@ -109,7 +109,7 @@ public class LegacyArmorLayer<T extends LivingEntity, M extends HumanoidModel<T>
     @SuppressWarnings({"unchecked", "rawtypes"})
     public static void hideFromHeadLayer(LivingEntityRenderer<?, ?> renderer) {
         try {
-            var field = LivingEntityRenderer.class.getDeclaredField("layers");
+            var field = org.kylepitcock.legacyconnector.core.Mirror.field(LivingEntityRenderer.class, "layers", "f_115291_");
             field.setAccessible(true);
             java.util.List<RenderLayer<?, ?>> layers = (java.util.List<RenderLayer<?, ?>>) field.get(renderer);
             for (int i = 0; i < layers.size(); i++) {

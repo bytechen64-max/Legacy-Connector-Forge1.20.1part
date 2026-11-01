@@ -14,7 +14,7 @@ public final class Fields1122 {
 
     static {
         try {
-            MISSING = Fields1122.class.getDeclaredField("CACHE");
+            MISSING = org.kylepitcock.legacyconnector.core.Mirror.field(Fields1122.class, "CACHE");
         } catch (NoSuchFieldException e) {
             throw new ExceptionInInitializerError(e);
         }

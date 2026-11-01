@@ -672,19 +672,19 @@ public class Minecraft implements legacyconnector.v1_12_2.net.minecraft.util.ITh
         mcc$inputReflected = true;
         Class<?> c = net.minecraft.client.Minecraft.class;
         try {
-            mcc$startAttack = c.getDeclaredMethod("startAttack");
+            mcc$startAttack = org.kylepitcock.legacyconnector.core.Mirror.method(c, "startAttack");
             mcc$startAttack.setAccessible(true);
         } catch (ReflectiveOperationException | RuntimeException e) {
             mcc$startAttack = null;
         }
         try {
-            mcc$continueAttack = c.getDeclaredMethod("continueAttack", boolean.class);
+            mcc$continueAttack = org.kylepitcock.legacyconnector.core.Mirror.method(c, "continueAttack", boolean.class);
             mcc$continueAttack.setAccessible(true);
         } catch (ReflectiveOperationException | RuntimeException e) {
             mcc$continueAttack = null;
         }
         try {
-            mcc$rightClickDelay = c.getDeclaredField("rightClickDelay");
+            mcc$rightClickDelay = org.kylepitcock.legacyconnector.core.Mirror.field(c, "rightClickDelay");
             mcc$rightClickDelay.setAccessible(true);
         } catch (ReflectiveOperationException | RuntimeException e) {
             mcc$rightClickDelay = null;

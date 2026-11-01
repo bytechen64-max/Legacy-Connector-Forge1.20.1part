@@ -58,7 +58,7 @@ public abstract class MobSpawnerBaseLogic {
             Field[] out = new Field[FIELDS.length];
             for (int i = 0; i < FIELDS.length; i++) {
                 try {
-                    out[i] = BaseSpawner.class.getDeclaredField(FIELDS[i]);
+                    out[i] = org.kylepitcock.legacyconnector.core.Mirror.field(BaseSpawner.class, FIELDS[i]);
                     out[i].setAccessible(true);
                 } catch (ReflectiveOperationException | RuntimeException e) {
                     out[i] = null;

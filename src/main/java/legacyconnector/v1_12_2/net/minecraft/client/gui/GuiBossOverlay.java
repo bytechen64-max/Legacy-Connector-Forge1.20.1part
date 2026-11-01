@@ -23,7 +23,7 @@ public class GuiBossOverlay extends Gui {
     public static Map<UUID, BossInfoClient> mcc$get$mapBossInfos(GuiBossOverlay o) {
         Map<UUID, BossInfoClient> out = new LinkedHashMap<>();
         try {
-            var f = net.minecraft.client.gui.components.BossHealthOverlay.class.getDeclaredField("events");
+            var f = org.kylepitcock.legacyconnector.core.Mirror.field(net.minecraft.client.gui.components.BossHealthOverlay.class, "events", "f_93699_");
             f.setAccessible(true);
             var events = (Map<UUID, net.minecraft.client.gui.components.LerpingBossEvent>) f.get(modern());
             events.forEach((id, e) -> out.put(id, BossInfoClient.mcc$of(e)));

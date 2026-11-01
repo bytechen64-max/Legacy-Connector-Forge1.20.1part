@@ -195,7 +195,7 @@ public final class BiomePlacement {
                     k -> biomes.getHolderOrThrow(k), VANILLA_ANALOG_WEIGHT);
             // 1.20.1 keeps the parameter list in a private final field
             try {
-                var parametersField = net.minecraft.world.level.biome.MultiNoiseBiomeSourceParameterList.class.getDeclaredField("parameters");
+                var parametersField = org.kylepitcock.legacyconnector.core.Mirror.field(net.minecraft.world.level.biome.MultiNoiseBiomeSourceParameterList.class, "parameters", "f_273815_");
                 parametersField.setAccessible(true);
                 parametersField.set(preset, new Climate.ParameterList<>(List.copyOf(blended)));
             } catch (ReflectiveOperationException e) {
