@@ -76,8 +76,12 @@ public final class ClientEvents1122 {
         bus.addListener(ClientEvents1122::onLivingPost);
         bus.addListener(ClientEvents1122::onPlayerPre);
         bus.addListener(ClientEvents1122::onPlayerPost);
-        bus.addListener((net.minecraftforge.client.event.RenderFrameEvent.Pre e) -> frame++);
-        bus.addListener((net.minecraftforge.client.event.RenderFrameEvent.Post e) -> Minecraft1122.recordFrame());
+        bus.addListener((net.minecraftforge.event.TickEvent.RenderTickEvent e) -> {
+            if (e.phase == net.minecraftforge.event.TickEvent.Phase.START) frame++;
+        });
+        bus.addListener((net.minecraftforge.event.TickEvent.RenderTickEvent e) -> {
+            if (e.phase == net.minecraftforge.event.TickEvent.Phase.END) Minecraft1122.recordFrame();
+        });
         bus.addListener(ClientEvents1122::onHand);
         bus.addListener(ClientEvents1122::onBlockOverlay);
         bus.addListener(ClientEvents1122::onItemInFrame);

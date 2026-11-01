@@ -84,12 +84,12 @@ public class MinecraftServer implements ICommandSender, Runnable {
     }
 
     public java.io.File getFile(String name) {
-        return new java.io.File(mcc$server.getServerDirectory().toFile(), name);
+        return new java.io.File(mcc$server.getServerDirectory(), name);
     }
 
     /** The game's directory (the server directory; the client's game directory in single player). */
     public java.io.File getDataDirectory() {
-        return mcc$server == null ? new java.io.File(".") : mcc$server.getServerDirectory().toFile();
+        return mcc$server == null ? new java.io.File(".") : mcc$server.getServerDirectory();
     }
 
     /** The saves folder holding the running world (its parent folder). */

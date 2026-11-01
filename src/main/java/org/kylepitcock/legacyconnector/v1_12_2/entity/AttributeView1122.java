@@ -30,7 +30,7 @@ public final class AttributeView1122 extends legacyconnector.v1_12_2.net.minecra
         } catch (IllegalArgumentException e) {
             uuid = UUID.nameUUIDFromBytes(m.id().toString().getBytes());
         }
-        return new AttributeModifier(uuid, m.id().toString(), m.amount(), m.operation().ordinal());
+        return new AttributeModifier(uuid, m.id().toString(), m.getAmount(), m.getOperation().ordinal());
     }
 
     @Override
@@ -56,7 +56,7 @@ public final class AttributeView1122 extends legacyconnector.v1_12_2.net.minecra
     public Collection<AttributeModifier> getModifiersByOperation(int operation) {
         var op = net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.values()[operation];
         java.util.List<AttributeModifier> out = new java.util.ArrayList<>();
-        for (var m : modern.getModifiers()) if (m.operation() == op) out.add(legacy(m));
+        for (var m : modern.getModifiers()) if (m.getOperation() == op) out.add(legacy(m));
         return out;
     }
 

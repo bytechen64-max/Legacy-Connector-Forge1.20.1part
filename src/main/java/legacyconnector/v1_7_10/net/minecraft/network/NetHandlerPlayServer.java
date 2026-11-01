@@ -21,7 +21,7 @@ public class NetHandlerPlayServer implements legacyconnector.v1_7_10.net.minecra
 
     private static NetworkManager mcc$connectionOf(EntityPlayerMP player) {
         var sp = player == null ? null : player.mcc$serverPlayer();
-        return sp == null || sp.connection == null ? NetworkManager.MCC_DUMMY : NetworkManager.mcc$of(sp.connection.getConnection());
+        return sp == null || sp.connection == null ? NetworkManager.MCC_DUMMY : NetworkManager.mcc$of(sp.connection.connection);
     }
 
     public NetHandlerPlayServer(legacyconnector.v1_7_10.net.minecraft.server.MinecraftServer server, NetworkManager manager, EntityPlayerMP player) {

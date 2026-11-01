@@ -434,11 +434,14 @@ public final class EventBridge1122 {
                 if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
                 if (wants(TickEvent.ClientTickEvent.class)) post(new TickEvent.ClientTickEvent(TickEvent.Phase.END));
             });
-            bus.addListener((net.minecraftforge.client.event.RenderFrameEvent.Pre e) -> {
-                if (wants(TickEvent.RenderTickEvent.class)) post(new TickEvent.RenderTickEvent(TickEvent.Phase.START, e.getPartialTick().getGameTimeDeltaPartialTick(false)));
+            // 1.21 renders a frame with RenderFrameEvent; 1.20.1 fires one RenderTickEvent per phase.
+            bus.addListener((net.minecraftforge.event.TickEvent.RenderTickEvent e) -> {
+                if (e.phase != net.minecraftforge.event.TickEvent.Phase.START) return;
+                if (wants(TickEvent.RenderTickEvent.class)) post(new TickEvent.RenderTickEvent(TickEvent.Phase.START, e.partialTick));
             });
-            bus.addListener((net.minecraftforge.client.event.RenderFrameEvent.Post e) -> {
-                if (wants(TickEvent.RenderTickEvent.class)) post(new TickEvent.RenderTickEvent(TickEvent.Phase.END, e.getPartialTick().getGameTimeDeltaPartialTick(false)));
+            bus.addListener((net.minecraftforge.event.TickEvent.RenderTickEvent e) -> {
+                if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
+                if (wants(TickEvent.RenderTickEvent.class)) post(new TickEvent.RenderTickEvent(TickEvent.Phase.END, e.partialTick));
             });
         }
     }

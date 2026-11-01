@@ -173,11 +173,11 @@ public final class Vanilla1122 {
             };
             return new VanillaArmor(m, slot);
         }
-        var food = modern == null ? null : modern.components().get(net.minecraft.core.component.DataComponents.FOOD);
+        var food = modern == null ? null : modern.getFoodProperties();
         if (food != null) {
             // mods cast vanilla food to ItemFood (Project Vibrant Journeys); 1.12 kept the modifier, 1.21 the absolute saturation
-            int nutrition = food.nutrition();
-            return new VanillaFood(nutrition, nutrition == 0 ? 0F : food.saturation() / (nutrition * 2F));
+            int nutrition = food.getNutrition();
+            return new VanillaFood(nutrition, nutrition == 0 ? 0F : food.getSaturationModifier() / (nutrition * 2F));
         }
         return new VanillaItem();
     }
@@ -415,7 +415,7 @@ public final class Vanilla1122 {
     /** The modern item of a vanilla legacy item and metadata (the 1.13 flattening, through the game's own data fixers). */
     public static net.minecraft.world.item.Item modernVariant(Item item, int meta) {
         net.minecraft.world.item.Item base = item.mcc$vanillaModern;
-        if (meta <= 0 || meta == 32767 || base.components().has(net.minecraft.core.component.DataComponents.MAX_DAMAGE)) return base;
+        if (meta <= 0 || meta == 32767 || !base.isDamageableItem()) return base;
         var name = item.getRegistryName();
         if (name == null || !"minecraft".equals(name.getNamespace())) return base;
         var flat = org.kylepitcock.legacyconnector.core.flatten.VanillaFlattening.item(name.getPath(), meta);

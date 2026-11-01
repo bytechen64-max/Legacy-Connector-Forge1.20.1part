@@ -41,7 +41,9 @@ public final class ClientEvents1710 {
     public static void register(IEventBus bus) {
         bus.addListener(ClientEvents1710::onFog);
         bus.addListener(ClientEvents1710::onBlockOverlay);
-        bus.addListener((net.minecraftforge.client.event.RenderFrameEvent.Pre e) -> frame++);
+        bus.addListener((net.minecraftforge.event.TickEvent.RenderTickEvent e) -> {
+            if (e.phase == net.minecraftforge.event.TickEvent.Phase.START) frame++;
+        });
         bus.addListener(ClientEvents1710::onHand);
         bus.addListener(ClientEvents1710::onItemInFrame);
         bus.addListener(ClientEvents1710::onChat);

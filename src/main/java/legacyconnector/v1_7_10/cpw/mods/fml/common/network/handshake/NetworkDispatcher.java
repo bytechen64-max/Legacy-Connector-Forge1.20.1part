@@ -39,7 +39,7 @@ public class NetworkDispatcher extends SimpleChannelInboundHandler<Packet> imple
 
     /** The dispatcher of a server-side player's connection. */
     public static NetworkDispatcher mcc$forPlayer(net.minecraft.server.level.ServerPlayer player) {
-        return player == null || player.connection == null ? null : get(NetworkManager.mcc$of(player.connection.getConnection()));
+        return player == null || player.connection == null ? null : get(NetworkManager.mcc$of(player.connection.connection));
     }
 
     public INetHandler getNetHandler() {

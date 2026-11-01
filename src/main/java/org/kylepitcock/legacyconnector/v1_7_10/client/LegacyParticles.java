@@ -73,7 +73,7 @@ public final class LegacyParticles {
                 RenderContext.KIND_PARTICLES);
         try {
             RenderContext.setBlend(true);
-            effects().mcc$render(event.getPartialTick().getGameTimeDeltaPartialTick(false), rx, rxz, rz, ryz, rxy, event.getFrustum(), CULL_BUILT_IN, CULL_MODS);
+            effects().mcc$render(event.getPartialTick(), rx, rxz, rz, ryz, rxy, event.getFrustum(), CULL_BUILT_IN, CULL_MODS);
         } finally {
             RenderContext.end();
         }

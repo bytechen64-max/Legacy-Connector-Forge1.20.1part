@@ -70,7 +70,7 @@ public final class LegacyParticles1122 {
         float ryz = (float) (-rz * Math.sin(pitch));
         float rxy = (float) (rx * Math.sin(pitch));
         float rxz = (float) Math.cos(pitch);
-        float partial = event.getPartialTick().getGameTimeDeltaPartialTick(false);
+        float partial = event.getPartialTick();
         var buffers = Minecraft.getInstance().renderBuffers().bufferSource();
         RenderContext.beginWorld(event.getPoseStack(), buffers, 0xF000F0, net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY,
                 RenderContext.KIND_PARTICLES);

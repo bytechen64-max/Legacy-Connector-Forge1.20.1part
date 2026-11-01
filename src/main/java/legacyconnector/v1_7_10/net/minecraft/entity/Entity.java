@@ -759,7 +759,7 @@ public abstract class Entity implements ICommandSender {
                     var id = net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("legacyconnector", "legacy_step_height");
                     double wanted = v - attr.getBaseValue();
                     var old = attr.getModifier(id);
-                    if (old != null && old.amount() == wanted) return;
+                    if (old != null && old.getAmount() == wanted) return;
                     attr.removeModifier(id);
                     if (wanted != 0.0D) {
                         attr.addTransientModifier(new net.minecraft.world.entity.ai.attributes.AttributeModifier(id.toString(), wanted,

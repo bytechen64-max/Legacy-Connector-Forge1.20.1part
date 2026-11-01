@@ -89,6 +89,6 @@ public class AttributeModifier {
         } else {
             id = UUID.nameUUIDFromBytes(rl.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
         }
-        return new AttributeModifier(id, rl.toString(), m.amount(), m.operation().id());
+        return new AttributeModifier(id, rl.toString(), m.getAmount(), m.getOperation().id());
     }
 }

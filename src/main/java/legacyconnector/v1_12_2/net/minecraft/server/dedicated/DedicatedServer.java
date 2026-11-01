@@ -21,7 +21,7 @@ public class DedicatedServer extends legacyconnector.v1_12_2.net.minecraft.serve
     public static synchronized PropertyManager mcc$get$settings(DedicatedServer s) {
         if (mcc$settings == null) {
             var m = mcc$server();
-            java.io.File dir = m == null ? net.minecraftforge.fml.loading.FMLPaths.GAMEDIR.get().toFile() : m.getServerDirectory().toFile();
+            java.io.File dir = m == null ? net.minecraftforge.fml.loading.FMLPaths.GAMEDIR.get().toFile() : m.getServerDirectory();
             mcc$settings = new PropertyManager(new java.io.File(dir, "server.properties"));
         }
         return mcc$settings;

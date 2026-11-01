@@ -20,8 +20,8 @@ public class ItemFood extends Item {
         // 1.20.1 asks the item for its food properties (the FOOD data component is 1.20.5).
         net.minecraft.world.food.FoodProperties food = modern == null ? null : modern.getFoodProperties();
         this.itemUseDuration = 32;
-        this.healAmount = food == null ? 0 : food.nutrition();
-        this.saturationModifier = food == null || food.nutrition() <= 0 ? 0.6F : food.saturation() / (2.0F * food.nutrition());
+        this.healAmount = food == null ? 0 : food.getNutrition();
+        this.saturationModifier = food == null || food.getNutrition() <= 0 ? 0.6F : food.getSaturationModifier() / (2.0F * food.getNutrition());
         this.isWolfsFavoriteMeat = info.legacyName().endsWith("beef") || info.legacyName().endsWith("porkchop") || info.legacyName().endsWith("chicken") || info.legacyName().endsWith("rotten_flesh");
     }
 

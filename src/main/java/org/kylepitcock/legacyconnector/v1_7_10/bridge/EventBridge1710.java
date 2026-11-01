@@ -142,7 +142,7 @@ public final class EventBridge1710 {
             // FML 1.7.10 completed the connection's handshake (channel pipelines told) and fired the connection event just
             // before the login event
             if (e.getEntity() instanceof net.minecraft.server.level.ServerPlayer sp && sp.connection != null) {
-                var manager = legacyconnector.v1_7_10.net.minecraft.network.NetworkManager.mcc$of(sp.connection.getConnection());
+                var manager = legacyconnector.v1_7_10.net.minecraft.network.NetworkManager.mcc$of(sp.connection.connection);
                 var handler = new legacyconnector.v1_7_10.net.minecraft.network.NetHandlerPlayServer(
                         (legacyconnector.v1_7_10.net.minecraft.entity.player.EntityPlayerMP) player(sp));
                 FmlChannelBridge.fireHandshake(legacyconnector.v1_7_10.cpw.mods.fml.relauncher.Side.SERVER,
@@ -160,7 +160,7 @@ public final class EventBridge1710 {
                     && wants(fml(), legacyconnector.v1_7_10.cpw.mods.fml.common.network.FMLNetworkEvent.ServerDisconnectionFromClientEvent.class)) {
                 fml().post(new legacyconnector.v1_7_10.cpw.mods.fml.common.network.FMLNetworkEvent.ServerDisconnectionFromClientEvent(
                         new legacyconnector.v1_7_10.net.minecraft.network.NetHandlerPlayServer((legacyconnector.v1_7_10.net.minecraft.entity.player.EntityPlayerMP) player(sp)),
-                        legacyconnector.v1_7_10.net.minecraft.network.NetworkManager.mcc$of(sp.connection.getConnection())));
+                        legacyconnector.v1_7_10.net.minecraft.network.NetworkManager.mcc$of(sp.connection.connection)));
             }
         });
         gameBus.addListener((net.minecraftforge.event.entity.player.PlayerEvent.PlayerRespawnEvent e) -> {

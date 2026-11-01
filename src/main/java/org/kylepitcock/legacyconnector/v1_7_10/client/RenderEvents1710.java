@@ -36,7 +36,7 @@ public final class RenderEvents1710 {
     private static void onStage(RenderLevelStageEvent e) {
         if (e.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
             legacyconnector.v1_7_10.net.minecraft.client.renderer.ActiveRenderInfo.mcc$update(e.getCamera().getYRot(), e.getCamera().getXRot());
-            legacyconnector.v1_7_10.net.minecraft.util.Timer.mcc$frame(e.getPartialTick().getGameTimeDeltaPartialTick(false));
+            legacyconnector.v1_7_10.net.minecraft.util.Timer.mcc$frame(e.getPartialTick());
             legacyconnector.v1_7_10.net.minecraft.client.Minecraft.debugFPS = Minecraft.getInstance().getFps();
             // the camera, as 1.7.10 cached it every frame: legacy code draws world-space things relative to these (Fisk's
             // Heroes' tentacles, beams and trails were drawn as far from the player as the player is from the world origin)
