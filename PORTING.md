@@ -88,7 +88,7 @@ files in place, which forces a full recompile every time. A full type-check of t
 
 ## What is left
 
-337 compile errors at the last run (the count moves as javac gets further into the tree). Categories, highest value first:
+284 compile errors at the last run (the count moves as javac gets further into the tree). Categories, highest value first:
 
 1. **Item components** (~20). `DataComponents`/`CustomData`/`ItemEnchantments`/`PotionContents`/`ItemAttributeModifiers`
    are 1.20.5+; 1.20.1 has `stack.getTag()`/`getOrCreateTag()`, `EnchantmentHelper.getEnchantments`,
@@ -96,10 +96,6 @@ files in place, which forces a full recompile every time. A full type-check of t
    `net.minecraft.world.item.alchemy.PotionUtils` (mind the shim's *legacy* `PotionUtils` class of the same name).
    `MapId` is a plain `int` (`MapItem.getMapId`/`setMapId`). `ItemAbility`/`ItemAbilities` are NeoForge-only:
    1.20.1 uses `net.minecraftforge.common.ToolAction`/`ToolActions` and `Item#canPerformAction(ToolAction)`.
-2. **Advancements** (~20). `AdvancementHolder`/`AdvancementNode`/`AdvancementTree`/`AdvancementType` are 1.20.2+;
-   1.20.1 has `Advancement` objects in a `Map<ResourceLocation, Advancement>`, `FrameType`, and
-   `PlayerAdvancements.getOrStartProgress(Advancement)`. `Criterion` is generic in 1.20.1 (`Criterion<T extends
-   CriterionTriggerInstance>`), and `CriterionProgress` deals in `Date`, not `Instant`.
 3. **Recipes** (~12). `RecipeHolder` and `CraftingInput` are 1.20.2+; 1.20.1 `RecipeManager` stores `Recipe<?>` and
    crafting gets a `CraftingContainer`. `LegacyCraftingRecipe`'s `StreamCodec` becomes a `RecipeSerializer`
    (`fromJson`/`toNetwork`/`fromNetwork`).

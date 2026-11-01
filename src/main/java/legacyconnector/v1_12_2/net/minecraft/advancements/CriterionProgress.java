@@ -20,8 +20,8 @@ public class CriterionProgress {
         progress.revoke();
     }
 
+    /** 1.20.1 already reports a {@link java.util.Date} here (1.20.5 moved the criterion progress to {@code Instant}). */
     public java.util.Date getObtained() {
-        var at = progress.getObtained();
-        return at == null ? null : java.util.Date.from(at);
+        return progress.getObtained();
     }
 }

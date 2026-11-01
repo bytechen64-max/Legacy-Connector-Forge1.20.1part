@@ -35,7 +35,9 @@ public enum FrameType {
         throw new IllegalArgumentException("Unknown frame type '" + name + "'");
     }
 
-    public static FrameType mcc$of(net.minecraft.advancements.AdvancementType type) {
+    /** 1.20.1 calls the modern enum {@code net.minecraft.advancements.FrameType} (1.21 renamed it to {@code AdvancementType}). */
+    public static FrameType mcc$of(net.minecraft.advancements.FrameType type) {
+        if (type == null) return TASK;
         return switch (type) {
             case CHALLENGE -> CHALLENGE;
             case GOAL -> GOAL;

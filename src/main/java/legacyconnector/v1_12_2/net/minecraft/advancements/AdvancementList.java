@@ -5,70 +5,76 @@ import java.util.List;
 import legacyconnector.v1_12_2.net.minecraft.util.ResourceLocation;
 
 /**
- * A tree of advancements: on the client, a view of the game's client advancement tree ({@code connection.getAdvancementManager()}).
- * (Created by area R2b for the client advancement manager.)
+ * A tree of advancements: on the client, a view of the game's client advancement tree
+ * ({@code connection.getAdvancements()}).
+ *
+ * <p>1.20.1 still ships {@code net.minecraft.advancements.AdvancementList} (1.20.2 replaced it with
+ * {@code AdvancementTree}/{@code AdvancementNode}), so this is a thin view over it.</p>
  */
 public class AdvancementList {
-    private final net.minecraft.advancements.AdvancementTree tree;
+    private final net.minecraft.advancements.AdvancementList list;
 
     public AdvancementList() {
-        this(new net.minecraft.advancements.AdvancementTree());
+        this(new net.minecraft.advancements.AdvancementList());
     }
 
-    public AdvancementList(net.minecraft.advancements.AdvancementTree tree) {
-        this.tree = tree;
+    public AdvancementList(net.minecraft.advancements.AdvancementList list) {
+        this.list = list;
     }
 
-    public net.minecraft.advancements.AdvancementTree mcc$modern() {
-        return tree;
+    public static AdvancementList mcc$of(net.minecraft.advancements.AdvancementList list) {
+        return list == null ? null : new AdvancementList(list);
+    }
+
+    public net.minecraft.advancements.AdvancementList mcc$modern() {
+        return list;
     }
 
     public Iterable<Advancement> getRoots() {
         List<Advancement> out = new ArrayList<>();
-        for (var node : tree.roots()) out.add(Advancement.mcc$of(node.holder()));
+        for (var advancement : list.getRoots()) out.add(Advancement.mcc$of(advancement));
         return out;
     }
 
     public Iterable<Advancement> getAdvancements() {
         List<Advancement> out = new ArrayList<>();
-        for (var node : tree.nodes()) out.add(Advancement.mcc$of(node.holder()));
+        for (var advancement : list.getAllAdvancements()) out.add(Advancement.mcc$of(advancement));
         return out;
     }
 
     public Advancement getAdvancement(ResourceLocation id) {
-        var node = id == null ? null : tree.get(id.mcc$modern());
-        return node == null ? null : Advancement.mcc$of(node.holder());
+        return id == null ? null : Advancement.mcc$of(list.get(id.mcc$modern()));
     }
 
     public void clear() {
-        tree.clear();
+        list.clear();
     }
 
     public void setListener(Listener listener) {
-        tree.setListener(listener == null ? null : mcc$listener(listener));
+        list.setListener(listener == null ? null : mcc$listener(listener));
     }
 
     /** A legacy listener as the game's tree listener (not a 1.12 method). */
-    public static net.minecraft.advancements.AdvancementTree.Listener mcc$listener(Listener l) {
-        return new net.minecraft.advancements.AdvancementTree.Listener() {
+    public static net.minecraft.advancements.AdvancementList.Listener mcc$listener(Listener l) {
+        return new net.minecraft.advancements.AdvancementList.Listener() {
             @Override
-            public void onAddAdvancementRoot(net.minecraft.advancements.AdvancementNode node) {
-                l.rootAdvancementAdded(Advancement.mcc$of(node.holder()));
+            public void onAddAdvancementRoot(net.minecraft.advancements.Advancement advancement) {
+                l.rootAdvancementAdded(Advancement.mcc$of(advancement));
             }
 
             @Override
-            public void onRemoveAdvancementRoot(net.minecraft.advancements.AdvancementNode node) {
-                l.rootAdvancementRemoved(Advancement.mcc$of(node.holder()));
+            public void onRemoveAdvancementRoot(net.minecraft.advancements.Advancement advancement) {
+                l.rootAdvancementRemoved(Advancement.mcc$of(advancement));
             }
 
             @Override
-            public void onAddAdvancementTask(net.minecraft.advancements.AdvancementNode node) {
-                l.nonRootAdvancementAdded(Advancement.mcc$of(node.holder()));
+            public void onAddAdvancementTask(net.minecraft.advancements.Advancement advancement) {
+                l.nonRootAdvancementAdded(Advancement.mcc$of(advancement));
             }
 
             @Override
-            public void onRemoveAdvancementTask(net.minecraft.advancements.AdvancementNode node) {
-                l.nonRootAdvancementRemoved(Advancement.mcc$of(node.holder()));
+            public void onRemoveAdvancementTask(net.minecraft.advancements.Advancement advancement) {
+                l.nonRootAdvancementRemoved(Advancement.mcc$of(advancement));
             }
 
             @Override

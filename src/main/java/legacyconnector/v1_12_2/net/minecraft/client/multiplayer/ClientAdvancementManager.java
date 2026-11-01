@@ -6,7 +6,7 @@ import legacyconnector.v1_12_2.net.minecraft.advancements.Advancement;
 import legacyconnector.v1_12_2.net.minecraft.advancements.AdvancementList;
 import legacyconnector.v1_12_2.net.minecraft.advancements.AdvancementProgress;
 
-/** The client's copy of the advancements ({@code connection.getAdvancementManager()}): a view of the game's client advancements. */
+/** The client's copy of the advancements ({@code connection.getAdvancements()}): a view of the game's client advancements. */
 public class ClientAdvancementManager {
     /** Phantom: each advancement's progress (a snapshot of the game's). */
     @Deprecated
@@ -28,7 +28,8 @@ public class ClientAdvancementManager {
         try {
             var f = net.minecraft.client.multiplayer.ClientAdvancements.class.getDeclaredField("progress");
             f.setAccessible(true);
-            var map = (Map<net.minecraft.advancements.AdvancementHolder, net.minecraft.advancements.AdvancementProgress>) f.get(modern);
+            // 1.20.1 keys the client's progress by the advancement itself (1.20.2+ uses AdvancementHolder).
+            var map = (Map<net.minecraft.advancements.Advancement, net.minecraft.advancements.AdvancementProgress>) f.get(modern);
             map.forEach((a, p) -> out.put(Advancement.mcc$of(a), new AdvancementProgress(p)));
         } catch (ReflectiveOperationException | RuntimeException e) {
             // no progress known
@@ -38,7 +39,7 @@ public class ClientAdvancementManager {
 
     public AdvancementList getAdvancementList() {
         var modern = modern();
-        return modern == null ? new AdvancementList() : new AdvancementList(modern.getTree());
+        return modern == null ? new AdvancementList() : AdvancementList.mcc$of(modern.getAdvancements());
     }
 
     /** Opens a tab of the advancements screen (and tells the server when asked). */
@@ -57,33 +58,34 @@ public class ClientAdvancementManager {
         var tree = AdvancementList.mcc$listener(listener);
         modern.setListener(new net.minecraft.client.multiplayer.ClientAdvancements.Listener() {
             @Override
-            public void onUpdateAdvancementProgress(net.minecraft.advancements.AdvancementNode node, net.minecraft.advancements.AdvancementProgress progress) {
-                listener.onUpdateAdvancementProgress(Advancement.mcc$of(node.holder()), new AdvancementProgress(progress));
+            public void onUpdateAdvancementProgress(net.minecraft.advancements.Advancement advancement,
+                    net.minecraft.advancements.AdvancementProgress progress) {
+                listener.onUpdateAdvancementProgress(Advancement.mcc$of(advancement), new AdvancementProgress(progress));
             }
 
             @Override
-            public void onSelectedTabChanged(net.minecraft.advancements.AdvancementHolder advancement) {
+            public void onSelectedTabChanged(net.minecraft.advancements.Advancement advancement) {
                 listener.setSelectedTab(advancement == null ? null : Advancement.mcc$of(advancement));
             }
 
             @Override
-            public void onAddAdvancementRoot(net.minecraft.advancements.AdvancementNode node) {
-                tree.onAddAdvancementRoot(node);
+            public void onAddAdvancementRoot(net.minecraft.advancements.Advancement advancement) {
+                tree.onAddAdvancementRoot(advancement);
             }
 
             @Override
-            public void onRemoveAdvancementRoot(net.minecraft.advancements.AdvancementNode node) {
-                tree.onRemoveAdvancementRoot(node);
+            public void onRemoveAdvancementRoot(net.minecraft.advancements.Advancement advancement) {
+                tree.onRemoveAdvancementRoot(advancement);
             }
 
             @Override
-            public void onAddAdvancementTask(net.minecraft.advancements.AdvancementNode node) {
-                tree.onAddAdvancementTask(node);
+            public void onAddAdvancementTask(net.minecraft.advancements.Advancement advancement) {
+                tree.onAddAdvancementTask(advancement);
             }
 
             @Override
-            public void onRemoveAdvancementTask(net.minecraft.advancements.AdvancementNode node) {
-                tree.onRemoveAdvancementTask(node);
+            public void onRemoveAdvancementTask(net.minecraft.advancements.Advancement advancement) {
+                tree.onRemoveAdvancementTask(advancement);
             }
 
             @Override

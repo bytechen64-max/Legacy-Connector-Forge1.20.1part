@@ -2,68 +2,73 @@ package legacyconnector.v1_12_2.net.minecraft.advancements;
 
 import legacyconnector.v1_12_2.net.minecraft.util.ResourceLocation;
 
-/** An advancement: a view over the modern one the server loaded. */
+/**
+ * An advancement: a view over the modern one the server loaded.
+ *
+ * <p>1.20.1 still has the pre-1.20.2 advancement model (an {@link net.minecraft.advancements.Advancement} names its parent
+ * directly and the registry keys them by id), so this is a straight view instead of the 1.21
+ * {@code AdvancementHolder}/{@code AdvancementNode} indirection.</p>
+ */
 public class Advancement {
-    private final net.minecraft.advancements.AdvancementHolder holder;
+    private final net.minecraft.advancements.Advancement advancement;
 
-    public Advancement(net.minecraft.advancements.AdvancementHolder holder) {
-        this.holder = holder;
+    public Advancement(net.minecraft.advancements.Advancement advancement) {
+        this.advancement = advancement;
     }
 
-    public static Advancement mcc$of(net.minecraft.advancements.AdvancementHolder holder) {
-        return holder == null ? null : new Advancement(holder);
+    public static Advancement mcc$of(net.minecraft.advancements.Advancement advancement) {
+        return advancement == null ? null : new Advancement(advancement);
     }
 
-    public net.minecraft.advancements.AdvancementHolder mcc$modern() {
-        return holder;
+    public net.minecraft.advancements.Advancement mcc$modern() {
+        return advancement;
     }
 
     public ResourceLocation getId() {
-        return new ResourceLocation(holder.id().getNamespace(), holder.id().getPath());
+        var id = advancement.getId();
+        return new ResourceLocation(id.getNamespace(), id.getPath());
     }
 
     public Advancement getParent() {
-        var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
-        var parent = holder.value().parent().orElse(null);
-        return parent == null || server == null ? null : mcc$of(server.getAdvancements().get(parent));
+        return mcc$of(advancement.getParent());
     }
 
     /** The criteria by name (each names its modern trigger). */
     public java.util.Map<String, Criterion> getCriteria() {
         java.util.Map<String, Criterion> out = new java.util.LinkedHashMap<>();
-        holder.value().criteria().forEach((name, c) -> out.put(name, Criterion.mcc$of(c)));
+        advancement.getCriteria().forEach((name, c) -> out.put(name, Criterion.mcc$of(c)));
         return out;
     }
 
     public AdvancementRewards getRewards() {
-        return new AdvancementRewards(holder.value().rewards());
+        return new AdvancementRewards(advancement.getRewards());
     }
 
     public int getRequirementCount() {
-        return holder.value().requirements().size();
+        return advancement.getRequirements().length;
     }
 
     public legacyconnector.v1_12_2.net.minecraft.util.text.ITextComponent getDisplayText() {
-        return new legacyconnector.v1_12_2.net.minecraft.util.text.TextComponentString(holder.value().name().map(c -> c.getString()).orElse(getId().toString()));
+        return new legacyconnector.v1_12_2.net.minecraft.util.text.TextComponentString(advancement.getChatComponent().getString());
     }
 
     /** How it shows in the advancements screen (null for a hidden-root or recipe advancement without display). */
     public DisplayInfo getDisplay() {
-        return DisplayInfo.mcc$of(holder.value().display().orElse(null));
+        return DisplayInfo.mcc$of(advancement.getDisplay());
     }
 
     @Override
     public boolean equals(Object o) {
-        return o instanceof Advancement a && a.holder.id().equals(holder.id());
+        return o instanceof Advancement a && a.advancement.getId().equals(advancement.getId());
     }
 
     @Override
     public int hashCode() {
-        return holder.id().hashCode();
+        return advancement.getId().hashCode();
     }
 
     @Override
     public String toString() {
-        return "SimpleAdvancement{id=" + holder.id() + '}';
+        return "SimpleAdvancement{id=" + getId() + '}';
     }
 }

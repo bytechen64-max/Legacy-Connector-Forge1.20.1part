@@ -32,10 +32,10 @@ public class DisplayInfo {
     /** The legacy view of the game's display info (not a 1.12 method). */
     public static DisplayInfo mcc$of(net.minecraft.advancements.DisplayInfo d) {
         if (d == null) return null;
-        var bg = d.getBackground().orElse(null);
+        var bg = d.getBackground();
         DisplayInfo out = new DisplayInfo(org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.fromModern(d.getIcon()),
                 text(d.getTitle()), text(d.getDescription()), bg == null ? null : new ResourceLocation(bg.getNamespace(), bg.getPath()),
-                FrameType.mcc$of(d.getType()), d.shouldShowToast(), d.shouldAnnounceChat(), d.isHidden());
+                FrameType.mcc$of(d.getFrame()), d.shouldShowToast(), d.shouldAnnounceChat(), d.isHidden());
         out.setPosition(d.getX(), d.getY());
         return out;
     }
