@@ -125,6 +125,10 @@ depend on `runServer`/`runClient`).
   copy `remapAccessTransformer` writes from `config/accesstransformer.cfg`. Launching without the refmap dies early with
   `InvalidAccessorException: No candidates were found matching isInsidePortal:Z`. Direct reflection by official name is
   still SRG-blind (the 1.12.2 shim has many `getDeclaredField("...")` sites) and needs the same treatment.
+- **`@Shadow` members are not in the refmap.** Mixin looks a shadow up by its declared name, so the mixin annotation
+  processor's SRG mapping of shadow (and `@Overwrite`) declarations is written with `-AoutTsrgFile` and merged into
+  `reobfJar.extraMappings`; reobf then renames the shadow field/method in the mixin class itself. Without that the launch
+  dies in `@Shadow field startPool was not located in the target class`.
 - **Access transformers are applied to the development game jar**, so code may name AT-widened members directly; the AT
   source stays in official names for that. Forge's runtime applies the shipped AT by SRG name and never remaps it, so the
   jar must get `remapAccessTransformer`'s output, not the source file.

@@ -221,17 +221,27 @@ tasks.withType(Test).configureEach { useJUnitPlatform() }
 //     Forge applies ATs by SRG name at runtime and never remaps them itself (see PORTING.md).
 // ---------------------------------------------------------------------------------------------------------
 def mixinRefmapFile = layout.buildDirectory.file('generated/mixin/legacyconnector.refmap.json')
+// @Shadow members are not in the refmap: Mixin resolves them by their declared name, so the processor's SRG mapping of
+// shadow (and @Overwrite) declarations is merged into reobfJar, which renames them in the compiled mixin class.
+def mixinShadowMappingsFile = layout.buildDirectory.file('generated/mixin/legacyconnector.shadow-mappings.tsrg')
 def srgMappingsFile = layout.buildDirectory.file('createMcpToSrg/output.tsrg')
 
 tasks.named('compileJava', JavaCompile) {
     dependsOn 'createMcpToSrg'
     options.compilerArgs += [
             '-AoutRefMapFile=' + mixinRefmapFile.get().asFile.absolutePath,
+            '-AoutTsrgFile=' + mixinShadowMappingsFile.get().asFile.absolutePath,
             // FG3 mapping provider: build/createMcpToSrg/output.tsrg maps official -> SRG (tsrg2).
             '-AmappingTypes=tsrg',
             '-AreobfTsrgFile=' + srgMappingsFile.get().asFile.absolutePath,
             '-AdefaultObfuscationEnv=searge'
     ]
+}
+
+// reobfJar merges the mixin processor's shadow mappings into the official -> SRG table it applies, so a @Shadow field
+// or method is already named like the target in production (Mixin would otherwise search for the official name).
+tasks.matching { it.name == 'reobfJar' }.configureEach {
+    extraMappings.from(mixinShadowMappingsFile)
 }
 
 // Rewrites the official-named access transformer into the SRG names Forge's runtime matches against.
