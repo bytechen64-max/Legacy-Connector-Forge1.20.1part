@@ -68,12 +68,12 @@ public class BlockSapling extends legacyconnector.v1_7_10.net.minecraft.block.Bl
             return;
         }
         net.minecraft.world.level.block.grower.AbstractTreeGrower grower = switch (world.getBlockMetadata(x, y, z) & 7) {
-            case 1 -> net.minecraft.world.level.block.grower.AbstractTreeGrower.SPRUCE;
-            case 2 -> net.minecraft.world.level.block.grower.AbstractTreeGrower.BIRCH;
-            case 3 -> net.minecraft.world.level.block.grower.AbstractTreeGrower.JUNGLE;
-            case 4 -> net.minecraft.world.level.block.grower.AbstractTreeGrower.ACACIA;
-            case 5 -> net.minecraft.world.level.block.grower.AbstractTreeGrower.DARK_OAK;
-            default -> net.minecraft.world.level.block.grower.AbstractTreeGrower.OAK;
+            case 1 -> new net.minecraft.world.level.block.grower.SpruceTreeGrower();
+            case 2 -> new net.minecraft.world.level.block.grower.BirchTreeGrower();
+            case 3 -> new net.minecraft.world.level.block.grower.JungleTreeGrower();
+            case 4 -> new net.minecraft.world.level.block.grower.AcaciaTreeGrower();
+            case 5 -> new net.minecraft.world.level.block.grower.DarkOakTreeGrower();
+            default -> new net.minecraft.world.level.block.grower.OakTreeGrower();
         };
         grower.growTree(level, level.getChunkSource().getGenerator(), pos, state, rand);
     }

@@ -15,7 +15,26 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 public final class LegacyRayContext implements CollisionContext {
     public static final LegacyRayContext INSTANCE = new LegacyRayContext();
 
+    /**
+     * Whether this thread is inside a legacy ray trace. 1.20.1's {@code ClipContext} carries no collision context (that is
+     * 1.20.5+), so the trace marks the thread for the duration of the clip and the block adapter asks this instead of comparing
+     * the context it was handed.
+     */
+    private static final ThreadLocal<Boolean> ACTIVE = ThreadLocal.withInitial(() -> Boolean.FALSE);
+
     private LegacyRayContext() {}
+
+    public static boolean active() {
+        return ACTIVE.get();
+    }
+
+    public static void begin() {
+        ACTIVE.set(Boolean.TRUE);
+    }
+
+    public static void end() {
+        ACTIVE.remove();
+    }
 
     @Override
     public boolean isDescending() {

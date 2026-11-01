@@ -42,9 +42,10 @@ public class MapData extends WorldSavedData {
         d.dimension = legacyconnector.v1_12_2.net.minecraftforge.common.DimensionManager.mcc$idOf(modern.dimension);
         for (var dec : modern.getDecorations()) {
             MapDecoration.Type type = MapDecoration.Type.PLAYER;
-            for (MapDecoration.Type t : MapDecoration.Type.values()) if (t.mcc$modern().equals(dec.type())) type = t;
-            d.mapDecorations.put(dec.name().map(c -> c.getString()).orElse(String.valueOf(d.mapDecorations.size())),
-                    new MapDecoration(type, dec.x(), dec.y(), dec.rot()));
+            for (MapDecoration.Type t : MapDecoration.Type.values()) if (t.mcc$modern().equals(dec.getType())) type = t;
+            net.minecraft.network.chat.Component label = dec.getName();
+            d.mapDecorations.put(label == null ? String.valueOf(d.mapDecorations.size()) : label.getString(),
+                    new MapDecoration(type, dec.getX(), dec.getY(), dec.getRot()));
         }
         return d;
     }

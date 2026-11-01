@@ -90,6 +90,13 @@ public final class PotionBridge {
         return -1;
     }
 
+    /** Legacy id of a modern effect, or -1 (1.20.1 hands an instance's effect out as a plain {@code MobEffect}). */
+    public static int idOf(MobEffect effect) {
+        for (int i = 1; i < BY_ID.size(); i++) if (BY_ID.get(i) != null && BY_ID.get(i) == effect) return i;
+        for (var e : CUSTOM.entrySet()) if (e.getValue().value() == effect) return e.getKey();
+        return -1;
+    }
+
     public static boolean isActive(LivingEntity entity, int id) {
         Holder<MobEffect> h = effectOrNull(id);
         return h != null && entity.hasEffect(h.value());

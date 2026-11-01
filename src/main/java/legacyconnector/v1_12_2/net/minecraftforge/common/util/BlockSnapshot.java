@@ -47,8 +47,8 @@ public class BlockSnapshot {
         if (modern == null) return null;
         World world = modern.getLevel() instanceof net.minecraft.world.level.Level l ? org.kylepitcock.legacyconnector.v1_12_2.bridge.WorldBridge1122.wrap(l) : null;
         var tag = modern.getTag();
-        BlockSnapshot out = new BlockSnapshot(world, BlockPos.mcc$of(modern.getPos()), StatesBridge1122.toLegacy(modern.getState()),
-                tag == null ? null : new NBTTagCompound(tag), modern.getFlags());
+        BlockSnapshot out = new BlockSnapshot(world, BlockPos.mcc$of(modern.getPos()), StatesBridge1122.toLegacy(modern.getCurrentBlock()),
+                tag == null ? null : new NBTTagCompound(tag), modern.getFlag());
         out.mcc$modern = modern;
         return out;
     }
@@ -57,7 +57,7 @@ public class BlockSnapshot {
         var level = world == null ? null : world.mcc$level();
         if (level == null) return null;
         var be = level.getBlockEntity(pos.mcc$modern());
-        return be == null ? null : new NBTTagCompound(be.saveWithFullMetadata(level.registryAccess()));
+        return be == null ? null : new NBTTagCompound(be.saveWithFullMetadata());
     }
 
     public static BlockSnapshot getBlockSnapshot(World world, BlockPos pos) {
@@ -154,10 +154,10 @@ public class BlockSnapshot {
         if (level == null || replacedBlock == null) return false;
         var target = pos.mcc$modern();
         int flags = notifyNeighbors ? flag : flag & ~1;
-        if (mcc$modern != null && force) return mcc$modern.restoreToLocation(level, target, flags);
+        if (mcc$modern != null && force) return mcc$modern.restoreToLocation(level, target, force, notifyNeighbors);
         var modernState = StatesBridge1122.toModern(replacedBlock);
         if (modernState == null) return false;
-        if (!force && mcc$modern != null && level.getBlockState(target).getBlock() != mcc$modern.getCurrentState().getBlock()) return false;
+        if (!force && mcc$modern != null && level.getBlockState(target).getBlock() != mcc$modern.getCurrentBlock().getBlock()) return false;
         level.setBlock(target, modernState, flags);
         if (nbt != null) {
             var be = level.getBlockEntity(target);
@@ -166,7 +166,7 @@ public class BlockSnapshot {
                 tag.putInt("x", target.getX());
                 tag.putInt("y", target.getY());
                 tag.putInt("z", target.getZ());
-                be.loadWithComponents(tag, level.registryAccess());
+                be.load(tag);
                 be.setChanged();
             }
         }

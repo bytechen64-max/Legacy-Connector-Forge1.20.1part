@@ -158,8 +158,8 @@ public class PotionEffect {
     }
 
     /**
-     * 1.20.1 has no cure registry: milk is hardwired in {@code MilkBucketItem} and everything else is the shim's own list, so
-     * nothing is returned for the modern side.
+     * 1.20.1 has no cure registry (the cure tags are 1.20.5+): an effect's cures are a plain list of item stacks, which is what
+     * {@code MobEffectInstance#getCurativeItems} hands out, so there is no modern cure object to map a legacy stack to.
      */
     public static Object mcc$cureFor(ItemStack stack) {
         return null;
@@ -185,11 +185,14 @@ public class PotionEffect {
         var effect = PotionBridge.effect(potionID);
         MobEffectInstance instance = new MobEffectInstance(effect == null ? null : effect.value(), duration, amplifier, isAmbient, true);
         if (curativeItems != null) {
-            instance.getCures().remove(EffectCures.MILK); // the legacy list decides about milk; modern cures (totem, honey) stay
+            // 1.20.1: the cures of an effect are its list of curative stacks (the cure tags came in 1.20.5)
+            java.util.List<net.minecraft.world.item.ItemStack> cures = new java.util.ArrayList<>();
             for (ItemStack stack : curativeItems) {
-                EffectCure cure = mcc$cureFor(stack);
-                if (cure != null) instance.getCures().add(cure);
+                if (stack == null) continue;
+                var modern = stack.mcc$modern();
+                if (!modern.isEmpty()) cures.add(modern);
             }
+            instance.setCurativeItems(cures);
         }
         return instance;
     }

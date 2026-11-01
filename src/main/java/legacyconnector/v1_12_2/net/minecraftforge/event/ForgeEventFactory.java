@@ -45,7 +45,7 @@ public class ForgeEventFactory {
     public static boolean getMobGriefingEvent(World world, Entity entity) {
         var level = world == null ? null : world.mcc$level();
         if (level == null) return true;
-        return net.minecraftforge.event.ForgeEventFactory.canEntityGrief(level, entity == null ? null : entity.mcc$modern());
+        return net.minecraftforge.event.ForgeEventFactory.getMobGriefingEvent(level, entity == null ? null : entity.mcc$modern());
     }
 
     public static int onArrowLoose(ItemStack stack, World world, EntityPlayer player, int charge, boolean hasAmmo) {
@@ -137,7 +137,7 @@ public class ForgeEventFactory {
     /** The extra ticks a mod gives an expiring item entity (a negative number lets it despawn). */
     public static int onItemExpire(legacyconnector.v1_12_2.net.minecraft.entity.item.EntityItem entity, ItemStack item) {
         if (entity == null || !(entity.mcc$modern() instanceof net.minecraft.world.entity.item.ItemEntity modern)) return -1;
-        return net.minecraftforge.event.ForgeEventFactory.onItemExpire(modern);
+        return net.minecraftforge.event.ForgeEventFactory.onItemExpire(modern, Stacks1122.toModern(item));
     }
 
     /** True when a mod stops the taming. */
@@ -163,7 +163,7 @@ public class ForgeEventFactory {
     public static boolean doPlayerHarvestCheck(EntityPlayer player, IBlockState state, boolean success) {
         var p = player(player);
         if (p == null || state == null) return success;
-        var event = new net.minecraftforge.event.entity.player.PlayerEvent.HarvestCheck(p, state(state), p.level(), p.blockPosition(), success);
+        var event = new net.minecraftforge.event.entity.player.PlayerEvent.HarvestCheck(p, state(state), success);
         return net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event).canHarvest();
     }
 
@@ -318,7 +318,7 @@ public class ForgeEventFactory {
 
     public static int getMaxSpawnPackSize(legacyconnector.v1_12_2.net.minecraft.entity.EntityLiving entity) {
         var mob = mcc$mob(entity);
-        return mob == null ? 4 : net.minecraftforge.event.ForgeEventFactory.getMaxSpawnClusterSize(mob);
+        return mob == null ? 4 : net.minecraftforge.event.ForgeEventFactory.getMaxSpawnPackSize(mob);
     }
 
     // ---- area F: terrain, explosion, projectile, bucket, tooltip and sound hooks
@@ -391,10 +391,11 @@ public class ForgeEventFactory {
         var mob = mcc$mob(entity);
         var level = world == null ? null : world.mcc$level();
         if (mob == null || !(level instanceof net.minecraft.world.level.ServerLevelAccessor accessor)) return false;
-        var event = new net.minecraftforge.event.entity.living.FinalizeSpawnEvent(mob, accessor, x, y, z,
+        var event = new net.minecraftforge.event.entity.living.MobSpawnEvent.FinalizeSpawn(mob, accessor, x, y, z,
                 accessor.getCurrentDifficultyAt(mob.blockPosition()),
-                spawner != null ? net.minecraft.world.entity.MobSpawnType.SPAWNER : net.minecraft.world.entity.MobSpawnType.NATURAL, null, null);
-        return net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event).isCanceled();
+                spawner != null ? net.minecraft.world.entity.MobSpawnType.SPAWNER : net.minecraft.world.entity.MobSpawnType.NATURAL, null, null, null);
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
+        return event.isSpawnCancelled();
     }
 
     /**

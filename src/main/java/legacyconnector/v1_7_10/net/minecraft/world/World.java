@@ -465,7 +465,7 @@ public class World implements IBlockAccess {
     private BlockState mcc$offThreadState(int x, int y, int z) {
         if (!(lvl() instanceof net.minecraft.server.level.ServerLevel sl) || sl.getServer().isSameThread()) return null;
         var holder = ((org.kylepitcock.legacyconnector.mixin.access.ChunkMapAccess) sl.getChunkSource().chunkMap).legacyconnector$visibleChunk(net.minecraft.world.level.ChunkPos.asLong(x >> 4, z >> 4));
-        var chunk = holder == null ? null : holder.getChunkIfPresent(net.minecraft.world.level.chunk.ChunkStatus.FULL);
+        var chunk = holder == null ? null : holder.getFullChunk();
         return chunk == null ? Blocks.AIR.defaultBlockState() : chunk.getBlockState(pos(x, y, z));
     }
 
@@ -1155,7 +1155,7 @@ public class World implements IBlockAccess {
             // another thread (the render thread reading the integrated server's world, as BuildCraft's RenderTank does): the level would
             // block until the busy server thread answers; 1.7.10 read the loaded chunk directly and had nothing for an unloaded one
             var holder = ((org.kylepitcock.legacyconnector.mixin.access.ChunkMapAccess) sl.getChunkSource().chunkMap).legacyconnector$visibleChunk(net.minecraft.world.level.ChunkPos.asLong(cx, cz));
-            var loaded = holder == null ? null : holder.getChunkIfPresent(net.minecraft.world.level.chunk.ChunkStatus.FULL);
+            var loaded = holder == null ? null : holder.getFullChunk();
             return loaded == null ? new legacyconnector.v1_7_10.net.minecraft.world.chunk.EmptyChunk(this, cx, cz)
                     : new legacyconnector.v1_7_10.net.minecraft.world.chunk.Chunk(this, loaded);
         }
@@ -1229,10 +1229,16 @@ public class World implements IBlockAccess {
      */
     public legacyconnector.v1_7_10.net.minecraft.util.MovingObjectPosition rayTraceBlocks(legacyconnector.v1_7_10.net.minecraft.util.Vec3 start,
             legacyconnector.v1_7_10.net.minecraft.util.Vec3 end, boolean liquids, boolean ignoreNoBoundingBox, boolean returnLastUncollidable) {
-        var hit = lvl().clip(new net.minecraft.world.level.ClipContext(start.mcc$modern(), end.mcc$modern(),
-                ignoreNoBoundingBox ? net.minecraft.world.level.ClipContext.Block.COLLIDER : net.minecraft.world.level.ClipContext.Block.OUTLINE,
-                liquids ? net.minecraft.world.level.ClipContext.Fluid.ANY : net.minecraft.world.level.ClipContext.Fluid.NONE,
-                org.kylepitcock.legacyconnector.v1_7_10.adapter.LegacyRayContext.INSTANCE));
+        // 1.20.1's ClipContext takes the entity, not the collision context (that is 1.20.5+): the trace marks the thread instead
+        net.minecraft.world.phys.HitResult hit;
+        org.kylepitcock.legacyconnector.v1_7_10.adapter.LegacyRayContext.begin();
+        try {
+            hit = lvl().clip(new net.minecraft.world.level.ClipContext(start.mcc$modern(), end.mcc$modern(),
+                    ignoreNoBoundingBox ? net.minecraft.world.level.ClipContext.Block.COLLIDER : net.minecraft.world.level.ClipContext.Block.OUTLINE,
+                    liquids ? net.minecraft.world.level.ClipContext.Fluid.ANY : net.minecraft.world.level.ClipContext.Fluid.NONE, null));
+        } finally {
+            org.kylepitcock.legacyconnector.v1_7_10.adapter.LegacyRayContext.end();
+        }
         if (liquids) {
             var source = mcc$legacyLiquidSource(start, end, hit.getType() == net.minecraft.world.phys.HitResult.Type.MISS ? null : hit.getLocation());
             if (source != null) return source;
