@@ -13,7 +13,4 @@ public interface LivingEntityAccess {
     @Invoker("jumpFromGround")
     void legacyconnector$jumpFromGround();
 
-    static void jumpFromGround(LivingEntity entity) {
-        ((LivingEntityAccess) entity).legacyconnector$jumpFromGround();
-    }
 }

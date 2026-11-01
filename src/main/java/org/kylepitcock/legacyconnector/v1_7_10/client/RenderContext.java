@@ -678,7 +678,7 @@ public final class RenderContext {
         return STATED.computeIfAbsent(key, k -> withBatchingClass(base, new RenderType(
                 base + (k.depthFunc() < 0 ? "" : "/legacy_depth_" + k.depthFunc() + (k.depthWrite() ? "w" : "") + "_c" + k.colorWrite())
                         + (k.blendSrc() < 0 ? "" : "/legacy_blend_" + k.blendSrc() + "_" + k.blendDst()), base.format(), base.mode(),
-                base.bufferSize(), base.affectsCrumbling(), org.kylepitcock.legacyconnector.mixin.access.RenderTypeAccess.sortOnUpload(base), () -> {
+                base.bufferSize(), base.affectsCrumbling(), org.kylepitcock.legacyconnector.mixin.access.Accessors.sortOnUpload(base), () -> {
                     base.setupRenderState();
                     if (k.depthFunc() >= 0) {
                         RenderSystem.depthFunc(k.depthFunc());

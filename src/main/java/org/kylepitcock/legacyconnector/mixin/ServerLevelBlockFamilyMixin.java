@@ -1,13 +1,12 @@
 package org.kylepitcock.legacyconnector.mixin;
 
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import org.kylepitcock.legacyconnector.v1_7_10.adapter.LegacyBlockAdapter;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 /**
  * Scheduled ticks and block events are queued for a block and run only while that block is still there. A legacy block whose
@@ -17,15 +16,15 @@ import org.spongepowered.asm.mixin.injection.At;
  */
 @Mixin(ServerLevel.class)
 public abstract class ServerLevelBlockFamilyMixin {
-    @WrapOperation(method = "tickBlock", at = @At(value = "INVOKE",
+    @Redirect(method = "tickBlock", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/world/level/block/state/BlockState;is(Lnet/minecraft/world/level/block/Block;)Z"))
-    private boolean legacyconnector$tickFamily(BlockState state, Block block, Operation<Boolean> original) {
-        return original.call(state, block) || LegacyBlockAdapter.sameFamily(state.getBlock(), block);
+    private boolean legacyconnector$tickFamily(BlockState state, Block block) {
+        return state.is(block) || LegacyBlockAdapter.sameFamily(state.getBlock(), block);
     }
 
-    @WrapOperation(method = "doBlockEvent", at = @At(value = "INVOKE",
+    @Redirect(method = "doBlockEvent", at = @At(value = "INVOKE",
             target = "Lnet/minecraft/world/level/block/state/BlockState;is(Lnet/minecraft/world/level/block/Block;)Z"))
-    private boolean legacyconnector$eventFamily(BlockState state, Block block, Operation<Boolean> original) {
-        return original.call(state, block) || LegacyBlockAdapter.sameFamily(state.getBlock(), block);
+    private boolean legacyconnector$eventFamily(BlockState state, Block block) {
+        return state.is(block) || LegacyBlockAdapter.sameFamily(state.getBlock(), block);
     }
 }

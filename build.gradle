@@ -45,96 +45,66 @@ minecraft {
     // the jar (applied by Forge at runtime) and applied to the development mappings here so shim code compiles.
     accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
 
+    // ForgeGradle fills the launch target, the module path and the JVM arguments (--add-opens for the secure jar handler) into
+    // the built-in client/server runs only; a run config of its own starts without them. The test runs therefore reuse those two:
+    // the requested task name picks the working directory and the self-test properties.
+    def requested = gradle.startParameter.taskNames.collect { it.tokenize(':').last().toLowerCase(Locale.ROOT) }
+    def asked = { String name -> requested.contains(name.toLowerCase(Locale.ROOT)) }
+
     runs {
         client {
             client true
-            workingDirectory project.file('run')
+            workingDirectory project.file(asked('runClientTest') ? 'run-clienttest' : asked('screenshotTest') ? 'run-screenshots' : 'run')
             property 'forge.logging.markers', 'REGISTRIES'
             jvmArg '-Xmx6G'
+            if (asked('runClientTest')) property 'legacyconnector.clientSelfTest', 'true'
+            if (asked('screenshotTest')) {
+                property 'legacyconnector.screenshotTest', 'true'
+                ['shotWorldType', 'shotMods', 'shotBlocksPerMod', 'shotItemsPerMod', 'shotTour', 'shotSeed', 'shotScenario', 'shotRenderDistance', 'shotBlocks', 'shotItems', 'shotEntities', 'shotMetas', 'shotCommands', 'debugIcons', 'debugAssets', 'debugAsm'].each { p ->
+                    if (project.hasProperty(p)) property 'legacyconnector.' + p, project.property(p)
+                }
+                if (project.hasProperty('shotWidth') && project.hasProperty('shotHeight')) {
+                    args '--width'
+                    args project.property('shotWidth').toString()
+                    args '--height'
+                    args project.property('shotHeight').toString()
+                }
+            }
             mods {
                 legacyconnector { source sourceSets.main }
             }
         }
 
         server {
-
             client false
-            workingDirectory project.file('run')
+            workingDirectory project.file(asked('runServerSubTest') ? 'run-subtest'
+                    : asked('runServerTest') ? 'run-servertest'
+                    : (project.findProperty('runDir') ?: 'run'))
             args '--nogui'
-            // The fixture mod stops the server after its self test when this is set (CI-style smoke test).
-            property 'legacytest.autostop', System.getProperty('legacytest.autostop', 'false')
-            mods {
-                legacyconnector { source sourceSets.main }
-            }
-        }
-
-        // Automated smoke test in its own directory: boots a dedicated server with the mods in run-servertest/mods,
-        // lets the fixture mod run its self test, then stops.
-        serverTest {
-            client false
-            workingDirectory project.file('run-servertest')
-            args '--nogui'
-            property 'legacytest.autostop', 'true'
-            property 'legacyconnector.entitySelfTest', 'true'
-            mods {
-                legacyconnector { source sourceSets.main }
-            }
-        }
-
-        // Server test over a hand-picked subset of mods (see build/devtools/run-subset.sh): run-subtest/mods holds links.
-        serverSubTest {
-            client false
-            workingDirectory project.file('run-subtest')
-            args '--nogui'
-            property 'legacytest.autostop', 'true'
-            property 'legacyconnector.autostopTicks', project.findProperty('autostopTicks') ?: '700'
-            // runs the client blockstate translation on the server too (logs "1.12.2 blockstates: N translated, M fell back"); -PassetsDump=<dir> writes it
-            property 'legacyconnector.assetsSelfTest', project.findProperty('assetsDump') ?: 'true'
-            // -PclientProxies=mekanism.client.ClientProxy,...: runs those mods' client registrations (state mappers) for the translation too
-            if (project.hasProperty('clientProxies')) property 'legacyconnector.assetsClientProxies', project.property('clientProxies')
-            property 'legacyconnector.entitySelfTest', project.findProperty('selfTests') ?: 'true'
-            // -PserverTickScript=<file.js>: runs that JavaScript on every server tick (see core/ServerTickScript; -PserverTickScriptFrom=<tick>)
-            if (project.hasProperty('serverTickScript')) {
-                property 'legacyconnector.serverTickScript', project.property('serverTickScript')
-                property 'legacyconnector.serverTickScriptFrom', project.findProperty('serverTickScriptFrom') ?: '200'
-            }
-            // -PserverDevScript=<dir>: evaluates dir/*.js once on the server thread (core/ServerDevScript)
-            if (project.hasProperty('serverDevScript')) property 'legacyconnector.serverDevScript', project.property('serverDevScript')
-            // -PserverScript=<dir>: long-lived script console, runs the *.js files dropped into the directory (core/ServerScript); -PserverScriptMod=<legacy mod id>
-            if (project.hasProperty('serverScript')) property 'legacyconnector.serverScript', project.property('serverScript')
-            if (project.hasProperty('serverScriptMod')) property 'legacyconnector.serverScriptMod', project.property('serverScriptMod')
-            // -PgenTiming: per-generator timing of the legacy world generators (a log line every 20 s and at shutdown)
-            if (project.hasProperty('genTiming')) property 'legacyconnector.genTiming', 'true'
-            mods {
-                legacyconnector { source sourceSets.main }
-            }
-        }
-
-        // Client smoke test: boots the client in run-clienttest (mods: run-clienttest/mods), reports texture and
-        // model problems per mod once the title screen shows, then quits.
-        clientTest {
-            client true
-            workingDirectory project.file('run-clienttest')
-            property 'legacyconnector.clientSelfTest', 'true'
-            mods {
-                legacyconnector { source sourceSets.main }
-            }
-        }
-
-        // Graphical test: creates a world, builds showcases of legacy blocks/items and writes screenshots to
-        // run-screenshots/shots (see tools/dev/run-screenshot-test.sh).
-        screenshotTest {
-            client true
-            workingDirectory project.file('run-screenshots')
-            property 'legacyconnector.screenshotTest', 'true'
-            ['shotWorldType', 'shotMods', 'shotBlocksPerMod', 'shotItemsPerMod', 'shotTour', 'shotSeed', 'shotScenario', 'shotRenderDistance', 'shotBlocks', 'shotItems', 'shotEntities', 'shotMetas', 'shotCommands', 'debugIcons', 'debugAssets', 'debugAsm'].each { p ->
-                if (project.hasProperty(p)) property 'legacyconnector.' + p, project.property(p)
-            }
-            if (project.hasProperty('shotWidth') && project.hasProperty('shotHeight')) {
-                args '--width'
-                args project.property('shotWidth').toString()
-                args '--height'
-                args project.property('shotHeight').toString()
+            // The test runs stop the server after the fixture mod's self test; -Pautostop=true does the same for a plain run.
+            property 'legacytest.autostop', asked('runServerSubTest') || asked('runServerTest') ? 'true'
+                    : (project.findProperty('autostop') ?: System.getProperty('legacytest.autostop', 'false'))
+            if (asked('runServerTest')) property 'legacyconnector.entitySelfTest', 'true'
+            if (asked('runServerSubTest')) {
+                property 'legacyconnector.autostopTicks', project.findProperty('autostopTicks') ?: '700'
+                // runs the client blockstate translation on the server too (logs "1.12.2 blockstates: N translated, M fell back");
+                // -PassetsDump=<dir> writes it
+                property 'legacyconnector.assetsSelfTest', project.findProperty('assetsDump') ?: 'true'
+                // -PclientProxies=mekanism.client.ClientProxy,...: runs those mods' client registrations (state mappers) too
+                if (project.hasProperty('clientProxies')) property 'legacyconnector.assetsClientProxies', project.property('clientProxies')
+                property 'legacyconnector.entitySelfTest', project.findProperty('selfTests') ?: 'true'
+                // -PserverTickScript=<file.js>: runs that JavaScript on every server tick (see core/ServerTickScript)
+                if (project.hasProperty('serverTickScript')) {
+                    property 'legacyconnector.serverTickScript', project.property('serverTickScript')
+                    property 'legacyconnector.serverTickScriptFrom', project.findProperty('serverTickScriptFrom') ?: '200'
+                }
+                // -PserverDevScript=<dir>: evaluates dir/*.js once on the server thread (core/ServerDevScript)
+                if (project.hasProperty('serverDevScript')) property 'legacyconnector.serverDevScript', project.property('serverDevScript')
+                // -PserverScript=<dir>: long-lived script console (core/ServerScript); -PserverScriptMod=<legacy mod id>
+                if (project.hasProperty('serverScript')) property 'legacyconnector.serverScript', project.property('serverScript')
+                if (project.hasProperty('serverScriptMod')) property 'legacyconnector.serverScriptMod', project.property('serverScriptMod')
+                // -PgenTiming: per-generator timing of the legacy world generators (a log line every 20 s and at shutdown)
+                if (project.hasProperty('genTiming')) property 'legacyconnector.genTiming', 'true'
             }
             mods {
                 legacyconnector { source sourceSets.main }
@@ -149,6 +119,29 @@ minecraft {
             // ... and legacy coremods' FML classes from the runtime jar; in development, from its compiled classes.
             property 'legacyconnector.runtimeClasses', sourceSets.main.java.classesDirectory.get().asFile.absolutePath
         }
+    }
+}
+
+// The test runs reuse ForgeGradle's own client/server run (see above): these names only start it with the matching setup.
+['runServerSubTest', 'runServerTest', 'runClientTest', 'screenshotTest'].each { name ->
+    def target = name in ['runClientTest', 'screenshotTest'] ? 'runClient' : 'runServer'
+    tasks.register(name) {
+        group = 'forgegradle runs'
+        description = "Runs $target with the ${name} working directory and self-test settings."
+        dependsOn target
+    }
+}
+
+// ForgeGradle 6 fills the launch target, the module path and the JVM arguments (--add-opens for the secure jar handler) into the
+// built-in client/server runs only, so every extra run starts from the same setup; its own arguments are kept.
+gradle.projectsEvaluated {
+    def runs = minecraft.runs
+    runs.each { run ->
+        if (run.name == 'client' || run.name == 'server') return
+        def base = run.isClient() ? runs.getByName('client') : runs.getByName('server')
+        run.setJvmArgs(new ArrayList<String>(base.getJvmArgs()))
+        def own = run.getArgs().findAll { it != '--nogui' }
+        run.setArgs(new ArrayList<String>(base.getArgs()) + own)
     }
 }
 

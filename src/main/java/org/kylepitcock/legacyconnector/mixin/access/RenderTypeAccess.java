@@ -15,7 +15,4 @@ public interface RenderTypeAccess {
     @Accessor("sortOnUpload")
     boolean legacyconnector$sortOnUpload();
 
-    static boolean sortOnUpload(RenderType type) {
-        return ((RenderTypeAccess) type).legacyconnector$sortOnUpload();
-    }
 }

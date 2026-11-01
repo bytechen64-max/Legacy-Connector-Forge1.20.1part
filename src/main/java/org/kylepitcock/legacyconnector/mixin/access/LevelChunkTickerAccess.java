@@ -13,4 +13,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 public interface LevelChunkTickerAccess {
     @Invoker("updateBlockEntityTicker")
     void legacyconnector$updateBlockEntityTicker(BlockEntity be);
+
+    @Invoker("removeBlockEntityTicker")
+    void legacyconnector$removeTicker(net.minecraft.core.BlockPos pos);
 }

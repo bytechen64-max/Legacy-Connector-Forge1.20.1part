@@ -74,7 +74,7 @@ public abstract class AbstractHorse extends EntityAnimal implements legacyconnec
                 if (h.isSaddled()) horseChest.setInventorySlotContents(0, new legacyconnector.v1_12_2.net.minecraft.item.ItemStack(
                         legacyconnector.v1_12_2.net.minecraft.init.Items.SADDLE));
                 // 1.20.1 has no getBodyArmorItem(): the armour is the horse's armour slot.
-                var armour = org.kylepitcock.legacyconnector.mixin.access.AbstractHorseAccess.inventory(h).getItem(net.minecraft.world.entity.animal.horse.AbstractHorse.INV_SLOT_ARMOR);
+                var armour = org.kylepitcock.legacyconnector.mixin.access.Accessors.horseInventory(h).getItem(net.minecraft.world.entity.animal.horse.AbstractHorse.INV_SLOT_ARMOR);
                 if (horseChest.getSizeInventory() > 1 && !armour.isEmpty()) {
                     horseChest.setInventorySlotContents(1, org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.fromModern(armour));
                 }

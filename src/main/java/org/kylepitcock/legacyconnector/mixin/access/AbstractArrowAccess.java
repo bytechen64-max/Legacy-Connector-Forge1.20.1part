@@ -14,7 +14,4 @@ public interface AbstractArrowAccess {
     @Invoker("getPickupItem")
     ItemStack legacyconnector$pickupItem();
 
-    static ItemStack pickupItem(AbstractArrow arrow) {
-        return ((AbstractArrowAccess) arrow).legacyconnector$pickupItem();
-    }
 }

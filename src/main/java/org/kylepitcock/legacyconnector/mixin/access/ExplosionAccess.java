@@ -15,7 +15,4 @@ public interface ExplosionAccess {
     @Accessor("radius")
     float legacyconnector$radius();
 
-    static float radius(Explosion explosion) {
-        return ((ExplosionAccess) explosion).legacyconnector$radius();
-    }
 }

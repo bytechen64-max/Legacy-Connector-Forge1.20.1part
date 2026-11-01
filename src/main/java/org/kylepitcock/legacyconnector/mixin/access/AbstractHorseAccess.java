@@ -14,7 +14,4 @@ public interface AbstractHorseAccess {
     @Accessor("inventory")
     SimpleContainer legacyconnector$inventory();
 
-    static SimpleContainer inventory(AbstractHorse horse) {
-        return ((AbstractHorseAccess) horse).legacyconnector$inventory();
-    }
 }

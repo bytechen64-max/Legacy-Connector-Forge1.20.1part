@@ -1,0 +1,3 @@
+Manifest-Version: 1.0
+MixinConfigs: legacyconnector.mixins.json,legacyconnector.compat.mixins.
+ json

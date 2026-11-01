@@ -40,8 +40,7 @@ public final class Dispensers1122 {
             IBehaviorDispenseItem own = registryObjects.get(item);
             if (own != null) return own;
             if (item != null && item.mcc$vanillaModern != null) {
-                DispenseItemBehavior modern = org.kylepitcock.legacyconnector.mixin.access.DispenserBlockAccess
-                        .legacyconnector$dispenserRegistry().get(item.mcc$vanillaModern);
+                DispenseItemBehavior modern = org.kylepitcock.legacyconnector.mixin.access.Accessors.dispenserRegistry().get(item.mcc$vanillaModern);
                 if (modern != null && !(modern instanceof net.minecraft.core.dispenser.DefaultDispenseItemBehavior
                         && modern.getClass() == net.minecraft.core.dispenser.DefaultDispenseItemBehavior.class)) {
                     synchronized (wrappers) {

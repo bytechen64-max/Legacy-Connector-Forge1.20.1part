@@ -90,6 +90,15 @@ public final class LegacyConnector {
             MENUS.register("legacy_1_12_2", () -> net.minecraftforge.common.extensions.IForgeMenuType.create(
                     org.kylepitcock.legacyconnector.v1_12_2.bridge.GuiBridge1122::clientMenu));
 
+    /**
+     * Forge 1.20.1 constructs a mod with a no-argument constructor (the {@code (IEventBus, ModContainer)} form is 1.21); the bus and
+     * the container come from the loading context, which FML has just made active.
+     */
+    public LegacyConnector() {
+        this(net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext.get().getModEventBus(),
+                net.minecraftforge.fml.ModLoadingContext.get().getActiveContainer());
+    }
+
     public LegacyConnector(IEventBus modBus, ModContainer container) {
         org.kylepitcock.legacyconnector.core.DirectMemoryGuard.start();
         org.kylepitcock.legacyconnector.core.LegacyLogFilter.install();
