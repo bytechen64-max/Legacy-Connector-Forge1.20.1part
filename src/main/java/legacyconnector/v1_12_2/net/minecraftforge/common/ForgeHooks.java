@@ -50,7 +50,7 @@ public class ForgeHooks {
 
     public static void setCraftingPlayer(EntityPlayer player) {
         CRAFTING_PLAYER.set(player);
-        ForgeHooks.setCraftingPlayer(player == null ? null : player.mcc$player());
+        net.minecraftforge.common.ForgeHooks.setCraftingPlayer(player == null ? null : player.mcc$player());
     }
 
     public static EntityPlayer getCraftingPlayer() {
@@ -70,7 +70,7 @@ public class ForgeHooks {
     }
 
     public static void onLivingJump(EntityLivingBase entity) {
-        if (entity != null && entity.mcc$modern() instanceof net.minecraft.world.entity.LivingEntity living) ForgeHooks.onLivingJump(living);
+        if (entity != null && entity.mcc$modern() instanceof net.minecraft.world.entity.LivingEntity living) net.minecraftforge.common.ForgeHooks.onLivingJump(living);
     }
 
     /** False when a mod stops the entity from changing dimension. */
@@ -78,25 +78,25 @@ public class ForgeHooks {
         if (entity == null || entity.mcc$modern() == null) return true;
         var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
         var level = server == null ? null : legacyconnector.v1_12_2.net.minecraftforge.common.DimensionManager.mcc$level(dimension);
-        return level == null || ForgeHooks.onTravelToDimension(entity.mcc$modern(), level.dimension());
+        return level == null || net.minecraftforge.common.ForgeHooks.onTravelToDimension(entity.mcc$modern(), level.dimension());
     }
 
     public static boolean onCropsGrowPre(World worldIn, BlockPos pos, IBlockState state, boolean def) {
         if (worldIn == null || worldIn.mcc$level() == null) return def;
         var modern = StatesBridge1122.toModern(state);
-        return modern == null ? def : ForgeHooks.onCropsGrowPre(worldIn.mcc$level(), pos(pos), modern, def);
+        return modern == null ? def : net.minecraftforge.common.ForgeHooks.onCropsGrowPre(worldIn.mcc$level(), pos(pos), modern, def);
     }
 
     public static void onCropsGrowPost(World worldIn, BlockPos pos, IBlockState state, IBlockState blockState) {
         if (worldIn == null || worldIn.mcc$level() == null) return;
         var modern = StatesBridge1122.toModern(blockState != null ? blockState : state);
-        if (modern != null) ForgeHooks.onCropsGrowPost(worldIn.mcc$level(), pos(pos), modern);
+        if (modern != null) net.minecraftforge.common.ForgeHooks.onCropsGrowPost(worldIn.mcc$level(), pos(pos), modern);
     }
 
     /** The chance the anvil is damaged by this repair. */
     public static float onAnvilRepair(EntityPlayer player, ItemStack output, ItemStack left, ItemStack right) {
         if (player == null || player.mcc$player() == null) return 0.12F;
-        return ForgeHooks.onAnvilRepair(player.mcc$player(), Stacks1122.toModern(output), Stacks1122.toModern(left), Stacks1122.toModern(right));
+        return net.minecraftforge.common.ForgeHooks.onAnvilRepair(player.mcc$player(), Stacks1122.toModern(output), Stacks1122.toModern(left), Stacks1122.toModern(right));
     }
 
     /** How much of the block the player breaks per tick (0 when the player cannot harvest it at all). */
@@ -185,7 +185,7 @@ public class ForgeHooks {
         var sp = entityPlayer == null ? null : entityPlayer.mcc$serverPlayer();
         if (level == null || sp == null || pos == null) return 0;
         var p = pos(pos);
-        int event = ForgeHooks.onBlockBreakEvent(level,
+        int event = net.minecraftforge.common.ForgeHooks.onBlockBreakEvent(level,
                 gameType == null ? sp.gameMode.getGameModeForPlayer() : gameType.mcc$modern(), sp, p);
         // 1.20.1 answers with the experience to drop, or -1 when the event was canceled.
         return event < 0 ? -1 : 0;
@@ -224,13 +224,13 @@ public class ForgeHooks {
     public static boolean onPlayerAttackTarget(EntityPlayer player, Entity target) {
         var p = player == null ? null : player.mcc$player();
         if (p == null || target == null || target.mcc$modern() == null) return true;
-        return ForgeHooks.onPlayerAttackTarget(p, target.mcc$modern());
+        return net.minecraftforge.common.ForgeHooks.onPlayerAttackTarget(p, target.mcc$modern());
     }
 
     /** The fall distance and damage multiplier after mods' fall handlers, or null when the fall was canceled. */
     public static float[] onLivingFall(EntityLivingBase entity, float distance, float damageMultiplier) {
         if (entity == null || !(entity.mcc$modern() instanceof net.minecraft.world.entity.LivingEntity living)) return new float[] {distance, damageMultiplier};
-        return ForgeHooks.onLivingFall(living, distance, damageMultiplier);
+        return net.minecraftforge.common.ForgeHooks.onLivingFall(living, distance, damageMultiplier);
     }
 
     /** How far away a mob notices the player: the distance scaled by the player's visibility (sneaking, invisibility, mob heads). */
@@ -284,7 +284,7 @@ public class ForgeHooks {
         if (living == null || src == null) {
             return mcc$bus().post(new legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.LivingDeathEvent(entity, src));
         }
-        return ForgeHooks.onLivingDeath(living, src.mcc$modern(living.level()));
+        return net.minecraftforge.common.ForgeHooks.onLivingDeath(living, src.mcc$modern(living.level()));
     }
 
     /** True when a mod canceled the drops; handlers may change the list. */
@@ -306,7 +306,7 @@ public class ForgeHooks {
         mcc$bus().post(new legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.LivingSetAttackTargetEvent(entity, target));
         var living = mcc$living(entity);
         if (living != null) {
-            ForgeHooks.onLivingChangeTarget(living, mcc$living(target),
+            net.minecraftforge.common.ForgeHooks.onLivingChangeTarget(living, mcc$living(target),
                     net.minecraftforge.event.entity.living.LivingChangeTargetEvent.LivingTargetType.MOB_TARGET);
         }
     }
@@ -329,7 +329,7 @@ public class ForgeHooks {
         var pos = te.getPos();
         if (level == null || pos == null) return true;
         var p = pos(pos);
-        int result = ForgeHooks.onNoteChange(level, p, level.getBlockState(p), old, te.note);
+        int result = net.minecraftforge.common.ForgeHooks.onNoteChange(level, p, level.getBlockState(p), old, te.note);
         if (result == -1) {
             te.note = old;
             return false;
@@ -351,7 +351,7 @@ public class ForgeHooks {
             return crit ? event : null;
         }
         // the modern event reaches 1.12 handlers through the event bridge
-        var modern = ForgeHooks.fireCriticalHit(p, target.mcc$modern(), vanillaCritical, damageModifier);
+        var modern = net.minecraftforge.common.ForgeHooks.fireCriticalHit(p, target.mcc$modern(), vanillaCritical, damageModifier);
         if (!modern.isCriticalHit()) return null;
         event.setDamageModifier(modern.getDamageMultiplier());
         if (!vanillaCritical) event.setResult(legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event.Result.ALLOW);
@@ -399,7 +399,7 @@ public class ForgeHooks {
         }
         var direction = face == null ? net.minecraft.core.Direction.UP : face.mcc$modern();
         var location = hitVec != null ? hitVec.mcc$modern() : net.minecraft.world.phys.Vec3.atCenterOf(pos(pos));
-        var modern = ForgeHooks.onRightClickBlock(p, hand == null ? net.minecraft.world.InteractionHand.MAIN_HAND : hand.mcc$modern(), pos(pos),
+        var modern = net.minecraftforge.common.ForgeHooks.onRightClickBlock(p, hand == null ? net.minecraft.world.InteractionHand.MAIN_HAND : hand.mcc$modern(), pos(pos),
                 new net.minecraft.world.phys.BlockHitResult(location, direction, pos(pos), false));
         if (modern.isCanceled()) {
             event.setCanceled(true);
@@ -427,7 +427,7 @@ public class ForgeHooks {
         var direction = side == null ? net.minecraft.core.Direction.UP : side.mcc$modern();
         var hit = new net.minecraft.world.phys.BlockHitResult(new net.minecraft.world.phys.Vec3(pos.getX() + hitX, pos.getY() + hitY, pos.getZ() + hitZ),
                 direction, pos(pos), false);
-        var result = ForgeHooks.onPlaceItemIntoWorld(new net.minecraft.world.item.context.UseOnContext(level, p, modernHand, stack, hit));
+        var result = net.minecraftforge.common.ForgeHooks.onPlaceItemIntoWorld(new net.minecraft.world.item.context.UseOnContext(level, p, modernHand, stack, hit));
         if (!live) itemstack.setCount(stack.getCount());
         return legacyconnector.v1_12_2.net.minecraft.util.EnumActionResult.mcc$of(result);
     }

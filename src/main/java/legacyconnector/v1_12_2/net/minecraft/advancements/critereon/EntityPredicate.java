@@ -50,7 +50,9 @@ public class EntityPredicate {
         if (effects != null && !effects.isEmpty()) {
             if (!(modern instanceof net.minecraft.world.entity.LivingEntity living)) return false;
             for (var e : effects.entrySet()) {
-                var effect = net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.getHolder(e.getKey().mcc$modern()).orElse(null);
+                // 1.20.1 looks a registry entry up by id and wraps the value itself.
+        var effect = org.kylepitcock.legacyconnector.core.RegistryUtil.holder(
+                net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT, e.getKey().mcc$modern()).orElse(null);
                 var instance = effect == null ? null : living.getEffect(effect);
                 if (instance == null || !e.getValue()[0].test(instance.getAmplifier()) || !e.getValue()[1].test(instance.getDuration())) return false;
             }

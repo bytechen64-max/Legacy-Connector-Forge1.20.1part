@@ -4,6 +4,7 @@
   "package": "org.kylepitcock.legacyconnector.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "access.FireBlockAccess",
     "access.ExplosionAccess",
     "access.AreaEffectCloudAccess",
     "access.ChunkMapAccess",

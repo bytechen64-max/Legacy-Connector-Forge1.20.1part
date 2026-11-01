@@ -20,7 +20,7 @@ public final class SynthBlocks1122 {
         Synth.addInstanceMethod("net.minecraft.block.BlockFire.setFireInfo", (self, args) -> {
             if (args.length != 3 || !(args[0] instanceof Block b)) return Synth.NONE;
             if (b.mcc$modern instanceof net.minecraft.world.level.block.Block modern) {
-                ((net.minecraft.world.level.block.FireBlock) net.minecraft.world.level.block.Blocks.FIRE).setFlammable(modern, Synth.toInt(args[1]), Synth.toInt(args[2]));
+                ((org.kylepitcock.legacyconnector.mixin.access.FireBlockAccess) net.minecraft.world.level.block.Blocks.FIRE).legacyconnector$setFlammable(modern, Synth.toInt(args[1]), Synth.toInt(args[2]));
             }
             return null;
         });

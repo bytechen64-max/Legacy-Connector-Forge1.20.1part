@@ -48,7 +48,8 @@ public class BlockFire extends Block {
         flammabilities.put(blockIn, flammability);
         Object modern = blockIn.mcc$modern;
         if (modern instanceof net.minecraft.world.level.block.Block m) {
-            ((net.minecraft.world.level.block.FireBlock) net.minecraft.world.level.block.Blocks.FIRE).setFlammable(m, encouragement, flammability);
+            // 1.20.1 keeps setFlammable private: the invoker mixin reaches it (see FireBlockAccess).
+        ((org.kylepitcock.legacyconnector.mixin.access.FireBlockAccess) net.minecraft.world.level.block.Blocks.FIRE).legacyconnector$setFlammable(m, encouragement, flammability);
         }
     }
 
