@@ -275,7 +275,7 @@ public class Chunk implements legacyconnector.v1_12_2.net.minecraftforge.common.
     }
 
     public boolean isPopulated() {
-        return access == null ? terrainPopulated : access.getPersistedStatus().isOrAfter(net.minecraft.world.level.chunk.status.ChunkStatus.FEATURES);
+        return access == null ? terrainPopulated : access.getStatus().isOrAfter(net.minecraft.world.level.chunk.ChunkStatus.FEATURES);
     }
 
     public boolean wasTicked() {

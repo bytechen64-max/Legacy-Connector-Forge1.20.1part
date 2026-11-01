@@ -1,4 +1,4 @@
-﻿{
+{
   "required": false,
   "minVersion": "0.8",
   "package": "org.kylepitcock.legacyconnector.mixin.compat",

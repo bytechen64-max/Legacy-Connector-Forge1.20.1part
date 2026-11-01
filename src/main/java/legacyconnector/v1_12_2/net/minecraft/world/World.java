@@ -244,7 +244,8 @@ public class World implements IBlockAccess {
     public static List<TileEntity> mcc$get$loadedTileEntityList(World w) {
         List<TileEntity> out = new ArrayList<>();
         if (w.serverLevel() == null) return out;
-        for (var holder : w.serverLevel().getChunkSource().chunkMap.getChunks()) {
+        for (var holder : ((org.kylepitcock.legacyconnector.mixin.access.ChunkMapAccess) w.serverLevel().getChunkSource().chunkMap)
+                .legacyconnector$chunks()) {
             var chunk = holder.getTickingChunk();
             if (chunk == null) continue;
             for (var be : chunk.getBlockEntities().values()) {
@@ -321,8 +322,9 @@ public class World implements IBlockAccess {
     /** A block read off the server thread: only a chunk that is fully loaded right now is read. Null on the server thread. */
     private BlockState offThreadState(net.minecraft.core.BlockPos p) {
         if (!(acc() instanceof ServerLevel sl) || sl.getServer().isSameThread()) return null;
-        var holder = sl.getChunkSource().chunkMap.getVisibleChunkIfPresent(net.minecraft.world.level.ChunkPos.asLong(p.getX() >> 4, p.getZ() >> 4));
-        var chunk = holder == null ? null : holder.getChunkIfPresent(net.minecraft.world.level.chunk.status.ChunkStatus.FULL);
+        var holder = ((org.kylepitcock.legacyconnector.mixin.access.ChunkMapAccess) sl.getChunkSource().chunkMap)
+                .legacyconnector$visibleChunk(net.minecraft.world.level.ChunkPos.asLong(p.getX() >> 4, p.getZ() >> 4));
+        var chunk = holder == null ? null : holder.getChunkIfPresent(net.minecraft.world.level.chunk.ChunkStatus.FULL);
         return chunk == null ? net.minecraft.world.level.block.Blocks.AIR.defaultBlockState() : chunk.getBlockState(p);
     }
 
@@ -769,7 +771,9 @@ public class World implements IBlockAccess {
     }
 
     public int getStrongPower(BlockPos pos) {
-        return acc() instanceof SignalGetter s ? s.getDirectSignalTo(modern(pos)) : 0;
+        // 1.20.1's LevelAccessor is a SignalGetter, so the instanceof this shim needed on 1.21 is redundant here.
+        var level = acc();
+        return level == null ? 0 : level.getDirectSignalTo(modern(pos));
     }
 
     @Override
@@ -969,11 +973,13 @@ public class World implements IBlockAccess {
     }
 
     public boolean isBlockPowered(BlockPos pos) {
-        return acc() instanceof SignalGetter s && s.hasNeighborSignal(modern(pos));
+        var level = acc();
+        return level != null && level.hasNeighborSignal(modern(pos));
     }
 
     public int isBlockIndirectlyGettingPowered(BlockPos pos) {
-        return acc() instanceof SignalGetter s ? s.getBestNeighborSignal(modern(pos)) : 0;
+        var level = acc();
+        return level == null ? 0 : level.getBestNeighborSignal(modern(pos));
     }
 
     public int getRedstonePowerFromNeighbors(BlockPos pos) {
@@ -981,7 +987,8 @@ public class World implements IBlockAccess {
     }
 
     public int getRedstonePower(BlockPos pos, EnumFacing facing) {
-        return acc() instanceof SignalGetter s ? s.getSignal(modern(pos), facing.mcc$modern()) : 0;
+        var level = acc();
+        return level == null ? 0 : level.getSignal(modern(pos), facing.mcc$modern());
     }
 
     public boolean isSidePowered(BlockPos pos, EnumFacing side) {
@@ -996,7 +1003,8 @@ public class World implements IBlockAccess {
         if (acc() != null && outsideRegion(p)) return deferredTile(p, pos);
         if (acc() == null || unloaded(p)) return null;
         if (acc() instanceof ServerLevel sl && !sl.getServer().isSameThread()) {
-            var holder = sl.getChunkSource().chunkMap.getVisibleChunkIfPresent(net.minecraft.world.level.ChunkPos.asLong(p.getX() >> 4, p.getZ() >> 4));
+            var holder = ((org.kylepitcock.legacyconnector.mixin.access.ChunkMapAccess) sl.getChunkSource().chunkMap)
+                    .legacyconnector$visibleChunk(net.minecraft.world.level.ChunkPos.asLong(p.getX() >> 4, p.getZ() >> 4));
             var chunk = holder == null ? null : holder.getTickingChunk();
             var be = chunk == null ? null : chunk.getBlockEntity(p);
             return be instanceof org.kylepitcock.legacyconnector.v1_12_2.adapter.Legacy1122BlockEntity l ? l.legacy() : null;

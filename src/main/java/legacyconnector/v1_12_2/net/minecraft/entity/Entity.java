@@ -667,36 +667,39 @@ public abstract class Entity implements legacyconnector.v1_12_2.net.minecraft.co
     public static boolean mcc$get$inPortal(Entity e) {
         var m = e.mcc$entity;
         if (m == null) return e.mcc$local_inPortal;
-        return m.isInsidePortal;
+        return ((org.kylepitcock.legacyconnector.mixin.access.EntityAccess) m).legacyconnector$insidePortal();
     }
 
     public static void mcc$set$inPortal(Entity e, boolean v) {
         var m = e.mcc$entity;
-        if (m != null) m.isInsidePortal = v;
+        if (m != null) ((org.kylepitcock.legacyconnector.mixin.access.EntityAccess) m).legacyconnector$setInsidePortal(v);
         else e.mcc$local_inPortal = v;
     }
 
     public static int mcc$get$portalCounter(Entity e) {
         var m = e.mcc$entity;
         if (m == null) return e.mcc$local_portalCounter;
-        return m.portalTime;
+        return ((org.kylepitcock.legacyconnector.mixin.access.EntityAccess) m).legacyconnector$portalTime();
     }
 
     public static void mcc$set$portalCounter(Entity e, int v) {
         var m = e.mcc$entity;
-        if (m != null) m.portalTime = v;
+        if (m != null) ((org.kylepitcock.legacyconnector.mixin.access.EntityAccess) m).legacyconnector$setPortalTime(v);
         else e.mcc$local_portalCounter = v;
     }
 
     public static legacyconnector.v1_12_2.net.minecraft.util.math.BlockPos mcc$get$lastPortalPos(Entity e) {
         var m = e.mcc$entity;
-        if (m == null || m.portalEntrancePos == null) return e.mcc$local_lastPortalPos;
-        return legacyconnector.v1_12_2.net.minecraft.util.math.BlockPos.mcc$of(m.portalEntrancePos);
+        if (m == null) return e.mcc$local_lastPortalPos;
+        var entrance = ((org.kylepitcock.legacyconnector.mixin.access.EntityAccess) m).legacyconnector$portalEntrancePos();
+        if (entrance == null) return e.mcc$local_lastPortalPos;
+        return legacyconnector.v1_12_2.net.minecraft.util.math.BlockPos.mcc$of(entrance);
     }
 
     public static void mcc$set$lastPortalPos(Entity e, legacyconnector.v1_12_2.net.minecraft.util.math.BlockPos v) {
         var m = e.mcc$entity;
-        if (m != null) m.portalEntrancePos = v == null ? null : v.mcc$modern();
+        if (m != null) ((org.kylepitcock.legacyconnector.mixin.access.EntityAccess) m)
+                .legacyconnector$setPortalEntrancePos(v == null ? null : v.mcc$modern());
         else e.mcc$local_lastPortalPos = v;
     }
 

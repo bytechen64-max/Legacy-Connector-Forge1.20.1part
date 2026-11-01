@@ -65,7 +65,7 @@ public class ChunkProviderServer implements IChunkProvider {
             var chunk = sl.getChunkSource().getChunkNow(x, z);
             return chunk == null ? null : Chunk.mcc$of(mcc$world, chunk);
         }
-        var chunk = access.getChunk(x, z, net.minecraft.world.level.chunk.status.ChunkStatus.EMPTY, false);
+        var chunk = access.getChunk(x, z, net.minecraft.world.level.chunk.ChunkStatus.EMPTY, false);
         return chunk == null ? null : Chunk.mcc$of(mcc$world, chunk);
     }
 

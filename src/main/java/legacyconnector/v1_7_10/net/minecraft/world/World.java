@@ -465,7 +465,7 @@ public class World implements IBlockAccess {
     private BlockState mcc$offThreadState(int x, int y, int z) {
         if (!(lvl() instanceof net.minecraft.server.level.ServerLevel sl) || sl.getServer().isSameThread()) return null;
         var holder = sl.getChunkSource().chunkMap.getVisibleChunkIfPresent(net.minecraft.world.level.ChunkPos.asLong(x >> 4, z >> 4));
-        var chunk = holder == null ? null : holder.getChunkIfPresent(net.minecraft.world.level.chunk.status.ChunkStatus.FULL);
+        var chunk = holder == null ? null : holder.getChunkIfPresent(net.minecraft.world.level.chunk.ChunkStatus.FULL);
         return chunk == null ? Blocks.AIR.defaultBlockState() : chunk.getBlockState(pos(x, y, z));
     }
 
@@ -1150,11 +1150,11 @@ public class World implements IBlockAccess {
             // another thread (the render thread reading the integrated server's world, as BuildCraft's RenderTank does): the level would
             // block until the busy server thread answers; 1.7.10 read the loaded chunk directly and had nothing for an unloaded one
             var holder = sl.getChunkSource().chunkMap.getVisibleChunkIfPresent(net.minecraft.world.level.ChunkPos.asLong(cx, cz));
-            var loaded = holder == null ? null : holder.getChunkIfPresent(net.minecraft.world.level.chunk.status.ChunkStatus.FULL);
+            var loaded = holder == null ? null : holder.getChunkIfPresent(net.minecraft.world.level.chunk.ChunkStatus.FULL);
             return loaded == null ? new legacyconnector.v1_7_10.net.minecraft.world.chunk.EmptyChunk(this, cx, cz)
                     : new legacyconnector.v1_7_10.net.minecraft.world.chunk.Chunk(this, loaded);
         }
-        var access = lvl().getChunk(cx, cz, net.minecraft.world.level.chunk.status.ChunkStatus.EMPTY, false);
+        var access = lvl().getChunk(cx, cz, net.minecraft.world.level.chunk.ChunkStatus.EMPTY, false);
         if (access == null && lvl() == mcc$liveLevel() && mcc$liveLevel() instanceof net.minecraft.server.level.ServerLevel level && level.getServer().isSameThread()) {
             access = level.getChunk(cx, cz);
         }
@@ -1165,7 +1165,7 @@ public class World implements IBlockAccess {
         // a generation region only hands out the chunks of its own radius at their generation status: report exactly those, so that
         // chunkExists/provideChunk agree (Mystcraft asks the provider for each chunk that exists and dereferences it)
         if (lvl() instanceof net.minecraft.server.level.WorldGenRegion region) {
-            return region.hasChunk(cx, cz) && region.getChunk(cx, cz, net.minecraft.world.level.chunk.status.ChunkStatus.EMPTY, false) != null;
+            return region.hasChunk(cx, cz) && region.getChunk(cx, cz, net.minecraft.world.level.chunk.ChunkStatus.EMPTY, false) != null;
         }
         return lvl().hasChunk(cx, cz);
     }
@@ -1759,7 +1759,7 @@ public class World implements IBlockAccess {
 
     /** The lowest value of the chunk's height map (where sky light may reach the lowest). */
     public int getChunkHeightMapMinimum(int x, int z) {
-        var chunk = lvl().getChunk(x >> 4, z >> 4, net.minecraft.world.level.chunk.status.ChunkStatus.EMPTY, false);
+        var chunk = lvl().getChunk(x >> 4, z >> 4, net.minecraft.world.level.chunk.ChunkStatus.EMPTY, false);
         if (chunk == null) return 0;
         int min = Integer.MAX_VALUE;
         for (int cx = 0; cx < 16; cx++) {
@@ -1790,7 +1790,7 @@ public class World implements IBlockAccess {
         var difficulty = lvl().getDifficulty();
         boolean hard = difficulty == net.minecraft.world.Difficulty.HARD;
         float f = 0.0F;
-        var chunk = lvl().getChunk(x >> 4, z >> 4, net.minecraft.world.level.chunk.status.ChunkStatus.EMPTY, false);
+        var chunk = lvl().getChunk(x >> 4, z >> 4, net.minecraft.world.level.chunk.ChunkStatus.EMPTY, false);
         if (chunk != null) {
             f += clamp01(chunk.getInhabitedTime() / 3600000.0F) * (hard ? 1.0F : 0.75F);
             f += getCurrentMoonPhaseFactor() * 0.25F;
