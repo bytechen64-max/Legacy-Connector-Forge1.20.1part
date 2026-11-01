@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  * <p>{@code loader.relocateLegacyJars=false} in {@code config/legacyconnector.properties} disables the move for users who would
  * rather keep their mods folder untouched; the legacy jars must then be kept outside the top level of the mods folder.</p>
  */
-public final class LegacyModLocator implements IModLocator {
+public final class LegacyModLocator extends net.minecraftforge.fml.loading.moddiscovery.AbstractModProvider implements IModLocator {
     private static final Logger LOG = LoggerFactory.getLogger("Legacy Connector");
     /** Nested runtime (shim) mod inside the distributed loader jar. Absent in development. */
     static final String EMBEDDED_RUNTIME = "/META-INF/legacyconnector/legacyconnector-runtime.jar";
@@ -150,9 +150,30 @@ public final class LegacyModLocator implements IModLocator {
         return files;
     }
 
-    /** Wraps a jar of the cache in the {@link IModFile} FML loads it from. */
+    /**
+     * Wraps a jar of the cache in the {@link IModFile} FML loads it from.
+     *
+     * <p>A translated legacy mod has a {@code mods.toml} the metadata generator wrote, and FML reads it. The other jars the
+     * loader hands over -- the synthesized legacy APIs, the bundled libraries, the shared API jar -- are libraries: they have no
+     * {@code mods.toml}, so the toml parser returns no file info, and FML's {@code ModValidator.validateLanguages} then throws
+     * {@code NullPointerException} on it (a silent death before the game window opens). For those FML's own manifest parser is
+     * used ({@code AbstractModProvider.createMod}), which builds the default file info a library needs.</p>
+     */
     private IModFile toModFile(Path jar) {
+        if (!hasModsToml(jar)) {
+            IModLocator.ModFileOrException library = createMod(jar.toAbsolutePath());
+            if (library.file() != null) return library.file();
+            LOG.debug("Legacy Connector: FML did not take the library {}: {}", jar, library.ex());
+        }
         return ModFileFactory.FACTORY.build(SecureJar.from(jar), this, ModFileParser::modsTomlParser);
+    }
+
+    private static boolean hasModsToml(Path jar) {
+        try (ZipFile zip = new ZipFile(jar.toFile())) {
+            return zip.getEntry("META-INF/mods.toml") != null;
+        } catch (IOException e) {
+            return false;
+        }
     }
 
     private void findCandidates(List<Path> outputs) {

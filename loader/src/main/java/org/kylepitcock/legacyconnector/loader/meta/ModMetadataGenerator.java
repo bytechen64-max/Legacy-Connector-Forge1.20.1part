@@ -124,6 +124,25 @@ public final class ModMetadataGenerator {
         av.visit("value", mod.fmlId());
         av.visitEnd();
 
+        // Forge 1.20.1 constructs a mod with a no-argument constructor (the (IEventBus, ModContainer) form is 1.21); the bus and
+        // the container come from the loading context, which FML has just made active.
+        MethodVisitor noArg = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
+        noArg.visitCode();
+        noArg.visitVarInsn(Opcodes.ALOAD, 0);
+        noArg.visitMethodInsn(Opcodes.INVOKESTATIC, "net/minecraftforge/fml/javafmlmod/FMLJavaModLoadingContext", "get",
+                "()Lnet/minecraftforge/fml/javafmlmod/FMLJavaModLoadingContext;", false);
+        noArg.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "net/minecraftforge/fml/javafmlmod/FMLJavaModLoadingContext", "getModEventBus",
+                "()Lnet/minecraftforge/eventbus/api/IEventBus;", false);
+        noArg.visitMethodInsn(Opcodes.INVOKESTATIC, "net/minecraftforge/fml/ModLoadingContext", "get",
+                "()Lnet/minecraftforge/fml/ModLoadingContext;", false);
+        noArg.visitMethodInsn(Opcodes.INVOKEVIRTUAL, "net/minecraftforge/fml/ModLoadingContext", "getActiveContainer",
+                "()Lnet/minecraftforge/fml/ModContainer;", false);
+        noArg.visitMethodInsn(Opcodes.INVOKESPECIAL, name, "<init>",
+                "(Lnet/minecraftforge/eventbus/api/IEventBus;Lnet/minecraftforge/fml/ModContainer;)V", false);
+        noArg.visitInsn(Opcodes.RETURN);
+        noArg.visitMaxs(0, 0);
+        noArg.visitEnd();
+
         MethodVisitor mv = cw.visitMethod(Opcodes.ACC_PUBLIC, "<init>", "(Lnet/minecraftforge/eventbus/api/IEventBus;Lnet/minecraftforge/fml/ModContainer;)V", null, null);
         mv.visitCode();
         mv.visitVarInsn(Opcodes.ALOAD, 0);
