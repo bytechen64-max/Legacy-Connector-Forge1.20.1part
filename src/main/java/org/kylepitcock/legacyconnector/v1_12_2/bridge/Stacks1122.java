@@ -16,7 +16,7 @@ public final class Stacks1122 {
         net.minecraft.world.item.Item modern = ItemBridge1122.modern(item, stack.getMetadata());
         if (modern == null) return net.minecraft.world.item.ItemStack.EMPTY;
         var out = new net.minecraft.world.item.ItemStack(modern, stack.getCount());
-        if ((item.isDamageable() || item.mcc$vanillaModern != null && modern.components().has(DataComponents.MAX_DAMAGE)) && stack.getMetadata() > 0) {
+        if ((item.isDamageable() || item.mcc$vanillaModern != null && modern.canBeDepleted()) && stack.getMetadata() > 0) {
             out.setDamageValue(stack.getMetadata());
         }
         // 1.12 kept a filled map's id in its metadata
@@ -195,10 +195,13 @@ public final class Stacks1122 {
         int mapId = org.kylepitcock.legacyconnector.core.data.ItemData.mapId(stack);
         if (mapId >= 0) meta = mapId;
         ItemStack out = new ItemStack(legacy, stack.getCount(), meta);
-        CustomData data = stack.get(DataComponents.CUSTOM_DATA);
+        // 1.20.1 keeps the same data in the stack's tag (the component types are 1.20.5+); ItemData/PotionData wrap it
+        net.minecraft.nbt.CompoundTag data = org.kylepitcock.legacyconnector.core.data.ItemData.customData(stack);
         if (data != null) out.setTagCompound(new NBTTagCompound(data.copy()));
-        var potion = stack.get(DataComponents.POTION_CONTENTS);
-        if (potion != null && isPotionItem(stack.getItem())) potionFromModern(potion, out);
+        if (isPotionItem(stack.getItem())) {
+            var potion = org.kylepitcock.legacyconnector.core.data.PotionData.of(stack);
+            if (!potion.potion().isEmpty() || !potion.customEffects().isEmpty()) potionFromModern(potion, out);
+        }
         return out;
     }
 }

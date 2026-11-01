@@ -810,7 +810,7 @@ public final class ItemBridge {
             Integer pm = CompatComponents.legacyMeta(stack);
             net.minecraft.world.item.ItemStack real = toModern(item, stack.getCount(), pm == null ? 0 : pm);
             if (real.is(Items.BARRIER) || real.isEmpty()) return stack;
-            net.minecraft.world.item.ItemStack moved = stack.transmuteCopy(real.getItem(), stack.getCount());
+            net.minecraft.world.item.ItemStack moved = new net.minecraft.world.item.ItemStack(real.getItem(), stack.getCount());
             Integer rm = CompatComponents.legacyMeta(real);
             if (rm != null) CompatComponents.setLegacyMeta(moved, rm);
             else CompatComponents.clearLegacyMeta(moved);
@@ -821,7 +821,7 @@ public final class ItemBridge {
         if (meta == null) return stack;
         net.minecraft.world.item.Item variant = item.mcc$variants.get(meta);
         if (variant == null || variant == stack.getItem()) return stack;
-        net.minecraft.world.item.ItemStack moved = stack.transmuteCopy(variant, stack.getCount());
+        net.minecraft.world.item.ItemStack moved = new net.minecraft.world.item.ItemStack(variant, stack.getCount());
         CompatComponents.clearLegacyMeta(moved);
         return moved;
     }
@@ -852,7 +852,7 @@ public final class ItemBridge {
             else CompatComponents.clearLegacyMeta(stack);
             return stack;
         }
-        net.minecraft.world.item.ItemStack moved = stack.transmuteCopy(replacement.getItem(), stack.getCount());
+        net.minecraft.world.item.ItemStack moved = new net.minecraft.world.item.ItemStack(replacement.getItem(), stack.getCount());
         Integer meta = CompatComponents.legacyMeta(replacement);
         if (meta != null) CompatComponents.setLegacyMeta(moved, meta);
         else CompatComponents.clearLegacyMeta(moved);
