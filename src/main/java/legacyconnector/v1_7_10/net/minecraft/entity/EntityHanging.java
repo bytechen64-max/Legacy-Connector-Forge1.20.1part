@@ -67,7 +67,8 @@ public abstract class EntityHanging extends Entity {
     private BlockPos mcc$modernTile() {
         HangingEntity a = mcc$attached();
         if (a == null || a.getPos() == null) return null;
-        return a instanceof HangingEntity h ? a.getPos().relative(h.getDirection().getOpposite()) : a.getPos();
+        // a is already a HangingEntity, so the pattern is redundant.
+        return a.getPos().relative(a.getDirection().getOpposite());
     }
 
     /** Copies a view's modern block and facing into the local values (before one of them is changed). */
@@ -77,7 +78,8 @@ public abstract class EntityHanging extends Entity {
         mcc$local_field_146063_b = tile.getX();
         mcc$local_field_146064_c = tile.getY();
         mcc$local_field_146062_d = tile.getZ();
-        if (mcc$attached() instanceof HangingEntity h && h.getDirection().getAxis().isHorizontal()) mcc$local_hangingDirection = h.getDirection().get2DDataValue();
+        HangingEntity h = mcc$attached();
+        if (h != null && h.getDirection().getAxis().isHorizontal()) mcc$local_hangingDirection = h.getDirection().get2DDataValue();
     }
 
     /** Moves and turns a view's modern entity to the local block and facing. */
@@ -85,7 +87,8 @@ public abstract class EntityHanging extends Entity {
         HangingEntity a = mcc$attached();
         if (a == null) return;
         BlockPos tile = new BlockPos(mcc$local_field_146063_b, mcc$local_field_146064_c, mcc$local_field_146062_d);
-        if (a instanceof HangingEntity h) {
+        if (a != null) {
+            HangingEntity h = a;
             Direction facing = Direction.from2DDataValue(mcc$local_hangingDirection);
             BlockPos pos = tile.relative(facing);
             a.setPos(pos.getX(), pos.getY(), pos.getZ());
@@ -96,7 +99,8 @@ public abstract class EntityHanging extends Entity {
     }
 
     public static int mcc$get$hangingDirection(EntityHanging e) {
-        if (e.mcc$attached() instanceof HangingEntity h && h.getPos() != null && h.getDirection().getAxis().isHorizontal()) return h.getDirection().get2DDataValue();
+        HangingEntity h = e.mcc$attached();
+        if (h != null && h.getPos() != null && h.getDirection().getAxis().isHorizontal()) return h.getDirection().get2DDataValue();
         return e.mcc$local_hangingDirection;
     }
 
