@@ -72,12 +72,11 @@ public class EnchantmentHelper {
         var name = enchantment.getRegistryName();
         if (backing == null || name == null || !"minecraft".equals(name.getNamespace())) return 0;
         String path = RENAMED.getOrDefault(name.getPath(), name.getPath());
-        var enchants = backing.getItem() == net.minecraft.world.item.Items.ENCHANTED_BOOK
-                ? backing.getOrDefault(net.minecraft.core.component.DataComponents.STORED_ENCHANTMENTS, net.minecraft.world.item.enchantment.ItemEnchantments.EMPTY)
-                : backing.getEnchantments();
+        // 1.20.1 resolves enchanted books inside getEnchantments already, and the map holds the enchantments themselves.
+        var enchants = net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantments(backing);
         for (var e : enchants.entrySet()) {
-            var key = e.getKey().unwrapKey();
-            if (key.isPresent() && key.get().location().getNamespace().equals("minecraft") && key.get().location().getPath().equals(path)) return e.getIntValue();
+            var key = net.minecraft.core.registries.BuiltInRegistries.ENCHANTMENT.getKey(e.getKey());
+            if (key != null && key.getNamespace().equals("minecraft") && key.getPath().equals(path)) return e.getValue();
         }
         return 0;
     }

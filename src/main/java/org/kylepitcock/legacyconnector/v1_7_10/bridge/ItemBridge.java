@@ -17,13 +17,10 @@ import legacyconnector.v1_7_10.net.minecraft.nbt.NBTTagCompound;
 import legacyconnector.v1_7_10.net.minecraft.nbt.NBTTagList;
 import legacyconnector.v1_7_10.net.minecraft.util.RegistryNamespaced;
 import net.minecraft.core.Holder;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.item.component.CustomData;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.ItemEnchantments;
 import org.kylepitcock.legacyconnector.core.Ids;
 import org.kylepitcock.legacyconnector.core.data.CompatComponents;
 import org.kylepitcock.legacyconnector.core.flatten.VanillaFlattening;
@@ -922,13 +919,14 @@ public final class ItemBridge {
 
     public static NBTTagList legacyEnchantments(net.minecraft.world.item.ItemStack stack) {
         NBTTagList list = new NBTTagList();
-        ItemEnchantments enchants = stack.getOrDefault(DataComponents.ENCHANTMENTS, ItemEnchantments.EMPTY);
+        // 1.20.1 keeps enchantments as a map of enchantment to level (the component is 1.20.5).
+        var enchants = stack.getEnchantments();
         for (var entry : enchants.entrySet()) {
-            Holder<Enchantment> h = entry.getKey();
-            String path = h.unwrapKey().map(k -> k.location().getPath()).orElse("");
+            var key = net.minecraft.core.registries.BuiltInRegistries.ENCHANTMENT.getKey(entry.getKey());
+            String path = key == null ? "" : key.getPath();
             NBTTagCompound e = new NBTTagCompound();
             e.setShort("id", ENCHANT_IDS.getOrDefault(path, -1).shortValue());
-            e.setShort("lvl", (short) entry.getIntValue());
+            e.setShort("lvl", (short) (int) entry.getValue());
             list.appendTag(e);
         }
         return list.tagCount() == 0 ? null : list;
@@ -1067,8 +1065,4 @@ public final class ItemBridge {
         return copy;
     }
 
-    /** Ensures custom data components exist before stacks are serialized with the legacy tag. */
-    static CustomData data(NBTTagCompound tag) {
-        return CustomData.of(tag.mcc$modern());
-    }
 }

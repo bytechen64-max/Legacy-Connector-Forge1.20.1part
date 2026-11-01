@@ -191,38 +191,31 @@ public class Legacy1122Item extends net.minecraft.world.item.Item {
      * hit like a fist.
      */
     @Override
-    public net.minecraft.world.item.component.ItemAttributeModifiers getDefaultAttributeModifiers(ItemStack stack) {
-        net.minecraft.world.item.component.ItemAttributeModifiers base = super.getDefaultAttributeModifiers(stack);
+    public com.google.common.collect.Multimap<net.minecraft.world.entity.ai.attributes.Attribute,
+            net.minecraft.world.entity.ai.attributes.AttributeModifier> getDefaultAttributeModifiers(net.minecraft.world.entity.EquipmentSlot slot) {
+        // 1.20.1 asks per equipment slot and answers with a Multimap; 1.20.5 collects every group into one component.
+        var out = com.google.common.collect.HashMultimap.<net.minecraft.world.entity.ai.attributes.Attribute,
+                net.minecraft.world.entity.ai.attributes.AttributeModifier>create();
+        out.putAll(super.getDefaultAttributeModifiers(slot));
         try {
-            var view = org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.fromModern(stack);
-            var builder = net.minecraft.world.item.component.ItemAttributeModifiers.builder();
-            boolean any = false;
-            for (var slot : legacyconnector.v1_12_2.net.minecraft.inventory.EntityEquipmentSlot.values()) {
-                var map = legacy.getAttributeModifiers(slot, view);
+            var view = org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.fromModern(new ItemStack(this));
+            for (var legacySlot : legacyconnector.v1_12_2.net.minecraft.inventory.EntityEquipmentSlot.values()) {
+                if (!legacySlot.getName().equals(slot.getName())) continue;
+                var map = legacy.getAttributeModifiers(legacySlot, view);
                 if (map == null || map.isEmpty()) continue;
-                var group = switch (slot) {
-                    case MAINHAND -> net.minecraft.world.entity.EquipmentSlotGroup.MAINHAND;
-                    case OFFHAND -> net.minecraft.world.entity.EquipmentSlotGroup.OFFHAND;
-                    case FEET -> net.minecraft.world.entity.EquipmentSlotGroup.FEET;
-                    case LEGS -> net.minecraft.world.entity.EquipmentSlotGroup.LEGS;
-                    case CHEST -> net.minecraft.world.entity.EquipmentSlotGroup.CHEST;
-                    case HEAD -> net.minecraft.world.entity.EquipmentSlotGroup.HEAD;
-                };
                 for (var e : map.entries()) {
                     var attribute = legacyconnector.v1_12_2.net.minecraft.entity.ai.attributes.IAttribute.mcc$modernByName(e.getKey());
                     if (attribute == null || e.getValue() == null) continue;
                     var modifier = e.getValue().mcc$modern();
                     // per slot: one modifier id may be used in several slots (armor uses one UUID per slot, swords one for the hand)
-                    modifier = new net.minecraft.world.entity.ai.attributes.AttributeModifier(
-                            modifier.id().withSuffix("/" + slot.getName()), modifier.amount(), modifier.operation());
-                    builder.add(attribute, modifier, group);
-                    any = true;
+                    out.put(attribute, new net.minecraft.world.entity.ai.attributes.AttributeModifier(
+                            modifier.getName() + "/" + legacySlot.getName(), modifier.getAmount(), modifier.getOperation()));
                 }
             }
-            return any ? builder.build() : base;
         } catch (RuntimeException | LinkageError e) {
-            return base;
+            // a broken legacy item keeps the vanilla modifiers
         }
+        return out;
     }
 
     @Override

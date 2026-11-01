@@ -93,7 +93,7 @@ files in place, which forces a full recompile every time. A full type-check of t
 
 ## What is left
 
-81 compile errors at the last run (the count moves as javac gets further into the tree). Categories, highest value first:
+76 compile errors at the last run (the count moves as javac gets further into the tree). Categories, highest value first:
 
 1. **Item components** (~20). `DataComponents`/`CustomData`/`ItemEnchantments`/`PotionContents`/`ItemAttributeModifiers`
    are 1.20.5+; 1.20.1 has `stack.getTag()`/`getOrCreateTag()`, `EnchantmentHelper.getEnchantments`,
