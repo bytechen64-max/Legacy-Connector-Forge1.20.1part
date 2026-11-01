@@ -373,6 +373,27 @@ public final class Assets1122 implements GeneratedPack.Contributor {
                 LOG.debug("The state mapper of {} failed: {}", id, e.toString());
             }
         }
+        legacyconnector.v1_12_2.net.minecraft.block.material.Material material = block.getMaterialLegacy();
+        if (material != null && material.isLiquid()) {
+            // a fluid block has no model of its own: the fluid renderer draws it from the block's fluid state (a "forge:fluid" model
+            // in 1.12); pointing at the air model keeps the block invisible and the fluid visible
+            JsonObject air = new JsonObject();
+            JsonObject variants = new JsonObject();
+            JsonObject variant = new JsonObject();
+            variant.addProperty("model", "minecraft:block/air");
+            variants.add("", variant);
+            air.add("variants", variants);
+            byte[] bytes = GSON.toJson(air).getBytes(StandardCharsets.UTF_8);
+            out.put("assets/" + id.getNamespace() + "/blockstates/" + id.getPath() + ".json", () -> bytes);
+            stats.translated++;
+            return;
+        }
+        if (multipart) {
+            // A multipart file selects parts with the block's own properties (a fence's north/east, a wall's up/low): the modern block
+            // has one "meta" property, so every part becomes a selector over the metas whose legacy state satisfies it.
+            translateMultipart(block, id, original, byMeta, out, stats);
+            return;
+        }
         Map<Integer, Res> results = new TreeMap<>();
         boolean translucentMeta = false;
         boolean cutoutMeta = false;
@@ -803,6 +824,109 @@ public final class Assets1122 implements GeneratedPack.Contributor {
         }
         return null;
     }
+
+    /**
+     * A 1.12 multipart blockstate (fences, panes, walls, fences of every mod) selects its parts with the block's own properties. The
+     * modern block has a single "meta" property, so each part is emitted once with the metas whose legacy state satisfies its selector:
+     * the shape then follows the connections the block's metadata carries, instead of drawing one part for every state.
+     */
+    private static void translateMultipart(Block block, ResourceLocation id, JsonObject original, Map<Integer, List<IBlockState>> byMeta,
+            Map<String, Supplier<byte[]>> out, Stats stats) {
+        JsonArray parts = new JsonArray();
+        String firstModel = null;
+        int n = 0;
+        for (JsonElement e : original.getAsJsonArray("multipart")) {
+            if (!e.isJsonObject()) continue;
+            JsonObject part = e.getAsJsonObject();
+            JsonElement apply = part.get("apply");
+            if (apply == null) continue;
+            JsonObject when = part.has("when") && part.get("when").isJsonObject() ? part.getAsJsonObject("when") : null;
+            String metas = matchingMetas(when, block, byMeta);
+            if (metas.isEmpty()) continue;
+            JsonElement resolved = convertApply(apply, id, "p" + n, out);
+            if (resolved == null) continue;
+            n++;
+            JsonObject mpPart = new JsonObject();
+            JsonObject selector = new JsonObject();
+            selector.addProperty("meta", metas);
+            mpPart.add("when", selector);
+            mpPart.add("apply", resolved);
+            parts.add(mpPart);
+            if (firstModel == null) firstModel = modelOf(resolved);
+        }
+        if (parts.size() == 0) {
+            // nothing matched: the post (or the first part) alone reads correctly, an empty multipart has no model at all
+            for (JsonElement e : original.getAsJsonArray("multipart")) {
+                if (!e.isJsonObject()) continue;
+                JsonElement apply = e.getAsJsonObject().get("apply");
+                if (apply == null) continue;
+                JsonElement resolved = convertApply(apply, id, "fallback", out);
+                if (resolved == null) continue;
+                JsonObject mpPart = new JsonObject();
+                JsonObject selector = new JsonObject();
+                selector.addProperty("meta", "0|1|2|3|4|5|6|7|8|9|10|11|12|13|14|15");
+                mpPart.add("when", selector);
+                mpPart.add("apply", resolved);
+                parts.add(mpPart);
+                firstModel = modelOf(resolved);
+                break;
+            }
+        }
+        if (parts.size() == 0) {
+            JsonElement variant = fallbackModel(id, null, "multipart", out);
+            JsonObject mpPart = new JsonObject();
+            mpPart.add("when", new JsonObject());
+            mpPart.add("apply", variant);
+            parts.add(mpPart);
+            firstModel = modelOf(variant);
+        }
+        JsonObject result = new JsonObject();
+        result.add("multipart", parts);
+        byte[] bytes = GSON.toJson(result).getBytes(StandardCharsets.UTF_8);
+        out.put("assets/" + id.getNamespace() + "/blockstates/" + id.getPath() + ".json", () -> bytes);
+        stats.translated++;
+        if (firstModel != null) generatedMultipartModels.put(id, firstModel);
+        LOG.debug("multipart {}: {} part(s)", id, parts.size());
+    }
+
+    /** The metas whose legacy state satisfies a multipart selector (all of them when it has none). */
+    private static String matchingMetas(JsonObject when, Block block, Map<Integer, List<IBlockState>> byMeta) {
+        StringBuilder metas = new StringBuilder();
+        for (var entry : byMeta.entrySet()) {
+            boolean matches = when == null;
+            if (!matches) {
+                for (IBlockState state : entry.getValue()) {
+                    if (whenMatches(when, propsOf(state))) {
+                        matches = true;
+                        break;
+                    }
+                }
+            }
+            if (!matches) continue;
+            if (metas.length() > 0) metas.append('|');
+            metas.append(entry.getKey());
+        }
+        return metas.toString();
+    }
+
+    /** The apply of one multipart part as a modern variant (an array stays an array). */
+    private static JsonElement convertApply(JsonElement apply, ResourceLocation id, String key, Map<String, Supplier<byte[]>> out) {
+        if (apply.isJsonArray()) {
+            JsonArray arr = new JsonArray();
+            int i = 0;
+            for (JsonElement a : apply.getAsJsonArray()) {
+                JsonObject m = a.isJsonObject() ? blockModels(normalizeApply(a.getAsJsonObject()), id, key + "_" + i, out) : null;
+                if (m != null) arr.add(m);
+                i++;
+            }
+            return arr.size() == 0 ? null : arr;
+        }
+        if (!apply.isJsonObject()) return null;
+        return blockModels(normalizeApply(apply.getAsJsonObject()), id, key, out);
+    }
+
+    /** The first model a multipart blockstate names, so its item model can inherit it. */
+    private static final Map<ResourceLocation, String> generatedMultipartModels = new java.util.concurrent.ConcurrentHashMap<>();
 
     private static Res resolveMultipart(JsonObject original, ResourceLocation id, IBlockState state, String key, Map<String, Supplier<byte[]>> out) {
         TreeMap<String, String> props = propsOf(state);

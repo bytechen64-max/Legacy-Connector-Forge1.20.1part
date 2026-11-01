@@ -39,6 +39,11 @@ public final class BlockBridge1122 {
         Material m = block.getMaterialLegacy();
         if (m != null && !m.isOpaque()) p.noOcclusion();
         if (m != null && !m.blocksMovement()) p.noCollission();
+        if (m != null && m.isLiquid()) {
+            // A 1.12 fluid block is not something the player breaks: it is drawn by the fluid renderer and replaced by the flow,
+            // while the modern block kept the default hardness and could be mined away (leaving a hole with a fluid state).
+            p.noCollission().noOcclusion().noLootTable().strength(-1.0F, 3600000.0F).replaceable().pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY);
+        }
         if (m != null) {
             p.pushReaction(m.mcc$pushReaction());
             if (m.getCanBurn()) p.ignitedByLava();

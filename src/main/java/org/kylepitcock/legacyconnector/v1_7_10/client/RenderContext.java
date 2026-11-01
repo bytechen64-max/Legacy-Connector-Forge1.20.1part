@@ -372,7 +372,12 @@ public final class RenderContext {
     }
 
     public static int light() {
-        Frame f = frames().peek();
+        State s = STATE.get();
+        // a glow pass sets the lightmap through OpenGlHelper.setLightmapTextureCoords (240, 240 = full bright) or the tessellator's
+        // brightness; without honouring it here the emissive layer of a mob (SRP's summoning pillar, eyes, orbs) drew at world light
+        // and came out dark
+        if (s.forcedLight >= 0) return s.forcedLight;
+        Frame f = s.frames.peek();
         return f == null ? LightTexture.FULL_BRIGHT : f.light;
     }
 

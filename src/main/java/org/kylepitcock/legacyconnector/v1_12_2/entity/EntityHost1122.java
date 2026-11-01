@@ -164,6 +164,21 @@ public class EntityHost1122 extends net.minecraft.world.entity.Entity implements
         return legacy != null && legacy.canBePushed();
     }
 
+    /**
+     * 1.12 entities do not collide with each other unless {@code canBeCollidedWith} says so; 1.20.1 mobs collide with every entity
+     * that does not opt out, so a mod's projectile or fluid entity (SRP's acid) blocked mobs that walked into it.
+     */
+    @Override
+    public boolean canCollideWith(net.minecraft.world.entity.Entity other) {
+        if (legacy == null) return super.canCollideWith(other);
+        return legacy.canBeCollidedWith() && super.canCollideWith(other);
+    }
+
+    @Override
+    public boolean isSpectator() {
+        return false;
+    }
+
     @Override
     public boolean canBeCollidedWith() {
         if (legacy != null && Hosts1122.overrides(legacy.getClass(), "getCollisionBoundingBox")) return legacy.getCollisionBoundingBox() != null;

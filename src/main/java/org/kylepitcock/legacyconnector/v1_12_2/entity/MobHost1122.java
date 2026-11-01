@@ -697,6 +697,13 @@ public class MobHost1122 extends PathfinderMob implements LivingHost1122, IEntit
         return legacy == null ? super.isPushable() : legacy.canBePushed();
     }
 
+    /** See {@link EntityHost1122#canCollideWith}: 1.12 only collided with entities that asked for it. */
+    @Override
+    public boolean canCollideWith(net.minecraft.world.entity.Entity other) {
+        if (legacy == null) return super.canCollideWith(other);
+        return legacy.canBeCollidedWith() && super.canCollideWith(other);
+    }
+
     @Override
     public void mcc$setSize(float width, float height) {
         if (width == this.width && height == this.height) return;
