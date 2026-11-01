@@ -150,6 +150,15 @@ depend on `runServer`/`runClient`).
 - **Forge registers its own capability interfaces** (item handler, fluid handler, item fluid handler, energy) before the
   mods are asked; `RegisterCapabilitiesEvent.register` throws for them *and* logs an error first, so they are skipped
   rather than caught.
+- **Reflection has to work in both runs.** The development game has the official (Mojang) names a mod is compiled against; an
+  installed game has the SRG names (`f_120349_`, `m_91561_`), and reobfuscation rewrites bytecode references but not a name
+  inside a reflection string. A lookup written for development therefore throws `NoSuchFieldException` in production, and
+  because the call sites catch it the feature silently disappears (legacy sounds, head-layer armor, key bindings, hopper
+  cooldowns, the recipe book panel, ...). Use `core/Mirror.field`/`method`: they take the official name and fall back to the
+  SRG names of `legacyconnector/mirror.tsrg`, which `generateMirrorTable` writes from ForgeGradle's official -> SRG mapping
+  (filtered to the names that appear in our classes, ~37k entries).
+- **A mod's own resources need a `pack.mcmeta`**: Forge adds them as the pack `mod:<modid>` and logs
+  `Missing metadata in pack mod:...` without one.
 - **A mod jar's module name must be its first mod id.** `FMLModContainer` loads the mod class with
   `Class.forName(gameLayer.findModule(info.getOwningFile().moduleName()).orElseThrow(), className)`, and
   `ModFileInfo.moduleName()` is the first `mods.toml` modId, while the game layer names a jar's module from its manifest.
