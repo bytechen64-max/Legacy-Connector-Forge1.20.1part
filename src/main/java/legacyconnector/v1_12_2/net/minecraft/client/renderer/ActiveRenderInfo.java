@@ -23,7 +23,7 @@ public class ActiveRenderInfo {
         var camera = camera();
         var entity = camera.getEntity();
         if (entity == null) return position;
-        float partial = net.minecraft.client.Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(true);
+        float partial = net.minecraft.client.Minecraft.getInstance().getFrameTime();
         var at = entity.getPosition(partial);
         var cam = camera.getPosition();
         position = new Vec3d(cam.x - at.x, cam.y - at.y, cam.z - at.z);

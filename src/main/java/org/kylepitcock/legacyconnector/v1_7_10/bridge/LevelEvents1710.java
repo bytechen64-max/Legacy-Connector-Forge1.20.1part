@@ -79,7 +79,7 @@ public final class LevelEvents1710 {
             var effects = legacyconnector.v1_7_10.net.minecraft.potion.PotionHelper.getPotionEffects(damage, false);
             if (effects != null && !effects.isEmpty()) {
                 var inst = ((legacyconnector.v1_7_10.net.minecraft.potion.PotionEffect) effects.get(0)).mcc$modern();
-                if (inst != null) return inst.getEffect().value().getColor();
+                if (inst != null) return inst.getEffect().getColor();
             }
         } catch (RuntimeException | LinkageError ignored) {
             // an unknown potion splashes in the default colour

@@ -87,8 +87,8 @@ public class EntityPotion extends EntityThrowable {
                 for (var e : effects) {
                     var m = e.mcc$toModern();
                     if (m == null) continue;
-                    if (m.getEffect().value().isInstantenous()) {
-                        m.getEffect().value().applyInstantenousEffect(mcc$entity, getThrower() == null ? null : getThrower().mcc$entity, living, m.getAmplifier(), scale);
+                    if (m.getEffect().isInstantenous()) {
+                        m.getEffect().applyInstantenousEffect(mcc$entity, getThrower() == null ? null : getThrower().mcc$entity, living, m.getAmplifier(), scale);
                     } else {
                         int duration = (int) (scale * m.getDuration() + 0.5D);
                         if (duration > 20) living.addEffect(new net.minecraft.world.effect.MobEffectInstance(m.getEffect(), duration, m.getAmplifier(),

@@ -18,7 +18,7 @@ public enum Animation {
 
     public static float getPartialTickTime() {
         try {
-            return net.minecraft.client.Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
+            return net.minecraft.client.Minecraft.getInstance().getFrameTime();
         } catch (RuntimeException | LinkageError e) {
             return INSTANCE.clientPartialTickTime;
         }

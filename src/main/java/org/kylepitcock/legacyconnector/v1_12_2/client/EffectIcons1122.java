@@ -43,13 +43,13 @@ public final class EffectIcons1122 {
         event.registerMobEffect(new IClientMobEffectExtensions() {
             @Override
             public boolean isVisibleInInventory(MobEffectInstance instance) {
-                Potion potion = Effects1122.legacy(instance.getEffect().value());
+                Potion potion = Effects1122.legacy(instance.getEffect());
                 return potion == null || safe(() -> potion.shouldRender(PotionEffect.mcc$fromModern(instance)), true);
             }
 
             @Override
             public boolean isVisibleInGui(MobEffectInstance instance) {
-                Potion potion = Effects1122.legacy(instance.getEffect().value());
+                Potion potion = Effects1122.legacy(instance.getEffect());
                 return potion == null || safe(() -> potion.shouldRenderHUD(PotionEffect.mcc$fromModern(instance)), true);
             }
 
@@ -81,7 +81,7 @@ public final class EffectIcons1122 {
     /** The icon cell (when the potion has one), then the mod's own drawing hook at the 1.12 corner (cornerX, cornerY). */
     private static void draw(MobEffectInstance instance, GuiGraphics graphics, int x, int y, float alpha, boolean hud, int cornerX, int cornerY,
             float z) {
-        Potion potion = Effects1122.legacy(instance.getEffect().value());
+        Potion potion = Effects1122.legacy(instance.getEffect());
         if (potion == null) return;
         ResourceLocation previous = RenderContext.texture();
         RenderContext.beginGui(graphics);

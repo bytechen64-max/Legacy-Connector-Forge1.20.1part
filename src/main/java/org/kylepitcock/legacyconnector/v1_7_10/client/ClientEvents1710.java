@@ -110,7 +110,7 @@ public final class ClientEvents1710 {
         var block = BlockBridge.legacyBlock(e.getBlockState());
         if (block == null) block = legacyconnector.v1_7_10.net.minecraft.init.Blocks.air;
         var pos = e.getBlockPos();
-        float partial = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
+        float partial = Minecraft.getInstance().getFrameTime();
         var buffers = Minecraft.getInstance().renderBuffers().bufferSource();
         RenderContext.beginWorld(e.getPoseStack(), buffers, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
         try {

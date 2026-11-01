@@ -132,7 +132,7 @@ public final class LegacyDimensionEffects extends DimensionSpecialEffects {
         WorldProvider p = provider();
         if (p == null || !overrides(p, "getFogColor", float.class, float.class)) return fogColor.multiply(brightness * 0.94F + 0.06F, brightness * 0.94F + 0.06F, brightness * 0.91F + 0.09F);
         try {
-            float partial = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
+            float partial = Minecraft.getInstance().getFrameTime();
             var legacy = p.getFogColor(Minecraft.getInstance().level.getTimeOfDay(partial), partial);
             if (legacy != null) return new Vec3(legacy.xCoord, legacy.yCoord, legacy.zCoord);
         } catch (RuntimeException | LinkageError e) {

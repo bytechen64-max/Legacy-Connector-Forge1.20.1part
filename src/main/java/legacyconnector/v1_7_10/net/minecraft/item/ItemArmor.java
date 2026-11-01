@@ -30,11 +30,11 @@ public class ItemArmor extends legacyconnector.v1_7_10.net.minecraft.item.Item {
     }
 
     private static ArmorMaterial mcc$material(net.minecraft.world.item.ArmorItem a) {
-        var m = a.getMaterial().value();
-        if (m == net.minecraft.world.item.ArmorMaterials.LEATHER.value()) return ArmorMaterial.CLOTH;
-        if (m == net.minecraft.world.item.ArmorMaterials.CHAIN.value()) return ArmorMaterial.CHAIN;
-        if (m == net.minecraft.world.item.ArmorMaterials.GOLD.value()) return ArmorMaterial.GOLD;
-        if (m == net.minecraft.world.item.ArmorMaterials.DIAMOND.value()) return ArmorMaterial.DIAMOND;
+        var m = a.getMaterial();
+        if (m == net.minecraft.world.item.ArmorMaterials.LEATHER) return ArmorMaterial.CLOTH;
+        if (m == net.minecraft.world.item.ArmorMaterials.CHAIN) return ArmorMaterial.CHAIN;
+        if (m == net.minecraft.world.item.ArmorMaterials.GOLD) return ArmorMaterial.GOLD;
+        if (m == net.minecraft.world.item.ArmorMaterials.DIAMOND) return ArmorMaterial.DIAMOND;
         return ArmorMaterial.IRON;
     }
 

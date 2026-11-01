@@ -94,11 +94,11 @@ public final class Minecraft1122 {
     }
 
     public static float tickLength() {
-        return mc().getTimer().getGameTimeDeltaTicks();
+        return mc().getDeltaFrameTime();
     }
 
     public static float pausedPartialTicks() {
-        return mc().getTimer().getGameTimeDeltaPartialTick(false);
+        return mc().getFrameTime();
     }
 
     public static boolean isDemo() {

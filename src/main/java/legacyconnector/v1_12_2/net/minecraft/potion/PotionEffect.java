@@ -97,7 +97,7 @@ public class PotionEffect implements Comparable<PotionEffect> {
 
     /** The legacy effect of a modern one (vanilla effects by their shared names), or null when its potion has no legacy object. */
     public static PotionEffect mcc$fromModern(net.minecraft.world.effect.MobEffectInstance e) {
-        var id = net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.getKey(e.getEffect().value());
+        var id = net.minecraft.core.registries.BuiltInRegistries.MOB_EFFECT.getKey(e.getEffect());
         if (id == null) return null;
         Potion potion = Potion.getPotionFromResourceLocation(id.toString());
         if (potion == null) return null;

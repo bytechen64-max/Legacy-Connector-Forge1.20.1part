@@ -1,4 +1,4 @@
-"""Prints `file:line` plus the offending source line for errors whose message contains a filter."""
+"""Prints `file:line` plus the offending source line for errors whose message or context matches a filter."""
 import re
 import sys
 
@@ -11,11 +11,12 @@ def main(log: str, *filters: str) -> None:
         m = pat.match(ln.strip())
         if not m:
             continue
-        if not any(f in m.group("m") for f in filters):
+        context = "\n".join(lines[i:i + 4])
+        if not any(f in context for f in filters):
             continue
         src = lines[i + 1].strip() if i + 1 < len(lines) else ""
         f = m.group("f").split("Legacy Connector")[-1].replace("\\src\\main\\java\\", "").lstrip("\\")
-        print(f"{f}:{m.group('l')}\n    {src[:150]}")
+        print(f"{f}:{m.group('l')}\n    {src[:160]}")
 
 
 if __name__ == "__main__":

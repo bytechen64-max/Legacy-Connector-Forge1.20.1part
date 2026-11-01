@@ -49,7 +49,7 @@ public abstract class InventoryEffectRenderer extends GuiContainer {
         for (var effect : effects) {
             gui.blitSprite(net.minecraft.resources.ResourceLocation.withDefaultNamespace("container/inventory/effect_background_large"), x, y, 120, 32);
             gui.blit(x + 6, y + 7, 0, 18, 18, mc.getMobEffectTextures().get(effect.getEffect()));
-            var name = effect.getEffect().value().getDisplayName().copy();
+            var name = effect.getEffect().getDisplayName().copy();
             if (effect.getAmplifier() >= 1 && effect.getAmplifier() <= 9) {
                 name.append(net.minecraft.network.chat.CommonComponents.SPACE).append(net.minecraft.network.chat.Component.translatable("enchantment.level." + (effect.getAmplifier() + 1)));
             }

@@ -44,7 +44,7 @@ public final class LegacyEffectIcons {
     }
 
     private static void draw(MobEffectInstance instance, GuiGraphics graphics, int x, int y, float alpha) {
-        Potion potion = PotionBridge.legacyOf(instance.getEffect().value());
+        Potion potion = PotionBridge.legacyOf(instance.getEffect());
         if (potion == null) return;
         ResourceLocation previous = RenderContext.texture();
         try {

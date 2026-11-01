@@ -49,7 +49,7 @@ public final class Hands1122 {
 
     private static int light() {
         var mc = Minecraft.getInstance();
-        return mc.player == null ? RenderContext.light() : mc.getEntityRenderDispatcher().getPackedLightCoords(mc.player, mc.getTimer().getGameTimeDeltaPartialTick(true));
+        return mc.player == null ? RenderContext.light() : mc.getEntityRenderDispatcher().getPackedLightCoords(mc.player, mc.getFrameTime());
     }
 
     /** The bare arm of the local player on one side, raised by {@code equipProgress} and swinging by {@code swingProgress}. */

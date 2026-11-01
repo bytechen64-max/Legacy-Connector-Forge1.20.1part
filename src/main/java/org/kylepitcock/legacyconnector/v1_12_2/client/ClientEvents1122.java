@@ -469,7 +469,7 @@ public final class ClientEvents1122 {
         var buffers = Minecraft.getInstance().renderBuffers().bufferSource();
         RenderContext.beginWorld(e.getPoseStack(), buffers, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
         try {
-            if (post(new RenderBlockOverlayEvent(player, Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false), type,
+            if (post(new RenderBlockOverlayEvent(player, Minecraft.getInstance().getFrameTime(), type,
                     StatesBridge1122.toLegacy(e.getBlockState()), new legacyconnector.v1_12_2.net.minecraft.util.math.BlockPos(pos.getX(), pos.getY(), pos.getZ())),
                     "block overlay")) {
                 e.setCanceled(true);
