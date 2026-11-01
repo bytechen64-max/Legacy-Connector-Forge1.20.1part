@@ -27,7 +27,7 @@ public class PlayerManager {
 
     /** The watchers of a chunk; null when nobody has it loaded and {@code create} is false. */
     public PlayerInstance getOrCreateChunkWatcher(int chunkX, int chunkZ, boolean create) {
-        if (!create && level.getChunkSource().chunkMap.getVisibleChunkIfPresent(ChunkPos.asLong(chunkX, chunkZ)) == null) return null;
+        if (!create && ((org.kylepitcock.legacyconnector.mixin.access.ChunkMapAccess) level.getChunkSource().chunkMap).legacyconnector$visibleChunk(ChunkPos.asLong(chunkX, chunkZ)) == null) return null;
         return new PlayerInstance(chunkX, chunkZ);
     }
 
@@ -87,7 +87,7 @@ public class PlayerManager {
         }
 
         private ChunkHolder mcc$holder() {
-            return level.getChunkSource().chunkMap.getVisibleChunkIfPresent(ChunkPos.asLong(chunkX, chunkZ));
+            return ((org.kylepitcock.legacyconnector.mixin.access.ChunkMapAccess) level.getChunkSource().chunkMap).legacyconnector$visibleChunk(ChunkPos.asLong(chunkX, chunkZ));
         }
 
         public void sendToAllPlayersWatchingChunk(legacyconnector.v1_7_10.net.minecraft.network.Packet packet) {

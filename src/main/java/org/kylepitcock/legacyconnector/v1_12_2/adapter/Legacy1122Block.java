@@ -659,8 +659,8 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
         boolean silk = false;
         if (tool != null && !tool.isEmpty()) {
             var enchants = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-            fortune = EnchantmentHelper.getItemEnchantmentLevel(enchants.getOrThrow(Enchantments.FORTUNE), tool);
-            silk = EnchantmentHelper.getItemEnchantmentLevel(enchants.getOrThrow(Enchantments.SILK_TOUCH), tool) > 0;
+            fortune = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, tool);
+            silk = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, tool) > 0;
         }
         World w = world(level);
         IBlockState legacyState = state(state);
@@ -824,7 +824,7 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
             int fortune = 0;
             if (tool != null && !tool.isEmpty() && level instanceof Level l) {
                 var enchants = l.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-                fortune = EnchantmentHelper.getItemEnchantmentLevel(enchants.getOrThrow(Enchantments.FORTUNE), tool);
+                fortune = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, tool);
             }
             return Math.max(0, legacy.getExpDrop(state(state), WorldBridge1122.access(level), pos(pos), fortune));
         } catch (RuntimeException | LinkageError e) {

@@ -623,7 +623,7 @@ public class MobHost1122 extends PathfinderMob implements LivingHost1122, IEntit
             net.minecraft.world.entity.SpawnGroupData data) {
         var level = spawnLevel != null ? spawnLevel : level() instanceof ServerLevel sl ? sl : null;
         if (level == null) return data;
-        return super.finalizeSpawn(level, difficulty, spawnType != null ? spawnType : net.minecraft.world.entity.MobSpawnType.NATURAL, data);
+        return super.finalizeSpawn(level, difficulty, spawnType != null ? spawnType : net.minecraft.world.entity.MobSpawnType.NATURAL, data, null);
     }
 
     @Override

@@ -359,7 +359,7 @@ public final class ForgeEvents1122 {
                 e.setCancellationResult(net.minecraft.world.InteractionResult.SUCCESS);
             }
         });
-        game.addListener((net.minecraftforge.event.tick.EntityTickEvent.Post e) -> {
+        game.addListener((net.minecraftforge.event.entity.living.LivingEvent.LivingTickEvent e) -> {
             if (!(e.getEntity() instanceof net.minecraft.world.entity.vehicle.AbstractMinecart modern) || modern.level().isClientSide()
                     || !wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.minecart.MinecartUpdateEvent.class)) {
                 return;

@@ -230,7 +230,7 @@ public final class ForgeEvents1710 {
             if (forge().post(new legacyconnector.v1_7_10.net.minecraftforge.event.entity.EntityStruckByLightningEvent(entity, bolt))) e.setCanceled(true);
         });
 
-        game.addListener((net.minecraftforge.event.tick.EntityTickEvent.Post e) -> {
+        game.addListener((net.minecraftforge.event.entity.living.LivingEvent.LivingTickEvent e) -> {
             if (!(e.getEntity() instanceof net.minecraft.world.entity.vehicle.AbstractMinecart cart) || cart.level().isClientSide()) return;
             if (!wants(legacyconnector.v1_7_10.net.minecraftforge.event.entity.minecart.MinecartUpdateEvent.class)) return;
             if (!(EntityBridge.wrap(cart) instanceof legacyconnector.v1_7_10.net.minecraft.entity.item.EntityMinecart legacy)) return;

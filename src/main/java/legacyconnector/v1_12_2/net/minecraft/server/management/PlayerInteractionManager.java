@@ -68,7 +68,10 @@ public class PlayerInteractionManager {
     /** The player's block reach (the modern block interaction range attribute; 5 for a detached manager, as Forge's default). */
     public double getBlockReachDistance() {
         var sp = mcc$player();
-        return sp != null ? sp.blockInteractionRange() : mcc$reach;
+        // 1.20.5 has blockInteractionRange(); 1.20.1 reads Forge's reach attribute.
+        return sp != null
+                ? (float) sp.getAttributeValue(net.minecraftforge.common.ForgeMod.BLOCK_REACH.get())
+                : mcc$reach;
     }
 
     public void setBlockReachDistance(double distance) {

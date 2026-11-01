@@ -102,7 +102,7 @@ public final class DragonApiEvents {
         org.kylepitcock.legacyconnector.v1_7_10.dimension.LegacyChunkGenerator.addPopulationInterceptor((world, chunkX, chunkZ, generator) ->
                 CHUNK_POPULATION.wanted() && CHUNK_POPULATION.post(world, chunkX, chunkZ, generator, generator));
         bus.addListener(EventPriority.HIGH, (net.minecraftforge.event.level.BlockEvent.EntityPlaceEvent e) -> onPlace(e));
-        bus.addListener((net.minecraftforge.event.tick.EntityTickEvent.Pre e) -> {
+        bus.addListener((net.minecraftforge.event.entity.living.LivingEvent.LivingTickEvent e) -> {
             var entity = e.getEntity();
             if (entity instanceof net.minecraft.world.entity.item.ItemEntity) {
                 if (ITEM_UPDATE.wanted()) ITEM_UPDATE.post(EntityBridge.wrap(entity));

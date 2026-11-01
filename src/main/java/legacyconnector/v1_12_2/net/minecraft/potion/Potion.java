@@ -137,7 +137,7 @@ public class Potion extends IForgeRegistryEntry.Impl<Potion> {
     public boolean isReady(int duration, int amplifier) {
         var modern = mcc$modern();
         if (modern != null && !(modern.value() instanceof org.kylepitcock.legacyconnector.v1_12_2.entity.Effects1122.LegacyEffect)) {
-            return modern.value().shouldApplyEffectTickThisTick(duration, amplifier);
+            return modern.value().isDurationEffectTick(duration, amplifier);
         }
         return false;
     }

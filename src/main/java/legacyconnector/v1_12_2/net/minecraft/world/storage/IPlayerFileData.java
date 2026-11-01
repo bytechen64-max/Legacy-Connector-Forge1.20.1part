@@ -39,7 +39,7 @@ public interface IPlayerFileData {
                 dir.mkdirs();
                 var tag = p.saveWithoutId(new net.minecraft.nbt.CompoundTag());
                 java.io.File tmp = java.io.File.createTempFile(p.getStringUUID() + "-", ".dat", dir);
-                net.minecraft.nbt.NbtIo.writeCompressed(tag, tmp.toPath());
+                net.minecraft.nbt.NbtIo.writeCompressed(tag, tmp);
                 java.io.File target = new java.io.File(dir, p.getStringUUID() + ".dat");
                 java.io.File old = new java.io.File(dir, p.getStringUUID() + ".dat_old");
                 net.minecraft.Util.safeReplaceFile(target.toPath(), tmp.toPath(), old.toPath());
@@ -56,7 +56,8 @@ public interface IPlayerFileData {
             java.io.File file = new java.io.File(dir, p.getStringUUID() + ".dat");
             if (!file.isFile()) return null;
             try {
-                var tag = net.minecraft.nbt.NbtIo.readCompressed(file.toPath(), net.minecraft.nbt.NbtAccounter.UNLIMITED);
+                // 1.20.1 reads compressed NBT from a File (the Path/NbtAccounter overload is 1.20.2+).
+        var tag = net.minecraft.nbt.NbtIo.readCompressed(file);
                 p.load(tag);
                 return new NBTTagCompound(tag);
             } catch (Exception e) {

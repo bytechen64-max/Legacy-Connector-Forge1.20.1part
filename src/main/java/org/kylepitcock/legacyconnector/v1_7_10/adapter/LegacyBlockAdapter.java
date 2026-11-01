@@ -914,8 +914,8 @@ public class LegacyBlockAdapter extends net.minecraft.world.level.block.Block {
         boolean silk = false;
         if (tool != null && !tool.isEmpty()) {
             var enchants = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
-            fortune = EnchantmentHelper.getItemEnchantmentLevel(enchants.getOrThrow(Enchantments.FORTUNE), tool);
-            silk = EnchantmentHelper.getItemEnchantmentLevel(enchants.getOrThrow(Enchantments.SILK_TOUCH), tool) > 0;
+            fortune = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.BLOCK_FORTUNE, tool);
+            silk = EnchantmentHelper.getItemEnchantmentLevel(Enchantments.SILK_TOUCH, tool) > 0;
         }
         World w = world(level);
         int meta = meta(state);

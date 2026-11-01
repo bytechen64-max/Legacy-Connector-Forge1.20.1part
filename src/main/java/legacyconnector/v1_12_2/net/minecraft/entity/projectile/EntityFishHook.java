@@ -138,7 +138,7 @@ public class EntityFishHook extends Entity {
         m.moveTo(p.getX() - f3 * 0.3D, p.getEyeY(), p.getZ() - f2 * 0.3D, yaw, pitch);
         var v = new net.minecraft.world.phys.Vec3(-f3, net.minecraft.util.Mth.clamp(-(f5 / f4), -5.0F, 5.0F), -f2);
         double len = v.length();
-        var random = m.getRandom();
+        var random = m.level().getRandom();
         v = v.multiply(0.6D / len + random.triangle(0.5D, 0.0103365D), 0.6D / len + random.triangle(0.5D, 0.0103365D),
                 0.6D / len + random.triangle(0.5D, 0.0103365D));
         m.setDeltaMovement(v);

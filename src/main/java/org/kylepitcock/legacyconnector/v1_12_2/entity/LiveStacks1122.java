@@ -170,6 +170,9 @@ public final class LiveStacks1122 {
 
     /** Flushes each side at the end of each of its level ticks. */
     public static void register(net.minecraftforge.eventbus.api.IEventBus game) {
-        game.addListener((net.minecraftforge.event.tick.LevelTickEvent.Post e) -> flushAll(e.getLevel().isClientSide() ? CLIENT : SERVER));
+        game.addListener((net.minecraftforge.event.TickEvent.LevelTickEvent e) -> {
+            if (e.phase != net.minecraftforge.event.TickEvent.Phase.END) return;
+            flushAll(e.level.isClientSide() ? CLIENT : SERVER);
+        });
     }
 }

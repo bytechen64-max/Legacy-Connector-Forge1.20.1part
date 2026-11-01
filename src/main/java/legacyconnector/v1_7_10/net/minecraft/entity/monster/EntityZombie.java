@@ -85,7 +85,7 @@ public class EntityZombie extends EntityMob {
         var converted = villager.convertTo(net.minecraft.world.entity.EntityType.ZOMBIE_VILLAGER, false);
         if (converted == null) return;
         converted.finalizeSpawn(level, level.getCurrentDifficultyAt(converted.blockPosition()), net.minecraft.world.entity.MobSpawnType.CONVERSION,
-                new net.minecraft.world.entity.monster.Zombie.ZombieGroupData(false, true));
+                new net.minecraft.world.entity.monster.Zombie.ZombieGroupData(false, true), null);
         converted.setVillagerData(villager.getVillagerData());
         converted.setGossips(villager.getGossips().store(net.minecraft.nbt.NbtOps.INSTANCE));
         converted.setTradeOffers(villager.getOffers().copy());

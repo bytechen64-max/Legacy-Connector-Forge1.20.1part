@@ -265,7 +265,7 @@ public final class EventBridge1122 {
             var entity = living(e.getEntity());
             if (entity != null) post(new legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.LivingEvent.LivingJumpEvent(entity));
         });
-        bus.addListener((net.minecraftforge.event.tick.EntityTickEvent.Pre e) -> {
+        bus.addListener((net.minecraftforge.event.entity.living.LivingEvent.LivingTickEvent e) -> {
             if (!(e.getEntity() instanceof net.minecraft.world.entity.LivingEntity)
                     || !wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.LivingEvent.LivingUpdateEvent.class)) return;
             var entity = living(e.getEntity());
@@ -386,7 +386,7 @@ public final class EventBridge1122 {
         boolean silk = false;
         if (!e.getTool().isEmpty()) {
             var enchantments = level.registryAccess().registryOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
-            fortune = e.getTool().getEnchantmentLevel(enchantments.getHolderOrThrow(net.minecraft.world.item.enchantment.Enchantments.FORTUNE));
+            fortune = e.getTool().getEnchantmentLevel(enchantments.getHolderOrThrow(net.minecraft.world.item.enchantment.Enchantments.BLOCK_FORTUNE));
             silk = e.getTool().getEnchantmentLevel(enchantments.getHolderOrThrow(net.minecraft.world.item.enchantment.Enchantments.SILK_TOUCH)) > 0;
         }
         var event = new legacyconnector.v1_12_2.net.minecraftforge.event.world.BlockEvent.HarvestDropsEvent(WorldBridge1122.wrap(level), pos(e.getPos()),

@@ -67,7 +67,8 @@ public class PlayerControllerMP {
 
     public float getBlockReachDistance() {
         var p = net.minecraft.client.Minecraft.getInstance().player;
-        return p == null ? 4.5F : (float) p.blockInteractionRange();
+        // 1.20.5 has blockInteractionRange(); 1.20.1 reads Forge's reach attribute.
+        return p == null ? 4.5F : (float) p.getAttributeValue(net.minecraftforge.common.ForgeMod.BLOCK_REACH.get());
     }
 
     public boolean getIsHittingBlock() {
