@@ -142,6 +142,36 @@ public final class Assets1122 implements GeneratedPack.Contributor {
             }
         }
         if (!reported.isEmpty()) LOG.warn("{} model reference(s) of generated blockstates are missing", reported.size());
+        // the same question asked of the real resource manager: the classloader sees the jar, the pack may not
+        if (net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) {
+            try {
+                var manager = net.minecraft.client.Minecraft.getInstance().getResourceManager();
+                int checked = 0, missing = 0;
+                for (var e : out.entrySet()) {
+                    if (!e.getKey().contains("/blockstates/")) continue;
+                    var m = java.util.regex.Pattern.compile("\"model\"\\s*:\\s*\"([^\"]+)\"").matcher(new String(e.getValue().get(), StandardCharsets.UTF_8));
+                    while (m.find() && checked < 6) {
+                        String ref = m.group(1);
+                        int colon = ref.indexOf(':');
+                        String ns = colon < 0 ? "minecraft" : ref.substring(0, colon);
+                        String path = colon < 0 ? ref : ref.substring(colon + 1);
+                        var location = ResourceLocation.fromNamespaceAndPath(ns, "models/" + path + ".json");
+                        var found = manager.getResource(location);
+                        checked++;
+                        if (found.isEmpty()) {
+                            missing++;
+                            LOG.warn("The resource manager does not serve {} (named by {})", location, e.getKey());
+                        } else {
+                            LOG.info("The resource manager serves {}", location);
+                        }
+                        break;
+                    }
+                    if (checked >= 6) break;
+                }
+            } catch (RuntimeException | LinkageError ex) {
+                LOG.warn("Asking the resource manager failed: {}", ex.toString());
+            }
+        }
     }
 
     private static void translateAll(Map<String, Supplier<byte[]>> out) {

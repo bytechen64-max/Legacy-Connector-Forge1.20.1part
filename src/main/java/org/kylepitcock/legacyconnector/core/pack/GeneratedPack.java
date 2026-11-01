@@ -43,18 +43,37 @@ public final class GeneratedPack implements PackResources {
     private final PackType type;
     private final Map<String, Supplier<byte[]>> files = new TreeMap<>();
 
+    /** Development aid: the first blockstate reads of the pack, so a "missing model" can be traced to the file that was served. */
+    private static final java.util.concurrent.atomic.AtomicInteger mcc$probeReads = new java.util.concurrent.atomic.AtomicInteger();
+
+    private final boolean recipes;
+    private volatile boolean built;
+
     private GeneratedPack(String id, PackType type, boolean recipes) {
-        this(id, type, recipes, false);
+        this.id = id;
+        this.type = type;
+        this.recipes = recipes;
+        if (type == PackType.CLIENT_RESOURCES) mcc$lastClient = this;
     }
 
     /**
-     * @param metadataOnly a pack opened only for its metadata ({@code Pack.ResourcesSupplier.openPrimary}: the pack format, feature
-     *        flags and overlays, read once per pack repository scan): no content is generated, see {@code perf.lazyPackMetadata}
+     * The content, generated on the first read. 1.20.1's {@code Pack.ResourcesSupplier} has a single {@code open}, called both for
+     * the metadata scan and for the content, so a pack cannot tell the two openings apart -- and building nothing for the metadata
+     * scan left the pack empty for the whole session (no generated blockstate, model or language file was served).
      */
-    private GeneratedPack(String id, PackType type, boolean recipes, boolean metadataOnly) {
-        this.id = id;
-        this.type = type;
-        if (metadataOnly) return;
+    private Map<String, Supplier<byte[]>> content() {
+        if (!built) {
+            synchronized (this) {
+                if (!built) {
+                    build();
+                    built = true;
+                }
+            }
+        }
+        return files;
+    }
+
+    private void build() {
         if (type == PackType.CLIENT_RESOURCES) GeneratedTranslations.contribute(files);
         List<Contributor> all = new java.util.ArrayList<>(recipes ? RECIPE_CONTRIBUTORS : CONTRIBUTORS);
         if (!recipes) all.addAll(LATE_CONTRIBUTORS);
@@ -131,13 +150,23 @@ public final class GeneratedPack implements PackResources {
             @Override
             public PackResources open(String packId) {
                 // 1.20.1 asks once, for the metadata the repository scan reads; the content is generated on first use of the pack
-                return new GeneratedPack(packId, type, recipes, org.kylepitcock.legacyconnector.core.LegacyConfig.perfLazyPackMetadata());
+                return new GeneratedPack(packId, type, recipes);
             }
         };
         // required: the generated blockstates/models/language files have to win over the 1.12 files in mod_resources, and a pack
         // added through AddPackFindersEvent is only selected when it cannot be disabled
         Pack pack = Pack.readMetaAndCreate(id, Component.literal(title), true, supplier, type, position, PackSource.BUILT_IN);
         if (pack != null) event.addRepositorySource(consumer -> consumer.accept(pack));
+    }
+
+    /** Development aid: the content of the last generated client pack, for {@code AssetProbe}. */
+    private static volatile GeneratedPack mcc$lastClient;
+
+    public static String mcc$probe(String path) {
+        GeneratedPack pack = mcc$lastClient;
+        if (pack == null) return "(no client pack built)";
+        var data = pack.content().get(path);
+        return data == null ? "(not in the pack)" : new String(data.get(), java.nio.charset.StandardCharsets.UTF_8);
     }
 
     private static IoSupplier<InputStream> stream(Supplier<byte[]> data) {
@@ -163,7 +192,10 @@ public final class GeneratedPack implements PackResources {
     @Override
     public IoSupplier<InputStream> getResource(PackType packType, ResourceLocation location) {
         if (packType != type) return null;
-        Supplier<byte[]> data = files.get(packType.getDirectory() + "/" + location.getNamespace() + "/" + location.getPath());
+        Supplier<byte[]> data = content().get(packType.getDirectory() + "/" + location.getNamespace() + "/" + location.getPath());
+        if (data != null && location.getPath().startsWith("blockstates/") && mcc$probeReads.incrementAndGet() <= 5) {
+            LoggerFactory.getLogger("LegacyConnector/Pack").warn("Serving {} from {} ({} bytes)", location, id, data.get().length);
+        }
         return data == null ? null : stream(data);
     }
 
@@ -172,7 +204,7 @@ public final class GeneratedPack implements PackResources {
         if (packType != type) return;
         String prefix = packType.getDirectory() + "/" + namespace + "/" + path + "/";
         String root = packType.getDirectory() + "/" + namespace + "/";
-        for (var e : files.entrySet()) {
+        for (var e : content().entrySet()) {
             if (!e.getKey().startsWith(prefix)) continue;
             ResourceLocation rl = ResourceLocation.tryBuild(namespace, e.getKey().substring(root.length()));
             if (rl != null) output.accept(rl, stream(e.getValue()));
@@ -184,7 +216,7 @@ public final class GeneratedPack implements PackResources {
         Set<String> out = new HashSet<>();
         if (packType != type) return out;
         String dir = packType.getDirectory() + "/";
-        for (String k : files.keySet()) {
+        for (String k : content().keySet()) {
             int slash = k.indexOf('/', dir.length());
             if (k.startsWith(dir) && slash > 0) out.add(k.substring(dir.length(), slash));
         }
@@ -215,7 +247,7 @@ public final class GeneratedPack implements PackResources {
         if (type != PackType.CLIENT_RESOURCES) return null;
         Map<String, StringBuilder> names = new TreeMap<>();
         String dir = type.getDirectory() + "/";
-        for (String k : files.keySet()) {
+        for (String k : content().keySet()) {
             if (!k.startsWith(dir) || !k.endsWith(".json")) continue;
             int slash = k.indexOf('/', dir.length());
             if (slash < 0 || !k.startsWith("/blockstates/", slash) || k.indexOf('/', slash + "/blockstates/".length()) >= 0) continue;

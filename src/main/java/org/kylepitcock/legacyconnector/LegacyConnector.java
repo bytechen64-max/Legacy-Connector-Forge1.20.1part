@@ -159,6 +159,7 @@ public final class LegacyConnector {
                 org.kylepitcock.legacyconnector.v1_12_2.bridge.RecipeBridge1122::markSynced);
 
         IEventBus game = MinecraftForge.EVENT_BUS;
+        if (!net.minecraftforge.fml.loading.FMLEnvironment.production) org.kylepitcock.legacyconnector.core.AssetProbe.register(game);
         org.kylepitcock.legacyconnector.core.LevelReleases.register(game);
         org.kylepitcock.legacyconnector.core.pack.LegacyRecipeSync.register(game);
         EventBridge1710.register(game);
