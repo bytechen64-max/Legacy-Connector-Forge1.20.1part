@@ -18,7 +18,6 @@ import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructurePiece;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePiecesBuilder;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
-import net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -220,7 +219,7 @@ public final class LegacyVillageAdditions {
         for (BoundingBox b : added) if (b.intersects(margin)) return false;
         // the piece knows its village: legacy components see its streets and buildings in their component list, as in 1.7.10
         builder.addPiece(new PoolElementStructurePiece(context.structureTemplateManager(), c.element().inVillage(streets, others), new BlockPos(cx, y, cz), 0,
-                rotationOf(mode), box, LiquidSettings.IGNORE_WATERLOGGING));
+                rotationOf(mode), box));
         added.add(box);
         return true;
     }

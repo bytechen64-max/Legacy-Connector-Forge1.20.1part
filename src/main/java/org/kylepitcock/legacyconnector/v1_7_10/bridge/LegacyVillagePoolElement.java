@@ -28,7 +28,6 @@ import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElement;
 import net.minecraft.world.level.levelgen.structure.pools.StructurePoolElementType;
 import net.minecraft.world.level.levelgen.structure.pools.StructureTemplatePool;
-import net.minecraft.world.level.levelgen.structure.templatesystem.LiquidSettings;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplateManager;
 import org.slf4j.Logger;
@@ -313,7 +312,7 @@ public final class LegacyVillagePoolElement extends StructurePoolElement {
 
     @Override
     public boolean place(StructureTemplateManager manager, WorldGenLevel level, StructureManager structureManager, ChunkGenerator generator,
-            BlockPos offset, BlockPos pivot, Rotation rotation, BoundingBox box, RandomSource random, LiquidSettings liquidSettings, boolean keepJigsaws) {
+            BlockPos offset, BlockPos pivot, Rotation rotation, BoundingBox box, RandomSource random, boolean keepJigsaws) {
         int mode = mode(rotation);
         if (shape(mode) == null) return false;
         Group group = build(offset.getX(), offset.getY() + PLAN_Y, offset.getZ(), mode, handler.hashCode(), true);

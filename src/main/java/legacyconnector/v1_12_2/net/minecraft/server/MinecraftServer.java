@@ -41,12 +41,12 @@ public class MinecraftServer implements legacyconnector.v1_12_2.net.minecraft.co
     /** The last 100 tick lengths in nanoseconds. */
     public static long[] mcc$get$tickTimeArray(MinecraftServer s) {
         var m = modern();
-        return m == null ? new long[100] : m.getTickTimesNanos();
+        return m == null ? new long[100] : m.tickTimes;
     }
 
     public static java.io.File mcc$get$anvilFile(MinecraftServer s) {
         var m = modern();
-        return m == null ? new java.io.File("saves") : m.getServerDirectory().resolve("saves").toFile();
+        return m == null ? new java.io.File("saves") : new java.io.File(m.getServerDirectory(), "saves");
     }
 
     /** The tick lengths of each dimension (by legacy id) in nanoseconds. */
@@ -259,7 +259,7 @@ public class MinecraftServer implements legacyconnector.v1_12_2.net.minecraft.co
     /** The game's directory (the server directory; the client's game directory in single player). */
     public java.io.File getDataDirectory() {
         var server = modern();
-        return server == null ? net.minecraftforge.fml.loading.FMLPaths.GAMEDIR.get().toFile() : server.getServerDirectory().toFile();
+        return server == null ? net.minecraftforge.fml.loading.FMLPaths.GAMEDIR.get().toFile() : server.getServerDirectory();
     }
 
     private static net.minecraft.server.MinecraftServer mcc$modern() {

@@ -80,7 +80,7 @@ public class LootPool {
         if (mcc$modern != null) {
             var params = context.mcc$params();
             if (params == null) return;
-            var modernContext = new net.minecraft.world.level.storage.loot.LootContext.Builder(params).create(java.util.Optional.empty());
+            var modernContext = new net.minecraft.world.level.storage.loot.LootContext.Builder(params).create((net.minecraft.resources.ResourceLocation) null);
             mcc$modern.addRandomItems(s -> stacks.add(org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.fromModern(s)), modernContext);
             return;
         }

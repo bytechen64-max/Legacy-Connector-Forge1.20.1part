@@ -50,8 +50,8 @@ public class MapStorage {
         if (cached != null || storage == null) return cached;
         Adapter adapter;
         try {
-            adapter = storage.get(new SavedData.Factory<>(() -> new Adapter(create(clazz, dataIdentifier)),
-                    (tag, registries) -> Adapter.load(create(clazz, dataIdentifier), tag), null), file(dataIdentifier));
+            // 1.20.1's storage reads through a tag-to-data function (the Factory record is 1.20.2+).
+            adapter = storage.get(tag -> Adapter.load(create(clazz, dataIdentifier), tag), file(dataIdentifier));
         } catch (RuntimeException e) {
             org.slf4j.LoggerFactory.getLogger("LegacyConnector/SavedData").warn("Cannot load legacy saved data {}: {}", dataIdentifier, e.toString());
             return null;
