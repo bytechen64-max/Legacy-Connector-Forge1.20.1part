@@ -119,5 +119,45 @@ public class BlockFluidRenderer {
             nz = z;
             return this;
         }
+
+        // 1.20.1's VertexConsumer method names (1.21 renamed them); the 1.21-style ones above stay for the shim's own callers.
+        @Override
+        public com.mojang.blaze3d.vertex.VertexConsumer vertex(double x, double y, double z) {
+            return addVertex((float) x, (float) y, (float) z);
+        }
+
+        @Override
+        public com.mojang.blaze3d.vertex.VertexConsumer color(int red, int green, int blue, int alpha) {
+            return setColor(red, green, blue, alpha);
+        }
+
+        @Override
+        public com.mojang.blaze3d.vertex.VertexConsumer uv(float u, float v) {
+            return setUv(u, v);
+        }
+
+        @Override
+        public com.mojang.blaze3d.vertex.VertexConsumer overlayCoords(int u, int v) {
+            return setUv1(u, v);
+        }
+
+        @Override
+        public com.mojang.blaze3d.vertex.VertexConsumer uv2(int u, int v) {
+            return setUv2(u, v);
+        }
+
+        @Override
+        public com.mojang.blaze3d.vertex.VertexConsumer normal(float x, float y, float z) {
+            return setNormal(x, y, z);
+        }
+
+        @Override
+        public void endVertex() {}
+
+        @Override
+        public void defaultColor(int red, int green, int blue, int alpha) {}
+
+        @Override
+        public void unsetDefaultColor() {}
     }
 }

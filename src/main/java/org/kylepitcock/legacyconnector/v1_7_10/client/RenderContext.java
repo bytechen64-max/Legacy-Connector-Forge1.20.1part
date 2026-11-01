@@ -40,35 +40,69 @@ public final class RenderContext {
 
     /** Swallows geometry that must not be drawn (overlays and glows in Iris's shadow pass). */
     private static final VertexConsumer DISCARD = new VertexConsumer() {
-        @Override
         public VertexConsumer addVertex(float x, float y, float z) {
             return this;
         }
 
-        @Override
         public VertexConsumer setColor(int red, int green, int blue, int alpha) {
             return this;
         }
 
-        @Override
         public VertexConsumer setUv(float u, float v) {
             return this;
         }
 
-        @Override
         public VertexConsumer setUv1(int u, int v) {
             return this;
         }
 
-        @Override
         public VertexConsumer setUv2(int u, int v) {
             return this;
         }
 
-        @Override
         public VertexConsumer setNormal(float x, float y, float z) {
             return this;
         }
+
+        // 1.20.1's VertexConsumer method names
+        @Override
+        public VertexConsumer vertex(double x, double y, double z) {
+            return this;
+        }
+
+        @Override
+        public VertexConsumer color(int red, int green, int blue, int alpha) {
+            return this;
+        }
+
+        @Override
+        public VertexConsumer uv(float u, float v) {
+            return this;
+        }
+
+        @Override
+        public VertexConsumer overlayCoords(int u, int v) {
+            return this;
+        }
+
+        @Override
+        public VertexConsumer uv2(int u, int v) {
+            return this;
+        }
+
+        @Override
+        public VertexConsumer normal(float x, float y, float z) {
+            return this;
+        }
+
+        @Override
+        public void endVertex() {}
+
+        @Override
+        public void defaultColor(int red, int green, int blue, int alpha) {}
+
+        @Override
+        public void unsetDefaultColor() {}
     };
 
     private static final ResourceLocation UNKNOWN_TEXTURE = ResourceLocation.withDefaultNamespace("textures/misc/unknown_pack.png");
