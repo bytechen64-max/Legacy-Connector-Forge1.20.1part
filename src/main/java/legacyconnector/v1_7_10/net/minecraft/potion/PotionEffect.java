@@ -4,8 +4,6 @@ import legacyconnector.v1_7_10.net.minecraft.item.ItemStack;
 import legacyconnector.v1_7_10.net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraftforge.common.EffectCure;
-import net.minecraftforge.common.EffectCures;
 import org.kylepitcock.legacyconnector.v1_7_10.bridge.PotionBridge;
 
 /**
@@ -159,12 +157,12 @@ public class PotionEffect {
         mcc$apply();
     }
 
-    /** The modern cure an item stands for: milk for the milk bucket, otherwise one per item. */
-    public static EffectCure mcc$cureFor(ItemStack stack) {
-        if (stack == null || stack.getItem() == null) return null;
-        if (stack.getItem() == legacyconnector.v1_7_10.net.minecraft.init.Items.milk_bucket) return EffectCures.MILK;
-        var key = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(stack.mcc$modern().getItem());
-        return EffectCure.get("legacyconnector:item/" + key);
+    /**
+     * 1.20.1 has no cure registry: milk is hardwired in {@code MilkBucketItem} and everything else is the shim's own list, so
+     * nothing is returned for the modern side.
+     */
+    public static Object mcc$cureFor(ItemStack stack) {
+        return null;
     }
 
     // ------------------------------------------------------------------ modern

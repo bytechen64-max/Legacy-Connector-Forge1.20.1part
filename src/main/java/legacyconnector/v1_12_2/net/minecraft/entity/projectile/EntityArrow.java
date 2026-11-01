@@ -370,14 +370,14 @@ public abstract class EntityArrow extends Entity implements IProjectile {
         var level = mcc$entity == null ? null : mcc$entity.level();
         setDamage(velocity * 2.0F + rand.nextGaussian() * 0.25D + (level == null ? 0.0F : level.getDifficulty().getId() * 0.11F));
         if (level == null || shooter == null || shooter.mcc$living() == null) return;
-        var enchantments = level.registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.ENCHANTMENT);
+        // 1.20.1's Enchantments constants are the enchantments themselves (1.21 wraps them in holders).
         var living = shooter.mcc$living();
         int power = net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantmentLevel(
-                enchantments.getOrThrow(net.minecraft.world.item.enchantment.Enchantments.POWER), living);
+                net.minecraft.world.item.enchantment.Enchantments.POWER_ARROWS, living);
         int punch = net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantmentLevel(
-                enchantments.getOrThrow(net.minecraft.world.item.enchantment.Enchantments.PUNCH), living);
+                net.minecraft.world.item.enchantment.Enchantments.PUNCH_ARROWS, living);
         int flame = net.minecraft.world.item.enchantment.EnchantmentHelper.getEnchantmentLevel(
-                enchantments.getOrThrow(net.minecraft.world.item.enchantment.Enchantments.FLAME), living);
+                net.minecraft.world.item.enchantment.Enchantments.FLAMING_ARROWS, living);
         if (power > 0) setDamage(getDamage() + power * 0.5D + 0.5D);
         if (punch > 0) setKnockbackStrength(punch);
         if (flame > 0) setFire(100);

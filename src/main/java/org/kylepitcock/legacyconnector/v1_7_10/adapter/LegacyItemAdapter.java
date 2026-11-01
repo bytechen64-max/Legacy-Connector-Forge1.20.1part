@@ -93,7 +93,7 @@ public class LegacyItemAdapter extends net.minecraft.world.item.Item implements 
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
+    public void appendHoverText(ItemStack stack, Level level, List<Component> tooltip, TooltipFlag flag) {
         ItemCallbacks.tooltip(legacy, stack, tooltip, flag);
     }
 

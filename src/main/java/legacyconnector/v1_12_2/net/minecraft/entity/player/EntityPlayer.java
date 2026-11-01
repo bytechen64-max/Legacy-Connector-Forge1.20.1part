@@ -446,7 +446,7 @@ public abstract class EntityPlayer extends EntityLivingBase {
     }
 
     public void disableShield(boolean always) {
-        mcc$player().disableShield();
+        mcc$player().disableShield(true);
     }
 
     public legacyconnector.v1_12_2.net.minecraft.util.EnumActionResult interactOn(Entity entity, legacyconnector.v1_12_2.net.minecraft.util.EnumHand hand) {
@@ -826,7 +826,7 @@ public abstract class EntityPlayer extends EntityLivingBase {
         for (var r : recipes) {
             if (r != null && r.getRegistryName() != null) ids.add(r.getRegistryName().mcc$modern());
         }
-        sp.awardRecipesByKey(ids);
+        sp.awardRecipesByKey(ids.toArray(new net.minecraft.resources.ResourceLocation[0]));
     }
 
     @Deprecated

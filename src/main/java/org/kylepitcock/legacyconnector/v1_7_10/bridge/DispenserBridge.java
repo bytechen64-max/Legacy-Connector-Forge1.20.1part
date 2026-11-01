@@ -6,7 +6,7 @@ import legacyconnector.v1_7_10.net.minecraft.item.Item;
 import legacyconnector.v1_7_10.net.minecraft.item.ItemStack;
 import legacyconnector.v1_7_10.net.minecraft.tileentity.TileEntity;
 import legacyconnector.v1_7_10.net.minecraft.world.World;
-import net.minecraft.core.dispenser.BlockSource;
+import net.minecraft.core.BlockSource;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.world.level.block.DispenserBlock;
 

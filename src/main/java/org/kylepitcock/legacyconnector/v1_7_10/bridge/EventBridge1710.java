@@ -48,7 +48,6 @@ import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.event.server.ServerStoppingEvent;
-import net.minecraftforge.event.tick.EntityTickEvent;
 import net.minecraftforge.event.TickEvent.LevelTickEvent;
 import net.minecraftforge.event.TickEvent.PlayerTickEvent;
 import net.minecraftforge.event.TickEvent.ServerTickEvent;
@@ -439,7 +438,8 @@ public final class EventBridge1710 {
             if (!wants(forge(), EntityJoinWorldEvent.class)) return;
             if (forge().post(new EntityJoinWorldEvent(EntityBridge.wrap(e.getEntity()), World.mcc$wrap(e.getLevel())))) e.setCanceled(true);
         });
-        gameBus.addListener((EntityTickEvent.Pre e) -> {
+        // 1.20.1 has no all-entity tick event; this listener only cares about living entities anyway.
+        gameBus.addListener((net.minecraftforge.event.entity.living.LivingEvent.LivingTickEvent e) -> {
             if (!(e.getEntity() instanceof LivingEntity l) || !wants(forge(), LivingEvent.LivingUpdateEvent.class)) return;
             EntityLivingBase view = (EntityLivingBase) EntityBridge.wrap(l);
             if (forge().post(new LivingEvent.LivingUpdateEvent(view))) e.setCanceled(true);
@@ -993,7 +993,7 @@ public final class EventBridge1710 {
     private static int specialArmorFailures;
 
     /** Applies the {@code ISpecialArmor} pieces a living entity wears to incoming damage (1.7.10 slots: 0 boots .. 3 helmet). */
-    private static void specialArmor(LivingIncomingDamageEvent e) {
+    private static void specialArmor(net.minecraftforge.event.entity.living.LivingHurtEvent e) {
         if (e.isCanceled() || e.getAmount() <= 0.0F || specialArmorFailures > 20) return;
         var living = e.getEntity();
         ItemStack[] worn = null;

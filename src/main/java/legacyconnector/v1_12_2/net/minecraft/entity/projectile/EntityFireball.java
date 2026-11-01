@@ -78,7 +78,14 @@ public abstract class EntityFireball extends Entity {
         mcc$az = z / d * 0.1D;
         var m = mcc$modernFireball();
         if (m != null) {
-            m.accelerationPower = 0.1D;
+            // 1.20.1 stores the acceleration as a vector (xPower/yPower/zPower); 1.20.5 as one power along the motion.
+            var d = m.getDeltaMovement();
+            if (d.lengthSqr() > 1.0E-7D) {
+                var u = d.normalize().scale(0.1D);
+                m.xPower = u.x;
+                m.yPower = u.y;
+                m.zPower = u.z;
+            }
             m.setDeltaMovement(mcc$ax, mcc$ay, mcc$az);
         }
     }
@@ -101,7 +108,7 @@ public abstract class EntityFireball extends Entity {
         var m = f.mcc$modernFireball();
         if (m == null) return null;
         var v = m.getDeltaMovement();
-        return v.lengthSqr() < 1.0E-7D ? net.minecraft.world.phys.Vec3.ZERO : v.normalize().scale(m.accelerationPower);
+        return new net.minecraft.world.phys.Vec3(m.xPower, m.yPower, m.zPower);
     }
 
     public static double mcc$get$accelerationX(EntityFireball f) {
@@ -138,7 +145,9 @@ public abstract class EntityFireball extends Entity {
         var m = mcc$modernFireball();
         if (m == null) return;
         double len = Math.sqrt(mcc$ax * mcc$ax + mcc$ay * mcc$ay + mcc$az * mcc$az);
-        m.accelerationPower = len;
+        m.xPower = mcc$ax;
+        m.yPower = mcc$ay;
+        m.zPower = mcc$az;
         if (len > 0.0D) m.setDeltaMovement(new net.minecraft.world.phys.Vec3(mcc$ax, mcc$ay, mcc$az).normalize().scale(Math.max(m.getDeltaMovement().length(), len)));
     }
 

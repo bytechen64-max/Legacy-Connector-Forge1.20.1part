@@ -52,8 +52,8 @@ public class AttributeModifier {
     /** The modern modifier (id from the UUID, operation by index). */
     public net.minecraft.world.entity.ai.attributes.AttributeModifier mcc$modern() {
         var op = net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.values()[operation];
-        return new net.minecraft.world.entity.ai.attributes.AttributeModifier(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath("legacyconnector",
-                "modifier/" + id), amount, op);
+        // 1.20.1 names modifiers with a string (1.20.5 switched to a ResourceLocation).
+        return new net.minecraft.world.entity.ai.attributes.AttributeModifier("legacyconnector:modifier/" + id, amount, op);
     }
 
     @Override
