@@ -148,7 +148,7 @@ public class LegacyBlockEntityRenderer implements BlockEntityRenderer<LegacyBloc
      * The frustum cull box: the tile entity's {@code getRenderBoundingBox()}, as 1.7.10's RenderGlobal tested it (renderers that
      * draw beyond their block declare a bigger or the infinite box; the block's own cube cut them off whenever it left the view).
      */
-    @Override
+    // 1.20.1 has no getRenderBoundingBox on BlockEntityRenderer (the shim keeps it for its own callers).
     public net.minecraft.world.phys.AABB getRenderBoundingBox(LegacyBlockEntity be) {
         TileEntity te = be.legacy();
         Vec3 camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();

@@ -238,8 +238,7 @@ public class Legacy1122BlockEntity extends net.minecraft.world.level.block.entit
     private static final java.util.concurrent.atomic.AtomicInteger DELIVERY_FAILURES = new java.util.concurrent.atomic.AtomicInteger();
 
     @Override
-    public void onDataPacket(net.minecraft.network.Connection net, net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket pkt,
-            HolderLookup.Provider registries) {
+    public void onDataPacket(net.minecraft.network.Connection net, net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket pkt) {
         CompoundTag tag = pkt.getTag();
         if (!tag.contains("mcc$type")) {
             super.onDataPacket(net, pkt);
@@ -259,8 +258,8 @@ public class Legacy1122BlockEntity extends net.minecraft.world.level.block.entit
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag) {
-        super.loadAdditional(tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         if (tag.contains("legacy")) {
             pending = tag.getCompound("legacy");
             // Saved at another position (Create contraptions and Sable/Create Aeronautics sub-levels load a moved block's tag into a new

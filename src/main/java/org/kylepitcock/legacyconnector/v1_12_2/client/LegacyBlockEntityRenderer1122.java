@@ -72,7 +72,7 @@ public final class LegacyBlockEntityRenderer1122 implements BlockEntityRenderer<
      * The frustum cull box: the block and its neighbours (renderers draw a little outside their block) together with the tile
      * entity's own {@code getRenderBoundingBox()}, which vanilla 1.12.2 culled with (infinite for beacons and big multiblock renderers).
      */
-    @Override
+    // 1.20.1 has no getRenderBoundingBox on BlockEntityRenderer (the shim keeps it for its own callers).
     public AABB getRenderBoundingBox(Legacy1122BlockEntity be) {
         var p = be.getBlockPos();
         AABB around = new AABB(p.getX() - 1, p.getY() - 1, p.getZ() - 1, p.getX() + 2, p.getY() + 2, p.getZ() + 2);

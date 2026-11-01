@@ -131,7 +131,7 @@ public final class PotionBridge {
         }
 
         @Override
-        public boolean shouldApplyEffectTickThisTick(int duration, int amplifier) {
+        public boolean isDurationEffectTick(int duration, int amplifier) {
             try {
                 return potion.isReady(duration, amplifier);
             } catch (RuntimeException e) {
@@ -140,7 +140,7 @@ public final class PotionBridge {
         }
 
         @Override
-        public boolean applyEffectTick(LivingEntity entity, int amplifier) {
+        public void applyEffectTick(LivingEntity entity, int amplifier) {
             try {
                 if (EntityBridge.wrap(entity) instanceof EntityLivingBase living) potion.performEffect(living, amplifier);
             } catch (RuntimeException e) {

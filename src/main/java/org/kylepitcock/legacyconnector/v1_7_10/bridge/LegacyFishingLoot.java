@@ -63,7 +63,8 @@ public final class LegacyFishingLoot extends LootModifier {
     }
 
     @Override
-    public MapCodec<? extends IGlobalLootModifier> codec() {
-        return CODEC;
+    public com.mojang.serialization.Codec<? extends IGlobalLootModifier> codec() {
+        // 1.20.1 codecs are plain Codecs (MapCodec is 1.20.5+).
+        return CODEC.codec();
     }
 }

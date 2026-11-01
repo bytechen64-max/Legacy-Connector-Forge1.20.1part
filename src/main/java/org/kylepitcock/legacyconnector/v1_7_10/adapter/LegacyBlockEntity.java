@@ -282,8 +282,8 @@ public class LegacyBlockEntity extends BlockEntity implements org.kylepitcock.le
     }
 
     @Override
-    protected void loadAdditional(CompoundTag tag) {
-        super.loadAdditional(tag);
+    public void load(CompoundTag tag) {
+        super.load(tag);
         if (tag.contains("legacy")) {
             CompoundTag data = atThisPosition(tag.getCompound("legacy"));
             if (legacy != null) {
