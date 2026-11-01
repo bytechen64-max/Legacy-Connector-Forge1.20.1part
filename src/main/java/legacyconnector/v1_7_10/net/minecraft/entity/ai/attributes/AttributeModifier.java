@@ -78,17 +78,18 @@ public class AttributeModifier {
     }
 
     public static AttributeModifier mcc$wrap(net.minecraft.world.entity.ai.attributes.AttributeModifier m) {
-        ResourceLocation rl = m.id();
+        // 1.20.1 names a modifier with a plain String (the ResourceLocation id is 1.21).
+        String name = m.getName();
         UUID id;
-        if (rl.getNamespace().equals("legacyconnector") && rl.getPath().startsWith("legacy/")) {
+        if (name.startsWith("legacyconnector:legacy/")) {
             try {
-                id = UUID.fromString(rl.getPath().substring("legacy/".length()));
+                id = UUID.fromString(name.substring("legacyconnector:legacy/".length()));
             } catch (IllegalArgumentException e) {
-                id = UUID.nameUUIDFromBytes(rl.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                id = UUID.nameUUIDFromBytes(name.getBytes(java.nio.charset.StandardCharsets.UTF_8));
             }
         } else {
-            id = UUID.nameUUIDFromBytes(rl.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            id = UUID.nameUUIDFromBytes(name.getBytes(java.nio.charset.StandardCharsets.UTF_8));
         }
-        return new AttributeModifier(id, rl.toString(), m.getAmount(), m.getOperation().id());
+        return new AttributeModifier(id, name, m.getAmount(), m.getOperation().ordinal());
     }
 }

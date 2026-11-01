@@ -23,14 +23,16 @@ public final class AttributeView1122 extends legacyconnector.v1_12_2.net.minecra
     }
 
     private static AttributeModifier legacy(net.minecraft.world.entity.ai.attributes.AttributeModifier m) {
-        String path = m.id().getPath();
+        // 1.20.1 names a modifier with a plain String (the ResourceLocation id is 1.21).
+        String name = m.getName();
+        String path = name.startsWith("legacyconnector:") ? name.substring("legacyconnector:".length()) : name;
         UUID uuid;
         try {
-            uuid = path.startsWith("modifier/") ? UUID.fromString(path.substring(9)) : UUID.nameUUIDFromBytes(m.id().toString().getBytes());
+            uuid = path.startsWith("modifier/") ? UUID.fromString(path.substring(9)) : UUID.nameUUIDFromBytes(name.getBytes());
         } catch (IllegalArgumentException e) {
-            uuid = UUID.nameUUIDFromBytes(m.id().toString().getBytes());
+            uuid = UUID.nameUUIDFromBytes(name.getBytes());
         }
-        return new AttributeModifier(uuid, m.id().toString(), m.getAmount(), m.getOperation().ordinal());
+        return new AttributeModifier(uuid, name, m.getAmount(), m.getOperation().ordinal());
     }
 
     @Override
