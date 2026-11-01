@@ -125,7 +125,7 @@ public class LegacyContainerScreen extends AbstractContainerScreen<LegacyMenu> {
     @Override
     public boolean mouseScrolled(double x, double y, double scrollY) {
         if (legacy != null && !failed) failed = !ScreenGuard.run(this, () -> legacy.mcc$mouseScrolled((int) x, (int) y, scrollY));
-        return super.mouseScrolled(x, y, scrollX, scrollY);
+        return super.mouseScrolled(x, y, scrollY);
     }
 
     @Override

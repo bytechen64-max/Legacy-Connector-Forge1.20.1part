@@ -19,4 +19,12 @@ public abstract class EntityGravityMixin {
         double scaled = org.kylepitcock.legacyconnector.v1_7_10.compat.fiskheroes.FiskHeroesHooks.gravity((Entity) (Object) this, result);
         if (scaled != result) cir.setReturnValue(scaled);
     }
+
+    /** A 1.7.10 dimension provider's gravity (Galacticraft's space dimensions) has no attribute before 1.20.5. */
+    @Inject(method = "getGravity", at = @At("RETURN"), cancellable = true, require = 0)
+    private void legacyconnector$dimensionGravity(CallbackInfoReturnable<Double> cir) {
+        double result = cir.getReturnValueD();
+        double gravity = org.kylepitcock.legacyconnector.v1_7_10.bridge.DimensionPhysics1710.gravity((Entity) (Object) this, result);
+        if (gravity != result) cir.setReturnValue(gravity);
+    }
 }

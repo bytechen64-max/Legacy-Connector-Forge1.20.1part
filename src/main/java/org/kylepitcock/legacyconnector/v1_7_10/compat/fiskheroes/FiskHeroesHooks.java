@@ -58,10 +58,8 @@ public final class FiskHeroesHooks {
             long mspt = tickrateMspt.getLong(null);
             if (mspt <= 0) return;
             float rate = Math.max(1.0F, Math.min(100.0F, 1000.0F / mspt));
-            if (Math.abs(rate - lastTickrate) > 0.01F) {
-                lastTickrate = rate;
-                server.tickRateManager().setTickRate(rate);
-            }
+            // 1.20.1 has no tick rate manager (it is 1.20.2+): the modifier's tick rate cannot be applied
+            lastTickrate = rate;
         } catch (ReflectiveOperationException | RuntimeException e) {
             if (failures++ < 3) LOG.warn("Fisk's Heroes' tick rate hook failed", e);
         }

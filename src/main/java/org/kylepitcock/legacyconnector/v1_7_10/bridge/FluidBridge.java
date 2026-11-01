@@ -265,7 +265,7 @@ public final class FluidBridge {
         @Override
         public FluidStack drain(FluidStack resource, FluidAction action) {
             FluidStack current = getFluidInTank(0);
-            if (current.isEmpty() || !FluidStack.isSameFluidSameComponents(current, resource)) return FluidStack.EMPTY;
+            if (current.isEmpty() || !current.isFluidEqual(resource)) return FluidStack.EMPTY;
             return drain(resource.getAmount(), action);
         }
 

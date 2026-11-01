@@ -31,12 +31,12 @@ public final class EntityLoading {
 
     private static boolean await(ServerLevel level, int cx, int cz) {
         try {
-            var manager = level.entityManager;
+            var manager = ((org.kylepitcock.legacyconnector.mixin.access.ServerLevelAccess) level).legacyconnector$entityManager();
             long key = ChunkPos.asLong(cx, cz);
             if (!pending(manager, key)) return false;
             long deadline = System.currentTimeMillis() + MAX_WAIT_MS;
             while (pending(manager, key) && System.currentTimeMillis() < deadline) {
-                manager.processPendingLoads();
+                ((org.kylepitcock.legacyconnector.mixin.access.PersistentEntitySectionManagerAccess) manager).legacyconnector$processPendingLoads();
                 if (!pending(manager, key)) break;
                 Thread.sleep(1);
             }
@@ -47,7 +47,7 @@ public final class EntityLoading {
     }
 
     private static boolean pending(net.minecraft.world.level.entity.PersistentEntitySectionManager<?> manager, long key) {
-        var status = manager.chunkLoadStatuses.get(key);
+        var status = ((org.kylepitcock.legacyconnector.mixin.access.PersistentEntitySectionManagerAccess) manager).legacyconnector$chunkLoadStatuses().get(key);
         return status != null && String.valueOf(status).equals("PENDING");
     }
 }

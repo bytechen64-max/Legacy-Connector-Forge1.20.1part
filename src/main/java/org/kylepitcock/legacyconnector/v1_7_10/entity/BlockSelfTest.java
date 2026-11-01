@@ -234,7 +234,7 @@ public final class BlockSelfTest {
             try {
                 player.setPos(pos.getX() + 0.5, pos.getY() + 2, pos.getZ() + 0.5);
                 var hit = new BlockHitResult(Vec3.atCenterOf(pos), Direction.UP, pos, false);
-                state.useWithoutItem(level, player, hit);
+                state.use(level, player, net.minecraft.world.InteractionHand.MAIN_HAND, hit);
                 activated++;
                 player.closeContainer();
             } catch (RuntimeException | LinkageError ex) {

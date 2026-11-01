@@ -34,23 +34,23 @@ public final class DimensionPhysics1710 {
     private DimensionPhysics1710() {}
 
     public static void register(IEventBus gameBus) {
-        gameBus.addListener((EntityJoinLevelEvent e) -> {
-            if (e.getEntity() instanceof LivingEntity living) applyGravity(living, e.getLevel());
-        });
+        // gravity is applied by mixin.EntityGravityMixin (1.20.1 has no gravity attribute)
         gameBus.addListener((LivingFallEvent e) -> {
             Float modifier = number(e.getEntity().level(), Methods::fall);
             if (modifier != null && modifier >= 0) e.setDamageMultiplier(e.getDamageMultiplier() * modifier);
         });
     }
 
-    private static void applyGravity(LivingEntity living, Level level) {
-        var attribute = living.getAttribute(Attributes.GRAVITY);
-        if (attribute == null) return;
+    /** The gravity of an entity's level (1.7.10 providers return how much weaker it is than the normal 0.08), or the engine's. */
+    public static double gravity(net.minecraft.world.entity.Entity entity, double engine) {
+        if (entity == null) return engine;
+        Level level = entity.level();
         Float reduction = number(level, Methods::gravity);
+        if (reduction == null) return engine;
         // 1.7.10 providers (Galacticraft) return how much weaker gravity is than the normal 0.08.
-        double wanted = reduction == null ? NORMAL_GRAVITY : Math.max(0.002D, Math.min(0.2D, NORMAL_GRAVITY - reduction));
-        if (Math.abs(attribute.getBaseValue() - wanted) > 1.0E-6) attribute.setBaseValue(wanted);
-        if (reduction != null && LOGGED.add(level.dimension().location().toString())) LOG.info("Gravity in {} is {} (provider reduction {})", level.dimension().location(), wanted, reduction);
+        double wanted = Math.max(0.002D, Math.min(0.2D, NORMAL_GRAVITY - reduction));
+        if (LOGGED.add(level.dimension().location().toString())) LOG.info("Gravity in {} is {} (provider reduction {})", level.dimension().location(), wanted, reduction);
+        return wanted;
     }
 
     /** One line for logs: what the dimension's provider says about gravity, fall damage and sound. */

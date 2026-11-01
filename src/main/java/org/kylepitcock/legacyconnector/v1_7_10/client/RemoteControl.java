@@ -249,7 +249,7 @@ public final class RemoteControl {
             case "title" -> {
                 // back to the title screen (a mod that replaces it, Custom Main Menu, gets its GuiOpenEvent)
                 mc.level.disconnect();
-                mc.disconnect(new net.minecraft.client.gui.screens.GenericDirtMessageScreen(net.minecraft.network.chat.Component.empty()));
+                mc.clearLevel(new net.minecraft.client.gui.screens.GenericDirtMessageScreen(net.minecraft.network.chat.Component.empty()));
                 mc.setScreen(new net.minecraft.client.gui.screens.TitleScreen());
                 waitTicks = 40;
             }

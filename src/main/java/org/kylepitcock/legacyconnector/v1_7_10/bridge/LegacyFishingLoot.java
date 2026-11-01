@@ -40,7 +40,7 @@ public final class LegacyFishingLoot extends LootModifier {
 
     @Override
     protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-        if (generatedLoot.size() != 1 || !BuiltInLootTables.FISHING.location().equals(context.getQueriedLootTableId())) return generatedLoot;
+        if (generatedLoot.size() != 1 || !BuiltInLootTables.FISHING.equals(context.getQueriedLootTableId())) return generatedLoot;
         ItemStack caught = generatedLoot.get(0);
         try {
             var legacy = FishingHooks.mcc$rollAdded(category(caught), new Random(context.getRandom().nextLong()));

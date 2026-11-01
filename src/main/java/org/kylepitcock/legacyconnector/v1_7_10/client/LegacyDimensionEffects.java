@@ -153,7 +153,7 @@ public final class LegacyDimensionEffects extends DimensionSpecialEffects {
     }
 
     @Override
-    public boolean renderSky(ClientLevel level, int ticks, float partialTick, Matrix4f modelView, Camera camera, Matrix4f projection, boolean foggy,
+    public boolean renderSky(ClientLevel level, int ticks, float partialTick, PoseStack pose, Camera camera, Matrix4f projection, boolean foggy,
             Runnable setupFog) {
         WorldProvider p = provider();
         IRenderHandler handler = p == null || FAILED.contains(p.getClass().getName() + ":sky") ? null : p.getSkyRenderer();
@@ -163,16 +163,15 @@ public final class LegacyDimensionEffects extends DimensionSpecialEffects {
         }
         if (handler == null) return false;
         setupFog.run();
-        return draw(p, "sky", handler, level, partialTick, modelView, RenderContext.KIND_SKY);
+        return draw(p, "sky", handler, level, partialTick, pose.last().pose(), RenderContext.KIND_SKY);
     }
 
     @Override
-    public boolean renderClouds(ClientLevel level, int ticks, float partialTick, PoseStack pose, double camX, double camY, double camZ, Matrix4f modelView,
-            Matrix4f projection) {
+    public boolean renderClouds(ClientLevel level, int ticks, float partialTick, PoseStack pose, double camX, double camY, double camZ, Matrix4f modelView) {
         WorldProvider p = provider();
         IRenderHandler handler = p == null || FAILED.contains(p.getClass().getName() + ":clouds") ? null : p.getCloudRenderer();
         if (handler == null) return p != null && vanillaCloudsHidden(p);
-        return draw(p, "clouds", handler, level, partialTick, modelView, RenderContext.KIND_WORLD);
+        return draw(p, "clouds", handler, level, partialTick, pose.last().pose(), RenderContext.KIND_WORLD);
     }
 
     @Override

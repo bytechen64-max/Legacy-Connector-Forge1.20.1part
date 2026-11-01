@@ -32,7 +32,7 @@ public final class Minecraft1122 {
 
     public static legacyconnector.v1_12_2.net.minecraft.util.Session session() {
         var user = mc().getUser();
-        String id = user.getProfileId() == null ? "" : com.mojang.util.UUIDTypeAdapter.toStrippedString(user.getProfileId());
+        String id = user.getProfileId() == null ? "" : com.mojang.util.UUIDTypeAdapter.fromUUID(user.getProfileId());
         return new legacyconnector.v1_12_2.net.minecraft.util.Session(user.getName(), id, user.getAccessToken(),
                 user.getType() == null ? "legacy" : user.getType().getName());
     }

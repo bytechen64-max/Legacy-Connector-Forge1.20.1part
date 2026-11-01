@@ -62,7 +62,7 @@ public final class DragonApiClientEvents {
         else if (e.getStage() == RenderLevelStageEvent.Stage.AFTER_TRANSLUCENT_BLOCKS) pass = 1;
         else return;
         if (!ENTITY_RENDERING_LOOP.wanted()) return;
-        Event ev = ENTITY_RENDERING_LOOP.create(pass, e.getPartialTick().getGameTimeDeltaPartialTick(false));
+        Event ev = ENTITY_RENDERING_LOOP.create(pass, e.getPartialTick());
         if (ev == null) return;
         Minecraft mc = Minecraft.getInstance();
         var cam = e.getCamera().getPosition();

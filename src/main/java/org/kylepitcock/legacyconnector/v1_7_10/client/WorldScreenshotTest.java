@@ -105,7 +105,7 @@ public final class WorldScreenshotTest {
             state.setName("LegacyConnectorShots" + System.currentTimeMillis());
             state.setGameMode(net.minecraft.client.gui.screens.worldselection.WorldCreationUiState.SelectedGameMode.CREATIVE);
             state.setDifficulty(Difficulty.PEACEFUL);
-            state.setAllowCommands(true);
+            state.setAllowCheats(true);
             state.setSeed(seed);
             if (!type.isEmpty()) {
                 var wanted = ResourceLocation.parse(type);
