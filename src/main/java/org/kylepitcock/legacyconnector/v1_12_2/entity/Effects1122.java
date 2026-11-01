@@ -41,8 +41,8 @@ public final class Effects1122 {
                     case 2 -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.MULTIPLY_TOTAL;
                     default -> net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADDITION;
                 };
-                effect.addAttributeModifier(attribute, ResourceLocation.fromNamespaceAndPath(id.getNamespace(), id.getPath() + "_" + mod.getID().toString().toLowerCase(java.util.Locale.ROOT)).toString(),
-                        mod.getAmount(), operation);
+                // 1.20.1 wants the modifier's UUID as the name (1.20.5 takes a ResourceLocation); the legacy modifier already has one
+                effect.addAttributeModifier(attribute, mod.getID().toString(), mod.getAmount(), operation);
             }
             MobEffect registered = LegacyRegistrar.register(BuiltInRegistries.MOB_EFFECT, id, effect);
             org.kylepitcock.legacyconnector.core.RegistryUtil.holder(BuiltInRegistries.MOB_EFFECT, BuiltInRegistries.MOB_EFFECT.getKey(registered)).ifPresent(h -> EFFECTS.put(potion, h));

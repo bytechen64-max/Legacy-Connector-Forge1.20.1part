@@ -327,6 +327,14 @@ public final class LegacyJarTransformer {
         }
         outResources.putAll(resources.finish());
 
+        // Forge mounts a mod's own jar as the pack "mod:<modid>", and a pack without a pack.mcmeta is rejected: the generated
+        // blockstates, models, language files, sounds and textures (and the data pack recipes/tags) would never load.
+        if (!outResources.containsKey("pack.mcmeta")) {
+            String description = jar.fileName().replace('\\', '/').replace("\"", "'");
+            outResources.put("pack.mcmeta", ("{\"pack\":{\"pack_format\":15,\"description\":\"" + description + "\"}}")
+                    .getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        }
+
         if (jar.coreModClass != null) {
             // The runtime constructs the coremod's plugin (without applying its transformers), as FML did.
             outResources.put(COREMOD_RESOURCE, jar.coreModClass.trim().getBytes(java.nio.charset.StandardCharsets.UTF_8));
