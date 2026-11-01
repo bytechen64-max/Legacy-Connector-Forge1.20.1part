@@ -21,7 +21,7 @@ public class RecipeFireworks implements IRecipe {
     @Override
     public boolean matches(InventoryCrafting inv, World world) {
         field_92102_a = null;
-        var input = inv == null ? null : inv.mcc$craftingInput();
+        var input = inv == null ? null : inv.mcc$craftingContainer();
         if (input == null) return false;
         net.minecraft.world.level.Level level = world == null ? null : world.mcc$liveLevel();
         for (var recipe : MODERN) {

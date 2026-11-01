@@ -1,39 +1,53 @@
 package org.kylepitcock.legacyconnector.v1_7_10.adapter;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.google.gson.JsonObject;
 import java.util.concurrent.atomic.AtomicInteger;
 import legacyconnector.v1_7_10.net.minecraft.inventory.InventoryCrafting;
 import legacyconnector.v1_7_10.net.minecraft.item.crafting.IRecipe;
 import legacyconnector.v1_7_10.net.minecraft.world.World;
-import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.RegistryAccess;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.RegistryFriendlyByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.inventory.CraftingContainer;
 import net.minecraft.world.inventory.TransientCraftingContainer;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.CraftingBookCategory;
-import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CraftingRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.level.Level;
-import net.minecraftforge.registries.RegistryObject;
 import net.minecraftforge.registries.DeferredRegister;
+import net.minecraftforge.registries.RegistryObject;
 import org.kylepitcock.legacyconnector.v1_7_10.bridge.RecipeBridge;
 
 /**
  * A crafting recipe that is a custom legacy {@link IRecipe} (IC2's AdvRecipe, AE2's recipes, Blood Orb recipes, ...): the
  * data pack only names it by index, matching and the result come from the legacy object, which sees a view of the grid.
+ *
+ * <p>1.20.1 recipes take a {@code CraftingContainer} and are (de)serialized by {@code fromJson}/{@code fromNetwork}/
+ * {@code toNetwork}: {@code CraftingInput}, {@code MapCodec}/{@code StreamCodec} serializers and the crafting book category
+ * all arrived with 1.20.2.</p>
  */
 public final class LegacyCraftingRecipe implements CraftingRecipe {
     public static final DeferredRegister<RecipeSerializer<?>> REGISTER = DeferredRegister.create(Registries.RECIPE_SERIALIZER, "legacyconnector");
-    public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<LegacyCraftingRecipe>> SERIALIZER = REGISTER.register("legacy_recipe", Serializer::new);
+    public static final RegistryObject<RecipeSerializer<LegacyCraftingRecipe>> SERIALIZER = REGISTER.register("legacy_recipe", Serializer::new);
     private static final AtomicInteger FAILURES = new AtomicInteger();
+    /** Recipes are only ever looked up by their datapack id; a custom legacy recipe is not a datapack entry of its own. */
+    private static final ResourceLocation ID = new ResourceLocation("legacyconnector", "legacy_recipe");
+    /** The menu a transient grid needs; nothing is ever moved through it. */
+    private static final AbstractContainerMenu MENU = new AbstractContainerMenu(null, 0) {
+        @Override
+        public ItemStack quickMoveStack(Player player, int slot) {
+            return ItemStack.EMPTY;
+        }
+
+        @Override
+        public boolean stillValid(Player player) {
+            return true;
+        }
+    };
 
     private final int index;
 
@@ -45,21 +59,10 @@ public final class LegacyCraftingRecipe implements CraftingRecipe {
         return RecipeBridge.custom(index);
     }
 
-    private static InventoryCrafting view(CraftingInput input) {
-        var menu = new AbstractContainerMenu(null, 0) {
-            @Override
-            public ItemStack quickMoveStack(Player player, int slot) {
-                return ItemStack.EMPTY;
-            }
-
-            @Override
-            public boolean stillValid(Player player) {
-                return true;
-            }
-        };
-        NonNullList<ItemStack> items = NonNullList.withSize(input.size(), ItemStack.EMPTY);
-        for (int i = 0; i < items.size(); i++) items.set(i, input.getItem(i));
-        return new InventoryCrafting(new TransientCraftingContainer(menu, input.width(), input.height(), items));
+    private static InventoryCrafting view(CraftingContainer container) {
+        NonNullList<ItemStack> items = NonNullList.withSize(container.getContainerSize(), ItemStack.EMPTY);
+        for (int i = 0; i < items.size(); i++) items.set(i, container.getItem(i));
+        return new InventoryCrafting(new TransientCraftingContainer(MENU, container.getWidth(), container.getHeight(), items));
     }
 
     private static void failed(Throwable e) {
@@ -67,11 +70,11 @@ public final class LegacyCraftingRecipe implements CraftingRecipe {
     }
 
     @Override
-    public boolean matches(CraftingInput input, Level level) {
+    public boolean matches(CraftingContainer container, Level level) {
         IRecipe r = legacy();
         if (r == null) return false;
         try {
-            return r.matches(view(input), World.mcc$wrap(level));
+            return r.matches(view(container), World.mcc$wrap(level));
         } catch (RuntimeException | LinkageError e) {
             failed(e);
             return false;
@@ -79,11 +82,11 @@ public final class LegacyCraftingRecipe implements CraftingRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
+    public ItemStack assemble(CraftingContainer container, RegistryAccess registries) {
         IRecipe r = legacy();
         if (r == null) return ItemStack.EMPTY;
         try {
-            var out = r.getCraftingResult(view(input));
+            var out = r.getCraftingResult(view(container));
             return out == null ? ItemStack.EMPTY : legacyconnector.v1_7_10.net.minecraft.item.ItemStack.mcc$toModern(out);
         } catch (RuntimeException | LinkageError e) {
             failed(e);
@@ -97,7 +100,7 @@ public final class LegacyCraftingRecipe implements CraftingRecipe {
     }
 
     @Override
-    public ItemStack getResultItem(HolderLookup.Provider registries) {
+    public ItemStack getResultItem(RegistryAccess registries) {
         IRecipe r = legacy();
         try {
             var out = r == null ? null : r.getRecipeOutput();
@@ -114,8 +117,8 @@ public final class LegacyCraftingRecipe implements CraftingRecipe {
     }
 
     @Override
-    public CraftingBookCategory category() {
-        return CraftingBookCategory.MISC;
+    public ResourceLocation getId() {
+        return ID;
     }
 
     @Override
@@ -124,19 +127,19 @@ public final class LegacyCraftingRecipe implements CraftingRecipe {
     }
 
     private static final class Serializer implements RecipeSerializer<LegacyCraftingRecipe> {
-        private static final MapCodec<LegacyCraftingRecipe> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
-                Codec.INT.fieldOf("index").forGetter(r -> r.index)).apply(i, LegacyCraftingRecipe::new));
-        private static final StreamCodec<RegistryFriendlyByteBuf, LegacyCraftingRecipe> STREAM = StreamCodec.composite(ByteBufCodecs.VAR_INT, r -> r.index,
-                LegacyCraftingRecipe::new);
-
         @Override
-        public MapCodec<LegacyCraftingRecipe> codec() {
-            return CODEC;
+        public LegacyCraftingRecipe fromJson(ResourceLocation id, JsonObject json) {
+            return new LegacyCraftingRecipe(json.has("index") ? json.get("index").getAsInt() : -1);
         }
 
         @Override
-        public StreamCodec<RegistryFriendlyByteBuf, LegacyCraftingRecipe> streamCodec() {
-            return STREAM;
+        public LegacyCraftingRecipe fromNetwork(ResourceLocation id, FriendlyByteBuf buf) {
+            return new LegacyCraftingRecipe(buf.readVarInt());
+        }
+
+        @Override
+        public void toNetwork(FriendlyByteBuf buf, LegacyCraftingRecipe recipe) {
+            buf.writeVarInt(recipe.index);
         }
     }
 }

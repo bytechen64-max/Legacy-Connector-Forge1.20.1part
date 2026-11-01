@@ -83,19 +83,23 @@ public class InventoryCrafting implements IInventory {
         changed();
     }
 
-    /** The grid as a modern crafting input (for the modern recipe manager and the modern special recipes); null when it is empty. */
-    public net.minecraft.world.item.crafting.CraftingInput mcc$craftingInput() {
+    /**
+     * The grid as a modern crafting container (for the modern recipe manager and the modern special recipes); null when it is
+     * empty. 1.20.1 recipes take a {@code CraftingContainer}; the 1.20.2 {@code CraftingInput} does not exist yet.
+     */
+    public net.minecraft.world.inventory.CraftingContainer mcc$craftingContainer() {
         int w = inventoryWidth;
         int h = inventoryHeight;
         if (w <= 0 || h <= 0 || w * h != getSizeInventory()) return null;
-        java.util.List<net.minecraft.world.item.ItemStack> items = new java.util.ArrayList<>(w * h);
+        net.minecraft.core.NonNullList<net.minecraft.world.item.ItemStack> items =
+                net.minecraft.core.NonNullList.withSize(w * h, net.minecraft.world.item.ItemStack.EMPTY);
         boolean any = false;
         for (int i = 0; i < w * h; i++) {
             net.minecraft.world.item.ItemStack s = ItemStack.mcc$toModern(getStackInSlot(i));
             any |= !s.isEmpty();
-            items.add(s);
+            items.set(i, s);
         }
-        return any ? net.minecraft.world.item.crafting.CraftingInput.of(w, h, items) : null;
+        return any ? new net.minecraft.world.inventory.TransientCraftingContainer(null, w, h, items) : null;
     }
 
     public int mcc$width() {

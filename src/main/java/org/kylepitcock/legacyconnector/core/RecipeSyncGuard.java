@@ -3,7 +3,7 @@ package org.kylepitcock.legacyconnector.core;
 import java.util.ArrayList;
 import java.util.List;
 import net.minecraft.world.item.crafting.Ingredient;
-import net.minecraft.world.item.crafting.RecipeHolder;
+import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.OnDatapackSyncEvent;
@@ -26,20 +26,19 @@ public final class RecipeSyncGuard {
     }
 
     private static void clean(RecipeManager manager, net.minecraft.core.RegistryAccess access) {
-        List<RecipeHolder<?>> keep = new ArrayList<>();
+        List<Recipe<?>> keep = new ArrayList<>();
         List<String> dropped = new ArrayList<>();
-        for (RecipeHolder<?> holder : manager.getRecipes()) {
-            if (sendable(holder, access)) keep.add(holder);
-            else dropped.add(holder.id().toString());
+        for (Recipe<?> recipe : manager.getRecipes()) {
+            if (sendable(recipe, access)) keep.add(recipe);
+            else dropped.add(recipe.getId().toString());
         }
         if (dropped.isEmpty()) return;
         manager.replaceRecipes(keep);
         LOG.warn("Dropped {} recipe(s) with empty item stacks (clients cannot receive them): {}", dropped.size(), dropped);
     }
 
-    private static boolean sendable(RecipeHolder<?> holder, net.minecraft.core.RegistryAccess access) {
+    private static boolean sendable(Recipe<?> recipe, net.minecraft.core.RegistryAccess access) {
         try {
-            var recipe = holder.value();
             if (recipe.getResultItem(access).isEmpty() && !recipe.isSpecial()) return false;
             for (Ingredient ing : recipe.getIngredients()) {
                 if (ing.isCustom()) continue;

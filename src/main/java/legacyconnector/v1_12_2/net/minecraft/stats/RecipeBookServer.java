@@ -26,8 +26,8 @@ public class RecipeBookServer extends RecipeBook {
         return modern == null ? null : new RecipeBookServer(modern);
     }
 
-    private static java.util.List<net.minecraft.world.item.crafting.RecipeHolder<?>> holders(List<IRecipe> recipes, EntityPlayerMP player) {
-        var out = new java.util.ArrayList<net.minecraft.world.item.crafting.RecipeHolder<?>>();
+    private static java.util.List<net.minecraft.world.item.crafting.Recipe<?>> holders(List<IRecipe> recipes, EntityPlayerMP player) {
+        var out = new java.util.ArrayList<net.minecraft.world.item.crafting.Recipe<?>>();
         var sp = player == null ? null : player.mcc$serverPlayer();
         if (recipes == null || sp == null) return out;
         var manager = sp.server.getRecipeManager();

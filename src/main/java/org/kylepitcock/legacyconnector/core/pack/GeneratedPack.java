@@ -14,9 +14,7 @@ import java.util.function.Supplier;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
-import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.metadata.MetadataSectionSerializer;
 import net.minecraft.server.packs.metadata.pack.PackMetadataSection;
@@ -41,20 +39,20 @@ public final class GeneratedPack implements PackResources {
 
     private static final List<Contributor> CONTRIBUTORS = new CopyOnWriteArrayList<>();
 
-    private final PackLocationInfo location;
+    private final String id;
     private final PackType type;
     private final Map<String, Supplier<byte[]>> files = new TreeMap<>();
 
-    private GeneratedPack(PackLocationInfo location, PackType type, boolean recipes) {
-        this(location, type, recipes, false);
+    private GeneratedPack(String id, PackType type, boolean recipes) {
+        this(id, type, recipes, false);
     }
 
     /**
      * @param metadataOnly a pack opened only for its metadata ({@code Pack.ResourcesSupplier.openPrimary}: the pack format, feature
      *        flags and overlays, read once per pack repository scan): no content is generated, see {@code perf.lazyPackMetadata}
      */
-    private GeneratedPack(PackLocationInfo location, PackType type, boolean recipes, boolean metadataOnly) {
-        this.location = location;
+    private GeneratedPack(String id, PackType type, boolean recipes, boolean metadataOnly) {
+        this.id = id;
         this.type = type;
         if (metadataOnly) return;
         if (type == PackType.CLIENT_RESOURCES) GeneratedTranslations.contribute(files);
@@ -129,20 +127,14 @@ public final class GeneratedPack implements PackResources {
     }
 
     private static void addPack(AddPackFindersEvent event, String id, String title, PackType type, boolean recipes, Pack.Position position) {
-        PackLocationInfo info = new PackLocationInfo(id, Component.literal(title), PackSource.BUILT_IN, Optional.empty());
         Pack.ResourcesSupplier supplier = new Pack.ResourcesSupplier() {
             @Override
-            public PackResources openPrimary(PackLocationInfo location) {
-                // read for the pack metadata only (Pack.readPackMetadata, NeoForge's readMeta), which needs no generated file
-                return new GeneratedPack(location, type, recipes, org.kylepitcock.legacyconnector.core.LegacyConfig.perfLazyPackMetadata());
-            }
-
-            @Override
-            public PackResources openFull(PackLocationInfo location, Pack.Metadata metadata) {
-                return new GeneratedPack(location, type, recipes);
+            public PackResources open(String packId) {
+                // 1.20.1 asks once, for the metadata the repository scan reads; the content is generated on first use of the pack
+                return new GeneratedPack(packId, type, recipes, org.kylepitcock.legacyconnector.core.LegacyConfig.perfLazyPackMetadata());
             }
         };
-        Pack pack = Pack.readMetaAndCreate(info, supplier, type, new PackSelectionConfig(true, position, false));
+        Pack pack = Pack.readMetaAndCreate(id, Component.literal(title), false, supplier, type, position, PackSource.BUILT_IN);
         if (pack != null) event.addRepositorySource(consumer -> consumer.accept(pack));
     }
 
@@ -251,8 +243,8 @@ public final class GeneratedPack implements PackResources {
     }
 
     @Override
-    public PackLocationInfo location() {
-        return location;
+    public String packId() {
+        return id;
     }
 
     @Override

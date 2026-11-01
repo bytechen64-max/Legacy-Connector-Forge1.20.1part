@@ -17,9 +17,7 @@ import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.AbstractPackResources;
-import net.minecraft.server.packs.PackLocationInfo;
 import net.minecraft.server.packs.PackResources;
-import net.minecraft.server.packs.PackSelectionConfig;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.repository.Pack;
 import net.minecraft.server.packs.repository.PackSource;
@@ -49,25 +47,20 @@ public final class LegacyModPacks extends AbstractPackResources {
         if (container != null && !ADDED.contains(container)) ADDED.add(container);
     }
 
-    private LegacyModPacks(PackLocationInfo location) {
-        super(location);
+    private LegacyModPacks(String id) {
+        super(id, true);
     }
 
     public static void onAddPackFinders(AddPackFindersEvent event) {
         if (event.getPackType() != PackType.CLIENT_RESOURCES) return;
-        PackLocationInfo info = new PackLocationInfo("legacyconnector_mod_packs", Component.literal("Legacy Connector: legacy mod packs"), PackSource.BUILT_IN, Optional.empty());
         Pack.ResourcesSupplier supplier = new Pack.ResourcesSupplier() {
             @Override
-            public PackResources openPrimary(PackLocationInfo location) {
-                return new LegacyModPacks(location);
-            }
-
-            @Override
-            public PackResources openFull(PackLocationInfo location, Pack.Metadata metadata) {
-                return new LegacyModPacks(location);
+            public PackResources open(String packId) {
+                return new LegacyModPacks(packId);
             }
         };
-        Pack pack = Pack.readMetaAndCreate(info, supplier, PackType.CLIENT_RESOURCES, new PackSelectionConfig(true, Pack.Position.BOTTOM, false));
+        Pack pack = Pack.readMetaAndCreate("legacyconnector_mod_packs", Component.literal("Legacy Connector: legacy mod packs"), false, supplier,
+                PackType.CLIENT_RESOURCES, Pack.Position.BOTTOM, PackSource.BUILT_IN);
         if (pack != null) event.addRepositorySource(consumer -> consumer.accept(pack));
     }
 

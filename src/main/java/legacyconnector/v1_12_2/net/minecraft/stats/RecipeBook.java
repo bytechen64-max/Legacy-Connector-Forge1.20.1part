@@ -32,7 +32,7 @@ public class RecipeBook {
     }
 
     /** The modern recipe of the legacy one's name, if the running game knows it. */
-    private static net.minecraft.world.item.crafting.RecipeHolder<?> holder(IRecipe recipe) {
+    private static net.minecraft.world.item.crafting.Recipe<?> holder(IRecipe recipe) {
         if (recipe == null || recipe.getRegistryName() == null) return null;
         var id = recipe.getRegistryName().mcc$modern();
         var server = net.minecraftforge.server.ServerLifecycleHooks.getCurrentServer();
@@ -127,7 +127,7 @@ public class RecipeBook {
 
     /** The client level's recipes, kept apart so this class verifies on a dedicated server. */
     private static final class ClientAccess {
-        static net.minecraft.world.item.crafting.RecipeHolder<?> holder(net.minecraft.resources.ResourceLocation id) {
+        static net.minecraft.world.item.crafting.Recipe<?> holder(net.minecraft.resources.ResourceLocation id) {
             var level = net.minecraft.client.Minecraft.getInstance().level;
             return level == null ? null : level.getRecipeManager().byKey(id).orElse(null);
         }

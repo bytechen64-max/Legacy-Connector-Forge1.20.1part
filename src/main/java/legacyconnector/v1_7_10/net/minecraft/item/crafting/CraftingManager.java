@@ -93,13 +93,13 @@ public class CraftingManager {
     private static ItemStack mcc$findModern(InventoryCrafting inv, World world) {
         net.minecraft.world.level.Level level = world == null ? null : world.mcc$liveLevel();
         if (level == null || inv == null) return null;
-        var input = inv.mcc$craftingInput();
+        var input = inv.mcc$craftingContainer();
         if (input == null || MODERN_LOOKUP.get()) return null;
         MODERN_LOOKUP.set(Boolean.TRUE);
         try {
             var found = level.getRecipeManager().getRecipeFor(net.minecraft.world.item.crafting.RecipeType.CRAFTING, input, level);
             if (found.isEmpty()) return null;
-            net.minecraft.world.item.ItemStack result = found.get().value().assemble(input, level.registryAccess());
+            net.minecraft.world.item.ItemStack result = found.get().assemble(input, level.registryAccess());
             return result.isEmpty() ? null : ItemStack.mcc$wrap(result);
         } catch (RuntimeException e) {
             return null;
@@ -113,7 +113,7 @@ public class CraftingManager {
         if (!(replaced.recipe() instanceof net.minecraft.world.item.crafting.CraftingRecipe recipe) || inv == null) return null;
         net.minecraft.world.level.Level level = world == null ? null : world.mcc$liveLevel();
         if (level == null) return null;
-        var input = inv.mcc$craftingInput();
+        var input = inv.mcc$craftingContainer();
         try {
             if (input == null || !recipe.matches(input, level)) return null;
             net.minecraft.world.item.ItemStack result = recipe.assemble(input, level.registryAccess());
