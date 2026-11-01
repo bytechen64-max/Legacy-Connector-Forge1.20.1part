@@ -10,7 +10,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.trading.ItemCost;
 import net.minecraft.world.item.trading.Merchant;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraft.world.item.trading.MerchantOffers;
@@ -33,12 +32,12 @@ public final class MerchantBridge {
         var buy = ItemStack.mcc$toModern(recipe.getItemToBuy());
         var sell = ItemStack.mcc$toModern(recipe.getItemToSell());
         if (buy == null || sell == null || buy.isEmpty() || sell.isEmpty()) return null;
-        Optional<ItemCost> second = Optional.empty();
+        net.minecraft.world.item.ItemStack second = net.minecraft.world.item.ItemStack.EMPTY;
         if (recipe.hasSecondItemToBuy()) {
             var s = ItemStack.mcc$toModern(recipe.getSecondItemToBuy());
-            if (s != null && !s.isEmpty()) second = Optional.of(new ItemCost(s.getItem(), s.getCount()));
+            if (s != null && !s.isEmpty()) second = s;
         }
-        return new MerchantOffer(new ItemCost(buy.getItem(), buy.getCount()), second, sell, recipe.getToolUses(), Math.max(1, recipe.getMaxTradeUses()), 0, 0.0F);
+        return new MerchantOffer(buy, second, sell, recipe.getToolUses(), Math.max(1, recipe.getMaxTradeUses()), 0, 0.0F);
     }
 
     /** The modern merchant side of a legacy one. */
@@ -72,7 +71,8 @@ public final class MerchantBridge {
                     for (Object o : recipes) {
                         MerchantOffer offer = o instanceof MerchantRecipe r ? offer(r) : null;
                         // keep indices aligned with the legacy list (a recipe that cannot be shown stays as a used-up offer)
-                        offers.add(offer != null ? offer : new MerchantOffer(new ItemCost(net.minecraft.world.item.Items.BARRIER), net.minecraft.world.item.ItemStack.EMPTY, 0, 0, 0.0F));
+                        offers.add(offer != null ? offer : new MerchantOffer(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.BARRIER),
+                                net.minecraft.world.item.ItemStack.EMPTY, 0, 0, 0.0F));
                     }
                 }
             }

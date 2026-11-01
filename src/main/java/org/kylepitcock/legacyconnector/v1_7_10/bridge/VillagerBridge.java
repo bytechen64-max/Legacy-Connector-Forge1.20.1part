@@ -20,7 +20,6 @@ import net.minecraft.server.packs.PackType;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.npc.VillagerProfession;
 import net.minecraft.world.entity.npc.VillagerTrades;
-import net.minecraft.world.item.trading.ItemCost;
 import net.minecraft.world.item.trading.MerchantOffer;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
@@ -223,12 +222,12 @@ public final class VillagerBridge {
             var buy = ItemStack.mcc$toModern(recipe.getItemToBuy());
             var sell = ItemStack.mcc$toModern(recipe.getItemToSell());
             if (buy == null || sell == null || buy.isEmpty() || sell.isEmpty()) return null;
-            Optional<ItemCost> second = Optional.empty();
+            net.minecraft.world.item.ItemStack second = net.minecraft.world.item.ItemStack.EMPTY;
             if (recipe.hasSecondItemToBuy()) {
                 var s = ItemStack.mcc$toModern(recipe.getSecondItemToBuy());
-                if (s != null && !s.isEmpty()) second = Optional.of(new ItemCost(s.getItem(), s.getCount()));
+                if (s != null && !s.isEmpty()) second = s;
             }
-            return new MerchantOffer(new ItemCost(buy.getItem(), buy.getCount()), second, sell, 0, Math.max(1, recipe.getMaxTradeUses()), 5, 0.05F);
+            return new MerchantOffer(buy, second, sell, 0, Math.max(1, recipe.getMaxTradeUses()), 5, 0.05F);
         };
     }
 

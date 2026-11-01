@@ -10,7 +10,7 @@ import legacyconnector.v1_12_2.net.minecraft.dispenser.IBlockSource;
 import legacyconnector.v1_12_2.net.minecraft.item.Item;
 import legacyconnector.v1_12_2.net.minecraft.item.ItemStack;
 import legacyconnector.v1_12_2.net.minecraft.util.registry.RegistryDefaulted;
-import net.minecraft.core.dispenser.BlockSource;
+import net.minecraft.core.BlockSource;
 import net.minecraft.core.dispenser.DispenseItemBehavior;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.DispenserBlock;
@@ -117,12 +117,11 @@ public final class Dispensers1122 {
     }
 
     /** The modern dispenser source at a legacy source's position (its block entity null unless it is a real dispenser), or null. */
-    public static BlockSource modernSource(IBlockSource source) {
+    public static net.minecraft.core.BlockSource modernSource(IBlockSource source) {
         var level = source == null || source.getWorld() == null ? null : source.getWorld().mcc$level();
         if (!(level instanceof ServerLevel server)) return null;
         var p = source.getBlockPos();
-        var pos = new net.minecraft.core.BlockPos(p.getX(), p.getY(), p.getZ());
-        DispenserBlockEntity be = server.getBlockEntity(pos) instanceof DispenserBlockEntity d ? d : null;
-        return new BlockSource(server, pos, server.getBlockState(pos), be);
+        // 1.20.1's source only carries the level and position; the block state and block entity are looked up from them.
+        return new net.minecraft.core.BlockSourceImpl(server, new net.minecraft.core.BlockPos(p.getX(), p.getY(), p.getZ()));
     }
 }

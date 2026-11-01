@@ -15,9 +15,10 @@ public class BlockSourceImpl implements IBlockSource {
         this.pos = posIn;
     }
 
-    public static BlockSourceImpl mcc$of(net.minecraft.core.dispenser.BlockSource source) {
-        var p = source.pos();
-        return new BlockSourceImpl(org.kylepitcock.legacyconnector.v1_12_2.bridge.WorldBridge1122.wrap(source.level()), new BlockPos(p.getX(), p.getY(), p.getZ()));
+    /** 1.20.1's source is {@code net.minecraft.core.BlockSource} (the record of the same name is 1.20.5+). */
+    public static BlockSourceImpl mcc$of(net.minecraft.core.BlockSource source) {
+        var p = source.getPos();
+        return new BlockSourceImpl(org.kylepitcock.legacyconnector.v1_12_2.bridge.WorldBridge1122.wrap(source.getLevel()), new BlockPos(p.getX(), p.getY(), p.getZ()));
     }
 
     @Override

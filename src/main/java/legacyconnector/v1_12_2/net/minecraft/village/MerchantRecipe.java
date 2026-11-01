@@ -108,32 +108,19 @@ public class MerchantRecipe {
     public net.minecraft.world.item.trading.MerchantOffer mcc$toModern() {
         var costA = mcc$cost(itemToBuy);
         if (costA == null) return null;
-        var costB = java.util.Optional.ofNullable(mcc$cost(secondItemToBuy));
+        var costB = mcc$cost(secondItemToBuy);
+        if (costB == null) costB = net.minecraft.world.item.ItemStack.EMPTY;
         var result = org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.toModern(itemToSell);
         if (result.isEmpty()) return null;
         // villager experience 1 per trade, as 1.12's trades levelled careers by use count; no xp when the trade gives none
         return new net.minecraft.world.item.trading.MerchantOffer(costA, costB, result, toolUses, maxTradeUses, rewardsExp ? 1 : 0, 0.05F);
     }
 
-    private static net.minecraft.world.item.trading.ItemCost mcc$cost(ItemStack legacy) {
+    /** 1.20.1 prices an offer with the item stack itself (the tag is matched as part of it); 1.20.5 wrapped it in an ItemCost. */
+    private static net.minecraft.world.item.ItemStack mcc$cost(ItemStack legacy) {
         if (legacy == null || legacy.isEmpty()) return null;
         var modern = org.kylepitcock.legacyconnector.v1_12_2.bridge.Stacks1122.toModern(legacy);
-        if (modern.isEmpty()) return null;
-        var predicate = net.minecraft.core.component.DataComponentPredicate.EMPTY;
-        if (!modern.getComponentsPatch().isEmpty()) {
-            var builder = net.minecraft.core.component.DataComponentPredicate.builder();
-            for (var entry : modern.getComponentsPatch().entrySet()) {
-                entry.getValue().ifPresent(v -> mcc$expect(builder, entry.getKey(), v));
-            }
-            predicate = builder.build();
-        }
-        return new net.minecraft.world.item.trading.ItemCost(modern.getItemHolder(), modern.getCount(), predicate);
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> void mcc$expect(net.minecraft.core.component.DataComponentPredicate.Builder builder,
-            net.minecraft.core.component.DataComponentType<T> type, Object value) {
-        builder.expect(type, (T) value);
+        return modern.isEmpty() ? null : modern;
     }
 
     /** A legacy trade for a modern offer. */
