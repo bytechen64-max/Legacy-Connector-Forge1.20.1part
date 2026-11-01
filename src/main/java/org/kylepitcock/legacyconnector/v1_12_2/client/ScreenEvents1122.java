@@ -9,7 +9,6 @@ import legacyconnector.v1_12_2.net.minecraft.client.gui.GuiMainMenu;
 import legacyconnector.v1_12_2.net.minecraft.client.gui.GuiScreen;
 import legacyconnector.v1_12_2.net.minecraftforge.client.event.GuiOpenEvent;
 import legacyconnector.v1_12_2.net.minecraftforge.client.event.GuiScreenEvent;
-import legacyconnector.v1_12_2.net.minecraftforge.common.MinecraftForge;
 import legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
@@ -49,11 +48,11 @@ public final class ScreenEvents1122 {
     }
 
     static boolean wants(Class<? extends Event> type) {
-        return MinecraftForge.EVENT_BUS.mcc$hasListeners(type);
+        return legacyconnector.v1_12_2.net.minecraftforge.common.MinecraftForge.EVENT_BUS.mcc$hasListeners(type);
     }
 
     static boolean post(Event event) {
-        return wants(event.getClass()) && MinecraftForge.EVENT_BUS.post(event);
+        return wants(event.getClass()) && legacyconnector.v1_12_2.net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
     }
 
     private static boolean legacyHost(Screen s) {
@@ -78,7 +77,7 @@ public final class ScreenEvents1122 {
         if (legacyHost(e.getNewScreen()) || !wants(GuiOpenEvent.class)) return;
         GuiScreen original = legacyOf(e.getNewScreen());
         GuiOpenEvent legacy = new GuiOpenEvent(original);
-        if (MinecraftForge.EVENT_BUS.post(legacy)) {
+        if (legacyconnector.v1_12_2.net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(legacy)) {
             e.setCanceled(true);
         } else if (legacy.getGui() != original) {
             e.setNewScreen(legacy.getGui() == null ? null : ClientGui1122.host(legacy.getGui()));
@@ -90,7 +89,7 @@ public final class ScreenEvents1122 {
         replace[0] = screen;
         if (!wants(GuiOpenEvent.class)) return false;
         GuiOpenEvent event = new GuiOpenEvent(screen);
-        if (MinecraftForge.EVENT_BUS.post(event)) return true;
+        if (legacyconnector.v1_12_2.net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event)) return true;
         replace[0] = event.getGui();
         return false;
     }

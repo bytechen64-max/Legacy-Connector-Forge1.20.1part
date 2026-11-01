@@ -34,7 +34,7 @@ public class CommandResultStats {
         var scoreboard = m.getScoreboard();
         var objective = scoreboard.getObjective(objectiveName);
         if (objective == null) return;
-        scoreboard.getOrCreatePlayerScore(net.minecraft.world.scores.ScoreHolder.forNameOnly(entity), objective).set(p_184932_4_);
+        scoreboard.getOrCreatePlayerScore(entity, objective).setScore(p_184932_4_);
     }
 
     public void readStatsFromNBT(NBTTagCompound tagcompound) {

@@ -5,7 +5,6 @@ import java.util.Map;
 import legacyconnector.v1_7_10.net.minecraft.client.gui.ScaledResolution;
 import legacyconnector.v1_7_10.net.minecraftforge.client.event.RenderGameOverlayEvent;
 import legacyconnector.v1_7_10.net.minecraftforge.client.event.RenderGameOverlayEvent.ElementType;
-import legacyconnector.v1_7_10.net.minecraftforge.common.MinecraftForge;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceLocation;
@@ -137,7 +136,7 @@ public final class HudEvents1710 {
      * itself, too): an overlay kind nobody listens to is neither built nor posted, each frame and HUD element.
      */
     private static boolean wants(Class<? extends RenderGameOverlayEvent> kind) {
-        return MinecraftForge.EVENT_BUS.mcc$hasListeners(kind);
+        return legacyconnector.v1_7_10.net.minecraftforge.common.MinecraftForge.EVENT_BUS.mcc$hasListeners(kind);
     }
 
     /** Posts one overlay event; returns whether a Pre listener cancelled it. */
@@ -151,13 +150,13 @@ public final class HudEvents1710 {
         RenderContext.beginGui(graphics);
         try {
             if (type == ElementType.TEXT && !after) {
-                return MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Text(root, new ArrayList<>(), new ArrayList<>()));
+                return legacyconnector.v1_7_10.net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Text(root, new ArrayList<>(), new ArrayList<>()));
             }
             if (after) {
-                MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Post(root, type));
+                legacyconnector.v1_7_10.net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Post(root, type));
                 return false;
             }
-            return MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Pre(root, type));
+            return legacyconnector.v1_7_10.net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new RenderGameOverlayEvent.Pre(root, type));
         } catch (RuntimeException | LinkageError ex) {
             if (HUD_FAILURES.merge(ex.toString(), 1, Integer::sum) == 1) {
                 org.slf4j.LoggerFactory.getLogger("LegacyConnector/Hud").warn("A HUD overlay handler failed (reported once per kind of failure): {}", ex.toString());

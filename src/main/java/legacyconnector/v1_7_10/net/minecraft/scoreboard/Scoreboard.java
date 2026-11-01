@@ -6,14 +6,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import net.minecraft.network.chat.Component;
-import net.minecraft.world.scores.DisplaySlot;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.PlayerTeam;
-import net.minecraft.world.scores.ScoreHolder;
 
 /**
  * The legacy scoreboard as a view of the level's modern one (the server's on the server, the synced copy on a client), so
  * objectives, scores and teams legacy code makes are the game's own (FiskTag keeps its kills and deaths in objectives).
+ *
+ * <p>1.20.1 knows players by plain name and display slots by number, so the 1.20.5 {@code ScoreHolder}/{@code DisplaySlot}
+ * layer this shim used to sit on is gone.</p>
  */
 public class Scoreboard {
     final net.minecraft.world.scores.Scoreboard modern;
@@ -52,7 +53,7 @@ public class Scoreboard {
     public ScoreObjective addScoreObjective(String name, IScoreObjectiveCriteria criteria) {
         if (modern.getObjective(name) != null) throw new IllegalArgumentException("An objective with the name '" + name + "' already exists!");
         var modernCriteria = criteria instanceof ScoreDummyCriteria c ? c.mcc$modern() : net.minecraft.world.scores.criteria.ObjectiveCriteria.DUMMY;
-        return view(modern.addObjective(name, modernCriteria, Component.literal(name), modernCriteria.getDefaultRenderType(), false, null));
+        return view(modern.addObjective(name, modernCriteria, Component.literal(name), modernCriteria.getDefaultRenderType()));
     }
 
     public Collection func_96520_a(IScoreObjectiveCriteria criteria) {
@@ -67,7 +68,7 @@ public class Scoreboard {
 
     public Collection getSortedScores(ScoreObjective objective) {
         List<Score> out = new ArrayList<>();
-        for (var entry : modern.listPlayerScores(objective.modern)) out.add(new Score(this, objective, entry.owner()));
+        for (var entry : modern.getPlayerScores(objective.modern)) out.add(new Score(this, objective, entry.getOwner()));
         out.sort(Score.scoreComparator);
         return out;
     }
@@ -84,21 +85,21 @@ public class Scoreboard {
 
     /** Resets a holder's scores (in every objective). */
     public void func_96515_c(String name) {
-        modern.resetAllPlayerScores(ScoreHolder.forNameOnly(name));
+        for (var o : new ArrayList<>(modern.getPlayerScores(name).keySet())) modern.resetPlayerScore(name, o);
     }
 
     public Collection func_96528_e() {
         List<Score> out = new ArrayList<>();
-        for (var holder : modern.getTrackedPlayers()) {
-            for (var e : modern.listPlayerScores(holder).object2IntEntrySet()) out.add(new Score(this, view(e.getKey()), holder.getScoreboardName()));
+        for (String player : modern.getTrackedPlayers()) {
+            for (var e : modern.getPlayerScores(player).entrySet()) out.add(new Score(this, view(e.getKey()), player));
         }
         return out;
     }
 
     public Map func_96510_d(String name) {
         Map<ScoreObjective, Score> out = new HashMap<>();
-        for (var e : modern.listPlayerScores(ScoreHolder.forNameOnly(name)).object2IntEntrySet()) {
-            ScoreObjective o = view(e.getKey());
+        for (var e : modern.getPlayerScores(name).keySet()) {
+            ScoreObjective o = view(e);
             out.put(o, new Score(this, o, name));
         }
         return out;
@@ -109,13 +110,13 @@ public class Scoreboard {
     }
 
     public void setObjectiveInDisplaySlot(int slot, ScoreObjective objective) {
-        DisplaySlot display = DisplaySlot.BY_ID.apply(slot);
-        if (display != null) modern.setDisplayObjective(display, objective == null ? null : objective.modern);
+        if (slot < 0 || slot >= net.minecraft.world.scores.Scoreboard.DISPLAY_SLOTS) return;
+        modern.setDisplayObjective(slot, objective == null ? null : objective.modern);
     }
 
     public ScoreObjective getObjectiveInDisplaySlot(int slot) {
-        DisplaySlot display = DisplaySlot.BY_ID.apply(slot);
-        return display == null ? null : view(modern.getDisplayObjective(display));
+        if (slot < 0 || slot >= net.minecraft.world.scores.Scoreboard.DISPLAY_SLOTS) return null;
+        return view(modern.getDisplayObjective(slot));
     }
 
     public ScorePlayerTeam getTeam(String name) {
@@ -183,20 +184,21 @@ public class Scoreboard {
     public void func_96513_c(ScorePlayerTeam team) {
     }
 
+    /** 1.7.10 only names the three universal slots; the numbered slots are the same numbers in 1.20.1. */
     public static String getObjectiveDisplaySlot(int slot) {
         return switch (slot) {
-            case 0 -> "list";
-            case 1 -> "sidebar";
-            case 2 -> "belowName";
+            case net.minecraft.world.scores.Scoreboard.DISPLAY_SLOT_LIST -> "list";
+            case net.minecraft.world.scores.Scoreboard.DISPLAY_SLOT_SIDEBAR -> "sidebar";
+            case net.minecraft.world.scores.Scoreboard.DISPLAY_SLOT_BELOW_NAME -> "belowName";
             default -> null;
         };
     }
 
     public static int getObjectiveDisplaySlotNumber(String name) {
         return switch (name) {
-            case "list" -> 0;
-            case "sidebar" -> 1;
-            case "belowName" -> 2;
+            case "list" -> net.minecraft.world.scores.Scoreboard.DISPLAY_SLOT_LIST;
+            case "sidebar" -> net.minecraft.world.scores.Scoreboard.DISPLAY_SLOT_SIDEBAR;
+            case "belowName" -> net.minecraft.world.scores.Scoreboard.DISPLAY_SLOT_BELOW_NAME;
             default -> -1;
         };
     }

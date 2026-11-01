@@ -18,7 +18,6 @@ import legacyconnector.v1_12_2.net.minecraftforge.client.event.RenderSpecificHan
 import legacyconnector.v1_12_2.net.minecraftforge.client.event.RenderTooltipEvent;
 import legacyconnector.v1_12_2.net.minecraftforge.client.event.RenderWorldLastEvent;
 import legacyconnector.v1_12_2.net.minecraftforge.client.event.ScreenshotEvent;
-import legacyconnector.v1_12_2.net.minecraftforge.common.MinecraftForge;
 import legacyconnector.v1_12_2.net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
@@ -101,13 +100,13 @@ public final class ClientEvents1122 {
     }
 
     static boolean wants(Class<? extends Event> type) {
-        return MinecraftForge.EVENT_BUS.mcc$hasListeners(type);
+        return legacyconnector.v1_12_2.net.minecraftforge.common.MinecraftForge.EVENT_BUS.mcc$hasListeners(type);
     }
 
     /** Posts and reports a failing handler once per kind of failure; returns whether the event was cancelled. */
     private static boolean post(Event event, String what) {
         try {
-            return MinecraftForge.EVENT_BUS.post(event);
+            return legacyconnector.v1_12_2.net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
         } catch (RuntimeException | LinkageError ex) {
             if (FAILURES.merge(what + ex, 1, Integer::sum) == 1) LOG.warn("A legacy {} handler failed (reported once): {}", what, ex.toString());
             return false;

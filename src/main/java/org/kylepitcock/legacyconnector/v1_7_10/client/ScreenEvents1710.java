@@ -4,7 +4,6 @@ import legacyconnector.v1_7_10.net.minecraft.client.gui.GuiMainMenu;
 import legacyconnector.v1_7_10.net.minecraft.client.gui.GuiScreen;
 import legacyconnector.v1_7_10.net.minecraftforge.client.event.GuiOpenEvent;
 import legacyconnector.v1_7_10.net.minecraftforge.client.event.GuiScreenEvent;
-import legacyconnector.v1_7_10.net.minecraftforge.common.MinecraftForge;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraftforge.client.event.ScreenEvent;
 import net.minecraftforge.common.MinecraftForge;
@@ -22,13 +21,13 @@ public final class ScreenEvents1710 {
         MinecraftForge.EVENT_BUS.addListener((ScreenEvent.Init.Post e) -> {
             if (!(e.getScreen() instanceof LegacyScreen ls) || !wants(GuiScreenEvent.InitGuiEvent.Post.class)) return;
             GuiScreenEvent.InitGuiEvent.Post post = new GuiScreenEvent.InitGuiEvent.Post(ls.legacy(), ls.legacy().mcc$buttons());
-            MinecraftForge.EVENT_BUS.post(post);
+            legacyconnector.v1_7_10.net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(post);
         });
         MinecraftForge.EVENT_BUS.addListener((ScreenEvent.Render.Post e) -> {
             if (!(e.getScreen() instanceof LegacyScreen ls) || !wants(GuiScreenEvent.DrawScreenEvent.Post.class)) return;
             RenderContext.beginGui(e.getGuiGraphics());
             try {
-                MinecraftForge.EVENT_BUS.post(new GuiScreenEvent.DrawScreenEvent.Post(ls.legacy(), e.getMouseX(), e.getMouseY(), e.getPartialTick()));
+                legacyconnector.v1_7_10.net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new GuiScreenEvent.DrawScreenEvent.Post(ls.legacy(), e.getMouseX(), e.getMouseY(), e.getPartialTick()));
             } finally {
                 RenderContext.end();
             }
@@ -36,7 +35,7 @@ public final class ScreenEvents1710 {
     }
 
     private static boolean wants(Class<? extends legacyconnector.v1_7_10.cpw.mods.fml.common.eventhandler.Event> type) {
-        return MinecraftForge.EVENT_BUS.mcc$hasListeners(type);
+        return legacyconnector.v1_7_10.net.minecraftforge.common.MinecraftForge.EVENT_BUS.mcc$hasListeners(type);
     }
 
     private static void onOpening(ScreenEvent.Opening e) {
@@ -46,7 +45,7 @@ public final class ScreenEvents1710 {
         else if (e.getNewScreen() instanceof LegacyScreen ls) original = ls.legacy();
         else return;
         GuiOpenEvent legacy = new GuiOpenEvent(original);
-        if (MinecraftForge.EVENT_BUS.post(legacy)) {
+        if (legacyconnector.v1_7_10.net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(legacy)) {
             e.setCanceled(true);
         } else if (legacy.gui != original) {
             e.setNewScreen(legacy.gui == null ? null : new LegacyScreen(legacy.gui));

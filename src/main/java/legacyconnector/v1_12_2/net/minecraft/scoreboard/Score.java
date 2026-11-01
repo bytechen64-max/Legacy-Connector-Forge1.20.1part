@@ -12,8 +12,14 @@ public class Score {
         this.scorePlayerName = playerName;
     }
 
-    private net.minecraft.world.scores.ScoreAccess mcc$access() {
-        return scoreboard.getOrCreatePlayerScore(net.minecraft.world.scores.ScoreHolder.forNameOnly(scorePlayerName), objective.mcc$modern(), true);
+    /** 1.20.1 keys scores by player name and creates the entry when it is missing. */
+    private net.minecraft.world.scores.Score mcc$access() {
+        return scoreboard.getOrCreatePlayerScore(scorePlayerName, objective.mcc$modern());
+    }
+
+    /** The existing entry, or null: looking a score up must not create one. */
+    private net.minecraft.world.scores.Score mcc$existing() {
+        return scoreboard.getPlayerScores(scorePlayerName).get(objective.mcc$modern());
     }
 
     public void increaseScore(int amount) {
@@ -31,12 +37,12 @@ public class Score {
     }
 
     public int getScorePoints() {
-        var info = scoreboard.getPlayerScoreInfo(net.minecraft.world.scores.ScoreHolder.forNameOnly(scorePlayerName), objective.mcc$modern());
-        return info == null ? 0 : info.value();
+        var existing = mcc$existing();
+        return existing == null ? 0 : existing.getScore();
     }
 
     public void setScorePoints(int points) {
-        mcc$access().set(points);
+        mcc$access().setScore(points);
     }
 
     public ScoreObjective getObjective() {
@@ -52,11 +58,11 @@ public class Score {
     }
 
     public boolean isLocked() {
-        return mcc$access().locked();
+        var existing = mcc$existing();
+        return existing != null && existing.isLocked();
     }
 
     public void setLocked(boolean locked) {
-        if (locked) mcc$access().lock();
-        else mcc$access().unlock();
+        mcc$access().setLocked(locked);
     }
 }

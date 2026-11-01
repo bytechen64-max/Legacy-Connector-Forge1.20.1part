@@ -321,8 +321,8 @@ public class ServerConfigurationManager {
             }
             var objective = scoreboard.getObjective(key);
             if (objective == null) return false;
-            var info = scoreboard.getPlayerScoreInfo(player, objective);
-            int score = info == null ? 0 : info.value();
+            var entry = scoreboard.getPlayerScores(player).get(objective);
+            int score = entry == null ? 0 : entry.getScore();
             int value = ((Number) e.getValue()).intValue();
             if (score < value && min) return false;
             if (score > value && !min) return false;

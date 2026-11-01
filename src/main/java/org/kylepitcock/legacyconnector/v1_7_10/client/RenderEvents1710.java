@@ -7,7 +7,6 @@ import legacyconnector.v1_7_10.net.minecraft.util.MovingObjectPosition;
 import legacyconnector.v1_7_10.net.minecraft.util.Vec3;
 import legacyconnector.v1_7_10.net.minecraftforge.client.event.DrawBlockHighlightEvent;
 import legacyconnector.v1_7_10.net.minecraftforge.client.event.RenderWorldLastEvent;
-import legacyconnector.v1_7_10.net.minecraftforge.common.MinecraftForge;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -49,7 +48,7 @@ public final class RenderEvents1710 {
             legacyconnector.v1_7_10.net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher.staticPlayerY = cam.y;
             legacyconnector.v1_7_10.net.minecraft.client.renderer.tileentity.TileEntityRendererDispatcher.staticPlayerZ = cam.z;
         }
-        if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_LEVEL || !MinecraftForge.EVENT_BUS.mcc$hasListeners(RenderWorldLastEvent.class)) return;
+        if (e.getStage() != RenderLevelStageEvent.Stage.AFTER_LEVEL || !legacyconnector.v1_7_10.net.minecraftforge.common.MinecraftForge.EVENT_BUS.mcc$hasListeners(RenderWorldLastEvent.class)) return;
         Minecraft mc = Minecraft.getInstance();
         var cam = e.getCamera().getPosition();
         RenderManager.renderPosX = cam.x;
@@ -64,7 +63,7 @@ public final class RenderEvents1710 {
         pose.last().normal().set(new org.joml.Matrix3f(e.getModelViewMatrix()));
         RenderContext.beginWorld(pose, buffers, LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
         try {
-            MinecraftForge.EVENT_BUS.post(new RenderWorldLastEvent(legacyconnector.v1_7_10.net.minecraft.client.Minecraft.getMinecraft().renderGlobal,
+            legacyconnector.v1_7_10.net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new RenderWorldLastEvent(legacyconnector.v1_7_10.net.minecraft.client.Minecraft.getMinecraft().renderGlobal,
                     e.getPartialTick().getGameTimeDeltaPartialTick(false)));
         } catch (RuntimeException | LinkageError ex) {
             org.slf4j.LoggerFactory.getLogger("LegacyConnector/Render").warn("A RenderWorldLastEvent handler failed: {}", ex.toString());
@@ -75,7 +74,7 @@ public final class RenderEvents1710 {
     }
 
     private static void onHighlight(RenderHighlightEvent.Block e) {
-        if (!MinecraftForge.EVENT_BUS.mcc$hasListeners(DrawBlockHighlightEvent.class) || Minecraft.getInstance().player == null) return;
+        if (!legacyconnector.v1_7_10.net.minecraftforge.common.MinecraftForge.EVENT_BUS.mcc$hasListeners(DrawBlockHighlightEvent.class) || Minecraft.getInstance().player == null) return;
         var hit = e.getTarget();
         var pos = hit.getBlockPos();
         var at = hit.getLocation();
@@ -93,7 +92,7 @@ public final class RenderEvents1710 {
         RenderManager.renderPosZ = cam.z;
         RenderContext.beginWorld(e.getPoseStack(), e.getMultiBufferSource(), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
         try {
-            if (MinecraftForge.EVENT_BUS.post(legacy)) e.setCanceled(true);
+            if (legacyconnector.v1_7_10.net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(legacy)) e.setCanceled(true);
         } catch (RuntimeException | LinkageError ex) {
             org.slf4j.LoggerFactory.getLogger("LegacyConnector/Render").warn("A DrawBlockHighlightEvent handler failed: {}", ex.toString());
         } finally {

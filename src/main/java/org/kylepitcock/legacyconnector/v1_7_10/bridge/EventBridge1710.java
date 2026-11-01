@@ -42,7 +42,6 @@ import net.minecraft.world.level.LevelAccessor;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.common.util.TriState;
 import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.EntityItemPickupEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerAboutToStartEvent;
@@ -447,7 +446,7 @@ public final class EventBridge1710 {
             if (forge().post(new LivingEvent.LivingUpdateEvent(view))) e.setCanceled(true);
             view.mcc$syncPreviousEquipment();
         });
-        gameBus.addListener((LivingIncomingDamageEvent e) -> {
+        gameBus.addListener((net.minecraftforge.event.entity.living.LivingHurtEvent e) -> {
             boolean attack = wants(forge(), LivingAttackEvent.class);
             boolean hurt = wants(forge(), LivingHurtEvent.class);
             if (!attack && !hurt) return;
@@ -465,7 +464,7 @@ public final class EventBridge1710 {
         });
         // Forge's ISpecialArmor: worn pieces that absorb damage by their own rules (ProjectE's matter armour: 80% less damage, none from
         // lava, drowning or mobs) take their share before the modern armour maths runs on what is left.
-        gameBus.addListener((LivingIncomingDamageEvent e) -> specialArmor(e));
+        gameBus.addListener((net.minecraftforge.event.entity.living.LivingHurtEvent e) -> specialArmor(e));
         gameBus.addListener((net.minecraftforge.event.entity.living.LivingDeathEvent e) -> {
             if (!wants(forge(), LivingDeathEvent.class)) return;
             if (forge().post(new LivingDeathEvent((EntityLivingBase) EntityBridge.wrap(e.getEntity()), legacySource(e.getSource())))) e.setCanceled(true);

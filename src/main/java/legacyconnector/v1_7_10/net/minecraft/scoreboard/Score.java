@@ -2,13 +2,12 @@ package legacyconnector.v1_7_10.net.minecraft.scoreboard;
 
 import java.util.Comparator;
 import java.util.List;
-import net.minecraft.world.scores.ScoreHolder;
 
 /** One holder's score in an objective, read from and written to the modern scoreboard. */
 public class Score {
     public static final Comparator scoreComparator = (a, b) -> {
         int pa = ((Score) a).getScorePoints(), pb = ((Score) b).getScorePoints();
-        return pa != pb ? Integer.compare(pa, pb) : ((Score) b).getPlayerName().compareToIgnoreCase(((Score) a).getPlayerName());
+        return pa != pb ? Integer.compare(pa, pb) : ((Score) b).getPlayerName().compareToIgnoreCase((((Score) a).getPlayerName()));
     };
 
     private final Scoreboard scoreboard;
@@ -23,8 +22,9 @@ public class Score {
         this.name = name;
     }
 
-    private net.minecraft.world.scores.ScoreAccess access() {
-        return scoreboard.modern.getOrCreatePlayerScore(ScoreHolder.forNameOnly(name), objective.modern);
+    /** 1.20.1 keys scores by player name and creates the entry when it is missing. */
+    private net.minecraft.world.scores.Score access() {
+        return scoreboard.modern.getOrCreatePlayerScore(name, objective.modern);
     }
 
     public void increseScore(int amount) {
@@ -41,13 +41,13 @@ public class Score {
 
     public int getScorePoints() {
         if (objective == null) return detachedPoints;
-        var info = scoreboard.modern.getPlayerScoreInfo(ScoreHolder.forNameOnly(name), objective.modern);
-        return info == null ? 0 : info.value();
+        var existing = scoreboard.modern.getPlayerScores(name).get(objective.modern);
+        return existing == null ? 0 : existing.getScore();
     }
 
     public void setScorePoints(int points) {
         if (objective == null) detachedPoints = points;
-        else access().set(points);
+        else access().setScore(points);
     }
 
     public ScoreObjective func_96645_d() {
