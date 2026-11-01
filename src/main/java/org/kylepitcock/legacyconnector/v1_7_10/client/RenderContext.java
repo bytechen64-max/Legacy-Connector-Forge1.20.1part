@@ -821,12 +821,12 @@ public final class RenderContext {
 
     private static void emitCorner(State s, VertexConsumer buffer, PoseStack.Pose last, boolean entity, int overlay, double[] x, float nx, float ny, float nz) {
         int argb = (int) color(s, x);
-        var vc = buffer.addVertex(last, (float) x[0], (float) x[1], (float) x[2]).setColor(argb);
-        if (s.texture2d) vc.setUv((float) x[3], (float) x[4]);
+        var vc = buffer.vertex(last.pose(), (float) x[0], (float) x[1], (float) x[2]).color(argb);
+        if (s.texture2d) vc.uv((float) x[3], (float) x[4]);
         if (entity) {
             vc.setOverlay(overlay);
             vc.setLight(s.lightmap ? (int) x[6] : LightTexture.FULL_BRIGHT); // lightmap unit off: its brightness was not applied
-            vc.setNormal(last, nx, ny, nz);
+            vc.normal(nx, ny, nz);
         }
     }
 
@@ -922,8 +922,8 @@ public final class RenderContext {
         nx /= len;
         ny /= len;
         nz /= len;
-        buffer.addVertex(last, (float) a[0], (float) a[1], (float) a[2]).setColor((int) color(s, a)).setNormal(last, nx, ny, nz);
-        buffer.addVertex(last, (float) b[0], (float) b[1], (float) b[2]).setColor((int) color(s, b)).setNormal(last, nx, ny, nz);
+        buffer.vertex(last.pose(), (float) a[0], (float) a[1], (float) a[2]).color((int) color(s, a)).normal(nx, ny, nz);
+        buffer.vertex(last.pose(), (float) b[0], (float) b[1], (float) b[2]).color((int) color(s, b)).normal(nx, ny, nz);
         return true;
     }
 

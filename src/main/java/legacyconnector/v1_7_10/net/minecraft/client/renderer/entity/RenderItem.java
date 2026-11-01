@@ -108,10 +108,10 @@ public class RenderItem extends Render {
         var vc = buffers.getBuffer(net.minecraft.client.renderer.RenderType.glint());
         var last = pose.last();
         float x0 = x - 2, y0 = y - 2, x1 = x0 + 20, y1 = y0 + 20;
-        vc.addVertex(last, x0, y1, zLevel).setUv(0.0F, 1.0F);
-        vc.addVertex(last, x1, y1, zLevel).setUv(1.0F, 1.0F);
-        vc.addVertex(last, x1, y0, zLevel).setUv(1.0F, 0.0F);
-        vc.addVertex(last, x0, y0, zLevel).setUv(0.0F, 0.0F);
+        vc.vertex(last.pose(), x0, y1, zLevel).uv(0.0F, 1.0F);
+        vc.vertex(last.pose(), x1, y1, zLevel).uv(1.0F, 1.0F);
+        vc.vertex(last.pose(), x1, y0, zLevel).uv(1.0F, 0.0F);
+        vc.vertex(last.pose(), x0, y0, zLevel).uv(0.0F, 0.0F);
     }
 
     public void renderItemIntoGUI(FontRenderer font, TextureManager tm, ItemStack stack, int x, int y, boolean renderEffect) {
