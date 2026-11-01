@@ -181,12 +181,7 @@ dependencies {
                  // Forge 1.12.2 put typesafe config and akka on the game classpath too (OpenComputers' Scala code uses both; Apache 2.0, ~3 MB).
                  'com.typesafe:config:1.2.1', 'com.typesafe.akka:akka-actor_2.11:2.3.3',
                  // Java 8 had javax.activation (removed from the JDK in 11); 1.12.2 mods use it for MIME types (Silent Lib, Scaling Health).
-                 'com.sun.activation:jakarta.activation:1.2.2',
-                 // Forge 1.7.10/1.12.2 put ASM on the game class path (the deobfuscating transformer and every coremod use it). A legacy
-                 // mod that generates classes at run time, or a coremod whose plugin is constructed here, references org.objectweb.asm
-                 // and cannot see the game's own ASM module: the jars are handed over like the rest of these libraries.
-                 'org.ow2.asm:asm:9.9.1', 'org.ow2.asm:asm-tree:9.9.1', 'org.ow2.asm:asm-commons:9.9.1',
-                 'org.ow2.asm:asm-analysis:9.9.1', 'org.ow2.asm:asm-util:9.9.1']) {
+                 'com.sun.activation:jakarta.activation:1.2.2']) {
         legacyLibs(lib)
         if (project.hasProperty('embeddedLibs')) {
             // test mode: the libraries are NOT on the run class path; the loader reads them from build/legacy-libs like the production jar's resources

@@ -59,7 +59,11 @@ public final class CoreModPlugins1122 {
                 }
                 constructed.add(new Object[] {name, plugin, index});
             } catch (ReflectiveOperationException | LinkageError | RuntimeException e) {
-                LOG.warn("Legacy coremod {} could not be constructed: {}", name, e.toString());
+                // the interesting part of a reflection failure is its cause (a missing class, a NoSuchMethodError inside the
+                // constructor): the wrapper's toString alone says nothing
+                Throwable cause = e instanceof java.lang.reflect.InvocationTargetException && e.getCause() != null ? e.getCause() : e;
+                LOG.warn("Legacy coremod {} could not be constructed: {}: {}", name, cause.getClass().getName(), cause.getMessage());
+                LOG.debug("Coremod {} construction stack", name, cause);
             }
         }
         constructed.sort(Comparator.comparingInt(o -> (Integer) o[2]));
