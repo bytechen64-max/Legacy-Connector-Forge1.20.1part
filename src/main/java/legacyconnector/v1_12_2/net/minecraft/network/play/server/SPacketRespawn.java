@@ -64,9 +64,10 @@ public class SPacketRespawn implements Packet<INetHandlerPlayClient> {
         var level = legacyconnector.v1_12_2.net.minecraftforge.common.DimensionManager.mcc$level(dimensionID);
         if (level == null) return null;
         var mode = gameType == null || gameType.mcc$modern() == null ? net.minecraft.world.level.GameType.SURVIVAL : gameType.mcc$modern();
-        var info = new net.minecraft.network.protocol.game.CommonPlayerSpawnInfo(level.dimensionTypeRegistration(), level.dimension(),
-                net.minecraft.world.level.biome.BiomeManager.obfuscateSeed(level.getSeed()), mode, null, level.isDebug(), level.isFlat(),
-                java.util.Optional.empty(), 0);
-        return new net.minecraft.network.protocol.game.ClientboundRespawnPacket(info, net.minecraft.network.protocol.game.ClientboundRespawnPacket.KEEP_ALL_DATA);
+        // 1.20.1 has no CommonPlayerSpawnInfo: the packet takes the fields itself
+        var dimensionType = level.dimensionTypeRegistration().unwrapKey().orElseThrow();
+        return new net.minecraft.network.protocol.game.ClientboundRespawnPacket(dimensionType, level.dimension(),
+                net.minecraft.world.level.biome.BiomeManager.obfuscateSeed(level.getSeed()), mode, mode, level.isDebug(), level.isFlat(),
+                net.minecraft.network.protocol.game.ClientboundRespawnPacket.KEEP_ALL_DATA, java.util.Optional.empty(), 0);
     }
 }

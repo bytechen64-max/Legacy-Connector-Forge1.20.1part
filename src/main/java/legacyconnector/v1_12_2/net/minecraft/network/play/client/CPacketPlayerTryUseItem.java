@@ -37,8 +37,7 @@ public class CPacketPlayerTryUseItem implements Packet<INetHandlerPlayServer> {
 
     @Override
     public net.minecraft.network.protocol.Packet<?> mcc$modern() {
-        float[] look = CPacketPlayerTryUseItemOnBlock.mcc$look();
-        return new net.minecraft.network.protocol.game.ServerboundUseItemPacket(hand == null ? net.minecraft.world.InteractionHand.MAIN_HAND : hand.mcc$modern(), 0,
-                look[0], look[1]);
+        // 1.20.1's packet carries the hand and the sequence number only
+        return new net.minecraft.network.protocol.game.ServerboundUseItemPacket(hand == null ? net.minecraft.world.InteractionHand.MAIN_HAND : hand.mcc$modern(), 0);
     }
 }

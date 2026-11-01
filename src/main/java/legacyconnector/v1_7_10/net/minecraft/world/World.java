@@ -1244,9 +1244,10 @@ public class World implements IBlockAccess {
             if (source != null) return source;
         }
         if (hit.getType() == net.minecraft.world.phys.HitResult.Type.MISS) return null;
-        var pos = hit.getBlockPos();
-        var at = hit.getLocation();
-        return new legacyconnector.v1_7_10.net.minecraft.util.MovingObjectPosition(pos.getX(), pos.getY(), pos.getZ(), hit.getDirection().get3DDataValue(),
+        if (!(hit instanceof net.minecraft.world.phys.BlockHitResult blockHit)) return null;
+        var pos = blockHit.getBlockPos();
+        var at = blockHit.getLocation();
+        return new legacyconnector.v1_7_10.net.minecraft.util.MovingObjectPosition(pos.getX(), pos.getY(), pos.getZ(), blockHit.getDirection().get3DDataValue(),
                 legacyconnector.v1_7_10.net.minecraft.util.Vec3.createVectorHelper(at.x, at.y, at.z));
     }
 

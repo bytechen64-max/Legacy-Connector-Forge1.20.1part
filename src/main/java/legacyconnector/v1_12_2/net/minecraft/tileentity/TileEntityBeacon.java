@@ -49,8 +49,9 @@ public class TileEntityBeacon extends TileEntity implements org.kylepitcock.lega
         if (mcc$beacon != null) {
             beamSegments.clear();
             for (var section : mcc$beacon.getBeamSections()) {
-                int c = section.getColor();
-                BeamSegment segment = new BeamSegment(new float[] {(c >> 16 & 255) / 255.0F, (c >> 8 & 255) / 255.0F, (c & 255) / 255.0F});
+                // 1.20.1 keeps the beam colour as three floats
+                float[] c = section.getColor();
+                BeamSegment segment = new BeamSegment(new float[] {c[0], c[1], c[2]});
                 segment.height = section.getHeight();
                 beamSegments.add(segment);
             }

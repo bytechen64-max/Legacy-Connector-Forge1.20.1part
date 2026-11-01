@@ -1194,7 +1194,7 @@ public abstract class Entity implements ICommandSender {
     }
 
     public void setFire(int seconds) {
-        if (mcc$entity != null) mcc$entity.igniteForSeconds(seconds);
+        if (mcc$entity != null) mcc$entity.setSecondsOnFire(seconds);
     }
 
     public void extinguish() {

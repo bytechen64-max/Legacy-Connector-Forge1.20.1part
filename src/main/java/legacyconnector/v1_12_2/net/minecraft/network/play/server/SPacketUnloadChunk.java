@@ -43,6 +43,6 @@ public class SPacketUnloadChunk implements Packet<INetHandlerPlayClient> {
 
     @Override
     public net.minecraft.network.protocol.Packet<?> mcc$modern() {
-        return new net.minecraft.network.protocol.game.ClientboundForgetLevelChunkPacket(new net.minecraft.world.level.ChunkPos(x, z));
+        return new net.minecraft.network.protocol.game.ClientboundForgetLevelChunkPacket(x, z);
     }
 }

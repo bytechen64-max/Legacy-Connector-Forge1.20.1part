@@ -32,13 +32,7 @@ public class TileEntityEndGateway extends TileEntityEndPortal {
     public void teleportEntity(Entity entityIn) {
         if (entityIn == null || entityIn.mcc$entity == null || world == null || world.isRemote) return;
         BlockPos target = exitPortal;
-        if (target == null && mcc$gateway != null) {
-            var level = world.mcc$level();
-            if (level instanceof net.minecraft.server.level.ServerLevel server) {
-                var exit = mcc$gateway.getPortalPosition(server, mcc$gateway.getBlockPos());
-                if (exit != null) target = new BlockPos((int) Math.floor(exit.x), (int) Math.floor(exit.y), (int) Math.floor(exit.z));
-            }
-        }
+        // 1.20.1 has no getPortalPosition on the gateway block entity: the exit portal comes from its saved data
         if (target == null) return;
         var e = entityIn.mcc$entity;
         e.teleportTo(target.getX() + 0.5D, target.getY(), target.getZ() + 0.5D);

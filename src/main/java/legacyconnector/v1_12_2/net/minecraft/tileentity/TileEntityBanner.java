@@ -56,7 +56,8 @@ public class TileEntityBanner extends TileEntity implements org.kylepitcock.lega
     private static NBTTagList mcc$patternsTag(net.minecraft.world.level.block.entity.BannerBlockEntity banner) {
         NBTTagList list = new NBTTagList();
         if (banner == null) return list;
-        var tag = banner.saveWithoutId(new net.minecraft.nbt.CompoundTag());
+        var tag = new net.minecraft.nbt.CompoundTag();
+        banner.save(tag);
         for (var entry : tag.getList("Patterns", 10)) list.appendTag(new NBTTagCompound((net.minecraft.nbt.CompoundTag) entry));
         return list;
     }

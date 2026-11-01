@@ -109,7 +109,8 @@ public class SaveHandler implements ISaveHandler, IPlayerFileData {
     public legacyconnector.v1_12_2.net.minecraft.nbt.NBTTagCompound readPlayerData(legacyconnector.v1_12_2.net.minecraft.entity.player.EntityPlayer player) {
         var storage = mcc$playerStorage();
         if (storage == null || player == null || !(player.mcc$modern() instanceof net.minecraft.world.entity.player.Player p)) return null;
-        return storage.load(p).map(legacyconnector.v1_12_2.net.minecraft.nbt.NBTTagCompound::new).orElse(null);
+                var tag = storage.load(p);
+        return tag == null ? null : new legacyconnector.v1_12_2.net.minecraft.nbt.NBTTagCompound(tag);
     }
 
     @Override

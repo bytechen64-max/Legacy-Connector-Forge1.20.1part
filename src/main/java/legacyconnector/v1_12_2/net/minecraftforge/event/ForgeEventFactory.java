@@ -164,7 +164,8 @@ public class ForgeEventFactory {
         var p = player(player);
         if (p == null || state == null) return success;
         var event = new net.minecraftforge.event.entity.player.PlayerEvent.HarvestCheck(p, state(state), success);
-        return net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event).canHarvest();
+        net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(event);
+        return event.canHarvest();
     }
 
     /** The burn time mods give the stack (-1: the item's own). */

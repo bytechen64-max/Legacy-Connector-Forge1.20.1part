@@ -610,9 +610,18 @@ public abstract class EntityLivingBase extends Entity {
 
     /** Forge: removes every effect {@code stack} cures (milk cures all vanilla effects). */
     public void curePotionEffects(ItemStack stack) {
-        if (!(mcc$entity instanceof LivingEntity l) || l.level().isClientSide()) return;
-        var cure = legacyconnector.v1_7_10.net.minecraft.potion.PotionEffect.mcc$cureFor(stack);
-        if (cure != null) l.removeEffectsCuredBy(cure);
+        if (!(mcc$entity instanceof LivingEntity l) || l.level().isClientSide() || stack == null) return;
+        // 1.20.1 has no cure registry (cure tags are 1.20.5+): an effect is cured when its curative item list holds the stack
+        var modern = stack.mcc$modern();
+        if (modern.isEmpty()) return;
+        for (var instance : new java.util.ArrayList<>(l.getActiveEffects())) {
+            for (var cure : instance.getCurativeItems()) {
+                if (net.minecraft.world.item.ItemStack.isSameItem(cure, modern)) {
+                    l.removeEffect(instance.getEffect());
+                    break;
+                }
+            }
+        }
     }
 
     /** Whether the effect can be applied (the undead are immune to regeneration and poison). */

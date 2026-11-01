@@ -184,7 +184,7 @@ public abstract class MobSpawnerBaseLogic {
     public Entity getCachedEntity() {
         var level = mcc$level();
         if (cachedEntity == null && level != null) {
-            var modern = mcc$spawner.getOrCreateDisplayEntity(level, mcc$pos());
+            var modern = mcc$spawner.getOrCreateDisplayEntity(level, level.getRandom(), mcc$pos());
             cachedEntity = modern == null ? null : org.kylepitcock.legacyconnector.v1_12_2.bridge.EntityBridge1122.wrap(modern);
         }
         return cachedEntity;
