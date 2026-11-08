@@ -147,6 +147,8 @@ gradle.projectsEvaluated {
 }
 
 configurations {
+    // Modern Forge mods loaded by Forge's dependency locator from the embedded runtime mod.
+    bundledMods { transitive = false }
     // The legacy-era libraries embedded as resources of the distributable jar (see the comment at their declaration).
     legacyLibs { transitive = false }
 }
@@ -196,9 +198,9 @@ dependencies {
     // org.openjdk.nashorn").
     compileOnly 'org.openjdk.nashorn:nashorn-core:15.4'
 
-    // MixinExtras: NeoForge bundles it, Forge 1.20.1 does not. The three @WrapOperation mixins (LevelChunk/ServerLevel block families,
-    // static tile entity tickers) need it at compile time; at runtime the MixinExtras mod must be installed (or the jar bundled).
+    // Compile against the common API; distribute the Forge bootstrap as an unmodified nested mod.
     compileOnly "io.github.llamalad7:mixinextras-common:${mixin_extras_version}"
+    bundledMods "io.github.llamalad7:mixinextras-forge:${mixin_extras_version}"
 
     // Mixin's annotation processor: generates the refmap for the mixin configs. 1.20.1 Forge runs Minecraft with SRG
     // member names (m_/f_) while the sources use official names; without the refmap every @Accessor/@Shadow/injection
@@ -523,10 +525,33 @@ tasks.matching { it.name.startsWith('run') || (it.name.startsWith('prepare') && 
 // Distribution: ONE jar for players. It is the loader (an FML service, picked up from the mods folder) with
 // the runtime mod embedded; the loader extracts and registers the runtime mod at discovery time.
 // ---------------------------------------------------------------------------------------------------------
+// Generate Forge's standard JiJ metadata inside the runtime mod, which our locator hands to FML.
+// The outer bundle is a service-layer jar, so putting JiJ metadata only there would bypass mod dependency discovery.
+def bundledModResources = layout.buildDirectory.dir('generated/bundledMods')
+def generateBundledMods = tasks.register('generateBundledMods', Sync) {
+    from(configurations.bundledMods) { into 'META-INF/jarjar' }
+    into bundledModResources
+    inputs.property('mixinExtrasVersion', mixin_extras_version)
+    doLast {
+        def jars = configurations.bundledMods.resolvedConfiguration.resolvedArtifacts.collect { artifact ->
+            def id = artifact.moduleVersion.id
+            [identifier: [group: id.group, artifact: id.name],
+             version: [range: "[${id.version},)", artifactVersion: id.version],
+             path: "META-INF/jarjar/${artifact.file.name}", isObfuscated: false]
+        }
+        new File(destinationDir, 'META-INF/jarjar/metadata.json').text =
+                groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson([jars: jars])) + '\n'
+    }
+}
+sourceSets.main.resources.srcDir(generateBundledMods)
+
 // The plain runtime jar is only an input of the bundle: dropped into a mods folder alone it has no loader, so Forge rejects every
 // legacy mod as built for an old Minecraft. A distinct classifier keeps it from being mistaken for the distributable.
 tasks.named('jar') {
     archiveClassifier = 'runtime-only'
+    if (project.hasProperty('withoutBundledMods')) exclude 'META-INF/jarjar/**'
+    from('LICENSE', 'THIRD_PARTY_NOTICES.md', 'PORT_NOTICE.md')
+    from('licenses') { into 'META-INF/licenses' }
     // The mixin refmap the annotation processor produced (SRG names, see the section above).
     from(mixinRefmapFile)
     // The SRG-remapped access transformer; the official-named source stays out of the jar (it is for the dev environment).
@@ -553,9 +578,10 @@ tasks.named('jar') {
 tasks.register('bundleJar', Jar) {
     group = 'build'
     description = 'Builds the single distributable jar (loader service + embedded runtime mod).'
-    archiveBaseName = 'legacyconnector'
+    archiveBaseName = 'legacyconnector-forge-1.20.1'
     archiveVersion = project.version
-    archiveClassifier = ''
+    // Keep player files distinguishable even when both variants share the same mod version.
+    archiveClassifier = project.hasProperty('withoutBundledMods') ? 'nojarinjar' : 'jarinjar'
     destinationDirectory = layout.buildDirectory.dir('dist')
     def loaderJar = project(':loader').tasks.named('jar')
     def runtimeJar = tasks.named('jar')
@@ -563,6 +589,8 @@ tasks.register('bundleJar', Jar) {
     // result, not the named jar `jar` just produced -- otherwise the embedded mod cannot link against the game.
     def reobfJar = tasks.named('reobfJar')
     dependsOn loaderJar, runtimeJar, reobfJar, syncLegacyLibs
+    from('LICENSE', 'THIRD_PARTY_NOTICES.md', 'PORT_NOTICE.md')
+    from('licenses') { into 'META-INF/licenses' }
     from(layout.buildDirectory.dir('legacy-libs')) {
         into 'META-INF/legacyconnector/libs'
     }

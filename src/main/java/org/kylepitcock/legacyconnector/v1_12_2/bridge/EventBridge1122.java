@@ -192,6 +192,13 @@ public final class EventBridge1122 {
     }
 
     private static void registerLiving(IEventBus bus) {
+        bus.addListener((net.minecraftforge.event.entity.living.MobEffectEvent.Added e) -> {
+            if (!wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.PotionEvent.PotionAddedEvent.class)) return;
+            var entity = living(e.getEntity());
+            if (entity != null) post(new legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.PotionEvent.PotionAddedEvent(entity,
+                    legacyconnector.v1_12_2.net.minecraft.potion.PotionEffect.mcc$fromModern(e.getOldEffectInstance()),
+                    legacyconnector.v1_12_2.net.minecraft.potion.PotionEffect.mcc$fromModern(e.getEffectInstance())));
+        });
         // 1.12.2 posted LivingAttackEvent and then LivingHurtEvent before armour, LivingDamageEvent after it
         bus.addListener((net.minecraftforge.event.entity.living.LivingHurtEvent e) -> {
             boolean attack = wants(legacyconnector.v1_12_2.net.minecraftforge.event.entity.living.LivingAttackEvent.class);

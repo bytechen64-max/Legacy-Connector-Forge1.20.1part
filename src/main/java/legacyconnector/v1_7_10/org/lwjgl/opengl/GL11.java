@@ -151,6 +151,7 @@ public class GL11 extends GL11Guard {
     }
 
     public static void glTexEnv(int target, int pname, FloatBuffer params) {
+        org.kylepitcock.legacyconnector.v1_7_10.client.RenderContext.textureEnvColor(target, pname, params);
     }
 
     public static void glTexEnv(int target, int pname, java.nio.IntBuffer params) {
@@ -830,10 +831,12 @@ public class GL11 extends GL11Guard {
     }
 
     public static void glTexEnvi(int target, int pname, int param) {
+        org.kylepitcock.legacyconnector.v1_7_10.client.RenderContext.textureEnvMode(target, pname, param);
         run(() -> GL11Guard.glTexEnvi(target, pname, param));
     }
 
     public static void glTexEnvf(int target, int pname, float param) {
+        org.kylepitcock.legacyconnector.v1_7_10.client.RenderContext.textureEnvMode(target, pname, (int) param);
         run(() -> GL11Guard.glTexEnvf(target, pname, param));
     }
 

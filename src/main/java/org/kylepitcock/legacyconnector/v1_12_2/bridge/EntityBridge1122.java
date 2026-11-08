@@ -36,6 +36,7 @@ public final class EntityBridge1122 {
 
     public static Entity wrap(net.minecraft.world.entity.Entity modern) {
         if (modern == null) return null;
+        if (modern instanceof org.kylepitcock.legacyconnector.v1_12_2.entity.Multipart1122.Part part) return part.legacy;
         Entity view = ENTITIES.get(modern);
         if (view != null) return view;
         synchronized (ENTITIES) {

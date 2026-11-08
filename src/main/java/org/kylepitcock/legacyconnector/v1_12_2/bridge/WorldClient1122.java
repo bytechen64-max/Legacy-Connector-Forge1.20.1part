@@ -6,6 +6,14 @@ import net.minecraft.world.level.Level;
 public final class WorldClient1122 {
     private WorldClient1122() {}
 
+    /** Forge inserts the parent before reading additional spawn data, so update the part ID index afterwards. */
+    public static void refreshParts(net.minecraft.world.entity.Entity parent, net.minecraftforge.entity.PartEntity<?>[] parts) {
+        if (!(parent.level() instanceof net.minecraft.client.multiplayer.ClientLevel client) || !parent.isAddedToWorld()) return;
+        var index = ((org.kylepitcock.legacyconnector.mixin.access.ClientLevelPartsAccess) client).legacyconnector$parts();
+        index.values().removeIf(part -> part.getParent() == parent);
+        for (var part : parts) index.put(part.getId(), part);
+    }
+
     public static Iterable<net.minecraft.world.entity.Entity> entities(Level level) {
         return level instanceof net.minecraft.client.multiplayer.ClientLevel c ? c.entitiesForRendering() : java.util.List.of();
     }

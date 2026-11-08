@@ -20,6 +20,30 @@ import org.kylepitcock.legacyconnector.v1_7_10.client.RenderContext;
  * that method), then called Forge's {@code renderInventoryEffect} / {@code renderHUDEffect}, where most mods draw their icon themselves.
  */
 public final class EffectIcons1122 {
+    public static final net.minecraftforge.client.extensions.common.IClientMobEffectExtensions EXTENSION =
+            new net.minecraftforge.client.extensions.common.IClientMobEffectExtensions() {
+                public boolean isVisibleInInventory(MobEffectInstance effect) {
+                    Potion potion = Effects1122.legacy(effect.getEffect());
+                    return potion == null || safe(() -> potion.shouldRender(PotionEffect.mcc$fromModern(effect)), true);
+                }
+                public boolean isVisibleInGui(MobEffectInstance effect) {
+                    Potion potion = Effects1122.legacy(effect.getEffect());
+                    return potion == null || safe(() -> potion.shouldRenderHUD(PotionEffect.mcc$fromModern(effect)), true);
+                }
+                public boolean renderInventoryIcon(MobEffectInstance effect, EffectRenderingInventoryScreen<?> screen,
+                        GuiGraphics graphics, int x, int y, int z) {
+                    // Forge supplies the icon's X, but the effect background's Y.
+                    // Legacy hooks receive the background corner and add (6, 7) themselves.
+                    draw(effect, graphics, x, y + 7, 1F, false, x - 6, y, z);
+                    return true;
+                }
+                public boolean renderGuiIcon(MobEffectInstance effect, net.minecraft.client.gui.Gui gui,
+                        GuiGraphics graphics, int x, int y, float z, float alpha) {
+                    // The HUD callback supplies the background corner on both axes.
+                    draw(effect, graphics, x + 3, y + 3, alpha, true, x, y, z);
+                    return true;
+                }
+            };
     /** 1.12's inventory.png, bound while the potion picks its icon. */
     private static final ResourceLocation VANILLA_SHEET = ResourceLocation.fromNamespaceAndPath("minecraft", "textures/gui/container/inventory.png");
     /** The vanilla effects by their 1.12 icon cell (x + 8 * y): a mod potion pointing at one shows that effect's sprite. */
@@ -35,10 +59,7 @@ public final class EffectIcons1122 {
 
     private EffectIcons1122() {}
 
-    /**
-     * 1.20.1 has no {@code IClientMobEffectExtensions} (NeoForge's per-effect client extensions are 1.21), so there is no hook to
-     * register here; {@link #draw} stays available for the client mixin that draws legacy effect icons (see PORTING.md).
-     */
+    /** Extensions are installed per effect through Effects1122.LegacyEffect.initializeClient. */
     public static void register() {
     }
 

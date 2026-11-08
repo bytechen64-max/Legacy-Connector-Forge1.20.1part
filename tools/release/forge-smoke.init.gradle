@@ -1,0 +1,6 @@
+gradle.projectsLoaded {
+    rootProject.afterEvaluate { project ->
+        project.minecraft.runs.server.property 'legacyconnector.serverTickScript', project.file('tools/release/forge-smoke.js').absolutePath
+        project.minecraft.runs.server.property 'legacyconnector.serverTickScriptFrom', '5'
+    }
+}

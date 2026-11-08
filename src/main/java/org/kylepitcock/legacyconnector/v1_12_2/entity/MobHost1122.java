@@ -34,6 +34,11 @@ public class MobHost1122 extends PathfinderMob implements LivingHost1122, IEntit
     static final EntityDataAccessor<CompoundTag> DATA = SynchedEntityData.defineId(MobHost1122.class, EntityDataSerializers.COMPOUND_TAG);
 
     private Entity legacy;
+    private final Multipart1122 multipart = new Multipart1122(this);
+
+    @Override public boolean isMultipartEntity() { return multipart != null && multipart.parts().length != 0; }
+    @Override public net.minecraftforge.entity.PartEntity<?>[] getParts() { return multipart == null ? null : multipart.parts(); }
+    public Multipart1122 mcc$multipart() { return multipart; }
     private float width = -1.0F;
     private float height = -1.0F;
     private int failedTicks;
@@ -93,6 +98,7 @@ public class MobHost1122 extends PathfinderMob implements LivingHost1122, IEntit
         }
         try {
             legacy.onUpdate();
+            multipart.sync();
             failedTicks = 0;
         } catch (RuntimeException | LinkageError e) {
             if (Hosts1122.tickFailed(this, legacy.getClass(), e, ++failedTicks)) discard();
@@ -755,5 +761,6 @@ public class MobHost1122 extends PathfinderMob implements LivingHost1122, IEntit
             legacy = read;
             EntityBridge1122.bind(legacy, this);
         }
+        multipart.readIds(buf);
     }
 }

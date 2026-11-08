@@ -12,6 +12,8 @@ public interface Host1122 {
     /** The legacy object (null on a client until its spawn data arrived). */
     Entity mcc$legacy();
 
+    Multipart1122 mcc$multipart();
+
     void mcc$superTick();
 
     void mcc$superBaseTick();

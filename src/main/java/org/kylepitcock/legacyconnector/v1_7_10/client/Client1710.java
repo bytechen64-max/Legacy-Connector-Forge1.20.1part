@@ -14,6 +14,7 @@ public final class Client1710 {
     private Client1710() {}
 
     public static void register(IEventBus modBus) {
+        modBus.addListener(LegacyShaders::register);
         ClientGui.registerScreens();
         modBus.addListener((net.minecraftforge.client.event.RegisterKeyMappingsEvent e) -> {
             for (var key : legacyconnector.v1_7_10.net.minecraft.client.settings.KeyBinding.mcc$registered()) {

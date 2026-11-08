@@ -21,6 +21,7 @@ permissions:
 
 jobs:
   sync:
+    if: ${{ vars.ENABLE_LEGACY_UPSTREAM_AUTOMATION == 'true' && github.repository == 'kylepitcock/Legacy-Connector' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

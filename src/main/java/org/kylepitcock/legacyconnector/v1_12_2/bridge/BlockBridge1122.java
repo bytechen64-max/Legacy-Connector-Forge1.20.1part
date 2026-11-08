@@ -63,7 +63,8 @@ public final class BlockBridge1122 {
             TileEntityBridge1122.addBlock(eb);
             modern = eb;
         } else {
-            modern = new Legacy1122Block(block, p);
+            modern = block instanceof legacyconnector.v1_12_2.net.minecraft.block.BlockFence fence
+                    ? new org.kylepitcock.legacyconnector.v1_12_2.adapter.Legacy1122FenceBlock(fence, p) : new Legacy1122Block(block, p);
         }
         // the registry answers with the existing entry when the id is taken; the shim must point at the registered instance,
         // never at an object no registry holds (ItemStack and the world look the delegate up by identity)

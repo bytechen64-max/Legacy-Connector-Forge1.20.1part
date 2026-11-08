@@ -934,6 +934,14 @@ public class Block extends IForgeRegistryEntry.Impl<Block> {
         return isNormalCube(state, world, pos);
     }
 
+    /** Forge's spawn-surface hook, also overridden by SRP's leaves. */
+    public boolean canCreatureSpawn(legacyconnector.v1_12_2.net.minecraft.block.state.IBlockState state,
+            legacyconnector.v1_12_2.net.minecraft.world.IBlockAccess world,
+            legacyconnector.v1_12_2.net.minecraft.util.math.BlockPos pos,
+            legacyconnector.v1_12_2.net.minecraft.entity.EntityLiving.SpawnPlacementType type) {
+        return isSideSolid(state, world, pos, legacyconnector.v1_12_2.net.minecraft.util.EnumFacing.UP);
+    }
+
     /** Forge: a normal cube at a position (the state's own answer by default). */
     public boolean isNormalCube(legacyconnector.v1_12_2.net.minecraft.block.state.IBlockState state, legacyconnector.v1_12_2.net.minecraft.world.IBlockAccess world,
             legacyconnector.v1_12_2.net.minecraft.util.math.BlockPos pos) {

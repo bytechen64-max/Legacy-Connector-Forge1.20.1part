@@ -97,15 +97,19 @@ public final class ScreenEvents1122 {
     private static void onInit(ScreenEvent.Init.Post e) {
         Screen screen = e.getScreen();
         if (legacyHost(screen)) return; // their InitGuiEvents are posted by GuiScreen.setWorldAndResolution
-        if (!wants(GuiScreenEvent.InitGuiEvent.class)) return;
+        if (!wants(GuiScreenEvent.InitGuiEvent.Pre.class) && !wants(GuiScreenEvent.InitGuiEvent.Post.class)) return;
         GuiScreen view = legacyOf(screen);
         view.setGuiSize(screen.width, screen.height);
         if (view instanceof Modern m) m.mcc$sync();
         List<GuiButton> buttons = view.mcc$buttons();
         buttons.clear();
+        if (view instanceof ModernScreens1122.CreateWorldView world) world.seedButtons(buttons);
         post(new GuiScreenEvent.InitGuiEvent.Pre(view, buttons));
         post(new GuiScreenEvent.InitGuiEvent.Post(view, buttons));
-        for (GuiButton b : new ArrayList<>(buttons)) e.addListener(new ButtonWidget(view, b));
+        for (GuiButton b : new ArrayList<>(buttons)) {
+            if (view instanceof ModernScreens1122.CreateWorldView world && world.isAnchor(b)) continue;
+            e.addListener(new ButtonWidget(view, b));
+        }
     }
 
     private static void onRenderPre(ScreenEvent.Render.Pre e) {

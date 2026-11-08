@@ -4,6 +4,10 @@ Back to [Home](Home.md).
 
 Settings live in `config/legacyconnector.properties`, written with defaults and comments on first start.
 
+`loader.excludeModIds=connector,examplemod` excludes entire jars declaring any listed mod ID from legacy detection, translation and relocation. IDs are case insensitive; restart after editing. This also applies to legacy contained dependencies. Modern Forge/NeoForge/Fabric/Quilt metadata, modern Forge `@Mod(value)` annotations and modern loader service declarations are excluded automatically; an ordinary reference to `net.minecraftforge.fml` is insufficient to classify a jar as 1.12.2.
+
+If an older release already moved a modern jar into `mods/.legacyconnector/originals/`, close the game and move the original jar back into `mods/` after updating. Keep only one copy of that mod. Excluding an ID does not move files back or make an unsupported Minecraft/loader version compatible.
+
 | Key | Default | Effect |
 | --- | --- | --- |
 | `oreBackgrounds.enabled` | `true` | Replace the old stone/netherrack/end stone behind legacy ore textures |

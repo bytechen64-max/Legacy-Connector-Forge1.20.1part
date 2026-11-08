@@ -17,6 +17,9 @@ permissions:
 
 jobs:
   publish:
+    # This inherited workflow targets the original project's IDs and NeoForge release metadata.
+    # Forks use forge-release-candidate.yml; publication requires their own project configuration.
+    if: ${{ vars.ENABLE_LEGACY_UPSTREAM_AUTOMATION == 'true' && github.repository == 'kylepitcock/Legacy-Connector' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

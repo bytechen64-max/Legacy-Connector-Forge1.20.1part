@@ -4,6 +4,11 @@ import legacyconnector.v1_12_2.net.minecraft.world.World;
 
 /** 1.12.2 server player: a view over a modern server player. */
 public class EntityPlayerMP extends EntityPlayer implements legacyconnector.v1_12_2.net.minecraft.inventory.IContainerListener {
+    public void setElytraFlying() {
+        var player = mcc$serverPlayer();
+        if (player != null) player.startFallFlying();
+    }
+
     @Deprecated
     public legacyconnector.v1_12_2.net.minecraft.network.NetHandlerPlayServer connection;
     @Deprecated

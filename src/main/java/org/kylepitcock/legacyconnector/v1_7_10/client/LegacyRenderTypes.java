@@ -183,6 +183,20 @@ public final class LegacyRenderTypes extends RenderType {
 
     private record GlowKey(ResourceLocation texture, boolean alphaWeighted, boolean depthTest) {}
 
+    private static final Function<ResourceLocation, RenderType> ADDITIVE_CUTOUT = Util.memoize(texture -> create(
+            "legacyconnector_additive_cutout", DefaultVertexFormat.NEW_ENTITY, VertexFormat.Mode.QUADS, 1536, false, true,
+            CompositeState.builder()
+                    .setShaderState(new ShaderStateShard(() -> LegacyShaders.eyesCutout))
+                    .setTextureState(new TextureStateShard(texture, false, false))
+                    .setTransparencyState(ADDITIVE_TRANSPARENCY)
+                    .setCullState(NO_CULL)
+                    .setWriteMaskState(COLOR_WRITE)
+                    .createCompositeState(false)));
+
+    public static RenderType additiveCutout(ResourceLocation texture) {
+        return ADDITIVE_CUTOUT.apply(texture);
+    }
+
     /** Additive light (GL_SRC_ALPHA or GL_ONE, GL_ONE) through the beacon beam shader: no depth writes, both sides. */
     private static final Function<GlowKey, RenderType> GLOW = Util.memoize(k -> {
         RenderType type = create(k.depthTest() ? "legacyconnector_glow" : "legacyconnector_glow_no_depth", DefaultVertexFormat.BLOCK,

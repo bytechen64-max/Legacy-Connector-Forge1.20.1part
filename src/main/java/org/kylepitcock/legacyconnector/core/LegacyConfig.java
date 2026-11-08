@@ -23,6 +23,10 @@ public final class LegacyConfig {
     private static final String DEFAULTS = """
             # Legacy Connector settings. Delete a line to restore its default.
 
+            # Never translate or relocate jars declaring these mod IDs (comma separated, case insensitive).
+            # Read by the loader during discovery; restart after changes. Example: connector,examplemod
+            loader.excludeModIds =
+
             # Replace the old stone / netherrack / end stone behind legacy ore textures with a modern block texture.
             oreBackgrounds.enabled = true
             # The vanilla block texture (textures/block/<name>.png) that replaces each old host rock, or "legacy" to keep it.

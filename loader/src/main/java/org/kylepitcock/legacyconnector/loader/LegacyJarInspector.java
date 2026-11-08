@@ -35,6 +35,7 @@ import org.objectweb.asm.Opcodes;
 public final class LegacyJarInspector {
     static final String MOD_1_7 = "Lcpw/mods/fml/common/Mod;";
     static final String MOD_1_12 = "Lnet/minecraftforge/fml/common/Mod;";
+    static final String MOD_NEO = "Lnet/neoforged/fml/common/Mod;";
 
     private LegacyJarInspector() {}
 
@@ -49,6 +50,12 @@ public final class LegacyJarInspector {
      * Returns null if the jar is not a legacy Forge mod (e.g. it is a modern NeoForge/Forge/Fabric mod).
      */
     public static LegacyJar inspect(Path path) throws IOException {
+        return inspect(path, java.util.Set.of());
+    }
+
+    /** A matching ID excludes the entire archive before translation or relocation. */
+    public static LegacyJar inspect(Path path, java.util.Set<String> excludedModIds) throws IOException {
+        var excluded = excludedModIds.stream().map(id -> id.toLowerCase(java.util.Locale.ROOT)).collect(java.util.stream.Collectors.toSet());
         try (ZipFile zip = new ZipFile(path.toFile())) {
             // Legacy Connector itself, whatever the file is called (a second copy of the jar in mods/ is not a legacy mod:
             // translating it puts the loader's packages in two modules and the game does not start).
@@ -60,16 +67,21 @@ public final class LegacyJarInspector {
             }
             // Anything that already speaks a modern metadata format is not ours to touch.
             if (zip.getEntry("META-INF/mods.toml") != null
+                    || zip.getEntry("META-INF/neoforge.mods.toml") != null
                     || zip.getEntry("fabric.mod.json") != null
                     || zip.getEntry("quilt.mod.json") != null) {
                 return null;
             }
+            // Modern loader libraries (including Connector) need not contain a [[mods]] declaration.
+            if (hasModernLoaderMetadata(zip)) return null;
 
             LegacyJar jar = new LegacyJar(path);
             readManifest(zip, jar);
 
             Map<String, JsonObject> infoById = readMcModInfo(zip, jar);
+            if (infoById.keySet().stream().anyMatch(id -> excluded.contains(id.toLowerCase(java.util.Locale.ROOT)))) return null;
             int refs17 = 0, refs112 = 0;
+            boolean legacy112Api = false;
             List<LegacyModDecl> found = new ArrayList<>();
 
             Enumeration<? extends ZipEntry> entries = zip.entries();
@@ -91,10 +103,19 @@ public final class LegacyJarInspector {
                 String pool = constantPoolText(reader);
                 if (pool.contains("cpw/mods/fml/")) refs17++;
                 if (pool.contains("net/minecraftforge/fml/")) refs112++;
+                legacy112Api |= pool.contains("net/minecraftforge/fml/relauncher/")
+                        || pool.contains("net/minecraftforge/fml/common/event/")
+                        || pool.contains("net/minecraftforge/fml/common/network/simpleimpl/")
+                        || pool.contains("net/minecraftforge/fml/common/Loader");
 
-                if (pool.contains(MOD_1_7) || pool.contains(MOD_1_12)) {
-                    LegacyModDecl decl = readModAnnotation(reader);
-                    if (decl != null) found.add(decl);
+                if (pool.contains(MOD_1_7) || pool.contains(MOD_1_12) || pool.contains(MOD_NEO)) {
+                    boolean[] modern = {false};
+                    LegacyModDecl decl = readModAnnotation(reader, modern);
+                    if (modern[0]) return null; // modern Forge's @Mod(value), same descriptor as 1.12's @Mod(modid)
+                    if (decl != null) {
+                        if (excluded.contains(decl.legacyId.toLowerCase(java.util.Locale.ROOT))) return null;
+                        found.add(decl);
+                    }
                 }
                 if (pool.contains("cpw/mods/fml/common/SidedProxy") || pool.contains("net/minecraftforge/fml/common/SidedProxy")) {
                     collectSidedProxies(reader, jar);
@@ -104,6 +125,9 @@ public final class LegacyJarInspector {
                     collectApi(reader, jar, entry.getName());
                 }
             }
+
+            // Shared modern FML classes alone do not establish a legacy target.
+            if (found.isEmpty() && infoById.isEmpty() && jar.coreModClass == null && refs17 == 0 && !legacy112Api) return null;
 
             if (found.isEmpty() && refs17 == 0 && refs112 == 0 && infoById.isEmpty() && jar.coreModClass == null) {
                 return null;
@@ -126,6 +150,28 @@ public final class LegacyJarInspector {
 
             jar.version = chooseVersion(jar, infoById, refs17, refs112);
             return jar.version == null ? null : jar;
+        }
+    }
+
+    static java.util.Set<String> excludedModIds(String configured) {
+        return java.util.Arrays.stream(configured.split("[,;\\s]+"))
+                .filter(id -> !id.isBlank()).map(id -> id.toLowerCase(java.util.Locale.ROOT))
+                .collect(java.util.stream.Collectors.toUnmodifiableSet());
+    }
+
+    private static boolean hasModernLoaderMetadata(ZipFile zip) throws IOException {
+        var entries = zip.entries();
+        while (entries.hasMoreElements()) {
+            String name = entries.nextElement().getName();
+            if (name.startsWith("META-INF/services/net.minecraftforge.forgespi.")
+                    || name.startsWith("META-INF/services/net.neoforged.neoforgespi.")) return true;
+        }
+        var manifest = zip.getEntry(JarFile.MANIFEST_NAME);
+        if (manifest == null) return false;
+        try (var in = zip.getInputStream(manifest)) {
+            return new Manifest(in).getMainAttributes().getValue("FMLModType") != null;
+        } catch (IOException | RuntimeException malformed) {
+            return false; // readManifest records the error; malformed metadata alone must not hide a legacy mod.
         }
     }
 
@@ -289,7 +335,7 @@ public final class LegacyJarInspector {
         }, ClassReader.SKIP_CODE | ClassReader.SKIP_DEBUG | ClassReader.SKIP_FRAMES);
     }
 
-    private static LegacyModDecl readModAnnotation(ClassReader reader) {
+    private static LegacyModDecl readModAnnotation(ClassReader reader, boolean[] modern) {
         LegacyModDecl[] result = new LegacyModDecl[1];
         reader.accept(new ClassVisitor(Opcodes.ASM9) {
             String className;
@@ -301,6 +347,7 @@ public final class LegacyJarInspector {
 
             @Override
             public AnnotationVisitor visitAnnotation(String descriptor, boolean visible) {
+                if (descriptor.equals(MOD_NEO)) { modern[0] = true; return null; }
                 if (!descriptor.equals(MOD_1_7) && !descriptor.equals(MOD_1_12)) return null;
                 LegacyModDecl decl = new LegacyModDecl();
                 decl.mainClass = className;
@@ -310,6 +357,7 @@ public final class LegacyJarInspector {
                     public void visit(String name, Object value) {
                         String s = String.valueOf(value);
                         switch (name) {
+                            case "value" -> { if (descriptor.equals(MOD_1_12) && value instanceof String && !s.isBlank()) modern[0] = true; }
                             case "modid" -> decl.legacyId = s;
                             case "name" -> decl.name = s;
                             case "version" -> decl.version = s;

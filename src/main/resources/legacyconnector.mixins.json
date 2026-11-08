@@ -36,6 +36,9 @@
     "perf.LevelChunkStaticTickerMixin"
   ],
   "client": [
+    "access.ParticleEngineAccess",
+    "access.ParticleAccess",
+    "access.ClientLevelPartsAccess",
     "ClientLevelSkyColorMixin",
     "MinecraftAttackMixin",
     "MultiPlayerGameModeMixin",

@@ -10,6 +10,9 @@ import org.spongepowered.asm.mixin.gen.Invoker;
  */
 @Mixin(LivingEntity.class)
 public interface LivingEntityAccess {
+    @Invoker("blockUsingShield")
+    void legacyconnector$blockUsingShield(LivingEntity attacker);
+
     @Invoker("jumpFromGround")
     void legacyconnector$jumpFromGround();
 

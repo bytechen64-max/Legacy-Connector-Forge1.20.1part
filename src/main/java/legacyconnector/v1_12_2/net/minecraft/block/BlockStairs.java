@@ -20,6 +20,44 @@ public class BlockStairs extends Block {
         super(modelState.getMaterial());
         this.modelBlock = modelState.getBlock();
         this.modelState = modelState;
+        setDefaultState(blockState.getBaseState().withProperty(FACING, legacyconnector.v1_12_2.net.minecraft.util.EnumFacing.NORTH)
+                .withProperty(HALF, EnumHalf.BOTTOM).withProperty(SHAPE, EnumShape.STRAIGHT));
+    }
+
+    @Override
+    protected legacyconnector.v1_12_2.net.minecraft.block.state.BlockStateContainer createBlockState() {
+        return new legacyconnector.v1_12_2.net.minecraft.block.state.BlockStateContainer(this, FACING, HALF, SHAPE);
+    }
+
+    @Override
+    public boolean isOpaqueCube(IBlockState state) {
+        return false;
+    }
+
+    @Override
+    public boolean isFullCube(IBlockState state) {
+        return false;
+    }
+
+    @Override
+    public IBlockState getStateFromMeta(int meta) {
+        return getDefaultState().withProperty(FACING, legacyconnector.v1_12_2.net.minecraft.util.EnumFacing.byIndex(5 - (meta & 3)))
+                .withProperty(HALF, (meta & 4) != 0 ? EnumHalf.TOP : EnumHalf.BOTTOM);
+    }
+
+    @Override
+    public int getMetaFromState(IBlockState state) {
+        return 5 - state.getValue(FACING).getIndex() | (state.getValue(HALF) == EnumHalf.TOP ? 4 : 0);
+    }
+
+    @Override
+    public IBlockState getStateForPlacement(legacyconnector.v1_12_2.net.minecraft.world.World world,
+            legacyconnector.v1_12_2.net.minecraft.util.math.BlockPos pos, legacyconnector.v1_12_2.net.minecraft.util.EnumFacing side,
+            float hitX, float hitY, float hitZ, int meta, legacyconnector.v1_12_2.net.minecraft.entity.EntityLivingBase placer) {
+        var facing = placer == null ? legacyconnector.v1_12_2.net.minecraft.util.EnumFacing.NORTH : placer.getHorizontalFacing();
+        boolean top = side == legacyconnector.v1_12_2.net.minecraft.util.EnumFacing.DOWN
+                || side != legacyconnector.v1_12_2.net.minecraft.util.EnumFacing.UP && hitY > 0.5F;
+        return getDefaultState().withProperty(FACING, facing).withProperty(HALF, top ? EnumHalf.TOP : EnumHalf.BOTTOM);
     }
 
     public enum EnumHalf implements IStringSerializable {

@@ -18,6 +18,15 @@ import org.kylepitcock.legacyconnector.v1_12_2.entity.LivingHost1122;
  * the stack in a hand changes the hand.
  */
 public abstract class EntityLivingBase extends Entity {
+    /** Called on the defender; vanilla applies the knockback to the attacking entity. */
+    protected void blockUsingShield(EntityLivingBase attacker) {
+        var defender = mcc$living();
+        var source = attacker == null ? null : attacker.mcc$living();
+        if (defender != null && source != null) {
+            ((org.kylepitcock.legacyconnector.mixin.access.LivingEntityAccess) defender).legacyconnector$blockUsingShield(source);
+        }
+    }
+
     /** Vanilla's data keys of living entities: their values are the modern entity's (see {@link org.kylepitcock.legacyconnector.v1_12_2.entity.VanillaDataKey1122}). */
     public static final legacyconnector.v1_12_2.net.minecraft.network.datasync.DataParameter<Byte> HAND_STATES = org.kylepitcock.legacyconnector.v1_12_2.entity.VanillaDataKey1122.of(6, legacyconnector.v1_12_2.net.minecraft.network.datasync.DataSerializers.BYTE, EntityLivingBase.class, (byte) 0, e -> {
         var l = e.mcc$living();

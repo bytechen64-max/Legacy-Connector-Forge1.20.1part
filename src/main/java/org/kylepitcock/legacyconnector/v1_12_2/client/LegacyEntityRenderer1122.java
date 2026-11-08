@@ -63,6 +63,17 @@ public class LegacyEntityRenderer1122 extends EntityRenderer<Entity> {
     @Override
     public boolean shouldRender(Entity entity, net.minecraft.client.renderer.culling.Frustum frustum, double camX, double camY, double camZ) {
         if (CULLING_MODS && entity instanceof Host1122) entity.noCulling = true;
+        if (entity instanceof Host1122 host && host.mcc$legacy() != null) {
+            var legacy = host.mcc$legacy();
+            var renderer = RenderManager.mcc$instance().getEntityRenderObject(legacy);
+            if (renderer != null) return renderer.shouldRender(legacy,
+                    new legacyconnector.v1_12_2.net.minecraft.client.renderer.culling.ICamera() {
+                        public boolean isBoundingBoxInFrustum(legacyconnector.v1_12_2.net.minecraft.util.math.AxisAlignedBB box) {
+                            return entity.noCulling || frustum.isVisible(new net.minecraft.world.phys.AABB(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ));
+                        }
+                        public void setPosition(double x, double y, double z) {}
+                    }, camX, camY, camZ);
+        }
         return super.shouldRender(entity, frustum, camX, camY, camZ);
     }
 

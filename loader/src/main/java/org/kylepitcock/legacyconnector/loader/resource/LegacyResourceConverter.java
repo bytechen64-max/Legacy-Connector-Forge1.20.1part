@@ -59,6 +59,7 @@ public final class LegacyResourceConverter {
         if (!path.startsWith("assets/")) return false;
 
         String modern = normalizePath(path);
+        data = repairSrpResource(modern, data);
         if (modern.contains("/textures/")) sawTextures = true;
 
         if (modern.matches("assets/[^/]+/blockstates/.+\\.json")) {
@@ -106,7 +107,82 @@ public final class LegacyResourceConverter {
             output.putIfAbsent("assets/minecraft/atlases/blocks.json", BLOCK_ATLAS.getBytes(StandardCharsets.UTF_8));
         }
         resolveModelParents();
+        addModelTexturesToAtlas();
         return output;
+    }
+
+    /** Narrow repairs for broken resources shipped by SRP 1.10.9; leave corrected releases untouched. */
+    private byte[] repairSrpResource(String path, byte[] data) {
+        if ((path.equals("assets/srparasites/blockstates/brusewood_trapdoor.json")
+                || path.equals("assets/srparasites/blockstates/consumed_trapdoor.json"))
+                && new String(data, StandardCharsets.UTF_8).contains("srparasites:consumed_planks_stairs")) {
+            String name = path.substring(path.lastIndexOf('/') + 1, path.length() - 5);
+            JsonObject root = new JsonObject(), variants = new JsonObject();
+            for (String half : List.of("bottom", "top")) for (boolean open : new boolean[]{false, true}) {
+                String model = name + "_" + (open ? "open" : half);
+                JsonObject template = new JsonObject(), textures = new JsonObject();
+                template.addProperty("parent", "minecraft:block/template_trapdoor_" + (open ? "open" : half));
+                textures.addProperty("texture", "srparasites:blocks/" + name);
+                template.add("textures", textures);
+                output.putIfAbsent("assets/srparasites/models/block/" + model + ".json", GSON.toJson(template).getBytes(StandardCharsets.UTF_8));
+                String[] facings = {"north", "east", "south", "west"};
+                for (int i = 0; i < facings.length; i++) {
+                    JsonObject variant = new JsonObject();
+                    variant.addProperty("model", "srparasites:" + model);
+                    variant.addProperty("y", i * 90);
+                    variants.add("facing=" + facings[i] + ",half=" + half + ",open=" + open, variant);
+                }
+            }
+            root.add("variants", variants);
+            return GSON.toJson(root).getBytes(StandardCharsets.UTF_8);
+        }
+        if (path.equals("assets/srparasites/models/block/infestedstainstairs_outer.json")) {
+            String text = new String(data, StandardCharsets.UTF_8);
+            return text.replace("\"top\": \"srparasites:blocks/infestedstain,",
+                    "\"top\": \"srparasites:blocks/infestedstain\",").getBytes(StandardCharsets.UTF_8);
+        }
+        if (path.equals("assets/srparasites/models/block/arraytowerlarge.mtl")) {
+            String text = new String(data, StandardCharsets.UTF_8);
+            return text.replace("map_Kd pasted.png", "map_Kd srparasites:blocks/arraytowertexture")
+                    .getBytes(StandardCharsets.UTF_8);
+        }
+        return data;
+    }
+
+    /** 1.12 stitched every model texture, including GUI icons used as items. Modern atlases need explicit sources. */
+    private void addModelTexturesToAtlas() {
+        String atlasPath = "assets/minecraft/atlases/blocks.json";
+        JsonObject atlas = JsonParser.parseString(new String(output.getOrDefault(atlasPath,
+                BLOCK_ATLAS.getBytes(StandardCharsets.UTF_8)), StandardCharsets.UTF_8)).getAsJsonObject();
+        JsonArray sources = atlas.has("sources") ? atlas.getAsJsonArray("sources") : new JsonArray();
+        java.util.Set<String> added = new java.util.LinkedHashSet<>();
+        for (var entry : output.entrySet()) {
+            if (!entry.getKey().contains("/models/") || !entry.getKey().endsWith(".json")) continue;
+            try {
+                JsonObject model = JsonParser.parseString(new String(entry.getValue(), StandardCharsets.UTF_8)).getAsJsonObject();
+                if (!model.has("textures") || !model.get("textures").isJsonObject()) continue;
+                for (JsonElement value : model.getAsJsonObject("textures").asMap().values()) {
+                    if (!value.isJsonPrimitive() || !value.getAsJsonPrimitive().isString()) continue;
+                    String ref = value.getAsString();
+                    if (ref.startsWith("#")) continue;
+                    int colon = ref.indexOf(':');
+                    String ns = colon < 0 ? "minecraft" : ref.substring(0, colon);
+                    String path = colon < 0 ? ref : ref.substring(colon + 1);
+                    if (path.startsWith("block/") || path.startsWith("blocks/") || path.startsWith("item/") || path.startsWith("items/")) continue;
+                    if (!output.containsKey("assets/" + ns + "/textures/" + path + ".png") || !added.add(ns + ":" + path)) continue;
+                    JsonObject source = new JsonObject();
+                    source.addProperty("type", "single");
+                    source.addProperty("resource", ns + ":" + path);
+                    sources.add(source);
+                }
+            } catch (RuntimeException ignored) {
+                // Preserve the loader's diagnostic for unrelated malformed model files.
+            }
+        }
+        if (!added.isEmpty()) {
+            atlas.add("sources", sources);
+            output.put(atlasPath, GSON.toJson(atlas).getBytes(StandardCharsets.UTF_8));
+        }
     }
 
     /**

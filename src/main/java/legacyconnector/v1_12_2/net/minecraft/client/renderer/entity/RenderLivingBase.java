@@ -200,6 +200,7 @@ public abstract class RenderLivingBase<T extends EntityLivingBase> extends Rende
     }
 
     protected void unsetBrightness() {
+        org.kylepitcock.legacyconnector.v1_7_10.client.RenderContext.clearTextureTint();
         GlStateManager.color(1.0F, 1.0F, 1.0F, 1.0F);
     }
 

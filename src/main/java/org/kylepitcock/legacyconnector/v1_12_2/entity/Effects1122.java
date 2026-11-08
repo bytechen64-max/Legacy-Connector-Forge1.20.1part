@@ -90,6 +90,11 @@ public final class Effects1122 {
     public static final class LegacyEffect extends MobEffect {
         final Potion potion;
 
+        @Override
+        public void initializeClient(java.util.function.Consumer<net.minecraftforge.client.extensions.common.IClientMobEffectExtensions> consumer) {
+            consumer.accept(org.kylepitcock.legacyconnector.v1_12_2.client.EffectIcons1122.EXTENSION);
+        }
+
         LegacyEffect(Potion potion) {
             super(potion.isBadEffect() ? MobEffectCategory.HARMFUL : potion.isBeneficial() ? MobEffectCategory.BENEFICIAL : MobEffectCategory.NEUTRAL,
                     potion.getLiquidColor());

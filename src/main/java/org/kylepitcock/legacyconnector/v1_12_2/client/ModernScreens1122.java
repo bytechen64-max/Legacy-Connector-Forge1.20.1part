@@ -29,6 +29,7 @@ public final class ModernScreens1122 {
     static GuiScreen viewOf(Screen screen) {
         try {
             if (screen instanceof TitleScreen) return new MainMenuView(screen);
+            if (screen instanceof net.minecraft.client.gui.screens.worldselection.CreateWorldScreen) return new CreateWorldView(screen);
             if (screen instanceof net.minecraft.client.gui.screens.controls.ControlsScreen cs) return new ControlsView(cs);
             if (screen instanceof net.minecraft.client.gui.screens.worldselection.SelectWorldScreen ws) return new WorldSelectionView(ws);
             if (screen instanceof CreativeModeInventoryScreen cs) return new CreativeView(cs);
@@ -48,6 +49,30 @@ public final class ModernScreens1122 {
     private static EntityPlayer player() {
         var p = net.minecraft.client.Minecraft.getInstance().player;
         return p != null && EntityBridge1122.wrap(p) instanceof EntityPlayer ep ? ep : null;
+    }
+
+    /** A typed view lets legacy world-creation extensions recognize the modern tabbed screen. */
+    public static final class CreateWorldView extends legacyconnector.v1_12_2.net.minecraft.client.gui.GuiCreateWorld implements ScreenEvents1122.Modern {
+        private final java.lang.ref.WeakReference<Screen> modern;
+        private legacyconnector.v1_12_2.net.minecraft.client.gui.GuiButton anchor;
+
+        CreateWorldView(Screen screen) {
+            super(null);
+            modern = new java.lang.ref.WeakReference<>(screen);
+            init(this, screen);
+        }
+        public Screen mcc$modern() { return modern.get(); }
+        public void mcc$sync() {
+            Screen screen = modern.get();
+            if (screen != null) setGuiSize(screen.width, screen.height);
+        }
+        void seedButtons(java.util.List<legacyconnector.v1_12_2.net.minecraft.client.gui.GuiButton> buttons) {
+            // Legacy extensions position their button above "More World Options". Modern Minecraft uses tabs instead.
+            anchor = new legacyconnector.v1_12_2.net.minecraft.client.gui.GuiButton(3, width / 2 - 75, height - 52, 150, 20,
+                    legacyconnector.v1_12_2.net.minecraft.client.resources.I18n.format("selectWorld.moreWorldOptions"));
+            buttons.add(anchor);
+        }
+        boolean isAnchor(legacyconnector.v1_12_2.net.minecraft.client.gui.GuiButton button) { return button == anchor; }
     }
 
     private static void init(GuiScreen view, Screen modern) {

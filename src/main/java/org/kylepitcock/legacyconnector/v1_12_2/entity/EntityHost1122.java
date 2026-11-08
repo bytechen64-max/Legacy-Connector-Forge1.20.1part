@@ -24,6 +24,12 @@ public class EntityHost1122 extends net.minecraft.world.entity.Entity implements
     static final EntityDataAccessor<CompoundTag> DATA = SynchedEntityData.defineId(EntityHost1122.class, EntityDataSerializers.COMPOUND_TAG);
 
     private Entity legacy;
+    private final OrbInterpolation1122 orbInterpolation = new OrbInterpolation1122();
+    private final Multipart1122 multipart = new Multipart1122(this);
+
+    @Override public boolean isMultipartEntity() { return multipart != null && multipart.parts().length != 0; }
+    @Override public net.minecraftforge.entity.PartEntity<?>[] getParts() { return multipart == null ? null : multipart.parts(); }
+    public Multipart1122 mcc$multipart() { return multipart; }
     private float width = -1.0F;
     private float height = -1.0F;
     private int failedTicks;
@@ -71,7 +77,15 @@ public class EntityHost1122 extends net.minecraft.world.entity.Entity implements
             return;
         }
         try {
+            if (level().isClientSide()) {
+                var next = orbInterpolation.tick(getX(), getY(), getZ(), getYRot(), getXRot());
+                if (next != null) {
+                    setPos(next.x(), next.y(), next.z());
+                    setRot(next.yaw(), next.pitch());
+                }
+            }
             legacy.onUpdate();
+            multipart.sync();
             failedTicks = 0;
         } catch (RuntimeException | LinkageError e) {
             if (Hosts1122.tickFailed(this, legacy.getClass(), e, ++failedTicks)) discard();
@@ -257,11 +271,18 @@ public class EntityHost1122 extends net.minecraft.world.entity.Entity implements
     @Override
     public void lerpTo(double x, double y, double z, float yaw, float pitch, int steps, boolean teleport) {
         if (legacy != null && HookState1122.customLerp(legacy)) legacy.setPositionAndRotationDirect(x, y, z, yaw, pitch, steps, false);
-        else super.lerpTo(x, y, z, yaw, pitch, steps, false);
+        else mcc$superLerpTo(x, y, z, yaw, pitch, teleport ? 0 : steps);
     }
 
     @Override
     public void mcc$superLerpTo(double x, double y, double z, float yaw, float pitch, int steps) {
+        // Entity.lerpTo ignores steps in 1.20.1. SRP orbs only follow their owner on the
+        // server, so snapping here leaves no movement for partial-tick rendering to blend.
+        if (level().isClientSide() && legacy != null && OrbInterpolation1122.supports(legacy.getClass().getName()) && steps > 0) {
+            orbInterpolation.target(x, y, z, yaw, pitch, steps);
+            return;
+        }
+        orbInterpolation.clear();
         super.lerpTo(x, y, z, yaw, pitch, steps, false);
     }
 
@@ -328,5 +349,6 @@ public class EntityHost1122 extends net.minecraft.world.entity.Entity implements
             legacy = read;
             EntityBridge1122.bind(legacy, this);
         }
+        multipart.readIds(buf);
     }
 }

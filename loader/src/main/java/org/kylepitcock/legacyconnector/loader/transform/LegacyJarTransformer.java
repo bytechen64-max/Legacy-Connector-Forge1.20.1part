@@ -38,7 +38,7 @@ import org.objectweb.asm.tree.ClassNode;
  */
 public final class LegacyJarTransformer {
     /** Bump whenever the output of this class changes, to invalidate caches. */
-    public static final int TRANSFORMER_VERSION = 8;
+    public static final int TRANSFORMER_VERSION = 10;
     /** Names the legacy coremod plugin class of a translated jar. */
     public static final String COREMOD_RESOURCE = "META-INF/legacyconnector-coremod.txt";
 
@@ -299,6 +299,11 @@ public final class LegacyJarTransformer {
         if (optionalStripped > 0) result.notes.add("Stripped " + optionalStripped + " @Optional interface(s)/method(s) for absent mods");
         for (ClassNode node : nodes.values()) CustomMainMenuVersionFix.apply(node);
         for (ClassNode node : nodes.values()) CofhWorldProxyFix.apply(node);
+        int meteorHeights = 0;
+        if (version == LegacyVersion.V1_12_2) {
+            for (ClassNode node : nodes.values()) meteorHeights += SrpMeteorHeightFix.apply(node);
+        }
+        if (meteorHeights > 0) result.notes.add(meteorHeights + " SRP meteor height limits now follow the world's build bottom");
         int absent = 0;
         for (ClassNode node : nodes.values()) absent += AbsentDependencyStubber.apply(node, hierarchy);
         if (absent > 0) result.notes.add(absent + " method(s) use mods that are not installed; they throw NoClassDefFoundError if called");

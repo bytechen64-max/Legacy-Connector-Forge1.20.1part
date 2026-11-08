@@ -27,6 +27,14 @@ public class ForgeHooks {
 
     private ForgeHooks() {}
 
+    public static boolean isLivingOnLadder(IBlockState state, World world, BlockPos pos, EntityLivingBase entity) {
+        if (state == null || world == null || pos == null || entity == null) return false;
+        if (world.mcc$level() != null && entity.mcc$modern() instanceof net.minecraft.world.entity.LivingEntity living) {
+            return net.minecraftforge.common.ForgeHooks.isLivingOnLadder(StatesBridge1122.toModern(state), world.mcc$level(), pos.mcc$modern(), living).isPresent();
+        }
+        return state.getBlock().isLadder(state, world, pos, entity);
+    }
+
     private static net.minecraft.core.BlockPos pos(BlockPos p) {
         return new net.minecraft.core.BlockPos(p.getX(), p.getY(), p.getZ());
     }

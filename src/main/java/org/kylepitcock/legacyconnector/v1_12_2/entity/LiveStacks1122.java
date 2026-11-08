@@ -92,9 +92,13 @@ public final class LiveStacks1122 {
             Map<Object, Entry> slots = map.get(owner);
             Entry e = slots == null ? null : slots.get(key);
             if (e != null) {
+                // A hand slot can now point at a different hotbar slot. flush snapshots the current
+                // modern stack, but must not make the previous weapon's legacy view look current.
+                var before = e.slot.get();
+                boolean unchanged = before == e.modern && net.minecraft.world.item.ItemStack.matches(before, e.modernSnapshot);
                 flush(e);
                 var now = e.slot.get();
-                if (now == e.modern && net.minecraft.world.item.ItemStack.matches(now, e.modernSnapshot)) return e.legacy;
+                if (unchanged && now == e.modern && net.minecraft.world.item.ItemStack.matches(now, e.modernSnapshot)) return e.legacy;
             }
             var current = slot.get();
             ItemStack legacy = Stacks1122.fromModern(current);
@@ -138,7 +142,8 @@ public final class LiveStacks1122 {
         var current = e.slot.get();
         boolean untouched = current == e.modern && net.minecraft.world.item.ItemStack.matches(current, e.modernSnapshot);
         try {
-            if (e.onlyCountChanged() && !current.isEmpty()) {
+            if (e.onlyCountChanged() && !current.isEmpty()
+                    && net.minecraft.world.item.ItemStack.isSameItemSameTags(current, e.modernSnapshot)) {
                 int target = Math.max(0, e.legacy.getCount());
                 int now = untouched ? target : current.getCount() + (target - e.count);
                 if (now <= 0) e.slot.set(net.minecraft.world.item.ItemStack.EMPTY);

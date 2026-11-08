@@ -31,6 +31,7 @@ public final class SpawnData1122 {
         } else {
             buf.writeVarInt(0);
         }
+        host.mcc$multipart().writeIds(buf);
     }
 
     /** Client: returns the legacy object created from the class name for fallback types (else the given one). */

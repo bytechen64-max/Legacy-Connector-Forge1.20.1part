@@ -278,8 +278,60 @@ public final class Assets1122 implements GeneratedPack.Contributor {
             String path = "assets/" + id.getNamespace() + "/textures/mob_effect/" + id.getPath() + ".png";
             if (out.containsKey(path)) continue;
             if (Thread.currentThread().getContextClassLoader().getResource(path) != null) continue;
-            byte[] png = iconPng(legacy.getLiquidColor());
+            byte[] sheetIcon = iconFromSheet(legacy);
+            LOG.info("Effect icon {} from {}", id, sheetIcon != null ? "the 1.12 sheet" : "the liquid colour");
+            final byte[] png = sheetIcon != null ? sheetIcon : iconPng(legacy.getLiquidColor());
             if (png != null) out.put(path, () -> png);
+        }
+    }
+
+    /**
+     * The 1.12 potion's own icon: a {@code hasStatusIcon()} potion names an 18x18 cell of the vanilla inventory sheet (remember that
+     * 1.12 drew it from the sheet bound at that moment, y offset 198). Potions that draw their icon themselves in
+     * {@code renderHUDEffect} cannot be turned into a sprite, so they keep the colour tile.
+     */
+    private static byte[] iconFromSheet(legacyconnector.v1_12_2.net.minecraft.potion.Potion potion) {
+        if (!net.minecraftforge.fml.loading.FMLEnvironment.dist.isClient()) return null;
+        if (!com.mojang.blaze3d.systems.RenderSystem.isOnRenderThread()) return null;
+        try {
+            if (!potion.hasStatusIcon()) return null;
+            if (overrides(potion, "renderHUDEffect", legacyconnector.v1_12_2.net.minecraft.potion.PotionEffect.class,
+                    legacyconnector.v1_12_2.net.minecraft.client.gui.Gui.class, int.class, int.class, float.class, float.class)) return null;
+            if (overrides(potion, "renderInventoryEffect", legacyconnector.v1_12_2.net.minecraft.potion.PotionEffect.class,
+                    legacyconnector.v1_12_2.net.minecraft.client.gui.Gui.class, int.class, int.class, float.class)) return null;
+            int index = potion.getStatusIconIndex();
+            if (index < 0 || index > 63) return null;
+            var manager = net.minecraft.client.Minecraft.getInstance().getResourceManager();
+            var sheetId = ResourceLocation.fromNamespaceAndPath("minecraft", "textures/gui/container/inventory.png");
+            var resource = manager.getResource(sheetId);
+            if (resource.isEmpty()) return null;
+            java.awt.image.BufferedImage sheet;
+            try (var in = resource.get().open()) {
+                sheet = javax.imageio.ImageIO.read(in);
+            }
+            if (sheet == null) return null;
+            int cell = 18;
+            int x = index % 8 * cell;
+            int y = 198 + index / 8 * cell;
+            if (x + cell > sheet.getWidth() || y + cell > sheet.getHeight()) return null;
+            var icon = new java.awt.image.BufferedImage(cell, cell, java.awt.image.BufferedImage.TYPE_INT_ARGB);
+            var g = icon.createGraphics();
+            g.drawImage(sheet, 0, 0, cell, cell, x, y, x + cell, y + cell, null);
+            g.dispose();
+            var bytes = new java.io.ByteArrayOutputStream();
+            javax.imageio.ImageIO.write(icon, "png", bytes);
+            return bytes.toByteArray();
+        } catch (RuntimeException | LinkageError | java.io.IOException e) {
+            return null;
+        }
+    }
+
+    private static boolean overrides(Object instance, String name, Class<?>... parameters) {
+        try {
+            return instance.getClass().getMethod(name, parameters).getDeclaringClass()
+                    != legacyconnector.v1_12_2.net.minecraft.potion.Potion.class;
+        } catch (NoSuchMethodException e) {
+            return false;
         }
     }
 
@@ -323,11 +375,12 @@ public final class Assets1122 implements GeneratedPack.Contributor {
                 var mrl = legacyconnector.v1_12_2.net.minecraftforge.client.model.ModelLoader.mcc$model(item, meta);
                 if (mrl == null) continue;
                 ResourceLocation id = BuiltInRegistries.ITEM.getKey(modern);
-                String target = Ids.namespace(mrl.getNamespace()) + ":item/" + Ids.normalizePath(mrl.getPath());
+                String itemPath = Ids.normalizePath(mrl.getPath());
+                if (!itemPath.startsWith("item/") && !itemPath.startsWith("block/")) itemPath = "item/" + itemPath;
+                String target = Ids.namespace(mrl.getNamespace()) + ":" + itemPath;
                 if (ObjAssets1122.isObj(mrl.getPath())) {
                     // an OBJ item model (models/item/<name>.obj): NeoForge's OBJ loader
-                    target = ObjAssets1122.model(Ids.namespace(mrl.getNamespace()),
-                            "item/" + Ids.normalizePath(mrl.getPath()), null, null, null, out);
+                    target = ObjAssets1122.model(Ids.namespace(mrl.getNamespace()), itemPath, null, null, null, out);
                 }
                 if (target.equals(id.getNamespace() + ":item/" + id.getPath())) continue; // the mod's own file already has the id's name
                 JsonObject model = new JsonObject();
@@ -841,14 +894,15 @@ public final class Assets1122 implements GeneratedPack.Contributor {
             JsonElement apply = part.get("apply");
             if (apply == null) continue;
             JsonObject when = part.has("when") && part.get("when").isJsonObject() ? part.getAsJsonObject("when") : null;
-            String metas = matchingMetas(when, block, byMeta);
+            boolean liveConnections = block instanceof legacyconnector.v1_12_2.net.minecraft.block.BlockFence;
+            String metas = liveConnections ? "0" : matchingMetas(when, block, byMeta);
             if (metas.isEmpty()) continue;
             JsonElement resolved = convertApply(apply, id, "p" + n, out);
             if (resolved == null) continue;
             n++;
             JsonObject mpPart = new JsonObject();
-            JsonObject selector = new JsonObject();
-            selector.addProperty("meta", metas);
+            JsonObject selector = liveConnections && when != null ? when.deepCopy() : new JsonObject();
+            if (!liveConnections) selector.addProperty("meta", metas);
             mpPart.add("when", selector);
             mpPart.add("apply", resolved);
             parts.add(mpPart);
@@ -975,7 +1029,11 @@ public final class Assets1122 implements GeneratedPack.Contributor {
 
     private static JsonObject normalizeApply(JsonObject apply) {
         JsonObject copy = new JsonObject();
-        mergeInto(copy, apply, new Acc(), false);
+        // Vanilla multipart uses Variant.Deserializer, not Forge's variant merger. In particular it ignores
+        // textures: SRP's fences contain stale overrides here, while their model files name the correct planks.
+        for (String key : List.of("model", "x", "y", "uvlock", "weight")) {
+            if (apply.has(key)) copy.add(key, apply.get(key).deepCopy());
+        }
         return copy;
     }
 
@@ -1226,8 +1284,11 @@ public final class Assets1122 implements GeneratedPack.Contributor {
                 int colon = m.indexOf(':');
                 String path = colon >= 0 ? m.substring(colon + 1) : m;
                 String normalized = Ids.normalizePath(path);
-                String ns = colon >= 0 ? m.substring(0, colon) : modelExists(defaultNamespace, "block/" + normalized) ? defaultNamespace : "minecraft";
-                model = Ids.namespace(ns) + ":block/" + normalized;
+                // 1.12 blockstates commonly use a short name, but a full model path is already relative to models/.
+                String modelPath = normalized.startsWith("block/") || normalized.startsWith("item/")
+                        ? normalized : "block/" + normalized;
+                String ns = colon >= 0 ? m.substring(0, colon) : modelExists(defaultNamespace, modelPath) ? defaultNamespace : "minecraft";
+                model = Ids.namespace(ns) + ":" + modelPath;
             } else if (k.equals("x") || k.equals("y")) {
                 int angle = e.getValue().isJsonPrimitive() ? Math.floorMod((int) Math.round(Math.round(e.getValue().getAsDouble() / 90.0) * 90.0), 360) : 0;
                 if (angle != 0) copy.addProperty(k, angle);

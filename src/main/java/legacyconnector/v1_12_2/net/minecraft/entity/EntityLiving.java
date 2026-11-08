@@ -24,6 +24,8 @@ import org.kylepitcock.legacyconnector.v1_12_2.bridge.EntityBridge1122;
  * and jump controls stand behind the legacy helpers unless a mod replaces them.
  */
 public abstract class EntityLiving extends EntityLivingBase {
+    public enum SpawnPlacementType { ON_GROUND, IN_AIR, IN_WATER }
+
     public int livingSoundTime;
     protected int experienceValue;
     protected EntityLookHelper lookHelper;

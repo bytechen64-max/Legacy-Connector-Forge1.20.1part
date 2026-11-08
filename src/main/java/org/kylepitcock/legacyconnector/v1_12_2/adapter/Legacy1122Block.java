@@ -448,7 +448,14 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
 
     @Override
     public boolean isLadder(BlockState state, LevelReader level, BlockPos pos, LivingEntity entity) {
-        return legacy instanceof legacyconnector.v1_12_2.net.minecraft.block.BlockLadder || super.isLadder(state, level, pos, entity);
+        try {
+            var wrapped = entity == null ? null : entity(entity);
+            return legacy.isLadder(state(state), WorldBridge1122.access(level), pos(pos),
+                    wrapped instanceof EntityLivingBase living ? living : null);
+        } catch (RuntimeException | LinkageError e) {
+            failure("isLadder", e);
+            return super.isLadder(state, level, pos, entity);
+        }
     }
 
     /** IGrowable blocks (crops, saplings): bone meal asks and grows them through the legacy code. */
@@ -487,6 +494,21 @@ public class Legacy1122Block extends net.minecraft.world.level.block.Block imple
     }
 
     // ------------------------------------------------------------------ shape, pistons, breaking speed
+
+    /** A selection box is not necessarily opaque (SRP's tunnel has transparent texels).
+     * 1.12's neighbour-face test used isOpaqueCube; the modern default instead uses
+     * getShape, which incorrectly hides terrain underneath cutouts and stairs. */
+    @Override
+    public net.minecraft.world.phys.shapes.VoxelShape getOcclusionShape(BlockState state, net.minecraft.world.level.BlockGetter getter, BlockPos pos) {
+        if (legacy != null) {
+            try {
+                if (!legacy.isOpaqueCube(state(state))) return net.minecraft.world.phys.shapes.Shapes.empty();
+            } catch (RuntimeException | LinkageError e) {
+                failure("isOpaqueCube", e);
+            }
+        }
+        return super.getOcclusionShape(state, getter, pos);
+    }
 
     private final net.minecraft.world.phys.shapes.VoxelShape[] staticShapes = new net.minecraft.world.phys.shapes.VoxelShape[16];
     private final boolean[] staticKnown = new boolean[16];

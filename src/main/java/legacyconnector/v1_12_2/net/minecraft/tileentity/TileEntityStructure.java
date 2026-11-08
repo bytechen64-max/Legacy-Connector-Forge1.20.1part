@@ -54,7 +54,7 @@ public class TileEntityStructure extends TileEntity {
         }
     }
 
-    public enum Mode {
+    public enum Mode implements legacyconnector.v1_12_2.net.minecraft.util.IStringSerializable {
         SAVE("save", 0),
         LOAD("load", 1),
         CORNER("corner", 2),

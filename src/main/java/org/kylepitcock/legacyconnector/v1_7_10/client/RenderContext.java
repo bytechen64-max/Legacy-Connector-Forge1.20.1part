@@ -130,6 +130,7 @@ public final class RenderContext {
         int forcedLight = -1;
         /** The emulated active texture unit, relative to GL_TEXTURE0. */
         int activeUnit;
+        final LegacyTextureTint textureTint = new LegacyTextureTint();
         /** GL_TEXTURE_2D on the lightmap unit: off, the lightmap was not applied and legacy geometry drew full bright. */
         boolean lightmap = true;
         boolean legacyDepthTest = true;
@@ -162,6 +163,15 @@ public final class RenderContext {
         /** Set while LegacyVertices emits a draw: the state is fixed for its quads, so their buffer is looked up once ({@link #drawBuffer}). */
         boolean inDraw;
         VertexConsumer drawBuffer;
+        com.mojang.blaze3d.vertex.VertexFormat geometryFormat;
+
+        boolean geometryAttribute(com.mojang.blaze3d.vertex.VertexFormatElement.Usage usage, int index) {
+            if (geometryFormat == null) return texture2d;
+            for (var element : geometryFormat.getElements()) {
+                if (element.getUsage() == usage && element.getIndex() == index) return true;
+            }
+            return false;
+        }
         /** While a draw is emitted: the colour its corners without a colour of their own take ({@link #color(State, double[])}). */
         boolean drawColorSet;
         long drawColor;
@@ -452,6 +462,18 @@ public final class RenderContext {
         return argb(STATE.get());
     }
 
+    public static void textureEnvMode(int target, int parameter, int value) {
+        State s = STATE.get();
+        if (s.activeUnit == 1 && target == 8960 && parameter == 34161) s.textureTint.mode(value);
+    }
+
+    public static void textureEnvColor(int target, int parameter, java.nio.FloatBuffer values) {
+        State s = STATE.get();
+        if (s.activeUnit == 1 && target == 8960 && parameter == 8705) s.textureTint.constant(values);
+    }
+
+    public static void clearTextureTint() { STATE.get().textureTint.clear(); }
+
     static int argb(State s) {
         return ((int) (s.a * 255) & 255) << 24 | ((int) (s.r * 255) & 255) << 16 | ((int) (s.g * 255) & 255) << 8 | ((int) (s.b * 255) & 255);
     }
@@ -588,20 +610,27 @@ public final class RenderContext {
             VertexConsumer shaderPack = shaderPackBuffer(s, buffers, texture);
             if (shaderPack != null) return shaderPack;
         }
-        if (gui && s.additive && s.texture2d) return buffers.getBuffer(stated(s, LegacyRenderTypes.guiAdditive(texture)));
+        if (gui && s.additive && s.texture2d) return geometryConsumer(s, buffers, stated(s, LegacyRenderTypes.guiAdditive(texture)));
         // a screen drawing with GL lighting off (Thaumcraft's aspect icons): the lit entity shader dimmed it
         // and a flat screen quad without a normal of its own, lighting or not: GUI item lighting left on by drawing items (the
         // Thaumonomicon's frame after its research icons) made the lit shader draw it black
-        if (gui && (!s.lighting || s.flatGuiQuad) && s.texture2d && s.depthTest) return buffers.getBuffer(stated(s, LegacyRenderTypes.guiUnlit(texture)));
-        if (s.blend && s.additiveAlpha && s.texture2d) return buffers.getBuffer(stated(s, LegacyRenderTypes.additiveAlpha(texture, s.depthTest)));
+        if (gui && (!s.lighting || s.flatGuiQuad) && s.texture2d && s.depthTest) return geometryConsumer(s, buffers, stated(s, LegacyRenderTypes.guiUnlit(texture)));
+        if (s.blend && s.additiveAlpha && s.texture2d) return geometryConsumer(s, buffers, stated(s, LegacyRenderTypes.additiveAlpha(texture, s.depthTest)));
         if (!s.depthTest && !s.additive) {
-            if (!s.texture2d) return buffers.getBuffer(stated(s, LegacyRenderTypes.untexturedNoDepth()));
-            return buffers.getBuffer(stated(s, s.blend ? LegacyRenderTypes.translucentNoDepth(texture) : LegacyRenderTypes.cutoutNoDepth(texture)));
+            if (!s.texture2d) return geometryConsumer(s, buffers, stated(s, LegacyRenderTypes.untexturedNoDepth()));
+            return geometryConsumer(s, buffers, stated(s, s.blend ? LegacyRenderTypes.translucentNoDepth(texture) : LegacyRenderTypes.cutoutNoDepth(texture)));
         }
-        if (!s.texture2d) return buffers.getBuffer(stated(s, s.additive ? RenderType.lightning() : RenderType.debugQuads()));
-        if (s.additive) return buffers.getBuffer(stated(s, RenderType.eyes(texture)));
-        return buffers.getBuffer(stated(s, s.blend ? RenderType.entityTranslucent(texture) : RenderType.entityCutoutNoCull(texture)));
+        if (!s.texture2d) return geometryConsumer(s, buffers, stated(s, s.additive ? RenderType.lightning() : RenderType.debugQuads()));
+        if (s.additive) return geometryConsumer(s, buffers, stated(s, RenderType.eyes(texture)));
+        return geometryConsumer(s, buffers, stated(s, s.blend ? RenderType.entityTranslucent(texture) : RenderType.entityCutoutNoCull(texture)));
     }
+
+    private static VertexConsumer geometryConsumer(State s, MultiBufferSource buffers, RenderType type) {
+        s.geometryFormat = type.format();
+        return buffers.getBuffer(type);
+    }
+
+
 
     /**
      * World geometry while an Iris shader pack is in use ({@code render.irisCompat}), or null for the normal choice. In the shadow
@@ -615,14 +644,14 @@ public final class RenderContext {
         Frame f = s.frames.peek();
         int kind = f == null ? KIND_WORLD : f.kind;
         if (kind == KIND_SKY) {
-            return buffers.getBuffer(stated(s, s.texture2d ? LegacyRenderTypes.skyTextured(texture, s.blend) : LegacyRenderTypes.skyUntextured()));
+            return geometryConsumer(s, buffers, stated(s, s.texture2d ? LegacyRenderTypes.skyTextured(texture, s.blend) : LegacyRenderTypes.skyUntextured()));
         }
         if (s.texture2d && s.additive) {
             boolean alphaWeighted = s.blend && s.additiveAlpha;
             // as the normal choice: GL_SRC_ALPHA, GL_ONE keeps the legacy depth test, GL_ONE, GL_ONE (the eyes type) always tests
-            return buffers.getBuffer(stated(s, LegacyRenderTypes.glow(texture, alphaWeighted, !alphaWeighted || s.depthTest)));
+            return geometryConsumer(s, buffers, stated(s, LegacyRenderTypes.glow(texture, alphaWeighted, !alphaWeighted || s.depthTest)));
         }
-        if (kind == KIND_PARTICLES && s.texture2d && s.depthTest) return buffers.getBuffer(stated(s, LegacyRenderTypes.particle(texture, s.blend)));
+        if (kind == KIND_PARTICLES && s.texture2d && s.depthTest) return geometryConsumer(s, buffers, stated(s, LegacyRenderTypes.particle(texture, s.blend)));
         return null;
     }
 
@@ -672,6 +701,11 @@ public final class RenderContext {
      * alpha blended it covered the slot and its neighbours with black squares and starbursts.
      */
     private static RenderType stated(State s, RenderType base) {
+        return statedBase(s, s.texture2d && s.textureTint.active() && gui(s) == null
+                ? LegacyTintOverlay.wrap(base, s.textureTint.overlayArgb()) : base);
+    }
+
+    private static RenderType statedBase(State s, RenderType base) {
         boolean depthState = gui(s) != null && !(s.depthFunc == 515 && s.depthWrite && s.colorWrite == 0xF);
         boolean blendState = s.blend && (s.blendSrc != 770 || s.blendDst != 771);
         if (!depthState && !blendState) return base;
@@ -826,14 +860,46 @@ public final class RenderContext {
 
     private static void emitCorner(State s, VertexConsumer buffer, PoseStack.Pose last, boolean entity, int overlay, double[] x, float nx, float ny, float nz) {
         int argb = (int) color(s, x);
-        var vc = buffer.vertex(last.pose(), (float) x[0], (float) x[1], (float) x[2]).color(argb);
-        if (s.texture2d) vc.uv((float) x[3], (float) x[4]);
-        if (entity) {
+        var vc = buffer.vertex(last.pose(), (float) x[0], (float) x[1], (float) x[2]);
+        if (s.geometryFormat != null) {
+            // BufferBuilder's non-fast formats consume attributes in declaration order. GUI formats put UV before
+            // colour, unlike NEW_ENTITY; writing colour first is ignored and leaves the vertex incomplete.
+            for (var element : s.geometryFormat.getElements()) {
+                switch (element.getUsage()) {
+                    case COLOR -> vc.color(argb);
+                    case NORMAL -> vc.normal(nx, ny, nz);
+                    case UV -> {
+                        switch (element.getIndex()) {
+                            case 0 -> vc.uv((float) x[3], (float) x[4]);
+                            case 1 -> vc.overlayCoords(overlay & 0xFFFF, overlay >>> 16);
+                            case 2 -> {
+                                int light = s.lightmap ? (int) x[6] : LightTexture.FULL_BRIGHT;
+                                vc.uv2(light & 0xFFFF, light >>> 16);
+                            }
+                            default -> {}
+                        }
+                    }
+                    default -> {}
+                }
+            }
+            vc.endVertex();
+            return;
+        }
+        vc.color(argb);
+        if (s.texture2d && s.geometryAttribute(com.mojang.blaze3d.vertex.VertexFormatElement.Usage.UV, 0)) vc.uv((float) x[3], (float) x[4]);
+        if (entity && s.geometryAttribute(com.mojang.blaze3d.vertex.VertexFormatElement.Usage.UV, 1)) {
             vc.overlayCoords(overlay & 0xFFFF, overlay >>> 16);
+        }
+        if (entity && s.geometryAttribute(com.mojang.blaze3d.vertex.VertexFormatElement.Usage.UV, 2)) {
             int light = s.lightmap ? (int) x[6] : LightTexture.FULL_BRIGHT; // lightmap unit off: its brightness was not applied
             vc.uv2(light & 0xFFFF, light >>> 16);
+        }
+        if (s.geometryAttribute(com.mojang.blaze3d.vertex.VertexFormatElement.Usage.NORMAL, 0)) {
             vc.normal(nx, ny, nz);
         }
+        // Forge 1.20.1 advances BufferBuilder only when a vertex is completed. Without this every
+        // corner overwrote the same slot and tessellated effects (including SRP orbs) submitted zero vertices.
+        vc.endVertex();
     }
 
     public static void resetState() {
@@ -852,6 +918,7 @@ public final class RenderContext {
         s.lighting = true;
         s.forcedLight = -1;
         s.activeUnit = 0;
+        s.textureTint.clear();
         s.lightmap = true;
         s.attribs.clear();
     }
@@ -928,8 +995,8 @@ public final class RenderContext {
         nx /= len;
         ny /= len;
         nz /= len;
-        buffer.vertex(last.pose(), (float) a[0], (float) a[1], (float) a[2]).color((int) color(s, a)).normal(nx, ny, nz);
-        buffer.vertex(last.pose(), (float) b[0], (float) b[1], (float) b[2]).color((int) color(s, b)).normal(nx, ny, nz);
+        buffer.vertex(last.pose(), (float) a[0], (float) a[1], (float) a[2]).color((int) color(s, a)).normal(nx, ny, nz).endVertex();
+        buffer.vertex(last.pose(), (float) b[0], (float) b[1], (float) b[2]).color((int) color(s, b)).normal(nx, ny, nz).endVertex();
         return true;
     }
 
@@ -939,7 +1006,7 @@ public final class RenderContext {
         // model boxes count as drawn geometry too (an inventory block handler drawing a TESR model: Thaumcraft's crystals)
         s.quadCount++;
         MultiBufferSource buffers = buffers(s);
-        if (s.armorLayering) return buffers.getBuffer(RenderType.armorCutoutNoCull(s.texture));
+        if (s.armorLayering) return buffers.getBuffer(stated(s, RenderType.armorCutoutNoCull(s.texture)));
         // blended models keep their blending, as raw geometry does: Thaumcraft's infusion matrix draws its glowing runes as
         // a second additive cube over the stone one, which drew opaque
         if (s.blend && s.texture2d && gui(s) == null) {
@@ -948,10 +1015,10 @@ public final class RenderContext {
                 return buffers.getBuffer(stated(s, LegacyRenderTypes.glow(s.texture, s.additiveAlpha, !s.additiveAlpha || s.depthTest)));
             }
             if (s.additiveAlpha) return buffers.getBuffer(stated(s, LegacyRenderTypes.additiveAlpha(s.texture, s.depthTest)));
-            if (s.additive) return buffers.getBuffer(stated(s, RenderType.eyes(s.texture)));
+            if (s.additive) return buffers.getBuffer(stated(s, LegacyRenderTypes.additiveCutout(s.texture)));
             return buffers.getBuffer(stated(s, RenderType.entityTranslucent(s.texture)));
         }
-        return buffers.getBuffer(RenderType.entityCutoutNoCull(s.texture));
+        return buffers.getBuffer(stated(s, RenderType.entityCutoutNoCull(s.texture)));
     }
 
     /**

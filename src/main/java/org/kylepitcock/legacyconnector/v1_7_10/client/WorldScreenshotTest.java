@@ -241,7 +241,8 @@ public final class WorldScreenshotTest {
                 final String c = c0.trim();
                 final String camName = c.startsWith("cam:") ? c.substring(4) : "";
                 // "shot:<name>" takes a screenshot (after the world around has had time to render), "wait:<ticks>" waits
-                if (c.startsWith("shot:")) add(wait(100), shot(c.substring(5)));
+                if (c.startsWith("shotNow:")) add(wait(2), shot(c.substring(8)));
+                else if (c.startsWith("shot:")) add(wait(100), shot(c.substring(5)));
                 else if (c.startsWith("wait:")) add(wait(Integer.parseInt(c.substring(5))));
                 else if (c.equals("use")) add(run(mc -> mc.gameMode.useItem(mc.player, net.minecraft.world.InteractionHand.MAIN_HAND)), wait(40));
                 else if (c.startsWith("key:")) add(run(mc -> mc.keyboardHandler.keyPress(mc.getWindow().getWindow(), Integer.parseInt(c.substring(4)), 0, 1, 0)), wait(10));

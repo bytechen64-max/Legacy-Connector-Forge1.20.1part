@@ -66,7 +66,7 @@ public final class LegacyModLocator extends net.minecraftforge.fml.loading.moddi
      * 1.12 jars may carry libraries and coremods as nested jars named by the {@code ContainedDeps} manifest attribute (stored under
      * {@code META-INF/libraries/}); Forge unpacked them next to the mods. They are extracted and handled as legacy jars of their own.
      */
-    private static void addContainedDeps(Path jarPath, Path nestedDir, List<LegacyJar> legacy, java.util.Set<String> seenNames) {
+    private static void addContainedDeps(Path jarPath, Path nestedDir, List<LegacyJar> legacy, java.util.Set<String> seenNames, Set<String> excludedModIds) {
         try (java.util.zip.ZipFile zip = new java.util.zip.ZipFile(jarPath.toFile())) {
             var entry = zip.getEntry("META-INF/MANIFEST.MF");
             if (entry == null) return;
@@ -84,7 +84,7 @@ public final class LegacyModLocator extends net.minecraftforge.fml.loading.moddi
                 try (var in = zip.getInputStream(nested)) {
                     Files.copy(in, target, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
                 }
-                LegacyJar jar = LegacyJarInspector.inspect(target);
+                LegacyJar jar = LegacyJarInspector.inspect(target, excludedModIds);
                 if (jar != null) legacy.add(jar);
             }
         } catch (IOException | RuntimeException e) {
@@ -182,6 +182,8 @@ public final class LegacyModLocator extends net.minecraftforge.fml.loading.moddi
         Path cacheDir = gameDir.resolve(".legacyconnector").resolve("cache");
         Path originalsDir = modsDir.resolve(ORIGINALS_DIR);
         List<Path> scanDirs = List.of(modsDir, modsDir.resolve("1.7.10"), modsDir.resolve("1.12.2"), originalsDir);
+        Set<String> excludedModIds = LegacyJarInspector.excludedModIds(LibraryBridges.readConfig(modsDir).getProperty("loader.excludeModIds", ""));
+        if (!excludedModIds.isEmpty()) LOG.info("Legacy Connector: excluding mod IDs from legacy handling: {}", excludedModIds);
         try {
             Files.createDirectories(cacheDir);
             Path runtimeJar = extractRuntime(cacheDir);
@@ -205,15 +207,17 @@ public final class LegacyModLocator extends net.minecraftforge.fml.loading.moddi
                             .sorted(Comparator.comparing(f -> f.getFileName().toString().toLowerCase())).toList()) {
                         if (!seenNames.add(p.getFileName().toString().toLowerCase())) continue;
                         try {
-                            LegacyJar jar = LegacyJarInspector.inspect(p);
+                            LegacyJar jar = LegacyJarInspector.inspect(p, excludedModIds);
                             if (jar == null && LegacyJarInspector.takeDerivative(p)) {
                                 // a translated jar taken out of a cache: only Legacy Connector itself loads those, from its own cache
                                 LOG.warn("Legacy Connector: {} is a translated copy of another mod made by Legacy Connector (not an original). "
                                         + "It is not loaded; put the original mod in mods/ instead and Legacy Connector translates it here.", p.getFileName());
                                 continue;
                             }
-                            if (jar != null) legacy.add(jar);
-                            addContainedDeps(p, gameDir.resolve(".legacyconnector").resolve("nested"), legacy, seenNames);
+                            if (jar != null) {
+                                legacy.add(jar);
+                                addContainedDeps(p, gameDir.resolve(".legacyconnector").resolve("nested"), legacy, seenNames, excludedModIds);
+                            }
                         } catch (IOException | RuntimeException e) {
                             LOG.debug("Legacy Connector: could not inspect {}", p, e);
                         }

@@ -126,6 +126,13 @@ public final class LegacyParticles1122 {
     public static void spawnVanilla(int id, double x, double y, double z, double vx, double vy, double vz, int... params) {
         var level = Minecraft.getInstance().level;
         if (level == null) return;
+        if (id == 28) {
+            effects().addEffect(
+                    new legacyconnector.v1_12_2.net.minecraft.client.particle.ParticleFootStep(null,
+                            legacyconnector.v1_12_2.net.minecraft.client.Minecraft.mcc$get$world(
+                                    legacyconnector.v1_12_2.net.minecraft.client.Minecraft.getMinecraft()), x, y, z));
+            return;
+        }
         ParticleOptions options = options(id, vx, vy, vz, params);
         if (options == null) return;
         if (id == 30) {
@@ -139,7 +146,7 @@ public final class LegacyParticles1122 {
         return options(id, 0.0D, 0.0D, 0.0D, new int[0]);
     }
 
-    private static ParticleOptions options(int id, double vx, double vy, double vz, int[] params) {
+    public static ParticleOptions options(int id, double vx, double vy, double vz, int[] params) {
         return switch (id) {
             case 0 -> ParticleTypes.POOF;
             case 1 -> ParticleTypes.EXPLOSION;
@@ -173,6 +180,7 @@ public final class LegacyParticles1122 {
             case 31, 32 -> ParticleTypes.ITEM_SNOWBALL;
             case 33 -> ParticleTypes.ITEM_SLIME;
             case 34 -> ParticleTypes.HEART;
+            case 35 -> new net.minecraft.core.particles.BlockParticleOption(ParticleTypes.BLOCK_MARKER, net.minecraft.world.level.block.Blocks.BARRIER.defaultBlockState());
             case 36 -> item(params);
             case 37, 38, 46 -> block(id == 46 ? ParticleTypes.FALLING_DUST : ParticleTypes.BLOCK, params);
             case 39 -> ParticleTypes.RAIN;

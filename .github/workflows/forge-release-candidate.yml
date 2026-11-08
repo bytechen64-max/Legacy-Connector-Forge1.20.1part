@@ -1,0 +1,30 @@
+name: Build Forge release candidate
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+      - uses: gradle/actions/setup-gradle@v4
+      - run: chmod +x gradlew
+      - run: ./gradlew bundleJar
+      - run: python3 tools/release/audit_forge_bundle.py build/dist/legacyconnector-forge-1.20.1-*-jarinjar.jar
+      - run: python3 tools/release/prepare_third_party_sources.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: forge-1.20.1-release-candidate
+          path: |
+            build/dist/legacyconnector-forge-1.20.1-*-jarinjar.jar
+            build/dist/legacyconnector-forge-1.20.1-*-jarinjar.jar.sha256
+            build/dist/legacyconnector-third-party-sources.zip
+            docs/release/
+            LICENSE
+            PORT_NOTICE.md
+            THIRD_PARTY_NOTICES.md

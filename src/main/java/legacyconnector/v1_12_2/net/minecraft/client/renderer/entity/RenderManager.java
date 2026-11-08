@@ -260,12 +260,23 @@ public class RenderManager {
     public void renderEntity(Entity entityIn, double x, double y, double z, float yaw, float partialTicks, boolean hideDebugBox) {
         Render<Entity> render = getEntityRenderObject(entityIn);
         if (render == null) return;
+        var graphics = org.kylepitcock.legacyconnector.v1_7_10.client.RenderContext.gui();
+        if (graphics != null) graphics.flush();
         try {
             render.setRenderOutlines(renderOutlines);
             render.doRender(entityIn, x, y, z, yaw, partialTicks);
             if (!renderOutlines) render.doRenderShadowAndFire(entityIn, x, y, z, yaw, partialTicks);
         } catch (RuntimeException | LinkageError e) {
             RenderErrors1122.report("rendering the entity " + entityIn.getClass().getName() + " with " + render.getClass().getName(), e);
+        } finally {
+            // Bestiary previews draw immediately between 2D panels. Delaying the model until the screen's final flush
+            // lets subsequent panels/depth changes hide it and makes it inherit the last GUI shader colour.
+            if (graphics != null) {
+                float[] color = com.mojang.blaze3d.systems.RenderSystem.getShaderColor().clone();
+                com.mojang.blaze3d.systems.RenderSystem.setShaderColor(1, 1, 1, 1);
+                try { graphics.flush(); }
+                finally { com.mojang.blaze3d.systems.RenderSystem.setShaderColor(color[0], color[1], color[2], color[3]); }
+            }
         }
     }
 

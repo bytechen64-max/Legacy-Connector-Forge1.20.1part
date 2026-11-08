@@ -1212,7 +1212,9 @@ public abstract class Entity implements legacyconnector.v1_12_2.net.minecraft.co
     /** Moves the entity and tells the clients (players: a teleport). */
     public void setPositionAndUpdate(double x, double y, double z) {
         var m = mcc$entity;
-        if (m != null) m.teleportTo(x, y, z);
+        // Modern teleportTo only moves entities in a ServerLevel. Legacy callers such
+        // as SRP's EntityBody also use this method every client tick to follow a parent.
+        if (m != null && !m.level().isClientSide) m.teleportTo(x, y, z);
         else setPosition(x, y, z);
     }
 

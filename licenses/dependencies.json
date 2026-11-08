@@ -1,0 +1,94 @@
+[
+  {
+    "artifact": "net.sf.trove4j:trove4j:3.0.3",
+    "licenses": [
+      {
+        "name": "GNU Lesser General Public License 2.1",
+        "url": "http://www.gnu.org/licenses/lgpl-2.1.txt",
+        "distribution": "repo"
+      }
+    ],
+    "source": "https://repo.maven.apache.org/maven2/net/sf/trove4j/trove4j/3.0.3/trove4j-3.0.3-sources.jar",
+    "notice_entries": []
+  },
+  {
+    "artifact": "javax.vecmath:vecmath:1.5.2",
+    "licenses": [
+      {
+        "name": "GPLv2 license, includes the CLASSPATH exception",
+        "url": "https://java.net/projects/vecmath/sources/svn/content/trunk/COPYRIGHT.txt"
+      }
+    ],
+    "source": "https://repo.maven.apache.org/maven2/javax/vecmath/vecmath/1.5.2/vecmath-1.5.2-sources.jar",
+    "notice_entries": []
+  },
+  {
+    "artifact": "org.scala-lang:scala-library:2.11.1",
+    "licenses": [],
+    "source": "https://repo.maven.apache.org/maven2/org/scala-lang/scala-library/2.11.1/scala-library-2.11.1-sources.jar",
+    "notice_entries": []
+  },
+  {
+    "artifact": "org.scala-lang:scala-reflect:2.11.1",
+    "licenses": [],
+    "source": "https://repo.maven.apache.org/maven2/org/scala-lang/scala-reflect/2.11.1/scala-reflect-2.11.1-sources.jar",
+    "notice_entries": []
+  },
+  {
+    "artifact": "org.scala-lang.modules:scala-parser-combinators_2.11:1.0.1",
+    "licenses": [
+      {
+        "name": "BSD 3-clause",
+        "url": "http://opensource.org/licenses/BSD-3-Clause",
+        "distribution": "repo"
+      }
+    ],
+    "source": "https://repo.maven.apache.org/maven2/org/scala-lang/modules/scala-parser-combinators_2.11/1.0.1/scala-parser-combinators_2.11-1.0.1-sources.jar",
+    "notice_entries": []
+  },
+  {
+    "artifact": "org.scala-lang.modules:scala-xml_2.11:1.0.2",
+    "licenses": [
+      {
+        "name": "BSD 3-clause",
+        "url": "http://opensource.org/licenses/BSD-3-Clause",
+        "distribution": "repo"
+      }
+    ],
+    "source": "https://repo.maven.apache.org/maven2/org/scala-lang/modules/scala-xml_2.11/1.0.2/scala-xml_2.11-1.0.2-sources.jar",
+    "notice_entries": []
+  },
+  {
+    "artifact": "com.typesafe:config:1.2.1",
+    "licenses": [
+      {
+        "name": "Apache License, Version 2.0",
+        "url": "http://www.apache.org/licenses/LICENSE-2.0",
+        "distribution": "repo"
+      }
+    ],
+    "source": "https://repo.maven.apache.org/maven2/com/typesafe/config/1.2.1/config-1.2.1-sources.jar",
+    "notice_entries": []
+  },
+  {
+    "artifact": "com.typesafe.akka:akka-actor_2.11:2.3.3",
+    "licenses": [
+      {
+        "name": "Apache License, Version 2.0",
+        "url": "http://www.apache.org/licenses/LICENSE-2.0",
+        "distribution": "repo"
+      }
+    ],
+    "source": "https://repo.maven.apache.org/maven2/com/typesafe/akka/akka-actor_2.11/2.3.3/akka-actor_2.11-2.3.3-sources.jar",
+    "notice_entries": []
+  },
+  {
+    "artifact": "com.sun.activation:jakarta.activation:1.2.2",
+    "licenses": [],
+    "source": "https://repo.maven.apache.org/maven2/com/sun/activation/jakarta.activation/1.2.2/jakarta.activation-1.2.2-sources.jar",
+    "notice_entries": [
+      "META-INF/LICENSE.md",
+      "META-INF/NOTICE.md"
+    ]
+  }
+]
